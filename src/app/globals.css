@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Jersey 10", serif;
+  font-family: "Jersey 10", serif;
+  letter-spacing: 1px;
+  font-style: normal;
+  background-image: url("/assets/bg.jpg");
+}
+
+.no-scrollbar {
+  overflow: scroll; /* Allows scrolling */
+  scrollbar-width: none; /* For Firefox to hide scrollbar */
+  -ms-overflow-style: none;  /* For IE and Edge */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;  /* Hides scrollbar in WebKit browsers (Chrome, Safari) */
+}
+
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #010101;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  @apply scroll-smooth;
+} */
+
+.bg {
+  height: 100vh;
+  background-image: url("/assets/bg.jpg");
+  background-size: contain;
+}
+
+.bg1 {
+  height: 100vh;
+  overflow-y: auto;
+  background-image: url("/assets/bg1.jpeg");
+  background-size: cover;
+}
+
+.makeStyles-iconContainer-3 {
+  text-align: center !important;
+  padding-top: 0px !important;
+}
+
+.makeStyles-copyContainer-5 {
+  border-color: rgb(23 131 251) !important;
+  background-color: transparent !important;
+  border-radius: 10px !important;
+}
+
+.share-container .w-full > :nth-child(1) {
+  background-color: transparent !important;
+}
+
+
+/* .goog-te-banner-frame.skiptranslate,
+.goog-logo-link,
+.goog-te-gadget span,
+.goog-te-gadget-simple span,
+.goog-te-gadget-simple img {
+  display: none !important;
+} */
+
+#google_translate_element {
+  font-size: 0; /* Hides text */
+}
+
+#google_translate_element select {
+  margin-top: 10px;
+  margin-right: 10px;
+  padding: 7px 20px;
+  border-radius: 10px;
+  border: 1px solid;
+  border-color: rgb(23 131 251) !important;
+  background-color: transparent !important;
+  font-size: 14px;
+}
+
+#google_translate_element select > option {
+  background-color: rgb(20, 30, 41) !important;
+  color: white !important;
+}
+
+#google_translate_element span {
+  display: none;
+}
+
+.goog-logo-link {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  color: transparent !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  color: white !important;
+  /* background-color: rgb(20 30 41); */
+}
+
+.css-aphhdw {
+  padding: 0 !important;
+}

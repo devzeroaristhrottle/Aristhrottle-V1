@@ -1,0 +1,14 @@
+#scene3{
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+#coin1{
+    position: absolute;
+    height: 100px;
+    width: 100px;
+    top: 10%;
+    left: 40%;
+    z-index: 999 !important;
+}

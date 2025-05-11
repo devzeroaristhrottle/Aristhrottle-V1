@@ -1,0 +1,129 @@
+#carousel {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.item {
+  text-align: center;
+  color: white;
+  font-size: 40px;
+  position: absolute;
+  border: 3px solid white;
+  transition: height 1s, width 1s, left 1s, margin-top 1s, line-height 1s,
+    background-color 1s;
+}
+
+.level-2 {
+  height: 130px;
+  width: 130px;
+  background-color: #228291;
+  left: 85%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.scale-anim {
+  animation: 1s scaleanim ease;
+}
+
+@keyframes scaleanim {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.level-1 {
+  height: 200px;
+  width: 200px;
+  background-color: #6796e5;
+  left: 75%;
+  transform: translate(-75%);
+  z-index: 2;
+  border-radius: 10px;
+  overflow: hidden;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.level0 {
+  height: 300px;
+  width: 300px;
+  background-color: #4ec9e1;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 3;
+  border-radius: 10px;
+  /* overflow: hidden; */
+}
+
+.level1 {
+  height: 200px;
+  width: 200px;
+  background-color: #6796e5;
+  left: 25%;
+  transform: translate(-25%);
+  z-index: 2;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.level2 {
+  height: 100px;
+  width: 100px;
+  background-color: #228291;
+  left: 10%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.carousel-items {
+  /* position: relative; */
+  height: 340px;
+  display: flex;
+  align-items: center;
+}
+
+/* .carousel-items.left-enter,
+.carousel-items.right-enter {
+  opacity: 0;
+  left: 650px;
+  height: 150px;
+  width: 110px;
+}
+
+.carousel-items.left-enter-active,
+.carousel-items.right-enter-active {
+  opacity: 1;
+  left: 650px;
+  height: 150px;
+  width: 110px;
+  transition: left 1s, opacity 1s, height 1s, width 1s, margin-top 1s, line-height 1s;
+}
+
+.carousel-items.left-leave,
+.carousel-items.right-leave {
+  opacity: 1;
+  left: 650px;
+  height: 150px;
+  width: 110px;
+}
+
+.carousel-items.left-leave-active,
+.carousel-items.right-leave-active {
+  left: 780px;
+  opacity: 0;
+  height: 120px;
+  width: 90px;
+  transition: left 1s, opacity 1s, height 1s, width 1s, margin-top 1s, line-height 1s;
+} */
+
+.noselect {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

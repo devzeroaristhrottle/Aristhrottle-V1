@@ -1,0 +1,285 @@
+/* Base styles */
+.scene-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  overflow: hidden;
+}
+
+.scene-container img {
+  position: absolute;
+  transition: opacity 2s ease;
+}
+
+/* Fog */
+.fog {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+  transition: opacity 4s ease;
+  z-index: 9999;
+}
+
+/* Commode */
+.commode {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 4s ease;
+}
+
+/* Satellite */
+.satellite-s2 {
+  width: 17rem;
+  height: 14rem;
+  top: 10rem;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  animation: satellite-bounce 2s ease-in-out infinite alternate paused;
+}
+
+
+.smoke-left {
+  position: absolute;
+  width: 80vw;
+  height: 100vh;
+  opacity: 1;
+  transition: opacity 2s ease, transform 6s ease;
+  z-index: 9999;
+}
+
+.smoke-right {
+  position: absolute;
+  width: 90vw;
+  height: 100vh;
+  opacity: 1;
+  transition: opacity 2s ease, transform 6s ease;
+  z-index: 9999;
+}
+
+.smoke1 {
+  left: 0%;
+  top:-15%;
+}
+
+.smoke2 {
+  right: 0%;
+  top: 20%;
+}
+
+/* Hover animations */
+.hovered .fog {
+  opacity: 0;
+  display: none;
+}
+
+.hovered .commode {
+  opacity: 1;
+}
+
+.hovered .satellite-s2 {
+  opacity: 1;
+  animation-play-state: running; /* Start bouncing animation */
+}
+
+.hovered .smoke1 {
+  left: -50%;
+  transition: 4s ease-out;
+}
+
+.hovered .smoke2 {
+  right: -50%;
+  transition:4s ease-out;
+}
+
+.transform-btn{
+  position: absolute;
+  height: 15rem;
+  width: 18rem;
+  top: 3%;
+  left: 33%;
+}
+
+#enviro{
+  width: 100%;
+  height: 100%;
+}
+
+.loading-bg{
+  width: 100vw;
+  height: 100vh;
+  background-color: #0e0e1a;
+  transition: opacity 2s ease;
+}
+
+#loading{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.load-smoke1{
+  position: absolute;
+  height: 30rem;
+  width: 50rem;
+  left: 20%;
+  top: -20%;
+}
+
+.load-smoke1-anim {
+  animation: move-smoke 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes move-smoke {
+  from {
+    top: -20%
+  }
+  to {
+    top: -40%;
+  }
+}
+
+.load-smoke2{
+  position: absolute;
+  height: 30rem;
+  width: 40rem;
+  top: 50%;
+  left: 30%;
+}
+
+.load-smoke2-anim {
+  animation: move-smoke2 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes move-smoke2 {
+  from {
+    top: 50%;
+  }
+  to {
+    top: 70%;
+  }
+}
+
+.load-smoke3{
+  position: absolute;
+  height: 40rem;
+  width: 40rem;
+  top: -20%;
+  left: -10%;
+  transform: rotate(40deg);
+}
+
+.load-smoke3-anim {
+  animation: move-smoke3 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes move-smoke3 {
+  from {
+    top: -20%;
+    left: -10%;
+  }
+  to {
+    top: -40%;
+    left: -20%;
+  }
+}
+
+.load-smoke4{
+  position: absolute;
+  height: 40rem;
+  width: 40rem;
+  top: 40%;
+  left: -10%;
+  transform: rotate(120deg);
+}
+
+.load-smoke4-anim {
+  animation: move-smoke4 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes move-smoke4 {
+  from {
+    top: 40%;
+    left: -10%;
+  }
+  to {
+    top: 60%;
+    left: -20%;
+  }
+}
+
+.load-smoke5{
+  position: absolute;
+  height: 40rem;
+  width: 40rem;
+  top: 40%;
+  left: 60%;
+  transform: rotate(120deg);
+}
+
+.load-smoke5-anim {
+  animation: move-smoke5 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes move-smoke5 {
+  from {
+    top: 40%;
+    left: 60%;
+  }
+  to {
+    top: 50%;
+    left: 70%;
+  }
+}
+
+.load-smoke6{
+  position: absolute;
+  height: 40rem;
+  width: 40rem;
+  top: -25%;
+  left: 60%;
+  transform: rotate(180deg);
+}
+
+.load-smoke6-anim {
+  animation: move-smoke6 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes move-smoke6 {
+  from {
+    top: -25%;
+    left: 60%;
+  }
+  to {
+    top: -35%;
+    left: 80%;
+  }
+}
+
+
+.fade-animation {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 2s ease, visibility 2s ease;
+}
+
+
+/* Satellite bounce animation */
+@keyframes satellite-bounce {
+  0% {
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    transform: translateX(-50%) translateY(20px);
+  }
+}
+
+
+
+
+
