@@ -287,9 +287,9 @@ export default function Navbar() {
           initialFocusEl={() => ref.current}
         >
           <DialogBackdrop />
-          <DialogContent className="mx-4 md:mx-0">
-            <DialogHeader>
-              <DialogTitle>Create Account</DialogTitle>
+          <DialogContent className="mx-4 md:mx-0 lg:px-6 px-8">
+            <DialogHeader className="px-0">
+              <DialogTitle className="text-3xl mb-2">Create Account</DialogTitle>
             </DialogHeader>
             <DialogBody>
               <Field label="Account Address">

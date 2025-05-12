@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import WalletProvider from "@/config/walletProvider";
-import "@rainbow-me/rainbowkit/styles.css";
 import ChakraUIProvider from "@/config/chakraProvider";
 import { ToastContainer } from "react-toastify";
 import ContextProvider from "@/context/contextProvider";
+import "@rainbow-me/rainbowkit/styles.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
@@ -32,10 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <style>
-          @import
-          url(&apos;https://fonts.googleapis.com/css2?family=Jersey+10&display=swap&apos;);
-        </style>
+        <style> @import url(&apos;https://fonts.googleapis.com/css2?family=Jersey+10&display=swap&apos;);</style>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
