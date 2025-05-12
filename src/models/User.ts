@@ -15,8 +15,7 @@ const UserSchema = new mongoose.Schema(
     },
     refer_code: {
       type: String,
-      unique: true,
-      sparse: true,
+      index: { unique: true, sparse: true },
       trim: true,
     },
     referred_by: {
