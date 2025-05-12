@@ -80,7 +80,7 @@ export function MemeCard({
       <div className="flex items-start gap-2 mb-2">
         <CgProfile size={28} />
         <span className="text-2xl text-[#29e0ca]">
-          {meme.created_by.username}
+          {meme.created_by?.username}
         </span>
       </div>
       <div className="flex cursor-pointer">
