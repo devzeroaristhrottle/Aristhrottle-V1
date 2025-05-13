@@ -148,7 +148,7 @@ export default function Page() {
 
   const getMyMemes = async () => {
     try {
-      if (!userDetails?._id) throw new Error("User not found");
+      // if (!userDetails?._id) throw new Error("User not found");
       setLoading(true);
       const offset = 30 * (page - 1);
       const daily = activeTab === "daily";
@@ -181,6 +181,7 @@ export default function Page() {
     resetFilters(); // Reset filters when page, tab, or user changes
     getMyMemes();
   }, [userDetails, page, activeTab]);
+  
 
   const applyFilters = () => {
     setPage(1);
