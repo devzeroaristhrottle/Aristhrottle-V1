@@ -249,13 +249,6 @@ export async function GET(req: NextRequest) {
         { $limit: defaultOffset },
       ]);
 
-      // Log for debugging
-      console.log('Non-Daily Memes:', memes.map(m => ({
-        id: m._id,
-        vote_count: m.vote_count,
-        rank: m.rank,
-        in_percentile: m.in_percentile,
-      })));
 
       return NextResponse.json(
         {
