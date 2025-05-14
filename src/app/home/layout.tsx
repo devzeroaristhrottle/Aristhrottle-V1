@@ -2,12 +2,14 @@ import Navbar from "@/components/Navbar";
 import { Switch } from "@/components/ui/switch";
 import UploadMeme from "@/components/UploadMeme";
 import Sidebar from "./sidebar/Sidebar";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 interface Props {
   children: React.ReactNode;
 }
 
 export default function Layout({ children }: Props) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID || "G-FY44ED1KLP";
   return (
     <div className="bg1">
       <div className="flex flex-col">
@@ -21,6 +23,7 @@ export default function Layout({ children }: Props) {
         </div>
       </div>
       <UploadMeme />
+      <GoogleAnalytics gaId={gaId} />
     </div>
   );
 }
