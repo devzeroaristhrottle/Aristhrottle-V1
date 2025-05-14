@@ -33,6 +33,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Context } from "@/context/contextProvider";
 import { toast } from "react-toastify";
 import { useAuthModal, useUser } from "@account-kit/react";
+import { ReactTour } from "react-interactive-tour";
 
 export interface Meme {
   _id: string;
@@ -369,27 +370,41 @@ export default function Page() {
 
   return (
     <div className="mx-4 md:mx-16">
-      {/* Upload Button */}
+      {/* Upload Button */}={" "}
       <div className="flex justify-center gap-5">
-        <div
-          className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col"
-          onClick={() => {
-            if (user && user.address) {
-              setIsUploadMemeOpen(true);
-            } else {
-              if (openAuthModal) {
-                openAuthModal();
-              }
-            }
-          }}
+        <ReactTour
+          index={2}
+          key="2"
+          position="right"
+          body={
+            <div>
+              <strong>📤 Upload Your Meme</strong>
+              <br />
+              Share your funniest meme with the Aristhrottle community. Get
+              votes, earn tokens, and go viral!
+            </div>
+          }
         >
-          <div className="ring-2 ring-slate-200 w-16 h-14 rounded-md p-2">
-            <IoCloudUploadOutline className="text-slate-200 h-full w-full" />
-          </div>
-          <p className="text-blue-500 font-bold mt-1 text-3xl">Upload</p>
-        </div>
-      </div>
+          <div
+            className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col"
+            onClick={() => {
+              if (user && user.address) {
+                setIsUploadMemeOpen(true);
+              } else {
+                if (openAuthModal) {
+                  openAuthModal();
+                }
+              }
+            }}
+          >
+            <div className="ring-2 ring-slate-200 w-16 h-14 rounded-md p-2">
+              <IoCloudUploadOutline className="text-slate-200 h-full w-full" />
+            </div>
 
+            <p className="text-blue-500 font-bold mt-1 text-3xl">Upload</p>
+          </div>
+        </ReactTour>
+      </div>
       {/* Carousel */}
       <div>
         <Carousel
@@ -400,7 +415,6 @@ export default function Page() {
           setSelectedMeme={setSelectedMeme}
         />
       </div>
-
       {/* Search Bar (Normal Layout) */}
       <div
         className={`relative mt-10 mb-8 md:mt-20 ${
@@ -438,9 +452,26 @@ export default function Page() {
             />
           </InputGroup>
         </div>
-        <p className="text-center my-1 text-sm leading-none md:text-lg">
-          Separate by comma to search for multiple tags, titles and usernames
-        </p>
+        <div className="w-full flex justify-center ">
+          <ReactTour
+            index={3}
+            key="3"
+            position="bottom"
+            body={
+              <div>
+                <strong>🔍 Search Memes</strong>
+                <br />
+                Find the hottest, funniest, or weirdest memes. Explore what the
+                community’s voting on!
+              </div>
+            }
+          >
+            <p className="w-full text-center my-1 text-sm leading-none md:text-lg text-nowrap">
+              Separate by comma to search for multiple tags, titles and
+              usernames
+            </p>
+          </ReactTour>
+        </div>
         {showRecommendations && query.length > 0 && (
           <div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto md:w-1/2 absolute translate-x-1/2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C]">
             {filteredTags.length > 0 ? (
@@ -468,7 +499,6 @@ export default function Page() {
           </div>
         )}
       </div>
-
       {/* Popular Tags */}
       <div
         className={`mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto ${
@@ -495,7 +525,6 @@ export default function Page() {
           </div>
         </div>
       </div>
-
       {/* Tabs and Sort (Normal Layout) */}
       <div
         ref={tabsRef}
@@ -556,7 +585,6 @@ export default function Page() {
           </PopoverRoot>
         </div>
       </div>
-
       {/* Fixed Header */}
       {isHeaderFixed && (
         <div className="fixed top-0 left-0 right-0 bg-[#141e29] z-50 shadow-md py-4 px-16">
@@ -677,7 +705,6 @@ export default function Page() {
           )}
         </div>
       )}
-
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
@@ -708,7 +735,6 @@ export default function Page() {
           <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto md:col-span-12" />
         )}
       </div>
-
       {/* Pagination */}
       <PaginationRoot
         count={totalMemeCount}
@@ -725,7 +751,6 @@ export default function Page() {
           <PaginationNextTrigger />
         </HStack>
       </PaginationRoot>
-
       {/* Meme Detail Modal */}
       {isMemeDetailOpen && selectedMeme && (
         <MemeDetail
