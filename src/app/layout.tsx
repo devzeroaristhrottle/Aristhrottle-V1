@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import WalletProvider from "@/config/walletProvider";
@@ -32,17 +33,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <style> @import url(&apos;https://fonts.googleapis.com/css2?family=Jersey+10&display=swap&apos;);</style>
+        <style>
+          {" "}
+          @import
+          url(&apos;https://fonts.googleapis.com/css2?family=Jersey+10&display=swap&apos;);
+        </style>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ContextProvider>
-          <ChakraUIProvider>
-            <WalletProvider>{children}</WalletProvider>
-          </ChakraUIProvider>
-          <ToastContainer theme="dark" />
-        </ContextProvider>
+          <ContextProvider>
+            <ChakraUIProvider>
+              <WalletProvider>{children}</WalletProvider>
+            </ChakraUIProvider>
+            <ToastContainer theme="dark" />
+          </ContextProvider>
       </body>
     </html>
   );

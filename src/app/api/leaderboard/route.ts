@@ -170,7 +170,7 @@ export async function GET(req: NextRequest) {
       const maxVotes = maxVotesResult[0]?.maxVotes || 0;
 
       // Calculate total votes for response
-      const totalVotesResult = await Meme.aggregate([
+      const totalVotes = await Meme.aggregate([
         {
           $match: {
             is_voting_close: true,
@@ -178,12 +178,11 @@ export async function GET(req: NextRequest) {
         },
         {
           $group: {
-            _id: null,
-            totalVotes: { $sum: { $ifNull: ['$vote_count', 0] } },
+            _id: null, // Group all matching documents
+            totalVotes: { $sum: '$vote_count' }, // Summing up vote_count
           },
         },
-      ]);
-      const totalVotes = totalVotesResult[0]?.totalVotes || 0;
+      ])
 
       // Fetch memes with rank and in_percentile
       const memes = await Meme.aggregate([
