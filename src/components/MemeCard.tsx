@@ -1,231 +1,179 @@
-"use client";
-
+import { Meme } from "@/app/home/page";
+import { useEffect, useState } from "react";
+import { CgProfile } from "react-icons/cg";
+import { Logo } from "./Logo";
 import { FaRegShareFromSquare } from "react-icons/fa6";
 import { FaRegBookmark } from "react-icons/fa";
-import {
-  DialogContent,
-  DialogBody,
-  DialogBackdrop,
-  DialogRoot,
-} from "@chakra-ui/react";
-import { CgCloseO, CgProfile } from "react-icons/cg";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Share from "./Share";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Meme, TagI } from "@/app/home/page";
-import { MdOutlineExpandMore } from "react-icons/md";
-import axiosInstance from "@/utils/axiosInstance";
+import { Tooltip } from "./ui/tooltip";
+import { FaBookmark } from "react-icons/fa";
+import { useUser } from "@account-kit/react";
 
-interface MemeDetailProps {
-  isOpen?: boolean;
-  onClose?: () => void;
-  meme: Meme | undefined;
-  searchRelatedMemes: Dispatch<SetStateAction<string>>;
-}
-interface Category {
-  name: string;
+export interface MemeCardI {
+  index: number;
+  meme: Meme;
+  onOpenMeme: () => void;
+  onVoteMeme: () => void;
+  bookmark: (id: string, name: string, image_url: string) => void;
+  activeTab?: "all" | "live";
 }
 
-export default function MemeDetail({
-  isOpen = true,
-  onClose = () => {},
+export function MemeCard({
+  index,
   meme,
-  searchRelatedMemes,
-}: MemeDetailProps) {
+  onOpenMeme,
+  onVoteMeme,
+  bookmark,
+  activeTab = "all",
+}: MemeCardI) {
+  const [loading, setLoading] = useState(false);
+  const { openConnectModal } = useConnectModal();
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const [relatedMemes, setRelatedMemes] = useState<Meme[]>([]);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkCount, setBookmarkCount] = useState(0);
+  const [shareCount, setShareCount] = useState(0);
+  const user = useUser();
+
+  useEffect(() => {
+    getBookmarks();
+    setBookmarkCount(meme.bookmarks.length);
+    setShareCount(meme.shares.length);
+  }, []);
+
+  const getBookmarks = () => {
+    const bookmarks = localStorage.getItem("bookmarks");
+    if (bookmarks) {
+      const bookmarksObj = JSON.parse(bookmarks);
+      if (bookmarksObj[meme._id]) {
+        setIsBookmarked(true);
+      } else {
+        setIsBookmarked(false);
+      }
+    }
+  };
 
   const handleShareClose = () => {
     setIsShareOpen(false);
   };
 
-  useEffect(() => {
-    getRelatedMemes();
-  }, [meme]);
+  const onShare = () => {
+    setShareCount(shareCount + 1);
+  };
 
-  const getRelatedMemes = async () => {
+  const voteMeme = () => {
     try {
-      if (meme && meme.tags.length > 0) {
-        let tags = "";
-        meme.tags.map((t) => {
-          if (tags.length > 0) {
-            tags += `,${t.name}`;
-          } else {
-            tags = `${t.name}`;
-          }
-        });
-
-        const response = await axiosInstance.get(`/api/meme?name=${tags}`);
-
-        if (response.data.memes) {
-          setRelatedMemes([...response.data.memes]);
-        }
-      }
-      // if (meme.categories.length == 0 && memes.length > 0) {
-      //   setRelatedMemes([...memes]);
-      // }
+      setLoading(true);
+      onVoteMeme();
     } catch (error) {
       console.log(error);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     }
   };
 
   return (
-    <>
-      {meme && (
-        <DialogRoot open={isOpen} motionPreset="slide-in-bottom">
-          <DialogBackdrop className="backdrop-blur-md" />
-          <DialogContent className="fixed inset-1 md:inset-2  bg-[#141e29] border border-white w-[90vw] md:w-[60vw] h-[70vh] md:h-[80vh] max-w-none p-0">
-            <DialogBody className="overflow-y-auto no-scrollbar mx-4 md:mx-8 my-4">
-              <CgCloseO
-                onClick={onClose}
-                className="z-50 absolute -top-6 -right-4 text-white w-5 h-5 cursor-pointer"
+    <div key={index} className="col-span-4 flex flex-col mx-auto">
+      <div className="flex items-start gap-2 mb-2">
+        <CgProfile size={28} />
+        <span className="text-2xl text-[#29e0ca]">
+          {meme.created_by?.username}
+        </span>
+      </div>
+      <div className="flex cursor-pointer">
+        <img
+          onClick={() => {
+            onOpenMeme();
+          }}
+          src={meme.image_url}
+          alt={meme.name}
+          className="border-2 h-96 w-96"
+        />
+        <div className="ml-4 place-content-end space-y-8">
+          {loading ? (
+            <AiOutlineLoading3Quarters className="animate-spin text-2xl" />
+          ) : (
+            <Logo
+              onClick={() => {
+                if (!activeTab.includes("all")) {
+                  if (user && user.address) {
+                    voteMeme();
+                  } else {
+                    if (openConnectModal) {
+                      openConnectModal();
+                    }
+                  }
+                }
+              }}
+            />
+          )}
+          <Tooltip content="Share" positioning={{ placement: "right-end" }}>
+            <div className="text-center font-bold text-lg">
+              <FaRegShareFromSquare
+                className="text-2xl"
+                onClick={() => {
+                  setIsShareOpen(true);
+                }}
               />
-              <div className="flex items-center gap-x-2 mb-1">
-                <CgProfile className="w-5 h-5" />
-                <span className="text-[#29e0ca] text-lg font-semibold">
-                  {meme.created_by.username}
-                </span>
-              </div>
-
-              <div className="flex flex-col md:flex-row gap-x-8">
-                {/* left side */}
-                <div className="w-[250px] h-[250px] md:w-[330px] md:h-[330px] col-span-5">
-                  <img
-                    src={meme.image_url}
-                    alt={meme.name}
-                    className="w-full cursor-pointer border-2 border-white"
-                  />
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="">
-                      {/* <FaRegEye className="text-xl rotate-90" />
-                      <p className="text-[#1783fb] text-center">13</p> */}
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div
-                        onClick={() => {
-                          setIsShareOpen(true);
-                        }}
-                      >
-                        <FaRegShareFromSquare className="text-xl cursor-pointer" />
-                        <p className="text-[#1783fb] text-center">120</p>
-                      </div>
-                      <div>
-                        <FaRegBookmark className="text-xl cursor-pointer" />
-                        <p className="text-[#1783fb] text-center">24</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* right side */}
-                <div className="mt-4 space-y-2 md:space-y-6">
-                  <div className="flex items-center gap-4">
-                    <label className="text-[#1783fb] text-lg md:text-2xl">
-                      Title :
-                    </label>
-                    <p className="text-lg md:text-2xl font-semibold">
-                      {meme.name}
-                    </p>
-                  </div>
-                  {meme.categories.length > 0 && (
-                    <div className="flex flex-col">
-                      <label className="text-[#1783fb] text-lg md:text-2xl">
-                        Categories :
-                      </label>
-                      <div className="flex flex-wrap gap-3 mt-2">
-                        {meme.categories.map(
-                          (category: Category, index: number) => (
-                            <button
-                              key={index}
-                              className="text-balance border-2 border-[#1783fb] rounded-lg px-3 py-1"
-                            >
-                              {category.name}
-                            </button>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {meme.tags.length > 0 && (
-                    <div className="flex flex-col">
-                      <label className="text-[#1783fb] text-lg md:text-2xl">
-                        Tags :
-                      </label>
-                      <div className="flex flex-wrap gap-2 md:gap-3 md:mt-2">
-                        {meme.tags.map((tag: TagI, index: number) => (
-                          <button
-                            key={index}
-                            className="text-balance border-2 border-[#1783fb] rounded-lg px-1 md:px-3 md:py-1"
-                          >
-                            {tag.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* <div className="flex items-center gap-4">
-                    <label className="text-[#1783fb] text-2xl">
-                      Vote Count:
-                    </label>
-                    <p className="text-2xl font-semibold">{meme.vote_count}</p>
-                  </div> */}
-
-                  <div className="flex items-center gap-4">
-                    <label className="text-nowrap text-[#1783fb] text-base md:text-2xl">
-                      Uploaded on:
-                    </label>
-                    <p className="text-nowrap text-base md:text-2xl font-semibold">
-                      {meme.createdAt}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Related content */}
-              {relatedMemes.length > 0 && (
-                <div className="mt-6 md:mt-16">
-                  <p className="text-xl md:text-3xl text-[#1783fb] mb-1 md:mb-3">
-                    Related Contents :
-                  </p>
-                  <div className="flex flex-wrap items-center gap-3.5  md:gap-8">
-                    {relatedMemes.map((item, index) => {
-                      if (index < 6 && meme.name != item.name) {
-                        return (
-                          <div
-                            key={item._id}
-                            className="w-28 h-28 md:w-36 md:h-36 border-2 border-white cursor-pointer"
-                            onClick={() => {
-                              if (item.categories.length > 0) {
-                                searchRelatedMemes(item.categories[0].name);
-                                onClose();
-                              }
-                            }}
-                          >
-                            <img src={item.image_url} alt={`meme${index}`} />
-                          </div>
-                        );
-                      }
-                    })}
-                  </div>
-                  <div className="flex justify-between items-center text-center cursor-pointer border-2 border-white rounded-lg w-min mx-auto mt-6 px-2">
-                    <span className="text-base md:text-lg">More</span>
-                    <MdOutlineExpandMore className="text-lg md:text-2xl" />
-                  </div>
-                </div>
+              {meme.shares && !activeTab?.includes("live") && (
+                <p>{shareCount}</p>
               )}
-            </DialogBody>
-          </DialogContent>
-        </DialogRoot>
-      )}
+            </div>
+          </Tooltip>
 
+          {isBookmarked ? (
+            <Tooltip
+              content="My Bookmark"
+              positioning={{ placement: "right-end" }}
+            >
+              <div className="text-center font-bold text-lg">
+                <FaBookmark
+                  className="text-2xl cursor-pointer"
+                  onClick={() => {
+                    bookmark(meme._id, meme.name, meme.image_url);
+                    setBookmarkCount(bookmarkCount - 1);
+                    getBookmarks();
+                  }}
+                />
+                {meme.bookmarks && !activeTab?.includes("live") && (
+                  <p>{bookmarkCount}</p>
+                )}
+              </div>
+            </Tooltip>
+          ) : (
+            <Tooltip
+              content="My Bookmark"
+              positioning={{ placement: "right-end" }}
+            >
+              <div className="text-center font-bold text-lg">
+                <FaRegBookmark
+                  className="text-2xl"
+                  onClick={() => {
+                    bookmark(meme._id, meme.name, meme.image_url);
+                    setBookmarkCount(bookmarkCount + 1);
+                    getBookmarks();
+                  }}
+                />
+                {meme.bookmarks && !activeTab?.includes("live") && (
+                  <p>{bookmarkCount}</p>
+                )}
+              </div>
+            </Tooltip>
+          )}
+        </div>
+      </div>
+      <p className="text-2xl text-wrap my-1 w-96 line-clamp-3">{meme.name}</p>
       {isShareOpen && (
         <Share
           onClose={handleShareClose}
+          onShare={onShare}
           imageUrl={meme?.image_url}
-          id={meme?._id}
+          id={meme._id}
         />
       )}
-    </>
+    </div>
   );
 }
