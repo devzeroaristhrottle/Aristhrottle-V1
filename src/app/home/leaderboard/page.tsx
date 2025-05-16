@@ -302,6 +302,7 @@ export default function Page() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 md:gap-8">
+        
         {/* For mobile */}
         <div className="md:hidden w-full flex flex-col items-center justify-center">
           {filteredMemes.map((item, index) => (

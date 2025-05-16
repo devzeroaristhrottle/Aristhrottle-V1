@@ -14,19 +14,22 @@ export async function GET(req: NextRequest) {
 
   try {
     if (daily === 'true') {
-      // Calculate the time range: 5 AM (previous day) to 4:59 AM (current day)
+  
+      // Dynamic time window: two days ago 11:30 PM IST to yesterday 11:30 PM IST
       const now = new Date();
-      const startOfDay = new Date(now);
-      startOfDay.setUTCHours(5, 0, 0, 0);
-      startOfDay.setUTCDate(startOfDay.getUTCDate() - 1);
+      const utcYear = now.getUTCFullYear();
+      const utcMonth = now.getUTCMonth();
+      const utcDate = now.getUTCDate();
 
-      const endOfDay = new Date(now);
-      endOfDay.setUTCHours(4, 59, 59, 999);
+      // End time: Yesterday 11:30 PM IST = 6:00 PM UTC of yesterday
+      const endOfDay = new Date(Date.UTC(utcYear, utcMonth, utcDate, 18, 0, 0, 0));
+      // Start time: Two days ago 11:30 PM IST = 6:00 PM UTC of two days ago
+      const startTime = new Date(endOfDay.getTime() - 24 * 60 * 60 * 1000);
 
       // Count total memes
       const memesCount = await Meme.countDocuments({
         is_voting_close: true,
-        createdAt: { $gte: startOfDay, $lt: endOfDay },
+        createdAt: { $gte: startTime, $lt: endOfDay },
       });
 
       // Calculate max vote_count
@@ -34,7 +37,7 @@ export async function GET(req: NextRequest) {
         {
           $match: {
             is_voting_close: true,
-            createdAt: { $gte: startOfDay, $lt: endOfDay },
+            createdAt: { $gte: startTime, $lt: endOfDay },
           },
         },
         {
@@ -51,7 +54,7 @@ export async function GET(req: NextRequest) {
         {
           $match: {
             is_voting_close: true,
-            createdAt: { $gte: startOfDay, $lt: endOfDay },
+            createdAt: { $gte: startTime, $lt: endOfDay },
           },
         },
         {
@@ -68,7 +71,7 @@ export async function GET(req: NextRequest) {
         {
           $match: {
             is_voting_close: true,
-            createdAt: { $gte: startOfDay, $lt: endOfDay },
+            createdAt: { $gte: startTime, $lt: endOfDay },
           },
         },
         { $sort: { vote_count: -1, _id: 1 } }, // Ensure stable sort with _id
@@ -130,13 +133,6 @@ export async function GET(req: NextRequest) {
         { $limit: defaultOffset },
       ]);
 
-      // Log for debugging
-      console.log('Daily Memes:', memes.map(m => ({
-        id: m._id,
-        vote_count: m.vote_count,
-        rank: m.rank,
-        in_percentile: m.in_percentile,
-      })));
 
       return NextResponse.json(
         {

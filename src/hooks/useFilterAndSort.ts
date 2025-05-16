@@ -31,9 +31,16 @@ const filterMemes = (
     // Filter memes from yesterday (00:00 to 23:59 UTC)
     filtered = filtered.filter((meme) => {
       const createdAt = new Date(meme.createdAt)
+      const now = new Date();
+      const utcYear = now.getUTCFullYear();
+      const utcMonth = now.getUTCMonth();
+      const utcDate = now.getUTCDate();
+      const endOfDay = new Date(Date.UTC(utcYear, utcMonth, utcDate, 18, 0, 0, 0));
+      // Start time: Two days ago 11:30 PM IST = 6:00 PM UTC of two days ago
+      const startTime = new Date(endOfDay.getTime() - 24 * 60 * 60 * 1000);
       return (
-        createdAt >= yesterday &&
-        createdAt < new Date(yesterday.getTime() + 24 * 60 * 60 * 1000)
+        createdAt >= startTime &&
+        createdAt < endOfDay
       )
     })
   }
