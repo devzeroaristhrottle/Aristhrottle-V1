@@ -133,18 +133,36 @@ export async function GET(req: NextRequest) {
 
       return NextResponse.json(
         {
-          memes: memes,
-          memesCount: memesCount,
+          memes,
+          memesCount,
           totalVotes,
           totalUpload: memesCount,
         },
         { status: 200 }
       );
     } else {
-      const memesCount = await Meme.find({
+      // Count total memes
+      const memesCount = await Meme.countDocuments({
         is_voting_close: true,
-      }).countDocuments();
+      });
 
+      // Calculate max vote_count
+      const maxVotesResult = await Meme.aggregate([
+        {
+          $match: {
+            is_voting_close: true,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            maxVotes: { $max: { $ifNull: ["$vote_count", 0] } },
+          },
+        },
+      ]);
+      const maxVotes = maxVotesResult[0]?.maxVotes || 0;
+
+      // Calculate total votes for response
       const totalVotes = await Meme.aggregate([
         {
           $match: {
@@ -159,35 +177,33 @@ export async function GET(req: NextRequest) {
         },
       ]);
 
-      // const memes = await Meme.find()
-      //   .skip(start)
-      //   .limit(defaultOffset)
-      //   .where({ is_voting_close: true })
-      //   .populate("created_by");
-
+      // Fetch memes with rank and in_percentile
       const memes = await Meme.aggregate([
         {
           $match: { is_voting_close: true },
         },
-        { $sort: { vote_count: -1 } }, // Sort by vote_count in descending order
+        { $sort: { vote_count: -1, _id: 1 } }, // Ensure stable sort with _id
         {
           $setWindowFields: {
             sortBy: { vote_count: -1 },
             output: {
-              rank: { $rank: {} }, // Assigns rank starting from 1
+              rank: { $denseRank: {} }, // Use denseRank for consecutive ranks
             },
           },
         },
         {
           $lookup: {
-            from: "users", // Collection name in MongoDB
+            from: "users",
             localField: "created_by",
             foreignField: "_id",
             as: "created_by",
           },
         },
         {
-          $unwind: "$created_by", // Convert array to object
+          $unwind: {
+            path: "$created_by",
+            preserveNullAndEmptyArrays: true,
+          },
         },
         {
           $project: {
@@ -199,19 +215,33 @@ export async function GET(req: NextRequest) {
             createdAt: 1,
             shares: 1,
             bookmarks: 1,
-            in_percentile: 1,
+            in_percentile: {
+              $cond: {
+                if: { $gt: [maxVotes, 0] },
+                then: {
+                  $multiply: [
+                    {
+                      $divide: [{ $ifNull: ["$vote_count", 0] }, maxVotes],
+                    },
+                    100,
+                  ],
+                },
+                else: 0,
+              },
+            },
             "created_by._id": 1,
-            "created_by.username": 1, // Adjust fields based on User schema
-            "created_by.profile_image": 1, // Example field
+            "created_by.username": 1,
+            "created_by.profile_image": 1,
           },
         },
-        { $limit: defaultOffset }, // Limit results
+        { $skip: start },
+        { $limit: defaultOffset },
       ]);
 
       return NextResponse.json(
         {
-          memes: memes,
-          memesCount: memesCount,
+          memes,
+          memesCount,
           totalVotes,
           totalUpload: memesCount,
         },
@@ -219,11 +249,10 @@ export async function GET(req: NextRequest) {
       );
     }
   } catch (error) {
+    console.error("Error in GET /memes:", error);
     return NextResponse.json(
-      { error: error },
-      {
-        status: 500,
-      }
+      { error: error || "Internal Server Error" },
+      { status: 500 }
     );
   }
 }
