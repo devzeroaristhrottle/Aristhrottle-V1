@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/utils/apiLogger";
+import Followers from "@/models/Followers";
 
 // Function to generate a random alphanumeric referral code (length: 8)
 // const generateReferralCode = () => {
@@ -84,6 +85,9 @@ async function handleGetRequest(request: NextRequest) {
         created_by: user.id,
       }).countDocuments();
       
+      // Get follower counts
+      const followersCount = await Followers.countDocuments({ following: user.id });
+      const followingCount = await Followers.countDocuments({ follower: user.id });
 
       const totalVotesReceived = await Meme.aggregate([
         {
@@ -128,6 +132,8 @@ async function handleGetRequest(request: NextRequest) {
           totalVotesReceived: totalVotesReceived,
           majorityUploads: majorityUploads,
           majorityVotes: majorityVotes,
+          followersCount: followersCount,
+          followingCount: followingCount,
           mintedCoins: BigInt(mintedCoins).toString(),
         },
         { status: 200 }
