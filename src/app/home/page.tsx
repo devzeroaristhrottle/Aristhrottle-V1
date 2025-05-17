@@ -90,6 +90,7 @@ export default function Page() {
   const [popularTags, setPopularTags] = useState<TagI[]>([]);
   const [selectedMeme, setSelectedMeme] = useState<Meme | undefined>();
   const [totalMemeCount, setTotalMemeCount] = useState<number>(0);
+  const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [filteredTags, setFilteredTags] = useState<TagI[]>([]);
@@ -118,9 +119,7 @@ export default function Page() {
         const viewportTop = 0;
         const isPastTabs = tabsBottom <= viewportTop + 80; // Account for 80px navbar
         setIsHeaderFixed(isPastTabs);
-        console.log("Scroll handler fired");
-        console.log("tabsBottom:", tabsBottom);
-        console.log("isPastTabs:", isPastTabs);
+        
       } else {
         console.log("Refs missing:", {
           tabsRef: tabsRef.current,
@@ -264,6 +263,7 @@ export default function Page() {
       const response = await axiosInstance.get(`/api/meme?offset=${offsetI}`);
       if (response.data.memes) {
         setTotalMemeCount(response.data.memesCount);
+        setTotalMemeCountConst(response.data.memesCount);
         setMemes([...response.data.memes]);
         setFilterMemes([...response.data.memes]);
       }
@@ -362,6 +362,11 @@ export default function Page() {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab.toLowerCase() as "live" | "all");
+    if(tab === "live") {
+      setTotalMemeCount(filterMemes.length);
+    }else{
+      setTotalMemeCount(totalMemeCountConst);
+    }
     setPage(1);
   };
 
@@ -710,22 +715,24 @@ export default function Page() {
       </div>
 
       {/* Pagination */}
-      <PaginationRoot
-        count={totalMemeCount}
-        pageSize={pageSize}
-        defaultPage={1}
-        variant="solid"
-        className="mx-auto mb-8"
-        page={page}
-        onPageChange={(e) => setPage(e.page)}
-      >
-        <HStack className="justify-center">
-          <PaginationPrevTrigger />
-          <PaginationItems />
-          <PaginationNextTrigger />
-        </HStack>
-      </PaginationRoot>
-
+      {
+        displayedMemes.length > 0 &&
+        <PaginationRoot
+          count={totalMemeCount}
+          pageSize={pageSize}
+          defaultPage={1}
+          variant="solid"
+          className="mx-auto mb-8"
+          page={page}
+          onPageChange={(e) => setPage(e.page)}
+        >
+          <HStack className="justify-center">
+            <PaginationPrevTrigger />
+            <PaginationItems />
+            <PaginationNextTrigger />
+          </HStack>
+        </PaginationRoot>
+      }
       {/* Meme Detail Modal */}
       {isMemeDetailOpen && selectedMeme && (
         <MemeDetail
