@@ -153,11 +153,11 @@ export default function Page() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-8">
+    <div className="md:max-w-7xl mx-auto px-6 md:px-8">
       {/* Top Section */}
-      <div className="flex items-center justify-between pb-6">
-        <div className="flex items-center space-x-4 rounded-lg">
-          <div className="h-20 w-24 md:h-44 md:w-44 bg-black rounded-full overflow-hidden flex items-center justify-center">
+      <div className="flex items-center justify-between pb-4 md:pb-6">
+        <div className="flex items-center space-x-2 md:space-x-4 rounded-lg">
+          <div className="h-20 w-20 md:h-44 md:w-44 bg-black rounded-full overflow-hidden flex items-center justify-center">
             <img
               src="/assets/meme1.jpeg"
               alt="Profile"
@@ -165,11 +165,11 @@ export default function Page() {
             />
           </div>
           <div>
-            <p className="text-[#29e0ca] text-base  md:text-2xl">
+            <p className="text-[#29e0ca] text-base  md:text-2xl hidden">
               Level Coming Soon
             </p>
-            <p className="text-white text-xl md:text-4xl font-bold">Welcome</p>
-            <h1 className="text-[#29e0ca] text-3xl md:text-6xl font-bold">
+            <p className="text-white text-lg md:text-4xl font-bold">Welcome</p>
+            <h1 className="text-[#29e0ca] text-2xl md:text-6xl font-bold">
               {userDetails?.username}
             </h1>
           </div>
@@ -180,7 +180,7 @@ export default function Page() {
             href=""
           >
             <MdHistoryEdu className="w-4 h-4 md:w-9 md:h-9" fill="#1783fb" />
-            <p className="text-[#1783fb] text-xl md:text-4xl font-bold">
+            <p className="text-[#1783fb] text-lg md:text-4xl font-bold">
               Activity
             </p>
           </Link>
@@ -189,7 +189,7 @@ export default function Page() {
             className="flex justify-between items-center gap-2 px-1 md:px-3 md:py-1 border border-[#1783fb] rounded-lg hover:opacity-40"
           >
             <MdEdit className="w-4 h-4 md:w-9 md:h-9" fill="#1783fb" />
-            <p className="text-[#1783fb] text-xl md:text-4xl text-nowrap font-bold">
+            <p className="text-[#1783fb] text-lg md:text-4xl text-nowrap font-bold">
               Edit Profile
             </p>
           </button>
@@ -197,31 +197,51 @@ export default function Page() {
       </div>
 
       {/* Stats Section */}
-      <div className="flex gap-10 h-[238px]">
-        <div className="flex-1 py-3 border-[.1875rem] border-[#1783fb] rounded-xl">
+      <div className="flex flex-col md:flex-row gap-10 h-[238px] mt-3">
+        <div className="md:flex-1 py-3 border-[.1875rem] border-[#1783fb] rounded-xl">
           <p className="text-[28px] h-8 leading-none px-4">
             {userDetails?.bio}
           </p>
         </div>
-        <div className="!w-[200px] flex flex-col justify-between">
-          <div className="flex flex-col gap-2 px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl">
-            <p className="text-[28px] h-8 text-[#1783FB] text-center">
-              eART Minted
-            </p>
-            <p className="text-[30px] h-8 text-center">
-              {userDetails?.mintedCoins ? userDetails.mintedCoins : 0}
-            </p>
+        <div className="flex justify-between gap-x-6 md:gap-x-0 flex-row md:flex-col">
+          <div className="votescast_majorityvotes_uploads_majorityuploads_mobile_wrapper flex-1 md:hidden space-y-2 md:space-y-0">
+            <div className="flex justify-between items-center gap-x-2 ">
+              <p className="text-lg text-[#1783FB]">Votes Cast</p>
+              <p className="text-lg">{userDetails?.totalCastedVotesCount}</p>
+            </div>
+            <div className="flex justify-between items-center gap-x-2">
+              <p className="text-lg text-[#1783FB]">Majority Votes</p>
+              <p className="text-lg">{userDetails?.majorityVotes}</p>
+            </div>
+            <div className="flex justify-between items-center gap-x-2">
+              <p className="text-lg text-[#1783FB]">Uploads</p>
+              <p className="text-lg">{userDetails?.totalUploadsCount}</p>
+            </div>
+            <div className="flex justify-between items-center gap-x-2">
+              <p className="text-lg text-[#1783FB]">Majority Uploads</p>
+              <p className="text-lg">{userDetails?.majorityUploads}</p>
+            </div>
           </div>
-          <div className="flex flex-col gap-2 px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl">
-            <p className="text-[28px] h-8 text-[#1783FB] text-center">
-              Votes Received
-            </p>
-            <p className="text-[30px] h-8 text-center">
-              {userDetails?.totalVotesReceived}
-            </p>
+          <div className="md:!w-[200px] flex flex-col md:justify-between gap-y-4">
+            <div className="order-2 md:order-1 flex flex-col md:gap-2 md:px-2 md:py-4 border-[.1875rem] border-[#1783fb] rounded-xl">
+              <p className="text-lg md:text-[28px] h-5 md:h-8 text-[#1783FB] text-center">
+                eART Minted
+              </p>
+              <p className="text-2xl md:text-[30px] md:h-8 text-center">
+                {userDetails?.mintedCoins ? userDetails.mintedCoins : 0}
+              </p>
+            </div>
+            <div className="order-1 md:order-2 flex flex-col md:gap-2 px-2 md:py-4 border-[.1875rem] border-[#1783fb] rounded-xl">
+              <p className="text-lg md:text-[28px] h-5 md:h-8 text-[#1783FB] text-center">
+                Votes Received
+              </p>
+              <p className="text-2xl md:text-[30px] md:h-8 text-center">
+                {userDetails?.totalVotesReceived}
+              </p>
+            </div>
           </div>
         </div>
-        <div className="w-[200px] px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl flex flex-col justify-between">
+        <div className="w-[200px] px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl hidden md:flex flex-col justify-between">
           <div className="flex flex-col gap-2">
             <p className="text-[28px] h-8 text-[#1783FB] text-center">
               Votes Cast
@@ -239,7 +259,7 @@ export default function Page() {
             </p>
           </div>
         </div>
-        <div className="w-[200px] px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl flex flex-col justify-between">
+        <div className="w-[200px] px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl hidden md:flex flex-col justify-between">
           <div className="flex flex-col gap-2">
             <p className="text-[28px] h-8 text-[#1783FB] text-center">
               Uploads
@@ -262,7 +282,7 @@ export default function Page() {
       {/* Gallery Section */}
       <div className="mt-12">
         <div className="flex items-center justify-between">
-          <div className="flex space-x-5">
+          <div className="flex space-x-2.5 md:space-x-5">
             <FilterPopover
               activeTab={activeTab}
               filterOpen={filterOpen}
@@ -289,9 +309,9 @@ export default function Page() {
               handleResetSort={handleResetSort}
             />
           </div>
-          <div className="space-x-5 flex justify-center">
+          <div className="space-x-2.5 md:space-x-5 flex justify-center">
             <TabButton
-              classname="!px-8"
+              classname="!text-base md:!text-xl !px-2  md:!px-8 !rounded-md md:!rounded-10px"
               isActive={activeTab === "live"}
               label="Live"
               onClick={() => handleTabChange("live")}
@@ -299,11 +319,11 @@ export default function Page() {
             {/* <TabButton
               classname='!px-8'
               isActive={activeTab === 'daily'}
-              label='Daily'
+              label='Daily'a
               onClick={() => handleTabChange('daily')}
             /> */}
             <TabButton
-              classname="!px-5"
+              classname="!text-base md:!text-xl !px-2 md:!px-5 !rounded-md md:!rounded-10px"
               isActive={activeTab === "all"}
               label="All-Time"
               onClick={() => handleTabChange("all")}
@@ -311,7 +331,7 @@ export default function Page() {
           </div>
         </div>
         <div>
-          <h2 className="text-[#29e0ca] text-4xl font-medium text-center my-2">
+          <h2 className="text-[#29e0ca] text-xl md:text-4xl font-medium text-center mt-8 md:my-2">
             Your Uploads
           </h2>
         </div>
@@ -345,7 +365,7 @@ export default function Page() {
               <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto col-span-12" />
             )}
             {!loading && filteredMemes.length === 0 && (
-              <p className="text-center text-nowrap text-2xl mx-auto col-span-12">
+              <p className="text-center text-nowrap text-lg md:text-2xl mx-auto col-span-12">
                 Meme not found
               </p>
             )}
