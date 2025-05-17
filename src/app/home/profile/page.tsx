@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { HStack } from "@chakra-ui/react";
 import { MdEdit, MdHistoryEdu } from "react-icons/md";
 import { FilterPopover } from "@/components/FilterPopover";
-import { SortPopover } from "@/components/SortPopover"; // Assuming you’ve separated this
+import { SortPopover } from "@/components/SortPopover";
 import EditProfile from "@/components/EditProfile";
 import { Context } from "@/context/contextProvider";
 import { useFilterAndSort } from "@/hooks/useFilterAndSort";
@@ -17,7 +17,6 @@ import {
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
-import Image from "next/image";
 import { TabButton } from "@/components/TabButton";
 import { Meme } from "../leaderboard/page";
 
@@ -153,7 +152,7 @@ export default function Page() {
   };
 
   return (
-    <div className="md:max-w-7xl mx-auto px-6 md:px-8">
+    <div className="md:max-w-7xl md:mx-auto mx-4">
       {/* Top Section */}
       <div className="flex items-center justify-between pb-4 md:pb-6">
         <div className="flex items-center space-x-2 md:space-x-4 rounded-lg">
@@ -174,7 +173,7 @@ export default function Page() {
             </h1>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-x-16">
+        <div className="flex flex-col items-end md:flex-row space-y-2 md:space-x-16">
           <Link
             className="flex justify-between items-center gap-2 px-1 md:px-3 md:py-1 border border-[#1783fb] rounded-lg hover:opacity-40"
             href=""
@@ -197,9 +196,9 @@ export default function Page() {
       </div>
 
       {/* Stats Section */}
-      <div className="flex flex-col md:flex-row gap-10 h-[238px] mt-3">
+      <div className="flex flex-col md:flex-row gap-10 mt-3">
         <div className="md:flex-1 py-3 border-[.1875rem] border-[#1783fb] rounded-xl">
-          <p className="text-[28px] h-8 leading-none px-4">
+          <p className="text-[28px] h-16 md:h-8 leading-none px-4">
             {userDetails?.bio}
           </p>
         </div>
@@ -280,7 +279,7 @@ export default function Page() {
       </div>
 
       {/* Gallery Section */}
-      <div className="mt-12">
+      <div className="mt-16 md:mt-12">
         <div className="flex items-center justify-between">
           <div className="flex space-x-2.5 md:space-x-5">
             <FilterPopover
@@ -335,15 +334,15 @@ export default function Page() {
             Your Uploads
           </h2>
         </div>
-        <div className="grid grid-cols-3 gap-16 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6">
           {filteredMemes.map((item, index) => (
-            <div key={index} className="px-4">
+            <div key={index} className="px-2 md:px-3 lg:px-4">
               <div className="flex justify-between items-center mb-1">
-                {item.winning_number ? (
+                {item.winning_number && (
                   <p className="text-[#29e0ca] font-medium">
                     #{item.winning_number}
                   </p>
-                ) : null}
+                )}
               </div>
               <div className="flex gap-4">
                 <div className="relative flex-grow">
@@ -352,7 +351,7 @@ export default function Page() {
                     alt="Content"
                     className="w-full aspect-square object-cover border-2 border-white"
                   />
-                  <div className="flex justify-between text-2xl">
+                  <div className="flex justify-between text-base lg:text-2xl mt-1">
                     <p>{item.name}</p>
                     <p>{item.createdAt.split("T")[0]}</p>
                   </div>
@@ -360,18 +359,20 @@ export default function Page() {
               </div>
             </div>
           ))}
-          <div className="col-span-3">
+
+          <div className="col-span-full">
             {loading && (
-              <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto col-span-12" />
+              <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto" />
             )}
             {!loading && filteredMemes.length === 0 && (
-              <p className="text-center text-nowrap text-lg md:text-2xl mx-auto col-span-12">
+              <p className="text-center text-nowrap text-lg md:text-2xl mx-auto">
                 Meme not found
               </p>
             )}
           </div>
+
           {filteredMemes.length > 0 && (
-            <div className="col-span-3">
+            <div className="col-span-full">
               <PaginationRoot
                 count={Math.max(
                   1,
