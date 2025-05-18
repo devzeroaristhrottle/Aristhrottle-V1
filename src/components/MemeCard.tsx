@@ -93,12 +93,12 @@ export function MemeCard({
           className="border-2 h-96 w-96"
         />
         <div className="ml-4 place-content-end space-y-8">
-          {loading ? (
-            <AiOutlineLoading3Quarters className="animate-spin text-2xl" />
-          ) : (
-            <Logo
-              onClick={() => {
-                if (!activeTab.includes("all")) {
+          {activeTab !== "all" &&
+            (loading ? (
+              <AiOutlineLoading3Quarters className="animate-spin text-2xl" />
+            ) : (
+              <Logo
+                onClick={() => {
                   if (user && user.address) {
                     voteMeme();
                   } else {
@@ -106,10 +106,9 @@ export function MemeCard({
                       openConnectModal();
                     }
                   }
-                }
-              }}
-            />
-          )}
+                }}
+              />
+            ))}
           <Tooltip content="Share" positioning={{ placement: "right-end" }}>
             <div className="text-center font-bold text-lg">
               <FaRegShareFromSquare

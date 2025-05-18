@@ -88,7 +88,6 @@ export const alchemyConfig = createConfig(
     sessionConfig: {
       expirationTimeMs: 1000 * 60 * 60, // 60 minutes (default is 15 min)
     },
-    policyId: "3f009126-a65f-46b9-9191-74ac1970f22e"
   },
   config
 );

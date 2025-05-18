@@ -32,7 +32,6 @@ import {
 } from "@account-kit/react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
-import { ReactTour } from "react-interactive-tour";
 
 export default function Navbar() {
   const [isOpenModel, setIsOpenModel] = useState<boolean>(false);
@@ -78,8 +77,8 @@ export default function Navbar() {
         } else {
           signature = await signMessageAsync({ message: message });
         }
-
-        if (signature && user && user.address) {
+        
+        if (signature && user && user.address) {          
           await signIn("credentials", {
             message,
             signature,
@@ -196,7 +195,6 @@ export default function Navbar() {
 
           <div className="flex items-center justify-center gap-4">
             <div className="hidden md:block">
-           
               <GoogleTranslate />
             </div>
             <main className="">
@@ -209,44 +207,30 @@ export default function Navbar() {
                   // setOpen(false);
                 }}
               >
-                <ReactTour
-                  index={1}
-                  key="1"
-                  position="bottom"
-                  body={
-                    <div>
-                      <strong>🎉 Connect Your Wallet to Join Aristhrottle</strong>
-                      <br />
-                      Connect your wallet to vote on memes, earn tokens, and rise up the leaderboard. Fast, fun, and rewarding!
-                    </div>
-                  }
-                >
-                  <Popover.Trigger asChild>
-                    <Button
-                      size={{ base: "xs", md: "lg" }}
-                      variant="solid"
-                      className="bg-slate-50 text-slate-800 font-bold px-1 md:px-3 rounded-lg md:rounded-xl text-base md:text-lg"
-                      onClick={() => {
-                        if (user && user.address) {
-                          setOpen(true);
-                        } else {
-                          openAuthModal();
-                        }
-                      }}
-                    >
-                      {user
-                        ? "0" +
-                          user.address.slice(1, 4) +
-                          ".." +
-                          user.address.slice(
-                            user.address.length - 3,
-                            user.address.length
-                          )
-                        : "Connect wallet"}
-                    </Button>
-                  </Popover.Trigger>
-                </ReactTour>
-
+                <Popover.Trigger asChild>
+                  <Button
+                    size={{ base: "xs", md: "lg" }}
+                    variant="solid"
+                    className="bg-slate-50 text-slate-800 font-bold px-1 md:px-3 rounded-lg md:rounded-xl text-base md:text-lg"
+                    onClick={() => {
+                      if (user && user.address) {
+                        setOpen(true);
+                      } else {
+                        openAuthModal();
+                      }
+                    }}
+                  >
+                    {user
+                      ? "0" +
+                        user.address.slice(1, 4) +
+                        ".." +
+                        user.address.slice(
+                          user.address.length - 3,
+                          user.address.length
+                        )
+                      : "Connect wallet"}
+                  </Button>
+                </Popover.Trigger>
                 <Portal>
                   <Popover.Positioner>
                     <Popover.Content className="bg-slate-50">
@@ -303,11 +287,9 @@ export default function Navbar() {
           initialFocusEl={() => ref.current}
         >
           <DialogBackdrop />
-          <DialogContent className="mx-4 md:mx-0 lg:px-6 px-8">
-            <DialogHeader className="px-0">
-              <DialogTitle className="text-3xl mb-2">
-                Create Account
-              </DialogTitle>
+          <DialogContent className="mx-4 md:mx-0">
+            <DialogHeader>
+              <DialogTitle>Create Account</DialogTitle>
             </DialogHeader>
             <DialogBody>
               <Field label="Account Address">

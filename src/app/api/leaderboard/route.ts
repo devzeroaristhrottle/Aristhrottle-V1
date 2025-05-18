@@ -1,13 +1,13 @@
-import connectToDatabase from '@/lib/db';
-import Meme from '@/models/Meme';
-import { NextRequest, NextResponse } from 'next/server';
+import connectToDatabase from "@/lib/db";
+import Meme from "@/models/Meme";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   await connectToDatabase();
 
   const query = new URLSearchParams(req.nextUrl.search);
-  const off = query.get('offset');
-  const daily = query.get('daily');
+  const off = query.get("offset");
+  const daily = query.get("daily");
   const defaultOffset = 30;
   const offset = off == null ? defaultOffset : parseInt(off.toString());
   const start = offset <= defaultOffset ? 0 : offset - defaultOffset;
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         {
           $group: {
             _id: null,
-            maxVotes: { $max: { $ifNull: ['$vote_count', 0] } },
+            maxVotes: { $max: { $ifNull: ["$vote_count", 0] } },
           },
         },
       ]);
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
         {
           $group: {
             _id: null,
-            totalVotes: { $sum: { $ifNull: ['$vote_count', 0] } },
+            totalVotes: { $sum: { $ifNull: ["$vote_count", 0] } },
           },
         },
       ]);
@@ -81,15 +81,15 @@ export async function GET(req: NextRequest) {
         },
         {
           $lookup: {
-            from: 'users',
-            localField: 'created_by',
-            foreignField: '_id',
-            as: 'created_by',
+            from: "users",
+            localField: "created_by",
+            foreignField: "_id",
+            as: "created_by",
           },
         },
         {
           $unwind: {
-            path: '$created_by',
+            path: "$created_by",
             preserveNullAndEmptyArrays: true,
           },
         },
@@ -109,10 +109,7 @@ export async function GET(req: NextRequest) {
                 then: {
                   $multiply: [
                     {
-                      $divide: [
-                        { $ifNull: ['$vote_count', 0] },
-                        maxVotes,
-                      ],
+                      $divide: [{ $ifNull: ["$vote_count", 0] }, maxVotes],
                     },
                     100,
                   ],
@@ -120,9 +117,9 @@ export async function GET(req: NextRequest) {
                 else: 0,
               },
             },
-            'created_by._id': 1,
-            'created_by.username': 1,
-            'created_by.profile_image': 1,
+            "created_by._id": 1,
+            "created_by.username": 1,
+            "created_by.profile_image": 1,
           },
         },
         { $skip: start },
@@ -153,7 +150,7 @@ export async function GET(req: NextRequest) {
         {
           $group: {
             _id: null,
-            maxVotes: { $max: { $ifNull: ['$vote_count', 0] } },
+            maxVotes: { $max: { $ifNull: ["$vote_count", 0] } },
           },
         },
       ]);
@@ -188,15 +185,15 @@ export async function GET(req: NextRequest) {
         },
         {
           $lookup: {
-            from: 'users',
-            localField: 'created_by',
-            foreignField: '_id',
-            as: 'created_by',
+            from: "users",
+            localField: "created_by",
+            foreignField: "_id",
+            as: "created_by",
           },
         },
         {
           $unwind: {
-            path: '$created_by',
+            path: "$created_by",
             preserveNullAndEmptyArrays: true,
           },
         },
@@ -216,10 +213,7 @@ export async function GET(req: NextRequest) {
                 then: {
                   $multiply: [
                     {
-                      $divide: [
-                        { $ifNull: ['$vote_count', 0] },
-                        maxVotes,
-                      ],
+                      $divide: [{ $ifNull: ["$vote_count", 0] }, maxVotes],
                     },
                     100,
                   ],
@@ -227,9 +221,9 @@ export async function GET(req: NextRequest) {
                 else: 0,
               },
             },
-            'created_by._id': 1,
-            'created_by.username': 1,
-            'created_by.profile_image': 1,
+            "created_by._id": 1,
+            "created_by.username": 1,
+            "created_by.profile_image": 1,
           },
         },
         { $skip: start },
@@ -247,9 +241,9 @@ export async function GET(req: NextRequest) {
       );
     }
   } catch (error) {
-    console.error('Error in GET /memes:', error);
+    console.error("Error in GET /memes:", error);
     return NextResponse.json(
-      { error: error || 'Internal Server Error' },
+      { error: error || "Internal Server Error" },
       { status: 500 }
     );
   }
