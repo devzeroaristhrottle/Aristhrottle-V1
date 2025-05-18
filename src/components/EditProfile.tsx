@@ -123,7 +123,7 @@ export default function EditProfile({
 
   return (
     <div className="fixed inset-0 backdrop-blur-md flex justify-center items-center">
-      <div className="bg-[#141e29] border border-white shadow-lg mx-4 md:w-1/3 rounded-md md:mx-auto py-8">
+      <div className="bg-[#141e29] border border-white shadow-lg mx-4 rounded-md py-8 md:ml-20">
         <form onSubmit={handleSubmit}>
           <div className="relative mx-10 md:mx-36">
             <div className="relative rounded border border-white flex justify-center items-center py-2 md:py-4">
