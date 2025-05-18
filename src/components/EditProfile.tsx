@@ -2,7 +2,7 @@
 
 import { Tag } from "@/components/ui/tag";
 import { useRef, useState } from "react";
-import { CgProfile } from "react-icons/cg";
+import { CgCloseO, CgProfile } from "react-icons/cg";
 import { FaUserPlus } from "react-icons/fa";
 import { HiPlus } from "react-icons/hi";
 import { MdEdit } from "react-icons/md";
@@ -123,7 +123,11 @@ export default function EditProfile({
 
   return (
     <div className="fixed inset-0 backdrop-blur-md flex justify-center items-center">
-      <div className="bg-[#141e29] border border-white shadow-lg mx-4 rounded-md py-8 md:ml-20">
+      <div className="relative bg-[#141e29] border border-white shadow-lg mx-6 rounded-md py-8 md:ml-20">
+        <CgCloseO
+          onClick={onCancel}
+          className="absolute -top-5 -right-5 text-white w-5 h-5 cursor-pointer"
+        />
         <form onSubmit={handleSubmit}>
           <div className="relative mx-10 md:mx-36">
             <div className="relative rounded border border-white flex justify-center items-center py-2 md:py-4">
