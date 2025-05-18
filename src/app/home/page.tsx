@@ -33,6 +33,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Context } from "@/context/contextProvider";
 import { toast } from "react-toastify";
 import { useAuthModal, useUser } from "@account-kit/react";
+import { useInView } from "motion/react";
 
 export interface Meme {
   _id: string;
@@ -370,6 +371,20 @@ export default function Page() {
   };
 
   const displayedMemes = getFilteredMemes();
+
+  const isInView = useInView(memeContainerRef, {
+    amount: 0.1, // Trigger when 10% visible
+  });
+
+  useEffect(() => {
+    console.log("isInView:", isInView);
+    if (isInView && memeContainerRef.current) {
+      (memeContainerRef.current as HTMLElement).scrollIntoView({
+        behavior: "smooth",
+        block: "start", // Scrolls to top
+      });
+    }
+  }, [isInView]);
 
   return (
     <div className="mx-4 md:mx-16">
