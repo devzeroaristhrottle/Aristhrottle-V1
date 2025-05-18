@@ -163,6 +163,8 @@ export default function UploadModal() {
     // setSelectedCategories([]);
     setSelectedTags([]);
     setNewTagInput("");
+    setMeme(null);
+    setSelectedImage(undefined);
     setIsUploadMemeOpen(false);
   };
 
@@ -258,12 +260,16 @@ export default function UploadModal() {
 
   return (
     <>
-      <DialogRoot open={isUploadMemeOpen} motionPreset="slide-in-bottom" >
+      <DialogRoot open={isUploadMemeOpen} motionPreset="slide-in-bottom">
         <DialogBackdrop className="backdrop-blur-md" />
         <DialogContent className="fixed inset-1 md:inset-10  bg-[#141e29] border border-white w-[90vw] md:w-[70vw] h-[70vh] md:h-[80vh] max-w-none p-0 mx-auto">
           <DialogBody className="overflow-y-auto lg:mx-8 lg:my-0 mx-6 my-6">
             <CgCloseO
-              onClick={() => setIsUploadMemeOpen(false)}
+              onClick={() => {
+                setMeme(null);
+                setSelectedImage(undefined);
+                setIsUploadMemeOpen(false);
+              }}
               className="z-50 absolute -top-5 md:-top-6 -right-4 text-white w-5 h-5 cursor-pointer"
             />
             <div className="flex flex-col md:flex-row gap-x-10 md:px-4 md:pt-14">

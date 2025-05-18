@@ -30,18 +30,19 @@ const filterMemes = (
   } else if (activeTab === 'daily') {
     // Filter memes from yesterday (00:00 to 23:59 UTC)
     filtered = filtered.filter((meme) => {
-      const createdAt = new Date(meme.createdAt)
+      const createdAt = new Date(meme.createdAt);
       const now = new Date();
-      const utcYear = now.getUTCFullYear();
-      const utcMonth = now.getUTCMonth();
-      const utcDate = now.getUTCDate();
-      const endOfDay = new Date(Date.UTC(utcYear, utcMonth, utcDate, 18, 0, 0, 0));
-      // Start time: Two days ago 11:30 PM IST = 6:00 PM UTC of two days ago
-      const startTime = new Date(endOfDay.getTime() - 24 * 60 * 60 * 1000);
+    
+      // Today 6 AM IST = Today 00:30 UTC
+      const today6amIST = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 30));
+    
+      // Yesterday 6 AM IST = 24 hours before today 6 AM IST
+      const yesterday6amIST = new Date(today6amIST.getTime() - 24 * 60 * 60 * 1000);
+    
       return (
-        createdAt >= startTime &&
-        createdAt < endOfDay
-      )
+        createdAt >= yesterday6amIST &&
+        createdAt < today6amIST
+      );
     })
   }
 
