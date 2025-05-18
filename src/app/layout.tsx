@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import ContextProvider from "@/context/contextProvider";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
+import Starfield from "@/components/Starfield";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -40,6 +41,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Starfield
+          starCount={2000}
+          starColor={[255, 255, 255]}
+          speedFactor={0.05}
+          gradientTopColor="#000000"
+          gradientMidColor="#000000"
+          gradientBottomColor="#1b1f3b"
+        />
         <ContextProvider>
           <ChakraUIProvider>
             <WalletProvider>{children}</WalletProvider>
