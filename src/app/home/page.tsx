@@ -81,6 +81,7 @@ interface Bookmark {
   [key: string]: { id: string; name: string; image_url: string };
 }
 
+
 export default function Page() {
   const [query, setQuery] = useState("");
   const [showRecommendations, setShowRecommendations] = useState(false);
@@ -372,6 +373,7 @@ export default function Page() {
 
   const displayedMemes = getFilteredMemes();
 
+
   const isInView = useInView(memeContainerRef, {
     amount: 0.1, // Trigger when 10% visible
   });
@@ -380,8 +382,8 @@ export default function Page() {
     console.log("isInView:", isInView);
     if (isInView && memeContainerRef.current) {
       (memeContainerRef.current as HTMLElement).scrollIntoView({
-        behavior: "smooth",
-        block: "start", // Scrolls to top
+        behavior: 'smooth',
+        block: 'start', // Scrolls to top
       });
     }
   }, [isInView]);
