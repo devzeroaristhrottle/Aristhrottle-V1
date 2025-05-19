@@ -19,7 +19,10 @@ export async function POST() {
     }).populate("created_by");
 
     if (!memes.length) {
-      return NextResponse.json({ message: "No new memes to process." }, { status: 200 });
+      return NextResponse.json(
+        { message: "No new memes to process." },
+        { status: 200 }
+      );
     }
 
     let totalVotes = 0;
@@ -46,7 +49,7 @@ export async function POST() {
     memeData.sort((a, b) => b.percentage - a.percentage);
 
     const rankMap = new Map<number, number>();
-    let lastPercentage:number | null = null;
+    let lastPercentage: number | null = null;
     let rank = 1;
 
     memeData.forEach(({ percentage }, i) => {
@@ -80,7 +83,11 @@ export async function POST() {
 
     while (retries > 0) {
       try {
-        tx = await contract.addUploadMemeBulk(memeIds, userAddresses, voteCounts);
+        tx = await contract.addUploadMemeBulk(
+          memeIds,
+          userAddresses,
+          voteCounts
+        );
         await tx.wait();
 
         // Only mark memes as on-chain after successful tx
@@ -93,9 +100,11 @@ export async function POST() {
 
         await Meme.bulkWrite([...bulkOps, ...setOnchainOps]);
         break; // exit retry loop
-
       } catch (txError) {
-        console.error(`❌ Transaction failed. Retries left: ${retries - 1}`, txError);
+        console.error(
+          `❌ Transaction failed. Retries left: ${retries - 1}`,
+          txError
+        );
         retries--;
         if (retries === 0) {
           return NextResponse.json(
@@ -119,5 +128,6 @@ export async function POST() {
   } catch (error: unknown) {
     console.error("❌ Uncaught error:", error);
     return NextResponse.json({ error: `Internal server error. ${error}`  }, { status: 500 });
+
   }
 }

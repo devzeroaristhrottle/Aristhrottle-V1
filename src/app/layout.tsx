@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import WalletProvider from "@/config/walletProvider";
+import "@rainbow-me/rainbowkit/styles.css";
 import ChakraUIProvider from "@/config/chakraProvider";
 import { ToastContainer } from "react-toastify";
 import ContextProvider from "@/context/contextProvider";
-import "@rainbow-me/rainbowkit/styles.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 import Starfield from "@/components/Starfield";
@@ -34,7 +34,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <style>
-          {" "}
           @import
           url(&apos;https://fonts.googleapis.com/css2?family=Jersey+10&display=swap&apos;);
         </style>
