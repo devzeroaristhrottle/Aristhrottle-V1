@@ -118,6 +118,6 @@ export async function POST() {
     );
   } catch (error: unknown) {
     console.error("❌ Uncaught error:", error);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    return NextResponse.json({ error: `Internal server error. ${error}`  }, { status: 500 });
   }
 }
