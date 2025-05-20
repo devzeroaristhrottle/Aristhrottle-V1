@@ -12,7 +12,7 @@ async function handlePost(req: NextRequest) {
 
     // Get authenticated user
     const token = await getToken({ req });
-    if (!token?.address) {
+    if (!token?.address || !token?.sub) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -29,16 +29,11 @@ async function handlePost(req: NextRequest) {
       );
     }
 
-    // Check if users exist
-    const followerUser = await User.findOne({ user_wallet_address: token.address });
+    // Get the follower user ID directly from token.sub
+    const followerUserId = token.sub;
+    
+    // Check if user to follow exists
     const followingUser = await User.findById(userIdToFollow);
-
-    if (!followerUser) {
-      return NextResponse.json(
-        { error: "Authenticated user not found" },
-        { status: 404 }
-      );
-    }
 
     if (!followingUser) {
       return NextResponse.json(
@@ -48,7 +43,7 @@ async function handlePost(req: NextRequest) {
     }
 
     // Prevent following yourself
-    if (followerUser._id.toString() === userIdToFollow) {
+    if (followerUserId === userIdToFollow) {
       return NextResponse.json(
         { error: "You cannot follow yourself" },
         { status: 400 }
@@ -57,7 +52,7 @@ async function handlePost(req: NextRequest) {
 
     // Create follow relationship
     const follow = new Followers({
-      follower: followerUser._id,
+      follower: followerUserId,
       following: userIdToFollow,
     });
 
@@ -91,7 +86,7 @@ async function handleDelete(req: NextRequest) {
 
     // Get authenticated user
     const token = await getToken({ req });
-    if (!token?.address) {
+    if (!token?.address || !token?.sub) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -108,19 +103,12 @@ async function handleDelete(req: NextRequest) {
       );
     }
 
-    // Get follower user ID
-    const followerUser = await User.findOne({ user_wallet_address: token.address });
-    
-    if (!followerUser) {
-      return NextResponse.json(
-        { error: "Authenticated user not found" },
-        { status: 404 }
-      );
-    }
+    // Get follower user ID directly from token.sub
+    const followerUserId = token.sub;
 
     // Delete follow relationship
     const result = await Followers.findOneAndDelete({
-      follower: followerUser._id,
+      follower: followerUserId,
       following: userIdToUnfollow,
     });
 
