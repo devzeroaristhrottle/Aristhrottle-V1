@@ -156,10 +156,6 @@ async function handlePostRequest(request: NextRequest) {
   try {
     await connectToDatabase();
 
-    // Parse request body
-    // const { username, user_wallet_address, referral_code, bio, tags } =
-    //   await request.json();
-
     const formData = await request.formData();
 
     const username = formData.get("username") as string;
@@ -168,6 +164,7 @@ async function handlePostRequest(request: NextRequest) {
     const bio = formData.get("bio") as string;
     const file = formData.get("file") as File;
     const tags = JSON.parse((formData.get("tags") as string) || "[]");
+    const interests = JSON.parse((formData.get("interests") as string) || "[]");
 
     // Validate input
     if (!username || !user_wallet_address) {
@@ -175,6 +172,32 @@ async function handlePostRequest(request: NextRequest) {
         { message: "Missing required fields" },
         { status: 400 }
       );
+    }
+
+    // Validate interests format if provided
+    if (interests.length > 0) {
+      if (interests.length > 5) {
+        return NextResponse.json(
+          { error: "Maximum 5 interest categories allowed" },
+          { status: 400 }
+        );
+      }
+
+      for (const interest of interests) {
+        if (!interest.name) {
+          return NextResponse.json(
+            { error: "Each interest category must have a name" },
+            { status: 400 }
+          );
+        }
+        
+        if (interest.tags && interest.tags.length > 10) {
+          return NextResponse.json(
+            { error: `Interest category '${interest.name}' cannot have more than 10 tags` },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     const token = await getToken({ req: request });
@@ -214,7 +237,8 @@ async function handlePostRequest(request: NextRequest) {
       user_wallet_address: user_wallet_address,
       bio: bio,
       tags: tags,
-      profile_pic: profile_pic
+      profile_pic: profile_pic,
+      interests: interests
     });
 
     // Process referral code if provided
@@ -248,9 +272,6 @@ async function handlePutRequest(request: NextRequest) {
   try {
     await connectToDatabase();
 
-    // const { user_wallet_address, new_username, bio, tags } =
-    //   await request.json();
-
     const formData = await request.formData();
 
     const user_wallet_address = formData.get("user_wallet_address") as string;
@@ -258,12 +279,39 @@ async function handlePutRequest(request: NextRequest) {
     const bio = formData.get("bio") as string;
     const file = formData.get("file") as File;
     const tags = JSON.parse((formData.get("tags") as string) || "[]");
+    const interests = JSON.parse((formData.get("interests") as string) || "[]");
 
-    if (!user_wallet_address || !new_username) {
+    if (!user_wallet_address) {
       return NextResponse.json(
-        { message: "Missing required fields" },
+        { message: "Missing wallet address" },
         { status: 400 }
       );
+    }
+
+    // Validate interests format if provided
+    if (interests.length > 0) {
+      if (interests.length > 5) {
+        return NextResponse.json(
+          { error: "Maximum 5 interest categories allowed" },
+          { status: 400 }
+        );
+      }
+
+      for (const interest of interests) {
+        if (!interest.name) {
+          return NextResponse.json(
+            { error: "Each interest category must have a name" },
+            { status: 400 }
+          );
+        }
+        
+        if (interest.tags && interest.tags.length > 10) {
+          return NextResponse.json(
+            { error: `Interest category '${interest.name}' cannot have more than 10 tags` },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     const token = await getToken({ req: request });
@@ -295,7 +343,12 @@ async function handlePutRequest(request: NextRequest) {
     }
 
     if (tags.length > 0) {
-      user.tags.push([...tags]);
+      user.tags = tags;
+    }
+
+    // Update interests if provided
+    if (interests.length > 0) {
+      user.interests = interests;
     }
 
     if (file) {
