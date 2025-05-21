@@ -93,7 +93,7 @@ export default function Page() {
   const getMyMemes = async () => {
     try {
       setLoading(true)
-      const offset = 30 * (page - 1)
+      const offset = 30 * page
       const daily = activeTab === 'daily'
       const response = await axiosInstance.get(
         `/api/leaderboard?daily=${daily}&offset=${offset}`
