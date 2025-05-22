@@ -249,6 +249,8 @@ export default function Navbar() {
                           onClick={() => {
                             logout();
                             setOpen(false);
+                            setUserDetails(undefined);
+                            
                             route.replace("/home");
                           }}
                         >
