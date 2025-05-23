@@ -338,9 +338,9 @@ export default function Page() {
           {filteredMemes.map((item, index) => (
             <div key={index} className='px-2 md:px-3 lg:px-4'>
               <div className='flex justify-between items-center mb-1'>
-                {item.winning_number && (
+                {item.rank && (
                   <p className='text-[#29e0ca] font-medium'>
-                    #{item.winning_number}
+                    #{item.rank}
                   </p>
                 )}
               </div>
