@@ -34,6 +34,7 @@ import { Context } from "@/context/contextProvider";
 import { toast } from "react-toastify";
 import { useAuthModal, useUser } from "@account-kit/react";
 import { useInView } from "motion/react";
+import { motion } from "framer-motion";
 
 export interface Meme {
   _id: string;
@@ -378,13 +379,21 @@ export default function Page() {
 
   useEffect(() => {
     console.log("isInView:", isInView);
-    if (isInView && memeContainerRef.current) {
-      (memeContainerRef.current as HTMLElement).scrollIntoView({
+    if (isInView && memeContainerRef.current && displayedMemes.length > 0) {
+      setAnimateSearchBar(275);
+      memeContainerRef.current.scrollIntoView({
         behavior: "smooth",
-        block: "start", // Scrolls to top
+        block: "start",
       });
+    } else if (displayedMemes.length === 0) {
+      // Keep the search bar in its current position when no memes are displayed
+      setAnimateSearchBar((prev) => prev);
+    } else {
+      setAnimateSearchBar(0);
     }
-  }, [isInView]);
+  }, [isInView, displayedMemes.length]);
+
+  const [animateSearchBar, setAnimateSearchBar] = useState(0);
 
   return (
     <div className="mx-4 md:mx-16">
@@ -419,73 +428,81 @@ export default function Page() {
           setSelectedMeme={setSelectedMeme}
         />
       </div>
-
       {/* Search Bar (Normal Layout) */}
       <div
         className={`relative mt-10 mb-8 md:mt-20 ${
           isHeaderFixed ? "hidden" : ""
         }`}
       >
-        <div className="border-2 border-slate-500 rounded-2xl w-full md:w-1/2 md:py-1 mt-12 md:mx-auto bg-gray-600/15">
-          <InputGroup
-            flex="2"
-            className="w-full"
-            startElement={
-              query.length === 0 ? (
-                <LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
-              ) : undefined
-            }
-            endElement={
-              query.length > 0 ? (
-                <LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
-              ) : undefined
-            }
-          >
-            <Input
-              placeholder="Search"
-              className={`text-xl md:text-2xl focus:outline-none w-full  ${
-                query.length === 0
-                  ? "!pl-10 md:!pl-14 pr-2 md:pr-4"
-                  : "pl-4 md:pl-6 pr-8 md:pr-12"
-              }`}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setShowRecommendations(true)}
-              onBlur={() =>
-                setTimeout(() => setShowRecommendations(false), 200)
+        <motion.div
+          initial={{ opacity: 0, y: 0 }}
+          animate={{
+            opacity: 1,
+            y: animateSearchBar,
+            transition: { duration: 0.5, ease: "easeInOut" },
+          }}
+        >
+          <div className="border-2 border-slate-500 rounded-2xl w-full md:w-1/2 md:py-1 mt-12 md:mx-auto bg-gray-600/15">
+            <InputGroup
+              flex="2"
+              className="w-full"
+              startElement={
+                query.length === 0 ? (
+                  <LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
+                ) : undefined
               }
-            />
-          </InputGroup>
-        </div>
-        <p className="text-center my-1 text-sm leading-none md:text-lg">
-          Separate by comma to search for multiple tags, titles and usernames
-        </p>
-        {showRecommendations && query.length > 0 && (
-          <div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto md:w-1/2 absolute translate-x-1/2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C]">
-            {filteredTags.length > 0 ? (
-              <div className="flex flex-wrap items-center justify-start gap-4">
-                {filteredTags.map((tag) => (
-                  <Tag
-                    key={tag._id}
-                    className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
-                    onClick={() => {
-                      setQuery(tag.name);
-                      setShowRecommendations(false);
-                    }}
-                  >
-                    <div className="flex gap-2 text-lg text-white items-center">
-                      {tag.name} <FaPlus size={14} className="stroke-[2px]" />
-                    </div>
-                  </Tag>
-                ))}
-              </div>
-            ) : (
-              <div className="md:px-4 md:py-2 w-full text-gray-400">
-                No recommendations found
-              </div>
-            )}
+              endElement={
+                query.length > 0 ? (
+                  <LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
+                ) : undefined
+              }
+            >
+              <Input
+                placeholder="Separate by comma to search for multiple tags, titles and usernames"
+                className={`text-xl md:text-2xl focus:outline-none w-full placeholder:text-sm placeholder:leading-none placeholder:md:text-lg  ${
+                  query.length === 0
+                    ? "!pl-10 md:!pl-14 pr-2 md:pr-4"
+                    : "pl-4 md:pl-6 pr-8 md:pr-12"
+                }`}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => setShowRecommendations(true)}
+                onBlur={() =>
+                  setTimeout(() => setShowRecommendations(false), 200)
+                }
+              />
+            </InputGroup>
           </div>
-        )}
+          {/* <p className="text-center my-1 text-sm leading-none md:text-lg">
+            Separate by comma to search for multiple tags, titles and usernames
+          </p> */}
+          {showRecommendations && query.length > 0 && (
+            <div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto md:w-1/2 absolute translate-x-1/2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C]">
+              {filteredTags.length > 0 ? (
+                <div className="flex flex-wrap items-center justify-start gap-4">
+                  {filteredTags.map((tag) => (
+                    <Tag
+                      key={tag._id}
+                      className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
+                      onClick={() => {
+                        setQuery(tag.name);
+                        setShowRecommendations(false);
+                      }}
+                    >
+                      <div className="flex gap-2 text-lg text-white items-center">
+                        {tag.name} <FaPlus size={14} className="stroke-[2px]" />
+                      </div>
+                    </Tag>
+                  ))}
+                </div>
+              ) : (
+                <div className="md:px-4 md:py-2 w-full text-gray-400">
+                  No recommendations found
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
       </div>
 
       {/* Popular Tags */}
@@ -518,7 +535,7 @@ export default function Page() {
       {/* Tabs and Sort (Normal Layout) */}
       <div
         ref={tabsRef}
-        className={`flex justify-between mb-8 md:mx-24 ${
+        className={`flex justify-between mt-28 mb-12 md:mx-24 ${
           isHeaderFixed ? "hidden" : ""
         }`}
       >
@@ -700,7 +717,7 @@ export default function Page() {
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="grid grid-cols-1 md:grid-cols-12 gap-y-10 gap-x-20  md:mx-14 max-h-[calc(100vh-300px)] overflow-y-auto no-scrollbar"
+        className="grid grid-cols-1 md:grid-cols-12 gap-y-10 gap-x-20  md:mx-14 !min-h-[500px] max-h-[calc(100vh-300px)] overflow-y-auto no-scrollbar"
       >
         {!loading &&
           displayedMemes.length > 0 &&
