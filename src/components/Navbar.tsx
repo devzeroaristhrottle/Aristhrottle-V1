@@ -77,8 +77,8 @@ export default function Navbar() {
         } else {
           signature = await signMessageAsync({ message: message });
         }
-        
-        if (signature && user && user.address) {          
+
+        if (signature && user && user.address) {
           await signIn("credentials", {
             message,
             signature,
@@ -155,8 +155,8 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-0 z-50 backdrop-blur-md bg-black/20">
-      <div className="relative w-[100%] pr-4 md:pr-10">
-        <div className="flex justify-between align-middle items-center py-5">
+      <div className="relative w-[100%] pr-4 md:pr-8">
+        <div className="flex justify-between align-middle items-center py-3 md:py-0">
           <div className="flex align-middle items-center w-1/2 gap-5">
             {userDetails && user != null && user.address && (
               <div className="flex gap-5">
@@ -250,7 +250,7 @@ export default function Navbar() {
                             logout();
                             setOpen(false);
                             setUserDetails(undefined);
-                            
+
                             route.replace("/home");
                           }}
                         >
