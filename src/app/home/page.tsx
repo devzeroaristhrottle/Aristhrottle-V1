@@ -334,15 +334,12 @@ export default function Page() {
   });
 
   useEffect(() => {
-    if (isInView && memeContainerRef.current && displayedMemes.length > 0) {
-      setAnimateSearchBar(275);
+    if (isInView && memeContainerRef.current) {
+      setAnimateSearchBar(310);
       memeContainerRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
-    } else if (displayedMemes.length === 0) {
-      // Keep the search bar in its current position when no memes are displayed
-      setAnimateSearchBar((prev) => prev);
     } else {
       setAnimateSearchBar(0);
     }
@@ -490,7 +487,7 @@ export default function Page() {
       {/* Tabs and Sort (Normal Layout) */}
       <div
         ref={tabsRef}
-        className={`flex justify-between mt-28 mb-12 md:mx-24 ${
+        className={`flex justify-between mt-36 mb-12 md:mx-24 ${
           isHeaderFixed ? "hidden" : ""
         }`}
       >
@@ -707,7 +704,7 @@ export default function Page() {
           pageSize={pageSize}
           defaultPage={1}
           variant="solid"
-          className="mx-auto mb-8"
+          className="mx-auto mb-10"
           page={page}
           onPageChange={(e) => setPage(e.page)}
         >

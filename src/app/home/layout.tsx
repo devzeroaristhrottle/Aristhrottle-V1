@@ -15,7 +15,7 @@ export default function Layout({ children }: Props) {
           <Sidebar />
           <Switch size="md" className="absolute bottom-8 translate-x-1/4" />
         </div>
-        <div className="min-h-dvh w-dvw ">
+        <div className="min-h-dvh max-w-screen">
           <Navbar />
           <div className="mt-2 md:mt-10">{children}</div>
         </div>

@@ -15,7 +15,7 @@ export default function CursorAristhrottle() {
   );
 }
 
-const spring = { damping: 20, stiffness: 200, restDelta: 0.001 };
+const spring = { damping: 10, stiffness: 200, restDelta: 0.001 };
 
 export function useFollowPointer(ref: RefObject<HTMLDivElement | null>) {
   const x = useSpring(0, spring);
