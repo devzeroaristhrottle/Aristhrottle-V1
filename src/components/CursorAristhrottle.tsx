@@ -47,5 +47,4 @@ const ball = {
   backgroundColor: "transparent",
   backgroundImage: `url("/assets/aris-logo.svg")`,
   backgroundSize: "contain",
-  zIndex: 9999999999,
 };

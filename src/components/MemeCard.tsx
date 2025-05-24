@@ -34,12 +34,14 @@ export function MemeCard({
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
+  const [voteCount, setVoteCount] = useState(0);
   const user = useUser();
 
   useEffect(() => {
     getBookmarks();
     setBookmarkCount(meme.bookmarks.length);
     setShareCount(meme.shares.length);
+    setVoteCount(meme.vote_count);
   }, []);
 
   const getBookmarks = () => {
@@ -93,22 +95,31 @@ export function MemeCard({
           className="border-2 h-96 w-96"
         />
         <div className="ml-4 place-content-end space-y-8">
-          {activeTab !== "all" &&
-            (loading ? (
-              <AiOutlineLoading3Quarters className="animate-spin text-2xl" />
-            ) : (
+          {loading ? (
+            <AiOutlineLoading3Quarters className="animate-spin text-2xl " />
+          ) : (
+            <div className="flex flex-col items-center space-y-1">
               <Logo
                 onClick={() => {
+                  if (activeTab === "all") return; // Disable click in 'all' tab
                   if (user && user.address) {
                     voteMeme();
-                  } else {
-                    if (openConnectModal) {
-                      openConnectModal();
-                    }
+                  } else if (openConnectModal) {
+                    openConnectModal();
                   }
                 }}
+                classNames={`${
+                  activeTab === "all"
+                    ? "opacity-70 !cursor-not-allowed pointer-events-none"
+                    : ""
+                }`}
               />
-            ))}
+              {activeTab !== "live" && (
+                <p className="text-center">{voteCount}</p>
+              )}
+            </div>
+          )}
+
           <Tooltip content="Share" positioning={{ placement: "right-end" }}>
             <div className="text-center font-bold text-lg">
               <FaRegShareFromSquare
