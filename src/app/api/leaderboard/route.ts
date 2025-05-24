@@ -105,8 +105,8 @@ export async function GET(req: NextRequest) {
             image_url: 1,
             rank: 1,
             createdAt: 1,
-            shares: 1,
-            bookmarks: 1,
+            share_count: { $size: { $ifNull: ["$shares", []] } },
+            bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } },
             in_percentile: {
               $cond: {
                 if: { $gt: [maxVotes, 0] },
@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
                   $multiply: [
                     {
                       $divide: [
-                        { $ifNull: ['$vote_count', 0] },
+                        { $ifNull: ["$vote_count", 0] },
                         maxVotes,
                       ],
                     },
@@ -216,8 +216,8 @@ export async function GET(req: NextRequest) {
             image_url: 1,
             rank: 1,
             createdAt: 1,
-            shares: 1,
-            bookmarks: 1,
+            share_count: { $size: { $ifNull: ["$shares", []] } },
+            bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } },
             in_percentile: {
               $cond: {
                 if: { $gt: [maxVotes, 0] },
@@ -225,7 +225,7 @@ export async function GET(req: NextRequest) {
                   $multiply: [
                     {
                       $divide: [
-                        { $ifNull: ['$vote_count', 0] },
+                        { $ifNull: ["$vote_count", 0] },
                         maxVotes,
                       ],
                     },
