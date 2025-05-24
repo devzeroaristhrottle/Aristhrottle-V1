@@ -34,6 +34,7 @@ import { Context } from "@/context/contextProvider";
 import { toast } from "react-toastify";
 import { useAuthModal, useUser } from "@account-kit/react";
 import { useInView } from "motion/react";
+import { useMemeActions } from "./bookmark/bookmarkHelper";
 import { motion } from "framer-motion";
 
 export interface Meme {
@@ -78,7 +79,7 @@ interface User {
   __v: number;
 }
 
-interface Bookmark {
+export interface Bookmark {
   [key: string]: { id: string; name: string; image_url: string };
 }
 
@@ -110,11 +111,9 @@ export default function Page() {
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const memeContainerRef = useRef<HTMLDivElement>(null);
-
+  const { handleBookmark } = useMemeActions();
   // Sticky header logic
   useEffect(() => {
-    console.log("useEffect for scroll initialized");
-
     const handleScroll = () => {
       if (tabsRef.current && memeContainerRef.current) {
         const tabsBottom = tabsRef.current.getBoundingClientRect().bottom;
@@ -174,49 +173,6 @@ export default function Page() {
     }, 400);
     return () => clearTimeout(timeout);
   }, [query]);
-
-  const toggleBookmark = async (memeId: string, userId: string) => {
-    try {
-      const response = await axiosInstance.post("/api/bookmark", {
-        memeId,
-        userId,
-      });
-      return response.data;
-    } catch {
-      return null;
-    }
-  };
-
-  const bookmarks = (id: string, name: string, image_url: string) => {
-    const bookmarks = localStorage.getItem("bookmarks");
-    if (bookmarks) {
-      const bookmarksObj: Bookmark = JSON.parse(bookmarks);
-      if (!bookmarksObj[id]) {
-        bookmarksObj[id] = {
-          id: id,
-          name: name,
-          image_url: image_url,
-        };
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarksObj));
-      } else {
-        delete bookmarksObj[id];
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarksObj));
-      }
-    } else {
-      const bookmarksObj: Bookmark = {};
-
-      bookmarksObj[id] = {
-        id: id,
-        name: name,
-        image_url: image_url,
-      };
-
-      localStorage.setItem("bookmarks", JSON.stringify(bookmarksObj));
-    }
-    if (id && userDetails && userDetails._id) {
-      toggleBookmark(id, userDetails._id);
-    }
-  };
 
   const onClose = () => {
     setIsMemeDetailOpen(false);
@@ -378,7 +334,6 @@ export default function Page() {
   });
 
   useEffect(() => {
-    console.log("isInView:", isInView);
     if (isInView && memeContainerRef.current && displayedMemes.length > 0) {
       setAnimateSearchBar(275);
       memeContainerRef.current.scrollIntoView({
@@ -421,7 +376,7 @@ export default function Page() {
       {/* Carousel */}
       <div>
         <Carousel
-          bookmark={bookmarks}
+          bookmark={handleBookmark}
           items={carouselMemes}
           setIsMemeDetailOpen={setIsMemeDetailOpen}
           active={0}
@@ -724,7 +679,7 @@ export default function Page() {
           displayedMemes.map((meme, index) => (
             <MemeCard
               key={meme._id}
-              bookmark={bookmarks}
+              bookmark={handleBookmark}
               index={index}
               meme={meme}
               activeTab={activeTab}
