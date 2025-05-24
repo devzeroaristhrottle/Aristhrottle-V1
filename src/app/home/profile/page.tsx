@@ -315,12 +315,6 @@ export default function Page() {
               label="Live"
               onClick={() => handleTabChange("live")}
             />
-            {/* <TabButton
-              classname='!px-8'
-              isActive={activeTab === 'daily'}
-              label='Daily'a
-              onClick={() => handleTabChange('daily')}
-            /> */}
             <TabButton
               classname="!text-base md:!text-xl !px-2 md:!px-5 !rounded-md md:!rounded-10px"
               isActive={activeTab === "all"}
