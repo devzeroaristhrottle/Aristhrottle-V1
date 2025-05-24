@@ -3,10 +3,19 @@ import Meme from "@/models/Meme";
 import { NextResponse } from "next/server";
 import { ethers } from "ethers";
 import { contract } from "@/ethers/contractUtils";
+import User from "@/models/User"; // Explicitly import User model
+import mongoose from "mongoose";
 
 export async function POST() {
   try {
     await connectToDatabase();
+
+    console.log('User model:', User);
+
+    // Verify User model is registered
+    if (!mongoose.models.User) {
+      throw new Error("User model is not registered");
+    }
 
     // Define 24-hour range (for cron job at 6 AM IST)
     const endTime = new Date();

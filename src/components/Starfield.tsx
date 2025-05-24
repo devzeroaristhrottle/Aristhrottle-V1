@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 
 interface Props {
   speedFactor?: number;
@@ -16,16 +16,16 @@ export default function Starfield(props: Props) {
     speedFactor = 0.05,
     starColor = [255, 255, 255],
     starCount = 5000,
-    gradientTopColor = '#0d0d1a',
-    gradientMidColor = '#220044',
-    gradientBottomColor = '#000000',
+    gradientTopColor = "#0d0d1a",
+    gradientMidColor = "#220044",
+    gradientBottomColor = "#000000",
   } = props;
 
   useEffect(() => {
-    const canvas = document.getElementById('starfield') as HTMLCanvasElement;
+    const canvas = document.getElementById("starfield") as HTMLCanvasElement;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let width = window.innerWidth;
@@ -112,7 +112,14 @@ export default function Starfield(props: Props) {
     return () => {
       window.onresize = null;
     };
-  }, [starColor, gradientTopColor, gradientMidColor, gradientBottomColor, speedFactor, starCount]);
+  }, [
+    starColor,
+    gradientTopColor,
+    gradientMidColor,
+    gradientBottomColor,
+    speedFactor,
+    starCount,
+  ]);
 
   return (
     <canvas
@@ -120,15 +127,16 @@ export default function Starfield(props: Props) {
       style={{
         padding: 0,
         margin: 0,
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         right: 0,
         bottom: 0,
         left: 0,
         zIndex: 0,
         opacity: 1,
-        pointerEvents: 'none',
-        mixBlendMode: 'screen',
+        pointerEvents: "none",
+        mixBlendMode: "screen",
+        height: "100%",
       }}
     />
   );

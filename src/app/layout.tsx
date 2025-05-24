@@ -8,6 +8,7 @@ import ContextProvider from "@/context/contextProvider";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 import Starfield from "@/components/Starfield";
+import CursorAristhrottle from "@/components/CursorAristhrottle";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -55,6 +56,7 @@ export default function RootLayout({
           </ChakraUIProvider>
           <ToastContainer theme="dark" />
         </ContextProvider>
+        <CursorAristhrottle />
       </body>
     </html>
   );
