@@ -337,13 +337,14 @@ export default function Page() {
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6'>
           {filteredMemes.map((item, index) => (
             <div key={index} className='px-2 md:px-3 lg:px-4'>
-              <div className='flex justify-between items-center mb-1'>
-                {item.winning_number && (
+              {/* TODO: adjust the leaderboard meme type */}
+              {/* <div className='flex justify-between items-center mb-1'>
+                {item?.winning_number && (
                   <p className='text-[#29e0ca] font-medium'>
                     #{item.winning_number}
                   </p>
                 )}
-              </div>
+              </div> */}
               <div className='flex gap-4'>
                 <div className='relative flex-grow'>
                   <img
