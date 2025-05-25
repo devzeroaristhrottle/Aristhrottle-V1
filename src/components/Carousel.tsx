@@ -106,7 +106,7 @@ export const Carousel: React.FC<CarouselProps> = ({
   return (
     <div
       id="carousel"
-      className="block relative w-full md:max-w-[56.25rem] lg:max-w-[87.5rem] mx-auto noselect"
+      className="block relative noselect"
       onMouseEnter={() => setIsPaused(true)} // Pause on hover
       onMouseLeave={() => setIsPaused(false)} // Resume on unhover
     >
@@ -207,8 +207,9 @@ const Item: React.FC<ItemProps> = ({
           <div className="grid grid-cols-12 mt-2">
             <div className="col-span-4"></div>
             {!memeDetails.is_onchain && (
-              <div className="flex flex-col items-center text-lg text-center col-span-4">
+              <div className="flex flex-col items-center text-center col-span-4">
                 <Logo
+                  classNames="w-4 h-4 md:w-8 md:h-8"
                   onClick={() => {
                     if (user && user.address) {
                       voteToMeme(memeDetails._id);
@@ -219,14 +220,14 @@ const Item: React.FC<ItemProps> = ({
                     }
                   }}
                 />
-                Vote
+                <span className="text-sm md:text-lg">Vote</span>
               </div>
             )}
 
             <div className="flex col-span-4 justify-end">
               <Tooltip content="Share" positioning={{ placement: "bottom" }}>
                 <FaRegShareFromSquare
-                  className="text-xl mr-3 cursor-pointer"
+                  className="w-4 h-4 md:w-8 md:h-8 mr-3 cursor-pointer"
                   onClick={() => {
                     setIsShareOpen(true);
                   }}
@@ -238,7 +239,7 @@ const Item: React.FC<ItemProps> = ({
                   positioning={{ placement: "right-end" }}
                 >
                   <FaBookmark
-                    className="text-xl cursor-pointer"
+                    className="w-4 h-4 md:w-7 md:h-7 cursor-pointer"
                     onClick={() => {
                       bookmark(
                         memeDetails._id,
@@ -255,7 +256,7 @@ const Item: React.FC<ItemProps> = ({
                   positioning={{ placement: "bottom" }}
                 >
                   <CiBookmark
-                    className="text-xl cursor-pointer"
+                    className="w-4 h-4 md:w-8 md:h-8 cursor-pointer"
                     onClick={() => {
                       bookmark(
                         memeDetails._id,
