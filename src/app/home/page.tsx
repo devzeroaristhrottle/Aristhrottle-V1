@@ -348,11 +348,11 @@ export default function Page() {
   const [animateSearchBar, setAnimateSearchBar] = useState(0);
 
   return (
-    <div className="mx-4 md:mx-16">
+    <div className="mx-6 md:ml-24 md:mx-auto">
       {/* Upload Button */}
       <div className="flex justify-center gap-5">
         <div
-          className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col"
+          className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col pt-2"
           onClick={() => {
             if (user && user.address) {
               setIsUploadMemeOpen(true);

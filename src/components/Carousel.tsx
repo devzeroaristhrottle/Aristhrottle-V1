@@ -106,18 +106,20 @@ export const Carousel: React.FC<CarouselProps> = ({
   return (
     <div
       id="carousel"
-      className="noselect"
+      className="block relative w-full md:max-w-[56.25rem] lg:max-w-[87.5rem] mx-auto noselect"
       onMouseEnter={() => setIsPaused(true)} // Pause on hover
       onMouseLeave={() => setIsPaused(false)} // Resume on unhover
     >
-      <div className={`carousel-items ${direction}`}>
+      <div
+        className={`h-[18rem] md:h-[26.25rem] flex items-center ${direction}`}
+      >
         <IoIosArrowBack
-          className="text-4xl absolute left-10 cursor-pointer"
+          className="text-lg md:text-2xl lg:text-4xl absolute left-0 cursor-pointer"
           onClick={moveLeft}
         />
         {generateItems()}
         <IoIosArrowForward
-          className="text-4xl absolute right-10 cursor-pointer"
+          className="text-lg md:text-2xl lg:text-4xl absolute right-0 cursor-pointer"
           onClick={moveRight}
         />
       </div>
@@ -133,9 +135,11 @@ const Item: React.FC<ItemProps> = ({
   setSelectedMeme,
   bookmark,
 }) => {
-  const className = `item ${level != 0 && "brightness-50"} level${level} ${
-    direction == "right" && level == -2 && "scale-anim"
-  } ${direction == "left" && level == 2 && "scale-anim"}`;
+  const className = `text-center text-white text-[2.5rem] absolute border-[.1875rem] border-white  item ${
+    level != 0 && "brightness-50"
+  } level${level} ${direction == "right" && level == -2 && "scale-anim"} ${
+    direction == "left" && level == 2 && "scale-anim"
+  }`;
 
   const { userDetails } = useContext(Context);
   const user = useUser();
@@ -200,9 +204,8 @@ const Item: React.FC<ItemProps> = ({
           }}
         />
         {level == 0 && (
-          <div className="grid grid-cols-12 mt-4">
-            <div className="col-span-4">
-            </div>
+          <div className="grid grid-cols-12 mt-2">
+            <div className="col-span-4"></div>
             {!memeDetails.is_onchain && (
               <div className="flex flex-col items-center text-lg text-center col-span-4">
                 <Logo
