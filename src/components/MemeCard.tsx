@@ -91,7 +91,7 @@ export function MemeCard({
           }}
           src={meme.image_url}
           alt={meme.name}
-          className="w-full h-full md:aspect-square object-cover border-2 border-white"
+          className="w-full h-full md:w-[270px] md:h-[270px] lg:w-[250px] lg:h-[250px] xl:w-[360px] xl:h-[360px] object-cover border-2 border-white"
         />
         {/* For above mobile */}
         <div className="hidden md:block ml-3 place-content-end space-y-8">
