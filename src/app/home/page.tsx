@@ -348,11 +348,11 @@ export default function Page() {
   const [animateSearchBar, setAnimateSearchBar] = useState(0);
 
   return (
-    <div className="mx-4 md:mx-16">
+    <div className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]">
       {/* Upload Button */}
       <div className="flex justify-center gap-5">
         <div
-          className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col"
+          className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col pt-2"
           onClick={() => {
             if (user && user.address) {
               setIsUploadMemeOpen(true);
@@ -487,7 +487,7 @@ export default function Page() {
       {/* Tabs and Sort (Normal Layout) */}
       <div
         ref={tabsRef}
-        className={`flex justify-between mt-36 mb-12 md:mx-24 ${
+        className={`flex justify-between mt-36 ${
           isHeaderFixed ? "hidden" : ""
         }`}
       >
@@ -669,7 +669,7 @@ export default function Page() {
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="grid grid-cols-1 md:grid-cols-12 gap-y-10 gap-x-20  md:mx-14 !min-h-[500px] max-h-[calc(100vh-300px)] overflow-y-auto no-scrollbar"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-16 gap-x-32 mx-auto lg:max-w-[1400px] !min-h-[500px] max-h-[calc(100vh-300px)] mt-10 mb-6 overflow-y-auto no-scrollbar"
       >
         {!loading &&
           displayedMemes.length > 0 &&

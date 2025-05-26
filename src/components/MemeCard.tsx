@@ -34,12 +34,14 @@ export function MemeCard({
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
+  const [voteCount, setVoteCount] = useState(0);
   const user = useUser();
 
   useEffect(() => {
     getBookmarks();
     setBookmarkCount(meme.bookmarks.length);
     setShareCount(meme.shares.length);
+    setVoteCount(meme.vote_count);
   }, []);
 
   const getBookmarks = () => {
@@ -76,10 +78,10 @@ export function MemeCard({
   };
 
   return (
-    <div key={index} className="col-span-4 flex flex-col mx-auto">
-      <div className="flex items-start gap-2 mb-2">
-        <CgProfile size={28} />
-        <span className="text-2xl text-[#29e0ca]">
+    <div key={index} className="flex flex-col">
+      <div className="flex items-start gap-x-1 md:gap-x-2 mb-1 md:mb-2">
+        <CgProfile className="md:w-7 md:h-7" />
+        <span className="text-[#29e0ca] text-base md:text-2xl">
           {meme.created_by?.username}
         </span>
       </div>
@@ -90,25 +92,35 @@ export function MemeCard({
           }}
           src={meme.image_url}
           alt={meme.name}
-          className="border-2 h-96 w-96"
+          className="w-full h-full md:aspect-square object-cover border-2 border-white"
         />
-        <div className="ml-4 place-content-end space-y-8">
-          {activeTab !== "all" &&
-            (loading ? (
-              <AiOutlineLoading3Quarters className="animate-spin text-2xl" />
-            ) : (
+        {/* For above mobile */}
+        <div className="hidden md:block ml-2 place-content-end space-y-4">
+          {loading ? (
+            <AiOutlineLoading3Quarters className="animate-spin text-2xl " />
+          ) : (
+            <div className="flex flex-col items-center space-y-1">
               <Logo
                 onClick={() => {
+                  if (activeTab === "all") return; // Disable click in 'all' tab
                   if (user && user.address) {
                     voteMeme();
-                  } else {
-                    if (openConnectModal) {
-                      openConnectModal();
-                    }
+                  } else if (openConnectModal) {
+                    openConnectModal();
                   }
                 }}
+                classNames={`${
+                  activeTab === "all"
+                    ? "opacity-70 !cursor-not-allowed pointer-events-none"
+                    : ""
+                }`}
               />
-            ))}
+              {activeTab !== "live" && (
+                <p className="text-center text-[#1783fb]">{voteCount}</p>
+              )}
+            </div>
+          )}
+
           <Tooltip content="Share" positioning={{ placement: "right-end" }}>
             <div className="text-center font-bold text-lg">
               <FaRegShareFromSquare
@@ -118,7 +130,7 @@ export function MemeCard({
                 }}
               />
               {meme.shares && !activeTab?.includes("live") && (
-                <p>{shareCount}</p>
+                <p className="text-[#1783fb]">{shareCount}</p>
               )}
             </div>
           </Tooltip>
@@ -138,7 +150,7 @@ export function MemeCard({
                   }}
                 />
                 {meme.bookmarks && !activeTab?.includes("live") && (
-                  <p>{bookmarkCount}</p>
+                  <p className="text-[#1783fb]">{bookmarkCount}</p>
                 )}
               </div>
             </Tooltip>
@@ -157,14 +169,105 @@ export function MemeCard({
                   }}
                 />
                 {meme.bookmarks && !activeTab?.includes("live") && (
-                  <p>{bookmarkCount}</p>
+                  <p className="text-[#1783fb]">{bookmarkCount}</p>
                 )}
               </div>
             </Tooltip>
           )}
         </div>
       </div>
-      <p className="text-2xl text-wrap my-1 w-96 line-clamp-3">{meme.name}</p>
+      <div className="flex justify-between mt-1">
+        <p className="text-lg md:text-2xl text-wrap">{meme.name}</p>
+        {/* For mobile */}
+        <div className="md:hidden flex items-center gap-x-6 md:gap-x-0">
+          {loading ? (
+            <AiOutlineLoading3Quarters className="animate-spin text-2xl " />
+          ) : (
+            <div className="flex flex-col items-center space-y-1">
+              <Logo
+                onClick={() => {
+                  if (activeTab === "all") return; // Disable click in 'all' tab
+                  if (user && user.address) {
+                    voteMeme();
+                  } else if (openConnectModal) {
+                    openConnectModal();
+                  }
+                }}
+                classNames={`w-4 h-4 md:w-6 md:h-6 ${
+                  activeTab === "all"
+                    ? "opacity-70 !cursor-not-allowed pointer-events-none"
+                    : ""
+                }`}
+              />
+              {activeTab !== "live" && (
+                <p className="text-center text-lg md:text-2xl text-[#1783fb]">
+                  {voteCount}
+                </p>
+              )}
+            </div>
+          )}
+
+          <Tooltip content="Share" positioning={{ placement: "right-end" }}>
+            <div className="text-center font-bold">
+              <FaRegShareFromSquare
+                className="w-4 h-4 md:w-6 md:h-6 cursor-pointer"
+                onClick={() => {
+                  setIsShareOpen(true);
+                }}
+              />
+              {meme.shares && !activeTab?.includes("live") && (
+                <p className="text-lg md:text-2xl text-[#1783fb]">
+                  {shareCount}
+                </p>
+              )}
+            </div>
+          </Tooltip>
+
+          {isBookmarked ? (
+            <Tooltip
+              content="My Bookmark"
+              positioning={{ placement: "right-end" }}
+            >
+              <div className="text-center font-bold text-lg">
+                <FaBookmark
+                  className="w-4 h-4 md:w-6 md:h-6 cursor-pointer"
+                  onClick={() => {
+                    bookmark(meme._id, meme.name, meme.image_url);
+                    setBookmarkCount(bookmarkCount - 1);
+                    getBookmarks();
+                  }}
+                />
+                {meme.bookmarks && !activeTab?.includes("live") && (
+                  <p className="text-lg md:text-2xl text-[#1783fb]">
+                    {bookmarkCount}
+                  </p>
+                )}
+              </div>
+            </Tooltip>
+          ) : (
+            <Tooltip
+              content="My Bookmark"
+              positioning={{ placement: "right-end" }}
+            >
+              <div className="text-center font-bold text-lg">
+                <FaRegBookmark
+                  className="w-4 h-4 md:w-6 md:h-6"
+                  onClick={() => {
+                    bookmark(meme._id, meme.name, meme.image_url);
+                    setBookmarkCount(bookmarkCount + 1);
+                    getBookmarks();
+                  }}
+                />
+                {meme.bookmarks && !activeTab?.includes("live") && (
+                  <p className="text-lg md:text-2xl text-[#1783fb]">
+                    {bookmarkCount}
+                  </p>
+                )}
+              </div>
+            </Tooltip>
+          )}
+        </div>
+      </div>
       {isShareOpen && (
         <Share
           onClose={handleShareClose}

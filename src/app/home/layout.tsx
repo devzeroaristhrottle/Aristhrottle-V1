@@ -15,7 +15,7 @@ export default function Layout({ children }: Props) {
         </div>
         <div className='min-h-dvh max-w-screen'>
           <Navbar />
-          <div className='mt-2 md:mt-10'>{children}</div>
+          <div className='mt-2 md:mt-6'>{children}</div>
         </div>
       </div>
       <UploadMeme />
