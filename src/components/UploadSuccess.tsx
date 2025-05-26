@@ -27,15 +27,6 @@ export default function UploadSuccess({
             Your meme uploaded successfully
           </span>
         </div>
-        {/* <label className="flex justify-center items-center text-base text-white gap-2 mt-2">
-          <input
-            type="checkbox"
-            checked={dontShowAgain}
-            onChange={(e) => setDontShowAgain(e.target.checked)}
-            className="rounded text-white focus:ring-blue-400"
-          />
-          Don’t show this again
-        </label> */}
         <div className='flex justify-end items-center gap-x-3 my-2 mr-4 mb-2'>
           <button
             onClick={() => handleView()}
