@@ -1,7 +1,6 @@
 'use client'
 
-import { FaRegShareFromSquare } from 'react-icons/fa6'
-import { FaRegBookmark } from 'react-icons/fa'
+import { FaBookmark, FaRegShareFromSquare } from 'react-icons/fa6'
 import {
   DialogContent,
   DialogBody,
@@ -15,6 +14,9 @@ import { Meme, TagI } from '@/app/home/page'
 import { LeaderboardMeme } from '@/app/home/leaderboard/page'
 import { MdOutlineExpandMore } from 'react-icons/md'
 import axiosInstance from '@/utils/axiosInstance'
+import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
+import { CiBookmark } from 'react-icons/ci'
+import { useUser } from '@account-kit/react'
 
 interface MemeDetailProps {
   isOpen?: boolean
@@ -35,6 +37,9 @@ export default function MemeDetail({
 }: MemeDetailProps) {
   const [isShareOpen, setIsShareOpen] = useState(false)
   const [relatedMemes, setRelatedMemes] = useState<Meme[]>([])
+  const user = useUser()
+  const { handleBookmark } = useMemeActions()
+  const [isBookmarked, setIsBookmarked] = useState(false)
 
   const handleShareClose = () => setIsShareOpen(false)
 
@@ -52,6 +57,18 @@ export default function MemeDetail({
       }
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  const getBookmarks = () => {
+    const bookmarks = localStorage.getItem('bookmarks')
+    if (bookmarks) {
+      const bookmarksObj = JSON.parse(bookmarks)
+      if (meme && bookmarksObj[meme._id]) {
+        setIsBookmarked(true)
+      } else {
+        setIsBookmarked(false)
+      }
     }
   }
 
@@ -91,12 +108,52 @@ export default function MemeDetail({
                     <div className='flex items-center gap-4'>
                       <div onClick={() => setIsShareOpen(true)}>
                         <FaRegShareFromSquare className='text-xl cursor-pointer' />
-                        <p className='text-[#1783fb] text-center'>120</p>
+                        <p className='text-[#1783fb] text-center'>
+                          {meme.shares}
+                        </p>
                       </div>
-                      <div>
-                        <FaRegBookmark className='text-xl cursor-pointer' />
-                        <p className='text-[#1783fb] text-center'>24</p>
-                      </div>
+                      {user && user.address ? (
+                        <div>
+                          {isBookmarked ? (
+                            <div className='flex flex-col items-center cursor-pointer'>
+                              <FaBookmark
+                                className='w-4 h-4 md:w-6 md:h-6'
+                                onClick={() => {
+                                  handleBookmark(
+                                    meme._id,
+                                    meme.name,
+                                    meme.image_url
+                                  )
+                                  getBookmarks()
+                                }}
+                              />
+                              <span className='text-lg md:text-2xl text-[#1783fb]'>
+                                0
+                              </span>
+                            </div>
+                          ) : (
+                            <div className='flex flex-col items-center cursor-pointer'>
+                              <CiBookmark
+                                className='w-4 h-4 md:w-6 md:h-6'
+                                onClick={() => {
+                                  handleBookmark(
+                                    meme._id,
+                                    meme.name,
+                                    meme.image_url
+                                  )
+                                  getBookmarks()
+                                }}
+                              />
+                              <span className='text-lg md:text-2xl text-[#1783fb]'>
+                                {meme.bookmarks}
+                              </span>
+                            </div>
+                          )}
+                          <p className='text-[#1783fb] text-center'>
+                            {meme.bookmarks}
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
