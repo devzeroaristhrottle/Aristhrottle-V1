@@ -94,6 +94,14 @@ export async function GET(req: NextRequest) {
           },
         },
         {
+          $lookup: {
+            from: 'tags',
+            localField: 'tags',
+            foreignField: '_id',
+            as: 'tags',
+          },
+        },
+        {
           $project: {
             _id: 1,
             name: 1,
@@ -109,8 +117,10 @@ export async function GET(req: NextRequest) {
                 then: {
                   $multiply: [
                     {
-
-                      $divide: [{ $ifNull: ["$vote_count", 0] }, maxVotes],
+                      $divide: [
+                        { $ifNull: ["$vote_count", 0] },
+                        maxVotes,
+                      ],
                     },
                     100,
                   ],
@@ -118,9 +128,16 @@ export async function GET(req: NextRequest) {
                 else: 0,
               },
             },
-            "created_by._id": 1,
-            "created_by.username": 1,
-            "created_by.profile_image": 1,
+            'created_by._id': 1,
+            'created_by.username': 1,
+            'created_by.profile_image': 1,
+            tags: {
+              $map: {
+                input: "$tags",
+                as: "tag",
+                in: "$$tag.name"
+              }
+            }
           },
         },
         { $skip: start },
@@ -199,6 +216,14 @@ export async function GET(req: NextRequest) {
           },
         },
         {
+          $lookup: {
+            from: 'tags',
+            localField: 'tags',
+            foreignField: '_id',
+            as: 'tags',
+          },
+        },
+        {
           $project: {
             _id: 1,
             name: 1,
@@ -225,6 +250,13 @@ export async function GET(req: NextRequest) {
             "created_by._id": 1,
             "created_by.username": 1,
             "created_by.profile_image": 1,
+            tags: {
+              $map: {
+                input: "$tags",
+                as: "tag",
+                in: "$$tag.name"
+              }
+            }
           },
         },
         { $skip: start },
