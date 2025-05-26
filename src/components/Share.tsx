@@ -1,21 +1,21 @@
-import { Context } from "@/context/contextProvider";
-import axiosInstance from "@/utils/axiosInstance";
+import { Context } from '@/context/contextProvider'
+import axiosInstance from '@/utils/axiosInstance'
 import {
   DialogBackdrop,
   DialogBody,
   DialogContent,
   DialogRoot,
-} from "@chakra-ui/react";
-import React, { useContext } from "react";
-import { CgCloseO } from "react-icons/cg";
-import { ShareSocial } from "react-share-social";
+} from '@chakra-ui/react'
+import React, { useContext } from 'react'
+import { CgCloseO } from 'react-icons/cg'
+import { ShareSocial } from 'react-share-social'
 
 interface ShareProps {
-  isOpen?: boolean;
-  onClose?: () => void;
-  onShare?: () => void;
-  imageUrl: string | undefined;
-  id: string | undefined;
+  isOpen?: boolean
+  onClose?: () => void
+  onShare?: () => void
+  imageUrl: string | undefined
+  id: string | undefined
 }
 
 const Share = ({
@@ -25,55 +25,51 @@ const Share = ({
   imageUrl,
   id,
 }: ShareProps) => {
-  const { userDetails } = useContext(Context);
+  const { userDetails } = useContext(Context)
   const addShare = async (memeId: string, userId: string) => {
     try {
-      const response = await axiosInstance.post("/api/share", {
+      const response = await axiosInstance.post('/api/share', {
         memeId,
         userId,
-      });
-      return response.data;
+      })
+      return response.data
     } catch {
-      return null;
+      return null
     }
-  };
+  }
   return (
-    <div className="share-container">
-      <DialogRoot
-        open={isOpen}
-        motionPreset="slide-in-bottom"
-        placement={"center"}
-      >
-        <DialogBackdrop className="backdrop-blur-md" />
-        <DialogContent className="fixed md:inset-10 bg-[#141e29] border-2 border-[#1783fb] w-[90vw] md:h-min p-0">
-          <DialogBody className="mt-8 md:p-10">
+    <div className='share-container'>
+      <DialogRoot open={isOpen} motionPreset='none' placement={'center'}>
+        <DialogBackdrop className='backdrop-blur-md' />
+        <DialogContent className='fixed inset-0 md:inset-10 bg-[#141e29] border-2 border-[#1783fb] w-[90vw] h-fit md:h-min p-0 max-h-[90vh] '>
+          <DialogBody className='mt-8 md:p-10'>
             <CgCloseO
               onClick={onClose}
-              className="z-50 absolute -top-5 md:-top-6 -right-5 text-white w-5 h-5"
+              className='z-50 absolute -top-5 md:-top-6 -right-5 text-white w-5 h-5 cursor-pointer'
             />
             {imageUrl && (
-              <div className="flex items-center justify-center">
-                <div className="h-56 w-56 border-2 border-white">
+              <div className='flex items-center justify-center'>
+                <div className='h-56 w-56 border-2 border-white'>
                   <img
                     src={imageUrl}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
+                    alt='Profile'
+                    className='w-full h-full object-cover'
                   />
                 </div>
               </div>
             )}
-            <div className="flex flex-col justify-center items-center mt-4 md:mt-8">
-              <p className="font-medium text-lg md:text-2xl">
+            <div className='flex flex-col justify-center items-center mt-4 md:mt-8'>
+              <p className='font-medium text-lg md:text-2xl'>
                 Share with your Friends
               </p>
-              <div className="w-full">
+              <div className='w-full'>
                 <ShareSocial
                   url={`${process.env.NEXT_PUBLIC_API_URL}/home?id=${id}`}
-                  socialTypes={["facebook", "whatsapp", "twitter", "telegram"]}
+                  socialTypes={['facebook', 'whatsapp', 'twitter', 'telegram']}
                   onSocialButtonClicked={async () => {
                     if (id && userDetails && userDetails._id) {
-                      await addShare(id, userDetails._id);
-                      onShare();
+                      await addShare(id, userDetails._id)
+                      onShare()
                     }
                   }}
                 />
@@ -128,7 +124,7 @@ const Share = ({
         </DialogContent>
       </DialogRoot>
     </div>
-  );
-};
+  )
+}
 
-export default Share;
+export default Share

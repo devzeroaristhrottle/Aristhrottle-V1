@@ -3,68 +3,75 @@ import Meme from "@/models/Meme";
 import { NextResponse } from "next/server";
 import { ethers } from "ethers";
 import { contract } from "@/ethers/contractUtils";
+import User from "@/models/User"; // Explicitly import User model
+import mongoose from "mongoose";
 
 export async function POST() {
   try {
     await connectToDatabase();
 
-    const memeIds: string[] = [];
-    const userAddresses: string[] = [];
-    const voteCounts: number[] = [];
-    const percentages: number[] = [];
-    let totalVotes = 0;
+    console.log('User model:', User);
 
-    // Set time range for the last 24 hours from current time
-    const endTime = new Date(); // Current time: 2025-05-16 10:35 PM IST (5:05 PM UTC)
-    const startTime = new Date(endTime.getTime() - 24 * 60 * 60 * 1000); // 24 hours before
+    // Verify User model is registered
+    if (!mongoose.models.User) {
+      throw new Error("User model is not registered");
+    }
 
-    console.log(startTime, endTime);
+    // Define 24-hour range (for cron job at 6 AM IST)
+    const endTime = new Date();
+    const startTime = new Date(endTime.getTime() - 24 * 60 * 60 * 1000);
 
-    // Find memes that are not on-chain and created in the correct time range
+    // Fetch unprocessed memes within time range
     const memes = await Meme.find({
       is_onchain: false,
       createdAt: { $gte: startTime, $lte: endTime },
     }).populate("created_by");
 
-
-    // Store meme data with computed percentage
-    const memeData = memes.map((meme) => {
-
-      memeIds.push(ethers.encodeBytes32String(meme._id.toString()));
-      userAddresses.push(meme.created_by.user_wallet_address);
-      const memeVoteCount = meme.vote_count || 0; // Handle undefined vote_count
-      voteCounts.push(memeVoteCount);
-      totalVotes += memeVoteCount;
-
-      // Handle division by zero: set percentage to 0 if totalVotes is 0
-      const memePercentage = totalVotes > 0 ? (memeVoteCount / totalVotes) * 100 : 0;
-
-      return { meme, percentage: memePercentage };
-    });
-
-    // Sort memes by percentage in descending order
-    memeData.sort((a, b) => b.percentage - a.percentage);
-
-    let rank = 1;
-    let lastPercentage = null;
-    const rankMap = new Map(); // Map to store rankings for each unique percentage
-
-    for (let i = 0; i < memeData.length; i++) {
-      const { percentage } = memeData[i];
-      percentages.push(percentage);
-
-      // Assign the same rank if percentage is the same as previous
-      if (lastPercentage !== null && percentage === lastPercentage) {
-        rankMap.set(percentage, rank); // Use the same rank
-      } else {
-        rank = i + 1; // New rank for a different percentage
-        rankMap.set(percentage, rank);
-      }
-
-      lastPercentage = percentage;
+    if (!memes.length) {
+      return NextResponse.json(
+        { message: "No new memes to process." },
+        { status: 200 }
+      );
     }
 
-    // Bulk update memes
+    let totalVotes = 0;
+    const memeIds: string[] = [];
+    const userAddresses: string[] = [];
+    const voteCounts: number[] = [];
+
+    for (const meme of memes) {
+      const voteCount = meme.vote_count || 0;
+      memeIds.push(ethers.encodeBytes32String(meme._id.toString()));
+      userAddresses.push(meme.created_by.user_wallet_address);
+      voteCounts.push(voteCount);
+      totalVotes += voteCount;
+    }
+
+    // Calculate percentage and rank
+    const memeData = memes.map((meme) => {
+      const voteCount = meme.vote_count || 0;
+      const percentage = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
+      return { meme, voteCount, percentage };
+    });
+
+    // Sort and rank
+    memeData.sort((a, b) => b.percentage - a.percentage);
+
+    const rankMap = new Map<number, number>();
+    let lastPercentage: number | null = null;
+    let rank = 1;
+
+    memeData.forEach(({ percentage }, i) => {
+      if (lastPercentage != null && percentage === lastPercentage) {
+        rankMap.set(percentage, rank);
+      } else {
+        rank = i + 1;
+        rankMap.set(percentage, rank);
+        lastPercentage = percentage;
+      }
+    });
+
+    // Bulk DB update
     const bulkOps = memeData.map(({ meme, percentage }) => ({
       updateOne: {
         filter: { _id: meme._id },
@@ -73,30 +80,48 @@ export async function POST() {
             in_percentile: percentage,
             winning_number: rankMap.get(percentage),
             is_voting_close: true,
-            is_onchain: true,
+            // only set is_onchain true after tx succeeds!
           },
         },
       },
     }));
 
-    if (bulkOps.length > 0) {
-      await Meme.bulkWrite(bulkOps);
-    }
-    
-    // Smart contract interaction
-    let tx = null;
-    if (
-      memeIds.length > 0 &&
-      userAddresses.length > 0 &&
-      voteCounts.length > 0 &&
-      memeIds.length === userAddresses.length &&
-      memeIds.length === voteCounts.length
-    ) {
+    // Smart contract interaction with retry
+    let tx;
+    let retries = 3;
+
+    while (retries > 0) {
       try {
-        tx = await contract.addUploadMemeBulk(memeIds, userAddresses, voteCounts);
+        tx = await contract.addUploadMemeBulk(
+          memeIds,
+          userAddresses,
+          voteCounts
+        );
         await tx.wait();
+
+        // Only mark memes as on-chain after successful tx
+        const setOnchainOps = memeData.map(({ meme }) => ({
+          updateOne: {
+            filter: { _id: meme._id },
+            update: { $set: { is_onchain: true } },
+          },
+        }));
+
+        await Meme.bulkWrite([...bulkOps, ...setOnchainOps]);
+        break; // exit retry loop
       } catch (txError) {
-        throw new Error(`Failed to upload memes to blockchain: ${txError}`);
+        console.error(
+          `❌ Transaction failed. Retries left: ${retries - 1}`,
+          txError
+        );
+        retries--;
+        if (retries === 0) {
+          return NextResponse.json(
+            { error: "Failed to upload memes to blockchain after 3 retries." },
+            { status: 500 }
+          );
+        }
+        await new Promise((r) => setTimeout(r, 3000)); // Wait before retry
       }
     }
 
@@ -104,13 +129,14 @@ export async function POST() {
       {
         memeIds,
         userAddresses,
-        voteCounts,
-        totalMemesProcessed: memes.length,
+        totalMemesProcessed: memeIds.length,
+        txHash: tx?.hash,
       },
       { status: 200 }
     );
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({ error: error }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("❌ Uncaught error:", error);
+    return NextResponse.json({ error: `Internal server error. ${error}`  }, { status: 500 });
+
   }
 }

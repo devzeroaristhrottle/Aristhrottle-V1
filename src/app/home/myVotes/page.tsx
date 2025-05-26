@@ -169,7 +169,7 @@ export default function Page({}: Props) {
             pageSize={pageSize}
             defaultPage={1}
             variant="solid"
-            className=" mx-auto"
+            className="mx-auto mb-10"
             page={page}
             onPageChange={(e) => {
               setMemes([]);

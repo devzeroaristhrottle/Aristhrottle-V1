@@ -1,46 +1,22 @@
-#carousel {
-  display: block;
-  position: relative;
-  width: 100%;
-}
-
 .item {
-  text-align: center;
-  color: white;
-  font-size: 40px;
-  position: absolute;
-  border: 3px solid white;
-  transition: height 1s, width 1s, left 1s, margin-top 1s, line-height 1s,
-    background-color 1s;
+  transition: height 1s, width 1s, left 1s, margin-top 1s, line-height 1s, background-color 1s;
 }
 
 .level-2 {
-  height: 130px;
-  width: 130px;
+  height: 180px;
+  width: 180px;
   background-color: #228291;
-  left: 85%;
+  left: 77%;
   border-radius: 10px;
   overflow: hidden;
 }
-.scale-anim {
-  animation: 1s scaleanim ease;
-}
-
-@keyframes scaleanim {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
 
 .level-1 {
-  height: 200px;
-  width: 200px;
+  height: 240px;
+  width: 240px;
   background-color: #6796e5;
-  left: 75%;
-  transform: translate(-75%);
+  left: 73%;
+  transform: translate(-73%);
   z-index: 2;
   border-radius: 10px;
   overflow: hidden;
@@ -60,32 +36,117 @@
 }
 
 .level1 {
-  height: 200px;
-  width: 200px;
+  height: 240px;
+  width: 240px;
   background-color: #6796e5;
-  left: 25%;
-  transform: translate(-25%);
+  left: 27%;
+  transform: translate(-27%);
   z-index: 2;
   border-radius: 10px;
   overflow: hidden;
 }
 
 .level2 {
-  height: 100px;
-  width: 100px;
+  height: 180px;
+  width: 180px;
   background-color: #228291;
-  left: 10%;
+  left: 11%;
   border-radius: 10px;
   overflow: hidden;
 }
 
-.carousel-items {
-  /* position: relative; */
-  height: 340px;
-  display: flex;
-  align-items: center;
+.scale-anim {
+  animation: 1s scaleanim ease;
 }
 
+@keyframes scaleanim {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+  .level-2{
+    height: 150px;
+    width: 150px;
+    left: 75%;
+  }
+
+  .level2 {
+    height: 150px;
+    width: 150px;
+    left: 4%;
+  }
+
+  .level-1{
+    height: 200px;
+    width: 200px;
+    left: 77%;
+    transform: translate(-77%);
+  }
+ 
+  .level1 {
+    height: 200px;
+    width: 200px;
+    left: 30%;
+    transform: translate(-50%);
+  }
+
+  .level0 {
+    height: 270px;
+    width: 270px;
+    left: 50%;
+    transform: translate(-50%);
+  }
+}
+
+/* Mobile (below 768px) */
+@media (max-width: 767px) {
+  .level-2 {
+    height: 100px;
+    width: 100px;
+    left: 64%;
+  }
+
+  .level2 {
+    height: 100px;
+    width: 100px;
+    left: 6%;
+  }
+
+  .level-1 {
+    height: 125px;
+    width: 125px;
+    left: 75%;
+    transform: translate(-75%);
+  }
+
+  .level1 {
+    height: 125px;
+    width: 125px;
+    left: 23%;
+    transform: translate(-23%);
+  }
+
+  .level0 {
+    height: 150px;
+    width: 150px;
+    left: 50%;
+    transform: translate(-50%);
+  }
+}
+
+.noselect {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 /* .carousel-items.left-enter,
 .carousel-items.right-enter {
   opacity: 0;
@@ -119,11 +180,3 @@
   width: 90px;
   transition: left 1s, opacity 1s, height 1s, width 1s, margin-top 1s, line-height 1s;
 } */
-
-.noselect {
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}

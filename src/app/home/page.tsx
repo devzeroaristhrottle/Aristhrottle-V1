@@ -33,7 +33,9 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Context } from "@/context/contextProvider";
 import { toast } from "react-toastify";
 import { useAuthModal, useUser } from "@account-kit/react";
-import { ReactTour } from "react-interactive-tour";
+import { useInView } from "motion/react";
+import { useMemeActions } from "./bookmark/bookmarkHelper";
+import { motion } from "framer-motion";
 
 export interface Meme {
   _id: string;
@@ -77,7 +79,7 @@ interface User {
   __v: number;
 }
 
-interface Bookmark {
+export interface Bookmark {
   [key: string]: { id: string; name: string; image_url: string };
 }
 
@@ -109,18 +111,15 @@ export default function Page() {
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const memeContainerRef = useRef<HTMLDivElement>(null);
-
+  const { handleBookmark } = useMemeActions();
   // Sticky header logic
   useEffect(() => {
-    console.log("useEffect for scroll initialized");
-
     const handleScroll = () => {
       if (tabsRef.current && memeContainerRef.current) {
         const tabsBottom = tabsRef.current.getBoundingClientRect().bottom;
         const viewportTop = 0;
         const isPastTabs = tabsBottom <= viewportTop + 80; // Account for 80px navbar
         setIsHeaderFixed(isPastTabs);
-        
       } else {
         console.log("Refs missing:", {
           tabsRef: tabsRef.current,
@@ -174,49 +173,6 @@ export default function Page() {
     }, 400);
     return () => clearTimeout(timeout);
   }, [query]);
-
-  const toggleBookmark = async (memeId: string, userId: string) => {
-    try {
-      const response = await axiosInstance.post("/api/bookmark", {
-        memeId,
-        userId,
-      });
-      return response.data;
-    } catch {
-      return null;
-    }
-  };
-
-  const bookmarks = (id: string, name: string, image_url: string) => {
-    const bookmarks = localStorage.getItem("bookmarks");
-    if (bookmarks) {
-      const bookmarksObj: Bookmark = JSON.parse(bookmarks);
-      if (!bookmarksObj[id]) {
-        bookmarksObj[id] = {
-          id: id,
-          name: name,
-          image_url: image_url,
-        };
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarksObj));
-      } else {
-        delete bookmarksObj[id];
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarksObj));
-      }
-    } else {
-      const bookmarksObj: Bookmark = {};
-
-      bookmarksObj[id] = {
-        id: id,
-        name: name,
-        image_url: image_url,
-      };
-
-      localStorage.setItem("bookmarks", JSON.stringify(bookmarksObj));
-    }
-    if (id && userDetails && userDetails._id) {
-      toggleBookmark(id, userDetails._id);
-    }
-  };
 
   const onClose = () => {
     setIsMemeDetailOpen(false);
@@ -363,9 +319,9 @@ export default function Page() {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab.toLowerCase() as "live" | "all");
-    if(tab === "live") {
+    if (tab === "live") {
       setTotalMemeCount(filterMemes.length);
-    }else{
+    } else {
       setTotalMemeCount(totalMemeCountConst);
     }
     setPage(1);
@@ -373,47 +329,51 @@ export default function Page() {
 
   const displayedMemes = getFilteredMemes();
 
-  return (
-    <div className="mx-4 md:mx-16">
-      {/* Upload Button */}={" "}
-      <div className="flex justify-center gap-5">
-        <ReactTour
-          index={2}
-          key="2"
-          position="right"
-          body={
-            <div>
-              <strong>📤 Upload Your Meme</strong>
-              <br />
-              Share your funniest meme with the Aristhrottle community. Get
-              votes, earn tokens, and go viral!
-            </div>
-          }
-        >
-          <div
-            className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col"
-            onClick={() => {
-              if (user && user.address) {
-                setIsUploadMemeOpen(true);
-              } else {
-                if (openAuthModal) {
-                  openAuthModal();
-                }
-              }
-            }}
-          >
-            <div className="ring-2 ring-slate-200 w-16 h-14 rounded-md p-2">
-              <IoCloudUploadOutline className="text-slate-200 h-full w-full" />
-            </div>
+  const isInView = useInView(memeContainerRef, {
+    amount: 0.1, // Trigger when 10% visible
+  });
 
-            <p className="text-blue-500 font-bold mt-1 text-3xl">Upload</p>
+  useEffect(() => {
+    if (isInView && memeContainerRef.current) {
+      setAnimateSearchBar(310);
+      memeContainerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    } else {
+      setAnimateSearchBar(0);
+    }
+  }, [isInView, displayedMemes.length]);
+
+  const [animateSearchBar, setAnimateSearchBar] = useState(0);
+
+  return (
+    <div className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]">
+      {/* Upload Button */}
+      <div className="flex justify-center gap-5">
+        <div
+          className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col pt-2"
+          onClick={() => {
+            if (user && user.address) {
+              setIsUploadMemeOpen(true);
+            } else {
+              if (openAuthModal) {
+                openAuthModal();
+              }
+            }
+          }}
+        >
+          <div className="ring-2 ring-slate-200 w-16 h-14 rounded-md p-2">
+            <IoCloudUploadOutline className="text-slate-200 h-full w-full" />
           </div>
-        </ReactTour>
+          <p className="text-blue-500 font-bold mt-1 text-3xl">Upload</p>
+        </div>
       </div>
+
       {/* Carousel */}
       <div>
         <Carousel
-          bookmark={bookmarks}
+          bookmark={handleBookmark}
           items={carouselMemes}
           setIsMemeDetailOpen={setIsMemeDetailOpen}
           active={0}
@@ -426,84 +386,77 @@ export default function Page() {
           isHeaderFixed ? "hidden" : ""
         }`}
       >
-        <div className="border-2 border-slate-500 rounded-2xl w-full md:w-1/2 md:py-1 mt-12 md:mx-auto bg-gray-600/15">
-          <InputGroup
-            flex="2"
-            className="w-full"
-            startElement={
-              query.length === 0 ? (
-                <LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
-              ) : undefined
-            }
-            endElement={
-              query.length > 0 ? (
-                <LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
-              ) : undefined
-            }
-          >
-            <Input
-              placeholder="Search"
-              className={`text-xl md:text-2xl focus:outline-none w-full  ${
-                query.length === 0
-                  ? "!pl-10 md:!pl-14 pr-2 md:pr-4"
-                  : "pl-4 md:pl-6 pr-8 md:pr-12"
-              }`}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setShowRecommendations(true)}
-              onBlur={() =>
-                setTimeout(() => setShowRecommendations(false), 200)
+        <motion.div
+          initial={{ opacity: 0, y: 0 }}
+          animate={{
+            opacity: 1,
+            y: animateSearchBar,
+            transition: { duration: 0.5, ease: "easeInOut" },
+          }}
+        >
+          <div className="border-2 border-slate-500 rounded-2xl w-full md:w-1/2 md:py-1 mt-12 md:mx-auto bg-gray-600/15">
+            <InputGroup
+              flex="2"
+              className="w-full"
+              startElement={
+                query.length === 0 ? (
+                  <LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
+                ) : undefined
               }
-            />
-          </InputGroup>
-        </div>
-        <div className="w-full flex justify-center ">
-          <ReactTour
-            index={3}
-            key="3"
-            position="bottom"
-            body={
-              <div>
-                <strong>🔍 Search Memes</strong>
-                <br />
-                Find the hottest, funniest, or weirdest memes. Explore what the
-                community’s voting on!
-              </div>
-            }
-          >
-            <p className="w-full text-center my-1 text-sm leading-none md:text-lg text-nowrap">
-              Separate by comma to search for multiple tags, titles and
-              usernames
-            </p>
-          </ReactTour>
-        </div>
-        {showRecommendations && query.length > 0 && (
-          <div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto md:w-1/2 absolute translate-x-1/2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C]">
-            {filteredTags.length > 0 ? (
-              <div className="flex flex-wrap items-center justify-start gap-4">
-                {filteredTags.map((tag) => (
-                  <Tag
-                    key={tag._id}
-                    className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
-                    onClick={() => {
-                      setQuery(tag.name);
-                      setShowRecommendations(false);
-                    }}
-                  >
-                    <div className="flex gap-2 text-lg text-white items-center">
-                      {tag.name} <FaPlus size={14} className="stroke-[2px]" />
-                    </div>
-                  </Tag>
-                ))}
-              </div>
-            ) : (
-              <div className="md:px-4 md:py-2 w-full text-gray-400">
-                No recommendations found
-              </div>
-            )}
+              endElement={
+                query.length > 0 ? (
+                  <LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
+                ) : undefined
+              }
+            >
+              <Input
+                placeholder="Separate by comma to search for multiple tags, titles and usernames"
+                className={`text-xl md:text-2xl focus:outline-none w-full placeholder:text-sm placeholder:leading-none placeholder:md:text-lg  ${
+                  query.length === 0
+                    ? "!pl-10 md:!pl-14 pr-2 md:pr-4"
+                    : "pl-4 md:pl-6 pr-8 md:pr-12"
+                }`}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => setShowRecommendations(true)}
+                onBlur={() =>
+                  setTimeout(() => setShowRecommendations(false), 200)
+                }
+              />
+            </InputGroup>
           </div>
-        )}
+          {/* <p className="text-center my-1 text-sm leading-none md:text-lg">
+            Separate by comma to search for multiple tags, titles and usernames
+          </p> */}
+          {showRecommendations && query.length > 0 && (
+            <div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto md:w-1/2 absolute translate-x-1/2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C]">
+              {filteredTags.length > 0 ? (
+                <div className="flex flex-wrap items-center justify-start gap-4">
+                  {filteredTags.map((tag) => (
+                    <Tag
+                      key={tag._id}
+                      className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
+                      onClick={() => {
+                        setQuery(tag.name);
+                        setShowRecommendations(false);
+                      }}
+                    >
+                      <div className="flex gap-2 text-lg text-white items-center">
+                        {tag.name} <FaPlus size={14} className="stroke-[2px]" />
+                      </div>
+                    </Tag>
+                  ))}
+                </div>
+              ) : (
+                <div className="md:px-4 md:py-2 w-full text-gray-400">
+                  No recommendations found
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
       </div>
+
       {/* Popular Tags */}
       <div
         className={`mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto ${
@@ -530,10 +483,11 @@ export default function Page() {
           </div>
         </div>
       </div>
+
       {/* Tabs and Sort (Normal Layout) */}
       <div
         ref={tabsRef}
-        className={`flex justify-between mb-8 md:mx-24 ${
+        className={`flex justify-between mt-36 ${
           isHeaderFixed ? "hidden" : ""
         }`}
       >
@@ -590,6 +544,7 @@ export default function Page() {
           </PopoverRoot>
         </div>
       </div>
+
       {/* Fixed Header */}
       {isHeaderFixed && (
         <div className="fixed top-0 left-0 right-0 bg-[#141e29] z-50 shadow-md py-4 px-16">
@@ -710,17 +665,18 @@ export default function Page() {
           )}
         </div>
       )}
+
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="grid grid-cols-1 md:grid-cols-12 gap-y-10 gap-x-20  md:mx-14 max-h-[calc(100vh-300px)] overflow-y-auto no-scrollbar"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-16 gap-x-32 mx-auto lg:max-w-[1400px] !min-h-[500px] max-h-[calc(100vh-300px)] mt-10 mb-6 overflow-y-auto no-scrollbar"
       >
         {!loading &&
           displayedMemes.length > 0 &&
           displayedMemes.map((meme, index) => (
             <MemeCard
               key={meme._id}
-              bookmark={bookmarks}
+              bookmark={handleBookmark}
               index={index}
               meme={meme}
               activeTab={activeTab}
@@ -740,15 +696,15 @@ export default function Page() {
           <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto md:col-span-12" />
         )}
       </div>
+
       {/* Pagination */}
-      {
-        displayedMemes.length > 0 &&
+      {displayedMemes.length > 0 && (
         <PaginationRoot
           count={totalMemeCount}
           pageSize={pageSize}
           defaultPage={1}
           variant="solid"
-          className="mx-auto mb-8"
+          className="mx-auto mb-10"
           page={page}
           onPageChange={(e) => setPage(e.page)}
         >
@@ -758,7 +714,7 @@ export default function Page() {
             <PaginationNextTrigger />
           </HStack>
         </PaginationRoot>
-      }
+      )}
       {/* Meme Detail Modal */}
       {isMemeDetailOpen && selectedMeme && (
         <MemeDetail
