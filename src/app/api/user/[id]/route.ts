@@ -5,13 +5,13 @@ import Followers from "@/models/Followers";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
-    const userId = params.id;
+    // Extract userId from the URL
+    const url = new URL(req.url);
+    const paths = url.pathname.split("/");
+    const userId = paths[paths.length - 1];
 
     // Find user
     const user = await User.findById(userId);
