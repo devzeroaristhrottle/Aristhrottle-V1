@@ -5,11 +5,10 @@ import { Logo } from "./Logo";
 import { FaRegShareFromSquare } from "react-icons/fa6";
 import { FaRegBookmark } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Share from "./Share";
 import { Tooltip } from "./ui/tooltip";
 import { FaBookmark } from "react-icons/fa";
-import { useUser } from "@account-kit/react";
+import { useAuthModal, useUser } from "@account-kit/react";
 
 export interface MemeCardI {
   index: number;
@@ -29,7 +28,7 @@ export function MemeCard({
   activeTab = "all",
 }: MemeCardI) {
   const [loading, setLoading] = useState(false);
-  const { openConnectModal } = useConnectModal();
+  const { openAuthModal } = useAuthModal();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkCount, setBookmarkCount] = useState(0);
@@ -95,9 +94,9 @@ export function MemeCard({
           className="w-full h-full md:aspect-square object-cover border-2 border-white"
         />
         {/* For above mobile */}
-        <div className="hidden md:block ml-2 place-content-end space-y-4">
+        <div className="hidden md:block ml-3 place-content-end space-y-8">
           {loading ? (
-            <AiOutlineLoading3Quarters className="animate-spin text-2xl " />
+            <AiOutlineLoading3Quarters className="animate-spin text-2xl" />
           ) : (
             <div className="flex flex-col items-center space-y-1">
               <Logo
@@ -105,8 +104,10 @@ export function MemeCard({
                   if (activeTab === "all") return; // Disable click in 'all' tab
                   if (user && user.address) {
                     voteMeme();
-                  } else if (openConnectModal) {
-                    openConnectModal();
+                  } else {
+                    if (openAuthModal) {
+                      openAuthModal();
+                    }
                   }
                 }}
                 classNames={`${
@@ -189,8 +190,10 @@ export function MemeCard({
                   if (activeTab === "all") return; // Disable click in 'all' tab
                   if (user && user.address) {
                     voteMeme();
-                  } else if (openConnectModal) {
-                    openConnectModal();
+                  } else {
+                    if (openAuthModal) {
+                      openAuthModal();
+                    }
                   }
                 }}
                 classNames={`w-4 h-4 md:w-6 md:h-6 ${
