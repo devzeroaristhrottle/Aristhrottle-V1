@@ -150,9 +150,9 @@ export default function Page() {
         <div className='flex gap-1 md:gap-3 items-center justify-center w-full md:w-auto mt-2 md:mt-0'>
           <h4 className='text-lg md:text-4xl'>Average Votes -</h4>
           <span className='text-xl md:text-4xl'>
-            {totalMemeCount === 0 || totalUploadCount === 0
+            {totalVoteCount === 0 || totalUploadCount === 0
               ? '0'
-              : Math.round(totalMemeCount / totalUploadCount)}
+              : Math.round(totalVoteCount / totalUploadCount)}
           </span>
         </div>
       </div>
