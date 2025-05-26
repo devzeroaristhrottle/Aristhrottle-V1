@@ -17,9 +17,11 @@ declare module "next-auth" {
   interface Session {
     user: User; // ✅ Make sure Session.user uses our extended User type
     address: string;
+    userId?: string; // ✅ Add MongoDB user ID
   }
 
   interface JWT {
     address?: string; // ✅ Ensure JWT can hold address
+    sub?: string; // ✅ Ensure JWT can hold MongoDB user ID
   }
 }
