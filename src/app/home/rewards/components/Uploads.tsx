@@ -34,7 +34,7 @@ const Uploads = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [uploadData, setUploadData] = useState<UploadResponse>()
   const [uploadMilestones, setUploadMilestones] = useState<MilestoneTitles[]>(
-    []
+    getMilestoneTitles([], 'uploads')
   )
 
   const { client } = useSmartAccountClient({})
