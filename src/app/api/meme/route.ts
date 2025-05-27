@@ -49,6 +49,7 @@ async function handleGetRequest(req: NextRequest) {
 
     const memesCount = await Meme.find({
       is_voting_close: false,
+      is_onchain: false,
     }).countDocuments();
 
     if (id) {
@@ -145,6 +146,7 @@ async function handleGetRequest(req: NextRequest) {
 
     const basePipeline: any[] = [
       { $match: { is_voting_close: false } },
+      { $match: { is_onchain: false } },
       { $sort: { createdAt: -1 } },
       { $skip: start },
       { $limit: defaultOffset },

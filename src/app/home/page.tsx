@@ -746,23 +746,23 @@ export default function Page() {
       </div>
 
       {/* Pagination */}
-      {displayedMemes.length > 0 && (
-        <PaginationRoot
-          count={totalMemeCount}
-          pageSize={pageSize}
-          defaultPage={1}
-          variant="solid"
-          className="mx-auto mb-10"
-          page={page}
-          onPageChange={(e) => setPage(e.page)}
-        >
-          <HStack className="justify-center">
-            <PaginationPrevTrigger />
-            <PaginationItems />
-            <PaginationNextTrigger />
-          </HStack>
-        </PaginationRoot>
-      )}
+      {/* {displayedMemes.length > 0 && ( */}
+      <PaginationRoot
+        count={activeTab === "all" ? allMemeCount : totalMemeCount}
+        pageSize={pageSize}
+        defaultPage={1}
+        variant="solid"
+        className="mx-auto mb-10"
+        page={page}
+        onPageChange={(e) => setPage(e.page)}
+      >
+        <HStack className="justify-center">
+          <PaginationPrevTrigger />
+          <PaginationItems />
+          <PaginationNextTrigger />
+        </HStack>
+      </PaginationRoot>
+      {/* )} */}
       {/* Meme Detail Modal */}
       {isMemeDetailOpen && selectedMeme && (
         <MemeDetail
