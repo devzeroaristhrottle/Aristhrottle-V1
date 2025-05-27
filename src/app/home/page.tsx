@@ -51,6 +51,7 @@ export interface Meme {
   bookmarks: string[];
   is_onchain?: boolean;
   __v: number;
+  voted?: boolean;
 }
 
 interface Category {
@@ -217,7 +218,7 @@ export default function Page() {
     try {
       setLoading(true);
       const offsetI = offset * page;
-      const response = await axiosInstance.get(`/api/meme?offset=${offsetI}`);
+      const response = await axiosInstance.get(`/api/meme?offset=${offsetI}&userId=${userDetails?._id}`);
       if (response.data.memes) {
         setTotalMemeCount(response.data.memesCount);
         setTotalMemeCountConst(response.data.memesCount);
@@ -288,7 +289,7 @@ export default function Page() {
 
   useEffect(() => {
     getMemes();
-  }, [user, page, isRefreshMeme]);
+  }, [user, page, isRefreshMeme,userDetails]);
 
   useEffect(() => {
     const time = setTimeout(() => {

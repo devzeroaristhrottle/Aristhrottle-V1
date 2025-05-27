@@ -10,6 +10,7 @@ import Share from "./Share";
 import { Tooltip } from "./ui/tooltip";
 import { FaBookmark } from "react-icons/fa";
 import { useUser } from "@account-kit/react";
+import Image from "next/image";
 
 export interface MemeCardI {
   index: number;
@@ -100,21 +101,33 @@ export function MemeCard({
             <AiOutlineLoading3Quarters className="animate-spin text-2xl " />
           ) : (
             <div className="flex flex-col items-center space-y-1">
-              <Logo
-                onClick={() => {
-                  if (activeTab === "all") return; // Disable click in 'all' tab
-                  if (user && user.address) {
-                    voteMeme();
-                  } else if (openConnectModal) {
-                    openConnectModal();
-                  }
-                }}
-                classNames={`${
-                  activeTab === "all"
-                    ? "opacity-70 !cursor-not-allowed pointer-events-none"
-                    : ""
-                }`}
-              />
+              {meme.voted ? (
+                <>
+                  <Image
+                    src={"/assets/vote/icon1.png"}
+                    width={30}
+                    height={30}
+                    alt="logo"
+                    className="transition-all duration-300 "
+                  />
+                </>
+              ) : (
+                <Logo
+                  onClick={() => {
+                    if (activeTab === "all") return; // Disable click in 'all' tab
+                    if (user && user.address) {
+                      voteMeme();
+                    } else if (openConnectModal) {
+                      openConnectModal();
+                    }
+                  }}
+                  classNames={`${
+                    activeTab === "all"
+                      ? "opacity-70 !cursor-not-allowed pointer-events-none"
+                      : ""
+                  }`}
+                />
+              )}
               {activeTab !== "live" && (
                 <p className="text-center text-[#1783fb]">{voteCount}</p>
               )}
