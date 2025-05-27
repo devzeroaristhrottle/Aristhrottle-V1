@@ -51,6 +51,7 @@ export interface Meme {
   bookmarks: string[];
   is_onchain?: boolean;
   __v: number;
+  voted?: boolean;
 }
 
 interface Category {
@@ -217,7 +218,7 @@ export default function Page() {
     try {
       setLoading(true);
       const offsetI = offset * page;
-      const response = await axiosInstance.get(`/api/meme?offset=${offsetI}`);
+      const response = await axiosInstance.get(`/api/meme?offset=${offsetI}&userId=${userDetails?._id}`);
       if (response.data.memes) {
         setTotalMemeCount(response.data.memesCount);
         setTotalMemeCountConst(response.data.memesCount);
@@ -288,7 +289,7 @@ export default function Page() {
 
   useEffect(() => {
     getMemes();
-  }, [user, page, isRefreshMeme]);
+  }, [user, page, isRefreshMeme,userDetails]);
 
   useEffect(() => {
     const time = setTimeout(() => {
@@ -335,7 +336,7 @@ export default function Page() {
 
   useEffect(() => {
     if (isInView && memeContainerRef.current) {
-      setAnimateSearchBar(310);
+      setAnimateSearchBar(330);
       memeContainerRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -669,7 +670,7 @@ export default function Page() {
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-16 gap-x-32 mx-auto lg:max-w-[1400px] !min-h-[500px] max-h-[calc(100vh-300px)] mt-10 mb-6 overflow-y-auto no-scrollbar"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-8 mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
       >
         {!loading &&
           displayedMemes.length > 0 &&
