@@ -9,6 +9,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/utils/apiLogger";
 import Followers from "@/models/Followers";
+import { ethers } from "ethers";
 
 // Function to generate a random alphanumeric referral code (length: 8)
 // const generateReferralCode = () => {
@@ -256,6 +257,21 @@ async function handlePostRequest(request: NextRequest) {
     }
 
     const savedUser = await newUser.save();
+
+    // Mint 5 tokens if the user was referred
+    if (savedUser.referred_by && savedUser.user_wallet_address) {
+      try {
+        // Mint 5 tokens (adjust amount as needed)
+        const amountToMint = 5; 
+        const tx = await contract.mintCoins(savedUser.user_wallet_address, ethers.parseUnits(amountToMint.toString(), 18));
+        await tx.wait(); // Wait for the transaction to be mined
+        console.log(`Minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for referral.`);
+      } catch (mintError) {
+        console.error("Error minting tokens for referred user:", mintError);
+        // Optionally handle the error, e.g., log to a specific table or notify admin
+      }
+    }
+
     return NextResponse.json({ user: savedUser }, { status: 201 });
   } catch (error) {
     console.log(error);
