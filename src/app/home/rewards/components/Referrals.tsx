@@ -26,7 +26,7 @@ const Referrals = () => {
   const [referrals, setReferrals] = useState<ReferralResponse>()
   const [referralMilestones, setReferralMilestones] = useState<
     MilestoneTitles[]
-  >([])
+  >(getMilestoneTitles([], 'referrals'))
   const [isLoading, setIsLoading] = useState(true)
   const [isClaimLoading, setIsClaimLoading] = useState(false)
 

@@ -31,7 +31,9 @@ const Votes = () => {
   const userId = userDetails?._id
   const [isLoading, setIsLoading] = useState(true)
   const [votesData, setVotesData] = useState<VotesResponse>()
-  const [votesMilestones, setVotesMilestones] = useState<MilestoneTitles[]>([])
+  const [votesMilestones, setVotesMilestones] = useState<MilestoneTitles[]>(
+    getMilestoneTitles([], 'votes')
+  )
   const { client } = useSmartAccountClient({})
 
   const { sendUserOperation, isSendingUserOperation } = useSendUserOperation({
