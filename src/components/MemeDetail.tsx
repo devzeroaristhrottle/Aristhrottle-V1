@@ -127,8 +127,8 @@ export default function MemeDetail({
                                   getBookmarks()
                                 }}
                               />
-                              <span className='text-lg md:text-2xl text-[#1783fb]'>
-                                0
+                              <span className='text-xl md:text-2xl text-[#1783fb]'>
+                                {meme.bookmarks}
                               </span>
                             </div>
                           ) : (
@@ -144,14 +144,11 @@ export default function MemeDetail({
                                   getBookmarks()
                                 }}
                               />
-                              <span className='text-lg md:text-2xl text-[#1783fb]'>
+                              <span className='text-xl md:text-2xl text-[#1783fb]'>
                                 {meme.bookmarks}
                               </span>
                             </div>
                           )}
-                          <p className='text-[#1783fb] text-center'>
-                            {meme.bookmarks}
-                          </p>
                         </div>
                       ) : null}
                     </div>
