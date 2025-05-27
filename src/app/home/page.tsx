@@ -203,6 +203,7 @@ export default function Page() {
         });
         if (response.status === 201) {
           toast.success("Vote casted successfully!");
+          getMemes();
         }
       }
     } catch (error: any) {
