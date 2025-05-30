@@ -27,7 +27,7 @@ import { LeaderboardMeme } from "@/app/home/leaderboard/page";
 interface CarouselProps {
   items: Meme[];
   setIsMemeDetailOpen: (isOpen: boolean) => void;
-  active: number;
+  active?: number;
   setSelectedMeme: Dispatch<SetStateAction<Meme | undefined | LeaderboardMeme>>;
   bookmark: (id: string, name: string, image_url: string) => void;
 }
@@ -49,49 +49,55 @@ export const Carousel: React.FC<CarouselProps> = ({
   setSelectedMeme,
   bookmark,
 }) => {
-  const [active, setActive] = useState<number>(initialActive);
+  const [active, setActive] = useState<number | undefined>(initialActive);
   const [direction, setDirection] = useState<string>("");
   const [isPaused, setIsPaused] = useState(false);
 
   const generateItems = useCallback(() => {
     const itemsToDisplay = [];
-    for (let i = active - 2; i < active + 3; i++) {
-      let index = i;
-      if (i < 0) {
-        index = items.length + i;
-      } else if (i >= items.length) {
-        index = i % items.length;
-      }
-      const level = active - i;
+    if (active !== undefined) {
+      for (let i = active - 2; i < active + 3; i++) {
+        let index = i;
+        if (i < 0) {
+          index = items.length + i;
+        } else if (i >= items.length) {
+          index = i % items.length;
+        }
+        const level = active - i;
 
-      if (items[index]) {
-        itemsToDisplay.push(
-          <Item
-            key={i}
-            id={i}
-            level={level}
-            direction={direction}
-            memeDetails={items[index]}
-            setIsMemeDetailOpen={setIsMemeDetailOpen}
-            setSelectedMeme={setSelectedMeme}
-            bookmark={bookmark}
-          />
-        );
+        if (items[index]) {
+          itemsToDisplay.push(
+            <Item
+              key={i}
+              id={i}
+              level={level}
+              direction={direction}
+              memeDetails={items[index]}
+              setIsMemeDetailOpen={setIsMemeDetailOpen}
+              setSelectedMeme={setSelectedMeme}
+              bookmark={bookmark}
+            />
+          );
+        }
       }
     }
     return itemsToDisplay;
   }, [active, items, direction]);
 
   const moveLeft = () => {
-    const newActive = active - 1 < 0 ? items.length - 1 : active - 1;
-    setActive(newActive);
-    setDirection("left");
+    if (active !== undefined) {
+      const newActive = active - 1 < 0 ? items.length - 1 : active - 1;
+      setActive(newActive);
+      setDirection("left");
+    }
   };
 
   const moveRight = () => {
-    const newActive = (active + 1) % items.length;
-    setActive(newActive);
-    setDirection("right");
+    if (active !== undefined) {
+      const newActive = (active + 1) % items.length;
+      setActive(newActive);
+      setDirection("right");
+    }
   };
 
   useEffect(() => {
