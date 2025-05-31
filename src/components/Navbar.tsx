@@ -32,6 +32,7 @@ import {
 } from '@account-kit/react'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'
+import { ethers } from 'ethers'
 
 export default function Navbar() {
   const [isOpenModel, setIsOpenModel] = useState<boolean>(false)
@@ -275,7 +276,7 @@ export default function Navbar() {
                 />
                 <span className='text-2xl'>
                   {' '}
-                  {userDetails?.mintedCoins ? userDetails.mintedCoins : 0}
+                  {userDetails?.mintedCoins ? ethers.formatEther(userDetails.mintedCoins) : 0}
                 </span>
               </div>
             ) : null}
