@@ -4,6 +4,7 @@ import Milestone from "@/models/Milestone";
 import { checkIsAuthenticated } from "@/utils/authFunctions";
 import { withApiLogging } from "@/utils/apiLogger";
 import { NextRequest, NextResponse } from "next/server";
+import { ethers } from "ethers";
 
 async function handlePostRequest(req: NextRequest) {
   try {
@@ -32,9 +33,10 @@ async function handlePostRequest(req: NextRequest) {
         milestoneData.created_by.user_wallet_address &&
         milestoneData.reward
       ) {
+        let reward = ethers.parseUnits(milestoneData.reward.toString(), 18); 
         const tx = await contract.mintCoins(
           milestoneData.created_by.user_wallet_address,
-          milestoneData.reward
+          reward
         );
         await tx.wait();
 
