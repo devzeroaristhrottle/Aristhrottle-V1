@@ -11,9 +11,8 @@ import Referrals from "@/models/Referrals";
 import ApiLog from "@/models/ApiLog";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { withApiLogging } from "@/utils/apiLogger";
 
-async function handleGetRequest(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
 
@@ -111,4 +110,3 @@ async function handleGetRequest(request: NextRequest) {
   }
 }
 
-export const GET = withApiLogging(handleGetRequest, "admin_data_access"); 
