@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Milestones } from "./Milestones";
+import React, { useContext, useEffect, useState } from 'react'
+import { Milestones } from './Milestones'
 import {
   getMilestoneKeys,
   getMilestoneTitles,
@@ -7,35 +7,34 @@ import {
   Milestone,
   MilestoneTitles,
   totalVotesRewards,
-} from "../constants";
-import { Context } from "@/context/contextProvider";
-import axiosInstance from "@/utils/axiosInstance";
-import ProgressBar from "./ProgressBar";
-import { BiDownArrowAlt } from "react-icons/bi";
-import Loader from "@/components/Loader";
-import {
-  useSendUserOperation,
-  useSmartAccountClient,
-} from "@account-kit/react";
-import { encodeFunctionData } from "viem";
-import { EArtTokenABI } from "@/ethers/contractAbi";
-import { toast } from "react-toastify";
+} from '../constants'
+import { Context } from '@/context/contextProvider'
+import axiosInstance from '@/utils/axiosInstance'
+import ProgressBar from './ProgressBar'
+import { BiDownArrowAlt } from 'react-icons/bi'
+import Loader from '@/components/Loader'
+import { useSendUserOperation, useSmartAccountClient } from '@account-kit/react'
+import { encodeFunctionData } from 'viem'
+import { EArtTokenABI } from '@/ethers/contractAbi'
+import { toast } from 'react-toastify'
 
 export type VotesResponse = {
-  totalVotesCount: number;
-  majorityVotesCount: number;
-  milestoneDetails: Milestone[];
-  points: number;
-  unClaimedMemeIds: string[];
-};
+  totalVotesCount: number
+  majorityVotesCount: number
+  milestoneDetails: Milestone[]
+  points: number
+  unClaimedMemeIds: string[]
+}
 
 const Votes = () => {
-  const { userDetails } = useContext(Context);
-  const userId = userDetails?._id;
-  const [isLoading, setIsLoading] = useState(true);
-  const [votesData, setVotesData] = useState<VotesResponse>();
-  const [votesMilestones, setVotesMilestones] = useState<MilestoneTitles[]>([]);
-  const { client } = useSmartAccountClient({});
+  const { userDetails } = useContext(Context)
+  const userId = userDetails?._id
+  const [isLoading, setIsLoading] = useState(true)
+  const [votesData, setVotesData] = useState<VotesResponse>()
+  const [votesMilestones, setVotesMilestones] = useState<MilestoneTitles[]>(
+    getMilestoneTitles([], 'votes')
+  )
+  const { client } = useSmartAccountClient({})
 
   const { sendUserOperation, isSendingUserOperation } = useSendUserOperation({
     client,
@@ -43,132 +42,123 @@ const Votes = () => {
     waitForTxn: true,
     onSuccess: ({ hash, request }) => {
       // [optional] Do something with the hash and request
-      console.log("User operation sent successfully:", hash, request);
+      console.log('User operation sent successfully:', hash, request)
     },
     onError: (error) => {
-      console.error("Error sending user operation:", error);
+      console.error('Error sending user operation:', error)
       // [optional] Do something with the error
     },
-  });
+  })
 
   useEffect(() => {
-    if (!userId) return;
-
     const getUploadData = async () => {
       try {
-        setIsLoading(true);
+        setIsLoading(true)
         const response = await axiosInstance.get(
           `/api/rewards/votes?userId=${userId}`
-        );
+        )
         if (response.data) {
-          console.log("Votes Data", response.data.unClaimedMemeIds);
-          setVotesData(response.data);
+          setVotesData(response.data)
           const milestones = getMilestoneTitles(
             response.data.milestoneDetails,
-            "votes"
-          );
-          setVotesMilestones(milestones);
+            'votes'
+          )
+          setVotesMilestones(milestones)
         }
       } catch (error) {
-        console.error("Error fetching Votes Data", error);
+        console.error('Error fetching Votes Data', error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    getUploadData();
-  }, [userId, userDetails]);
+    getUploadData()
+  }, [userId, userDetails])
 
-  if (!userDetails?._id) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center text-2xl ">
-        Please Login
-      </div>
-    );
-  } else if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
+      <div className='flex justify-center items-center h-full'>
         <Loader />
       </div>
-    );
+    )
   }
 
   return (
-    <div className="grid h-full md:grid-cols-3 grid-cols-1 gap-y-6 md:gap-y-0 flex-col-reverse">
-      <div className="total_majority_milestones_wrapper md:col-span-2 col-span-1 md:order-1 order-2">
-        <div className="total_votes flex flex-col gap-4 md:p-5">
-          <h2 className="text-2xl md:text-4xl">Total Votes</h2>
+    <div className='grid h-full md:grid-cols-3 grid-cols-1 gap-y-6 md:gap-y-0 flex-col-reverse'>
+      <div className='total_majority_milestones_wrapper md:col-span-2 col-span-1 md:order-1 order-2'>
+        <div className='total_votes flex flex-col gap-4 md:p-5'>
+          <h2 className='text-2xl md:text-4xl'>Total Votes</h2>
           <ProgressBar
             milestones={getMilestoneKeys(totalVotesRewards)}
             currentValue={votesData?.totalVotesCount ?? 0}
           />
         </div>
-        <div className="majority_votes mt-6 md:mt-0 flex flex-col gap-4 md:p-5">
-          <h2 className="text-2xl md:text-4xl">Majority Votes</h2>
+        <div className='majority_votes mt-6 md:mt-0 flex flex-col gap-4 md:p-5'>
+          <h2 className='text-2xl md:text-4xl'>Majority Votes</h2>
           <ProgressBar
             milestones={getMilestoneKeys(majorityVotesRewards)}
             currentValue={votesData?.majorityVotesCount ?? 0}
           />
         </div>
-        <div className="milestones mt-8 md:mt-6 md:pr-10 flex flex-col">
-          <h2 className="text-2xl md:text-4xl md:pl-5">Milestones</h2>
+        <div className='milestones mt-8 md:mt-6 md:pr-10 flex flex-col'>
+          <h2 className='text-2xl md:text-4xl md:pl-5'>Milestones</h2>
           <Milestones hasBorder={false} tasks={votesMilestones} />
         </div>
       </div>
-      <div className="points_rules_wrapper flex flex-col gap-y-8 md:gap-y-12 md:mt-8 md:order-2 order-1">
-
-        <div className="points flex flex-col gap-2 md:gap-5 items-center mx-20 md:mx-0 border-2 border-[#1783FB] rounded-lg p-2 md:p-5 mt-8 md:mt-10">
-          <span className="text-2xl md:text-4xl">Points</span>
-          <p className="text-[#29e0ca] text-3xl md:text-4xl">
-            {votesData?.points == 0 ? 0 : votesData?.points.toFixed(1) ?? 0}{" "}
+      <div className='points_rules_wrapper flex flex-col gap-y-8 md:gap-y-12 md:mt-8 md:order-2 order-1'>
+        <div className='points flex flex-col gap-2 md:gap-5 items-center mx-20 md:mx-0 border-2 border-[#1783FB] rounded-lg p-2 md:p-5 mt-8 md:mt-10'>
+          <span className='text-2xl md:text-4xl'>Points</span>
+          <p className='text-[#29e0ca] text-3xl md:text-4xl'>
+            {votesData?.points == 0 ? 0 : votesData?.points.toFixed(1) ?? 0}{' '}
             $eART
           </p>
           {votesData?.points && (
             <button
-              className="bg-[#040f2b] border-2 border-[#1783FB] rounded-lg text-xl md:text-3xl px-4 md:px-8 md:py-1 hover:bg-blue-500/20 bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"
+              className='bg-[#040f2b] border-2 border-[#1783FB] rounded-lg text-xl md:text-3xl px-4 md:px-8 md:py-1 hover:bg-blue-500/20 bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]'
               onClick={() => {
-                
                 try {
                   const uoCallData = encodeFunctionData({
                     abi: EArtTokenABI,
-                    functionName: "claimAllMemeVoteRewards",
+                    functionName: 'claimAllMemeVoteRewards',
                     args: [votesData?.unClaimedMemeIds],
-                  });
+                  })
 
-                  if(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS){
+                  if (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS) {
                     sendUserOperation({
                       uo: {
-                        target: `0x${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS.slice(2,process.env.NEXT_PUBLIC_CONTRACT_ADDRESS.length)}`,
+                        target: `0x${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS.slice(
+                          2,
+                          process.env.NEXT_PUBLIC_CONTRACT_ADDRESS.length
+                        )}`,
                         data: uoCallData,
-                      }
+                      },
                     })
                   }
                 } catch (e) {
-                  console.error("Error claiming rewards", e);
-                  toast.error("Failed to claim rewards. Please try again.");
+                  console.error('Error claiming rewards', e)
+                  toast.error('Failed to claim rewards. Please try again.')
                 }
-
               }}
               disabled={isSendingUserOperation}
             >
-              {isSendingUserOperation ? "Sending..." : "Claim"}
+              {isSendingUserOperation ? 'Sending...' : 'Claim'}
             </button>
           )}
         </div>
-        <div className="rules flex flex-col md:gap-3 items-center justify-center border-2 border-[#1783FB] rounded-lg p-3 md:p-5 mx-8 md:mx-0">
-          <h4 className="text-2xl md:text-4xl">Rules</h4>
-          <p className="text-2xl md:text-3xl">1 Vote Cast</p>
-          <BiDownArrowAlt className="w-8 h-8 md:w-12 md:h-12" />
-          <span className="text-[#29e0ca] text-3xl md:text-4xl">0.1 $eART</span>
-          <p className="text-xl md:text-3xl">to Voter</p>
-          <span className="text-[#1783FB] text-lg md:text-2xl text-center leading-none md:leading-normal">
+        <div className='rules flex flex-col md:gap-3 items-center justify-center border-2 border-[#1783FB] rounded-lg p-3 md:p-5 mx-8 md:mx-0'>
+          <h4 className='text-2xl md:text-4xl'>Rules</h4>
+          <p className='text-2xl md:text-3xl'>1 Vote Cast</p>
+          <BiDownArrowAlt className='w-8 h-8 md:w-12 md:h-12' />
+          <span className='text-[#29e0ca] text-3xl md:text-4xl'>0.1 $eART</span>
+          <p className='text-xl md:text-3xl'>to Voter</p>
+          <span className='text-[#1783FB] text-lg md:text-2xl text-center leading-none md:leading-normal'>
             *Majority Vote is counted when Voted Content has above average
             votes. (Total Votes on Platform / Number of Content) in 24 Hours
           </span>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Votes;
+export default Votes

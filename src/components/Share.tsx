@@ -39,17 +39,13 @@ const Share = ({
   };
   return (
     <div className="share-container">
-      <DialogRoot
-        open={isOpen}
-        motionPreset="slide-in-bottom"
-        placement={"center"}
-      >
+      <DialogRoot open={isOpen} motionPreset="none" placement={"center"}>
         <DialogBackdrop className="backdrop-blur-md" />
-        <DialogContent className="fixed md:inset-10 bg-[#141e29] border-2 border-[#1783fb] w-[90vw] md:h-min p-0">
+        <DialogContent className="fixed inset-0 md:inset-10 bg-[#141e29] border-2 border-[#1783fb] w-[90vw] h-fit md:h-min p-0 max-h-[90vh] ">
           <DialogBody className="mt-8 md:p-10">
             <CgCloseO
               onClick={onClose}
-              className="z-50 absolute -top-5 md:-top-6 -right-5 text-white w-5 h-5"
+              className="z-50 absolute -top-5 md:-top-6 -right-5 text-white w-5 h-5 cursor-pointer"
             />
             {imageUrl && (
               <div className="flex items-center justify-center">

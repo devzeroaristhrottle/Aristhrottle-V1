@@ -42,12 +42,14 @@ async function handleGetRequest(req: NextRequest) {
     const created_by = query.get("created_by");
     const vote_by = query.get("vote_by");
     const off = query.get("offset");
+    const userId = query.get("userId"); // Get userId from query params
     const defaultOffset = 30;
     const offset = off == null ? defaultOffset : parseInt(off.toString());
     const start = offset <= defaultOffset ? 0 : offset - defaultOffset;
 
     const memesCount = await Meme.find({
       is_voting_close: false,
+      is_onchain: false,
     }).countDocuments();
 
     if (id) {
@@ -133,14 +135,84 @@ async function handleGetRequest(req: NextRequest) {
       // // .populate("categories");
     }
 
-    const memes = await Meme.find()
-      .skip(start)
-      .limit(defaultOffset)
-      .where({ is_voting_close: false })
-      .populate("created_by")
-      .populate("tags")
-      .sort({ createdAt: -1 });
-    // // .populate("categories");
+    // const memes = await Meme.find()
+    //   .skip(start)
+    //   .limit(defaultOffset)
+    //   .where({ is_voting_close: false })
+    //   .populate("created_by")
+    //   .populate("tags")
+    //   .sort({ createdAt: -1 });
+    // // // .populate("categories");
+
+    const basePipeline: any[] = [
+      { $match: { is_voting_close: false } },
+      { $match: { is_onchain: false } },
+      { $sort: { createdAt: -1 } },
+      { $skip: start },
+      { $limit: defaultOffset },
+    ];
+
+    // Add common population lookups
+    basePipeline.push(
+      {
+        $lookup: {
+          from: "users",
+          localField: "created_by",
+          foreignField: "_id",
+          as: "created_by",
+        },
+      },
+      { $unwind: "$created_by" },
+      {
+        $lookup: {
+          from: "tags",
+          localField: "tags",
+          foreignField: "_id",
+          as: "tags",
+        },
+      }
+    );
+
+    // If userId is provided, inject vote check logic
+    if (userId != null && userId != "undefined") {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      basePipeline.splice(
+        3,
+        0, // insert before lookups
+        {
+          $lookup: {
+            from: "votes",
+            let: { memeId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$vote_to", "$$memeId"] },
+                      { $eq: ["$vote_by", userObjectId] },
+                    ],
+                  },
+                },
+              },
+              { $limit: 1 },
+            ],
+            as: "userVote",
+          },
+        },
+        {
+          $addFields: {
+            voted: { $gt: [{ $size: "$userVote" }, 0] },
+          },
+        },
+        {
+          $project: {
+            userVote: 0,
+          },
+        }
+      );
+    }
+
+    const memes = await Meme.aggregate(basePipeline);
 
     return NextResponse.json(
       { memes: memes, memesCount: memesCount },
@@ -231,15 +303,15 @@ async function handlePostRequest(req: NextRequest) {
 
       // Update count and upload_count field for each tag
       await Tags.updateMany(
-        { _id: { $in: tagIds } }, 
-        { 
-          $inc: { 
+        { _id: { $in: tagIds } },
+        {
+          $inc: {
             count: 1,
-            upload_count: 1
-          } 
+            upload_count: 1,
+          },
         }
       );
-      
+
       // Update the relevance scores for the tags
       await updateTagsRelevance(tagIds);
     }

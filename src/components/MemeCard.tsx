@@ -5,11 +5,11 @@ import { Logo } from "./Logo";
 import { FaRegShareFromSquare } from "react-icons/fa6";
 import { FaRegBookmark } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Share from "./Share";
 import { Tooltip } from "./ui/tooltip";
 import { FaBookmark } from "react-icons/fa";
-import { useUser } from "@account-kit/react";
+import { useUser, useAuthModal } from "@account-kit/react";
+import Image from "next/image";
 
 export interface MemeCardI {
   index: number;
@@ -29,17 +29,19 @@ export function MemeCard({
   activeTab = "all",
 }: MemeCardI) {
   const [loading, setLoading] = useState(false);
-  const { openConnectModal } = useConnectModal();
+  const { openAuthModal } = useAuthModal();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
+  const [voteCount, setVoteCount] = useState(0);
   const user = useUser();
 
   useEffect(() => {
     getBookmarks();
     setBookmarkCount(meme.bookmarks.length);
     setShareCount(meme.shares.length);
+    setVoteCount(meme.vote_count);
   }, []);
 
   const getBookmarks = () => {
@@ -76,11 +78,11 @@ export function MemeCard({
   };
 
   return (
-    <div key={index} className="col-span-4 flex flex-col mx-auto">
-      <div className="flex items-start gap-2 mb-2">
-        <CgProfile size={28} />
-        <span className="text-2xl text-[#29e0ca]">
-          {meme.created_by.username}
+    <div key={index} className="flex flex-col">
+      <div className="flex items-start gap-x-1 md:gap-x-2 mb-1 md:mb-2">
+        <CgProfile className="md:w-7 md:h-7" />
+        <span className="text-[#29e0ca] text-base md:text-2xl">
+          {meme.created_by?.username}
         </span>
       </div>
       <div className="flex cursor-pointer">
@@ -90,28 +92,50 @@ export function MemeCard({
           }}
           src={meme.image_url}
           alt={meme.name}
-          className="border-2 h-96 w-96"
+          className="w-full h-full md:w-[270px] md:h-[270px] lg:w-[250px] lg:h-[250px] xl:w-[360px] xl:h-[360px] object-cover border-2 border-white"
         />
-        <div className="ml-4 place-content-end space-y-8">
+        {/* For above mobile */}
+        <div className="hidden md:block ml-3 place-content-end space-y-8">
           {loading ? (
             <AiOutlineLoading3Quarters className="animate-spin text-2xl" />
           ) : (
-            <Logo
-              onClick={() => {
-                if (!activeTab.includes("all")) {
-                  if (user && user.address) {
-                    voteMeme();
-                  } else {
-                    if (openConnectModal) {
-                      openConnectModal();
+            <div className="flex flex-col items-center font-bold text-xl space-y-1">
+              {meme.voted ? (
+                <>
+                  <Image
+                    src={"/assets/vote/icon1.png"}
+                    width={30}
+                    height={30}
+                    alt="logo"
+                    className="transition-all duration-300 "
+                  />
+                </>
+              ) : (
+                <Logo
+                  onClick={() => {
+                    if (activeTab === "all") return; // Disable click in 'all' tab
+                    if (user && user.address) {
+                      voteMeme();
+                    } else if (openAuthModal) {
+                      openAuthModal();
                     }
-                  }
-                }
-              }}
-            />
+                  }}
+                  classNames={`${
+                    activeTab === "all"
+                      ? "opacity-70 !cursor-not-allowed pointer-events-none"
+                      : ""
+                  }`}
+                />
+              )}
+
+              {activeTab !== "live" && (
+                <p className="text-center text-[#1783fb]">{voteCount}</p>
+              )}
+            </div>
           )}
+
           <Tooltip content="Share" positioning={{ placement: "right-end" }}>
-            <div className="text-center font-bold text-lg">
+            <div className="text-center font-bold text-xl">
               <FaRegShareFromSquare
                 className="text-2xl"
                 onClick={() => {
@@ -119,7 +143,97 @@ export function MemeCard({
                 }}
               />
               {meme.shares && !activeTab?.includes("live") && (
-                <p>{shareCount}</p>
+                <p className="text-[#1783fb]">{shareCount}</p>
+              )}
+            </div>
+          </Tooltip>
+
+          {isBookmarked ? (
+            <Tooltip
+              content="My Bookmark"
+              positioning={{ placement: "right-end" }}
+            >
+              <div className="text-center font-bold text-xl">
+                <FaBookmark
+                  className="text-2xl cursor-pointer"
+                  onClick={() => {
+                    bookmark(meme._id, meme.name, meme.image_url);
+                    setBookmarkCount(bookmarkCount - 1);
+                    getBookmarks();
+                  }}
+                />
+                {meme.bookmarks && !activeTab?.includes("live") && (
+                  <p className="text-[#1783fb]">{bookmarkCount}</p>
+                )}
+              </div>
+            </Tooltip>
+          ) : (
+            <Tooltip
+              content="My Bookmark"
+              positioning={{ placement: "right-end" }}
+            >
+              <div className="text-center font-bold text-xl">
+                <FaRegBookmark
+                  className="text-2xl"
+                  onClick={() => {
+                    bookmark(meme._id, meme.name, meme.image_url);
+                    setBookmarkCount(bookmarkCount + 1);
+                    getBookmarks();
+                  }}
+                />
+                {meme.bookmarks && !activeTab?.includes("live") && (
+                  <p className="text-[#1783fb]">{bookmarkCount}</p>
+                )}
+              </div>
+            </Tooltip>
+          )}
+        </div>
+      </div>
+      <div className="flex justify-between mt-1">
+        <p className="text-lg md:text-2xl text-wrap">{meme.name}</p>
+        {/* For mobile */}
+        <div className="md:hidden flex items-center gap-x-6 md:gap-x-0">
+          {loading ? (
+            <AiOutlineLoading3Quarters className="animate-spin text-2xl " />
+          ) : (
+            <div className="flex flex-col items-center space-y-1">
+              <Logo
+                onClick={() => {
+                  if (activeTab === "all") return; // Disable click in 'all' tab
+                  if (user && user.address) {
+                    voteMeme();
+                  } else {
+                    if (openAuthModal) {
+                      openAuthModal();
+                    }
+                  }
+                }}
+                classNames={`w-5 h-5 md:w-6 md:h-6 ${
+                  activeTab === "all"
+                    ? "opacity-70 !cursor-not-allowed pointer-events-none"
+                    : ""
+                }`}
+              />
+              {activeTab !== "live" && (
+                <p className="text-center text-lg md:text-2xl text-[#1783fb]">
+                  {voteCount}
+                </p>
+              )}
+            </div>
+          )}
+
+          <Tooltip content="Share" positioning={{ placement: "right-end" }}>
+            <div className="text-center font-bold">
+              <FaRegShareFromSquare
+                className="w-5 h-5 md:w-6 md:h-6 cursor-pointer"
+                onClick={() => {
+                  setIsShareOpen(true);
+                }}
+              />
+              {meme.shares && !activeTab?.includes("live") && (
+                <p className="text-lg md:text-2xl text-[#1783fb]">
+                  {shareCount}
+                </p>
               )}
             </div>
           </Tooltip>
@@ -131,7 +245,7 @@ export function MemeCard({
             >
               <div className="text-center font-bold text-lg">
                 <FaBookmark
-                  className="text-2xl cursor-pointer"
+                  className="w-5 h-5 md:w-6 md:h-6 cursor-pointer"
                   onClick={() => {
                     bookmark(meme._id, meme.name, meme.image_url);
                     setBookmarkCount(bookmarkCount - 1);
@@ -139,7 +253,9 @@ export function MemeCard({
                   }}
                 />
                 {meme.bookmarks && !activeTab?.includes("live") && (
-                  <p>{bookmarkCount}</p>
+                  <p className="text-lg md:text-2xl text-[#1783fb]">
+                    {bookmarkCount}
+                  </p>
                 )}
               </div>
             </Tooltip>
@@ -150,7 +266,7 @@ export function MemeCard({
             >
               <div className="text-center font-bold text-lg">
                 <FaRegBookmark
-                  className="text-2xl"
+                  className="w-5 h-5 md:w-6 md:h-6"
                   onClick={() => {
                     bookmark(meme._id, meme.name, meme.image_url);
                     setBookmarkCount(bookmarkCount + 1);
@@ -158,14 +274,15 @@ export function MemeCard({
                   }}
                 />
                 {meme.bookmarks && !activeTab?.includes("live") && (
-                  <p>{bookmarkCount}</p>
+                  <p className="text-lg md:text-2xl text-[#1783fb]">
+                    {bookmarkCount}
+                  </p>
                 )}
               </div>
             </Tooltip>
           )}
         </div>
       </div>
-      <p className="text-2xl text-wrap my-1 w-96 line-clamp-3">{meme.name}</p>
       {isShareOpen && (
         <Share
           onClose={handleShareClose}

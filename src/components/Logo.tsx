@@ -4,9 +4,10 @@ import { Tooltip } from "./ui/tooltip";
 
 type Props = {
   onClick?: () => void;
+  classNames?: string;
 };
 
-export const Logo = ({ onClick }: Props) => {
+export const Logo = ({ onClick, classNames }: Props) => {
   const [isHovering, setIsHovered] = useState(false);
   const onMouseEnter = () => setIsHovered(true);
   const onMouseLeave = () => setIsHovered(false);
@@ -19,7 +20,7 @@ export const Logo = ({ onClick }: Props) => {
             onClick();
           }
         }}
-        className="flex items-center flex-shrink-0 cursor-pointer"
+        className={`flex items-center flex-shrink-0 cursor-pointer ${classNames}`}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >

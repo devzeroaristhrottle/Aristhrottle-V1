@@ -10,7 +10,7 @@ import {
 import { MemeCard } from "@/components/MemeCard";
 import { TabButton } from "@/components/TabButton";
 import { Tag } from "@/components/ui/tag";
-import { Carousel } from "@/components/Carousel";
+// import { Carousel } from "@/components/Carousel";
 import MemeDetail from "@/components/MemeDetail";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/input-group";
@@ -33,6 +33,13 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Context } from "@/context/contextProvider";
 import { toast } from "react-toastify";
 import { useAuthModal, useUser } from "@account-kit/react";
+import { useInView } from "motion/react";
+import { useMemeActions } from "./bookmark/bookmarkHelper";
+import { motion } from "framer-motion";
+import { LeaderboardMemeCard } from "./leaderboard/MemeCard";
+import { LeaderboardMeme } from "./leaderboard/page";
+import Share from "@/components/Share";
+import Carousel1 from "@/components/Carousel1";
 
 export interface Meme {
   _id: string;
@@ -48,6 +55,7 @@ export interface Meme {
   bookmarks: string[];
   is_onchain?: boolean;
   __v: number;
+  voted?: boolean;
 }
 
 interface Category {
@@ -76,7 +84,7 @@ interface User {
   __v: number;
 }
 
-interface Bookmark {
+export interface Bookmark {
   [key: string]: { id: string; name: string; image_url: string };
 }
 
@@ -88,13 +96,23 @@ export default function Page() {
   const [memes, setMemes] = useState<Meme[]>([]);
   const [filterMemes, setFilterMemes] = useState<Meme[]>([]);
   const [popularTags, setPopularTags] = useState<TagI[]>([]);
-  const [selectedMeme, setSelectedMeme] = useState<Meme | undefined>();
+  const [selectedMeme, setSelectedMeme] = useState<
+    Meme | undefined | LeaderboardMeme
+  >();
   const [totalMemeCount, setTotalMemeCount] = useState<number>(0);
+  const [allMemeCount, setAllMemeCount] = useState<number>(0);
+  const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([]);
+  // const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [filteredTags, setFilteredTags] = useState<TagI[]>([]);
   const [activeTab, setActiveTab] = useState<"live" | "all">("live");
   const [isHeaderFixed, setIsHeaderFixed] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [shareData, setShareData] = useState<{
+    id: string;
+    imageUrl: string;
+  } | null>(null);
 
   const { userDetails, setIsUploadMemeOpen, isRefreshMeme } =
     useContext(Context);
@@ -107,20 +125,26 @@ export default function Page() {
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const memeContainerRef = useRef<HTMLDivElement>(null);
+  const { handleBookmark } = useMemeActions();
+
+  const handleShare = (id: string, imageUrl: string) => {
+    setShareData({ id, imageUrl });
+    setIsShareOpen(true);
+  };
+
+  const handleCloseShare = () => {
+    setIsShareOpen(false);
+    setShareData(null);
+  };
 
   // Sticky header logic
   useEffect(() => {
-    console.log("useEffect for scroll initialized");
-
     const handleScroll = () => {
       if (tabsRef.current && memeContainerRef.current) {
         const tabsBottom = tabsRef.current.getBoundingClientRect().bottom;
         const viewportTop = 0;
         const isPastTabs = tabsBottom <= viewportTop + 80; // Account for 80px navbar
         setIsHeaderFixed(isPastTabs);
-        console.log("Scroll handler fired");
-        console.log("tabsBottom:", tabsBottom);
-        console.log("isPastTabs:", isPastTabs);
       } else {
         console.log("Refs missing:", {
           tabsRef: tabsRef.current,
@@ -175,49 +199,6 @@ export default function Page() {
     return () => clearTimeout(timeout);
   }, [query]);
 
-  const toggleBookmark = async (memeId: string, userId: string) => {
-    try {
-      const response = await axiosInstance.post("/api/bookmark", {
-        memeId,
-        userId,
-      });
-      return response.data;
-    } catch {
-      return null;
-    }
-  };
-
-  const bookmarks = (id: string, name: string, image_url: string) => {
-    const bookmarks = localStorage.getItem("bookmarks");
-    if (bookmarks) {
-      const bookmarksObj: Bookmark = JSON.parse(bookmarks);
-      if (!bookmarksObj[id]) {
-        bookmarksObj[id] = {
-          id: id,
-          name: name,
-          image_url: image_url,
-        };
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarksObj));
-      } else {
-        delete bookmarksObj[id];
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarksObj));
-      }
-    } else {
-      const bookmarksObj: Bookmark = {};
-
-      bookmarksObj[id] = {
-        id: id,
-        name: name,
-        image_url: image_url,
-      };
-
-      localStorage.setItem("bookmarks", JSON.stringify(bookmarksObj));
-    }
-    if (id && userDetails && userDetails._id) {
-      toggleBookmark(id, userDetails._id);
-    }
-  };
-
   const onClose = () => {
     setIsMemeDetailOpen(false);
     setSelectedMeme(undefined);
@@ -239,13 +220,14 @@ export default function Page() {
 
   const voteToMeme = async (vote_to: string) => {
     try {
-      if (user && user.address) {
+      if (user && user.address && activeTab === "live") {
         const response = await axiosInstance.post("/api/vote", {
           vote_to: vote_to,
           vote_by: userDetails?._id,
         });
         if (response.status === 201) {
           toast.success("Vote casted successfully!");
+          getMemes();
         }
       }
     } catch (error: any) {
@@ -261,9 +243,12 @@ export default function Page() {
     try {
       setLoading(true);
       const offsetI = offset * page;
-      const response = await axiosInstance.get(`/api/meme?offset=${offsetI}`);
+      const response = await axiosInstance.get(
+        `/api/meme?offset=${offsetI}&userId=${userDetails?._id}`
+      );
       if (response.data.memes) {
         setTotalMemeCount(response.data.memesCount);
+        // setTotalMemeCountConst(response.data.memesCount);
         setMemes([...response.data.memes]);
         setFilterMemes([...response.data.memes]);
       }
@@ -331,7 +316,8 @@ export default function Page() {
 
   useEffect(() => {
     getMemes();
-  }, [user, page, isRefreshMeme]);
+    getMyMemes();
+  }, [user, page, isRefreshMeme, userDetails]);
 
   useEffect(() => {
     const time = setTimeout(() => {
@@ -362,17 +348,61 @@ export default function Page() {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab.toLowerCase() as "live" | "all");
+    if (tab === "live") {
+      setTotalMemeCount(filterMemes.length);
+    } else {
+      setAllMemeCount(allMemeCount);
+    }
     setPage(1);
   };
 
   const displayedMemes = getFilteredMemes();
 
+  const isInView = useInView(memeContainerRef, {
+    amount: 0.1, // Trigger when 10% visible
+  });
+
+  useEffect(() => {
+    if (isInView && memeContainerRef.current) {
+      setAnimateSearchBar(330);
+      memeContainerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    } else {
+      setAnimateSearchBar(0);
+    }
+  }, [isInView, displayedMemes.length]);
+
+  const [animateSearchBar, setAnimateSearchBar] = useState(0);
+
+  const getMyMemes = async () => {
+    try {
+      setLoading(true);
+      const offset = 30 * page;
+      const response = await axiosInstance.get(
+        `/api/leaderboard?daily=false&offset=${offset}`
+      );
+
+      if (response?.data?.memes) {
+        setAllMemeData(response.data.memes);
+        setAllMemeCount(response.data.memesCount);
+      }
+    } catch (error) {
+      console.log(error);
+      setAllMemeData([]);
+      setAllMemeCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="mx-4 md:mx-16">
+    <div className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]">
       {/* Upload Button */}
       <div className="flex justify-center gap-5">
         <div
-          className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col"
+          className="text-center hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center flex-col pt-2"
           onClick={() => {
             if (user && user.address) {
               setIsUploadMemeOpen(true);
@@ -392,81 +422,98 @@ export default function Page() {
 
       {/* Carousel */}
       <div>
-        <Carousel
-          bookmark={bookmarks}
+        {/* <Carousel
+          bookmark={handleBookmark}
           items={carouselMemes}
           setIsMemeDetailOpen={setIsMemeDetailOpen}
           active={0}
           setSelectedMeme={setSelectedMeme}
-        />
+        /> */}
+        {carouselMemes.length > 0 && (
+          <Carousel1
+            items={carouselMemes}
+            setIsMemeDetailOpen={setIsMemeDetailOpen}
+            setSelectedMeme={setSelectedMeme}
+            bookmark={handleBookmark}
+            handleShare={handleShare}
+          />
+        )}
       </div>
-
       {/* Search Bar (Normal Layout) */}
       <div
         className={`relative mt-10 mb-8 md:mt-20 ${
           isHeaderFixed ? "hidden" : ""
         }`}
       >
-        <div className="border-2 border-slate-500 rounded-2xl w-full md:w-1/2 md:py-1 mt-12 md:mx-auto bg-gray-600/15">
-          <InputGroup
-            flex="2"
-            className="w-full"
-            startElement={
-              query.length === 0 ? (
-                <LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
-              ) : undefined
-            }
-            endElement={
-              query.length > 0 ? (
-                <LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
-              ) : undefined
-            }
-          >
-            <Input
-              placeholder="Search"
-              className={`text-xl md:text-2xl focus:outline-none w-full  ${
-                query.length === 0
-                  ? "!pl-10 md:!pl-14 pr-2 md:pr-4"
-                  : "pl-4 md:pl-6 pr-8 md:pr-12"
-              }`}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setShowRecommendations(true)}
-              onBlur={() =>
-                setTimeout(() => setShowRecommendations(false), 200)
+        <motion.div
+          initial={{ opacity: 0, y: 0 }}
+          animate={{
+            opacity: 1,
+            y: animateSearchBar,
+            transition: { duration: 0.5, ease: "easeInOut" },
+          }}
+        >
+          <div className="border-2 border-slate-500 rounded-2xl w-full md:w-1/2 md:py-1 mt-12 md:mx-auto bg-gray-600/15">
+            <InputGroup
+              flex="2"
+              className="w-full"
+              startElement={
+                query.length === 0 ? (
+                  <LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
+                ) : undefined
               }
-            />
-          </InputGroup>
-        </div>
-        <p className="text-center my-1 text-sm leading-none md:text-lg">
-          Separate by comma to search for multiple tags, titles and usernames
-        </p>
-        {showRecommendations && query.length > 0 && (
-          <div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto md:w-1/2 absolute translate-x-1/2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C]">
-            {filteredTags.length > 0 ? (
-              <div className="flex flex-wrap items-center justify-start gap-4">
-                {filteredTags.map((tag) => (
-                  <Tag
-                    key={tag._id}
-                    className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
-                    onClick={() => {
-                      setQuery(tag.name);
-                      setShowRecommendations(false);
-                    }}
-                  >
-                    <div className="flex gap-2 text-lg text-white items-center">
-                      {tag.name} <FaPlus size={14} className="stroke-[2px]" />
-                    </div>
-                  </Tag>
-                ))}
-              </div>
-            ) : (
-              <div className="md:px-4 md:py-2 w-full text-gray-400">
-                No recommendations found
-              </div>
-            )}
+              endElement={
+                query.length > 0 ? (
+                  <LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
+                ) : undefined
+              }
+            >
+              <Input
+                placeholder="Separate by comma to search for multiple tags, titles and usernames"
+                className={`text-xl md:text-2xl focus:outline-none w-full placeholder:text-sm placeholder:leading-none placeholder:md:text-lg  ${
+                  query.length === 0
+                    ? "!pl-10 md:!pl-14 pr-2 md:pr-4"
+                    : "pl-4 md:pl-6 pr-8 md:pr-12"
+                }`}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => setShowRecommendations(true)}
+                onBlur={() =>
+                  setTimeout(() => setShowRecommendations(false), 200)
+                }
+              />
+            </InputGroup>
           </div>
-        )}
+          {/* <p className="text-center my-1 text-sm leading-none md:text-lg">
+            Separate by comma to search for multiple tags, titles and usernames
+          </p> */}
+          {showRecommendations && query.length > 0 && (
+            <div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto md:w-1/2 absolute translate-x-1/2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C]">
+              {filteredTags.length > 0 ? (
+                <div className="flex flex-wrap items-center justify-start gap-4">
+                  {filteredTags.map((tag) => (
+                    <Tag
+                      key={tag._id}
+                      className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
+                      onClick={() => {
+                        setQuery(tag.name);
+                        setShowRecommendations(false);
+                      }}
+                    >
+                      <div className="flex gap-2 text-lg text-white items-center">
+                        {tag.name} <FaPlus size={14} className="stroke-[2px]" />
+                      </div>
+                    </Tag>
+                  ))}
+                </div>
+              ) : (
+                <div className="md:px-4 md:py-2 w-full text-gray-400">
+                  No recommendations found
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
       </div>
 
       {/* Popular Tags */}
@@ -499,7 +546,7 @@ export default function Page() {
       {/* Tabs and Sort (Normal Layout) */}
       <div
         ref={tabsRef}
-        className={`flex justify-between mb-8 md:mx-24 ${
+        className={`flex justify-between mt-36 ${
           isHeaderFixed ? "hidden" : ""
         }`}
       >
@@ -511,9 +558,7 @@ export default function Page() {
             onClick={() => handleTabChange("live")}
           />
           <TabButton
-            label={`All${
-              activeTab.includes("all") ? ` ${displayedMemes.length}` : ""
-            }`}
+            label={`All${activeTab.includes("all") ? ` ${allMemeCount}` : ""}`}
             classname="!px-2 md:!px-5"
             isActive={activeTab === "all"}
             onClick={() => handleTabChange("all")}
@@ -571,7 +616,7 @@ export default function Page() {
               />
               <TabButton
                 label={`All${
-                  activeTab.includes("all") ? ` ${displayedMemes.length}` : ""
+                  activeTab.includes("all") ? ` ${allMemeCount}` : ""
                 }`}
                 classname="!px-5"
                 isActive={activeTab === "all"}
@@ -681,14 +726,15 @@ export default function Page() {
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="grid grid-cols-1 md:grid-cols-12 gap-y-10 gap-x-20  md:mx-14 max-h-[calc(100vh-300px)] overflow-y-auto no-scrollbar"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-8 mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
       >
         {!loading &&
+          activeTab === "live" &&
           displayedMemes.length > 0 &&
           displayedMemes.map((meme, index) => (
             <MemeCard
               key={meme._id}
-              bookmark={bookmarks}
+              bookmark={handleBookmark}
               index={index}
               meme={meme}
               activeTab={activeTab}
@@ -699,6 +745,22 @@ export default function Page() {
               onVoteMeme={() => voteToMeme(meme._id)}
             />
           ))}
+
+        {!loading &&
+          activeTab === "all" &&
+          allMemeData?.length > 0 &&
+          allMemeData.map((item, index) => (
+            <div key={index}>
+              <LeaderboardMemeCard
+                meme={item}
+                onOpenMeme={() => {
+                  setSelectedMeme(item);
+                  setIsMemeDetailOpen(true);
+                }}
+              />
+            </div>
+          ))}
+
         {!loading && displayedMemes.length === 0 && (
           <p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
             Meme not found
@@ -710,12 +772,13 @@ export default function Page() {
       </div>
 
       {/* Pagination */}
+      {/* {displayedMemes.length > 0 && ( */}
       <PaginationRoot
-        count={totalMemeCount}
+        count={activeTab === "all" ? allMemeCount : totalMemeCount}
         pageSize={pageSize}
         defaultPage={1}
         variant="solid"
-        className="mx-auto mb-8"
+        className="mx-auto mb-16"
         page={page}
         onPageChange={(e) => setPage(e.page)}
       >
@@ -725,13 +788,20 @@ export default function Page() {
           <PaginationNextTrigger />
         </HStack>
       </PaginationRoot>
-
+      {/* )} */}
       {/* Meme Detail Modal */}
       {isMemeDetailOpen && selectedMeme && (
         <MemeDetail
           onClose={onClose}
           meme={selectedMeme}
           searchRelatedMemes={setQuery}
+        />
+      )}
+      {isShareOpen && shareData && (
+        <Share
+          id={shareData.id}
+          imageUrl={shareData.imageUrl}
+          onClose={handleCloseShare}
         />
       )}
     </div>

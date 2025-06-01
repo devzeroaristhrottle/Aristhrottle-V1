@@ -7,7 +7,7 @@
   font-family: "Jersey 10", serif;
   letter-spacing: 1px;
   font-style: normal;
-  background-image: url("/assets/bg.jpg");
+  /* background-image: url("/assets/bg.jpg"); */
 }
 
 .no-scrollbar {
@@ -48,14 +48,14 @@ body {
 
 .bg {
   height: 100vh;
-  background-image: url("/assets/bg.jpg");
+  /* background-image: url("/assets/bg.jpg"); */
   background-size: contain;
 }
 
 .bg1 {
-  height: 100vh;
-  overflow-y: auto;
-  background-image: url("/assets/bg1.jpeg");
+  /* height: 100vh; */
+  /* overflow-y: auto; */
+  /* background-image: url("/assets/bg1.jpeg"); */
   background-size: cover;
 }
 

@@ -1,15 +1,15 @@
 import { useState, useCallback, useEffect } from 'react'
 import debounce from 'lodash/debounce'
 import { sampleTags } from '@/data/constants'
-import { Meme } from '@/app/home/leaderboard/page'
+import { LeaderboardMeme } from '@/app/home/leaderboard/page'
 
 const filterMemes = (
-  memesList: Meme[],
+  memesList: LeaderboardMeme[],
   activeTab: 'live' | 'daily' | 'all',
   selectedTags: string[],
   dateRange: { startDate: Date | null; endDate: Date | null },
   percentage: number
-): Meme[] => {
+): LeaderboardMeme[] => {
   let filtered = [...memesList]
 
   // Tab-based filtering (primary)
@@ -31,10 +31,25 @@ const filterMemes = (
     // Filter memes from yesterday (00:00 to 23:59 UTC)
     filtered = filtered.filter((meme) => {
       const createdAt = new Date(meme.createdAt)
-      return (
-        createdAt >= yesterday &&
-        createdAt < new Date(yesterday.getTime() + 24 * 60 * 60 * 1000)
+      const now = new Date()
+
+      // Today 6 AM IST = Today 00:30 UTC
+      const today6amIST = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          0,
+          30
+        )
       )
+
+      // Yesterday 6 AM IST = 24 hours before today 6 AM IST
+      const yesterday6amIST = new Date(
+        today6amIST.getTime() - 24 * 60 * 60 * 1000
+      )
+
+      return createdAt >= yesterday6amIST && createdAt < today6amIST
     })
   }
 
@@ -77,7 +92,7 @@ const filterMemes = (
 }
 
 export const useFilterAndSort = (
-  memes: Meme[],
+  memes: LeaderboardMeme[],
   activeTab: 'live' | 'daily' | 'all'
 ) => {
   const [percentage, setPercentage] = useState(0)
@@ -91,7 +106,7 @@ export const useFilterAndSort = (
     field: 'time' | 'votes' | null
     direction: 'asc' | 'desc'
   }>({ field: null, direction: 'asc' })
-  const [filteredMemes, setFilteredMemes] = useState<Meme[]>([])
+  const [filteredMemes, setFilteredMemes] = useState<LeaderboardMeme[]>([])
 
   const debouncedUpdateTags = useCallback(
     debounce((input: string) => {

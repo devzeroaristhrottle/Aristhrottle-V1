@@ -9,6 +9,8 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { ethers } from "ethers";
+import User from "@/models/User";
+import connectToDatabase from "@/lib/db";
 
 const handler = NextAuth({
   providers: [
@@ -48,7 +50,23 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        // Store wallet address in token
         token.address = user.address;
+        
+        // Connect to database
+        await connectToDatabase();
+        
+        try {
+          // Find user by wallet address to get MongoDB ID
+          const dbUser = await User.findOne({ user_wallet_address: user.address });
+          
+          if (dbUser) {
+            // Store MongoDB ID in token.sub
+            token.sub = dbUser._id.toString();
+          }
+        } catch (error) {
+          console.error("Error fetching user for JWT:", error);
+        }
       }
       return token;
     },
@@ -56,6 +74,12 @@ const handler = NextAuth({
       if (token?.address && typeof token?.address === "string") {
         session.address = token.address;
       }
+      
+      // Add userId to session for easy access
+      if (token?.sub) {
+        session.userId = token.sub;
+      }
+      
       return session;
     },
   },
