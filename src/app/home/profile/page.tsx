@@ -32,7 +32,7 @@ export default function Page() {
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [formData, setFormData] = useState<Data>({
     title: "",
-    tags: ["Jokes", "Abstract", "Meme"],
+    tags: [],
     file: null,
     bio: "",
   });
@@ -159,7 +159,11 @@ export default function Page() {
         <div className="flex items-center space-x-2 md:space-x-4 rounded-lg">
           <div className="h-20 w-20 md:h-44 md:w-44 bg-black rounded-full overflow-hidden flex items-center justify-center">
             <img
-              src="/assets/meme1.jpeg"
+              src={
+                userDetails?.profile_pic
+                  ? userDetails?.profile_pic
+                  : "/assets/meme1.jpeg"
+              }
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -228,7 +232,9 @@ export default function Page() {
                 eART Minted
               </p>
               <p className="text-2xl md:text-[30px] md:h-8 text-center">
-                {userDetails?.mintedCoins ?  ethers.formatEther(userDetails.mintedCoins) : 0}
+                {userDetails?.mintedCoins
+                  ? ethers.formatEther(userDetails.mintedCoins)
+                  : 0}
               </p>
             </div>
             <div className="order-1 md:order-2 flex flex-col md:gap-2 px-2 md:py-4 border-[.1875rem] border-[#1783fb] rounded-xl">

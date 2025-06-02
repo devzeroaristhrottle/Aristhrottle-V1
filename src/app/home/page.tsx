@@ -364,7 +364,7 @@ export default function Page() {
 
   useEffect(() => {
     if (isInView && memeContainerRef.current) {
-      setAnimateSearchBar(330);
+      setAnimateSearchBar(300);
       memeContainerRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -429,7 +429,7 @@ export default function Page() {
           active={0}
           setSelectedMeme={setSelectedMeme}
         /> */}
-        {carouselMemes.length > 0 && (
+        {carouselMemes.length >= 5 && (
           <Carousel1
             items={carouselMemes}
             setIsMemeDetailOpen={setIsMemeDetailOpen}

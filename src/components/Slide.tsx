@@ -99,7 +99,7 @@ export const Slide = ({
               {!memeDetails[dataIndex].is_onchain && (
                 <div className="flex flex-col items-center text-center col-span-4">
                   <Logo
-                    classNames="w-6 h-6 md:w-8 md:h-8"
+                    classNames="w-7 h-7 md:w-8 md:h-8"
                     onClick={() => {
                       if (user?.address) {
                         voteToMeme(memeDetails[dataIndex]._id);
