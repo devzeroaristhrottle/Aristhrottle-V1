@@ -19,6 +19,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
 import { TabButton } from "@/components/TabButton";
 import { LeaderboardMeme } from "../leaderboard/page";
+import { ethers } from "ethers";
 
 interface Data {
   title: string;
@@ -227,7 +228,7 @@ export default function Page() {
                 eART Minted
               </p>
               <p className="text-2xl md:text-[30px] md:h-8 text-center">
-                {userDetails?.mintedCoins ? userDetails.mintedCoins : 0}
+                {userDetails?.mintedCoins ?  ethers.formatEther(userDetails.mintedCoins) : 0}
               </p>
             </div>
             <div className="order-1 md:order-2 flex flex-col md:gap-2 px-2 md:py-4 border-[.1875rem] border-[#1783fb] rounded-xl">

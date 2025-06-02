@@ -262,7 +262,7 @@ async function handlePostRequest(request: NextRequest) {
     if (savedUser.referred_by && savedUser.user_wallet_address) {
       try {
         // Mint 5 tokens (adjust amount as needed)
-        const amountToMint = 5; 
+        const amountToMint = 5;
         const tx = await contract.mintCoins(savedUser.user_wallet_address, ethers.parseUnits(amountToMint.toString(), 18));
         await tx.wait(); // Wait for the transaction to be mined
         console.log(`Minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for referral.`);

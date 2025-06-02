@@ -10,7 +10,7 @@ import {
 import { MemeCard } from "@/components/MemeCard";
 import { TabButton } from "@/components/TabButton";
 import { Tag } from "@/components/ui/tag";
-import { Carousel } from "@/components/Carousel";
+// import { Carousel } from "@/components/Carousel";
 import MemeDetail from "@/components/MemeDetail";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/input-group";
@@ -38,6 +38,8 @@ import { useMemeActions } from "./bookmark/bookmarkHelper";
 import { motion } from "framer-motion";
 import { LeaderboardMemeCard } from "./leaderboard/MemeCard";
 import { LeaderboardMeme } from "./leaderboard/page";
+import Share from "@/components/Share";
+import Carousel1 from "@/components/Carousel1";
 
 export interface Meme {
   _id: string;
@@ -106,6 +108,11 @@ export default function Page() {
   const [filteredTags, setFilteredTags] = useState<TagI[]>([]);
   const [activeTab, setActiveTab] = useState<"live" | "all">("live");
   const [isHeaderFixed, setIsHeaderFixed] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [shareData, setShareData] = useState<{
+    id: string;
+    imageUrl: string;
+  } | null>(null);
 
   const { userDetails, setIsUploadMemeOpen, isRefreshMeme } =
     useContext(Context);
@@ -119,6 +126,16 @@ export default function Page() {
   const tabsRef = useRef<HTMLDivElement>(null);
   const memeContainerRef = useRef<HTMLDivElement>(null);
   const { handleBookmark } = useMemeActions();
+
+  const handleShare = (id: string, imageUrl: string) => {
+    setShareData({ id, imageUrl });
+    setIsShareOpen(true);
+  };
+
+  const handleCloseShare = () => {
+    setIsShareOpen(false);
+    setShareData(null);
+  };
 
   // Sticky header logic
   useEffect(() => {
@@ -405,13 +422,22 @@ export default function Page() {
 
       {/* Carousel */}
       <div>
-        <Carousel
+        {/* <Carousel
           bookmark={handleBookmark}
           items={carouselMemes}
           setIsMemeDetailOpen={setIsMemeDetailOpen}
           active={0}
           setSelectedMeme={setSelectedMeme}
-        />
+        /> */}
+        {carouselMemes.length > 0 && (
+          <Carousel1
+            items={carouselMemes}
+            setIsMemeDetailOpen={setIsMemeDetailOpen}
+            setSelectedMeme={setSelectedMeme}
+            bookmark={handleBookmark}
+            handleShare={handleShare}
+          />
+        )}
       </div>
       {/* Search Bar (Normal Layout) */}
       <div
@@ -752,7 +778,7 @@ export default function Page() {
         pageSize={pageSize}
         defaultPage={1}
         variant="solid"
-        className="mx-auto mb-10"
+        className="mx-auto mb-16"
         page={page}
         onPageChange={(e) => setPage(e.page)}
       >
@@ -769,6 +795,13 @@ export default function Page() {
           onClose={onClose}
           meme={selectedMeme}
           searchRelatedMemes={setQuery}
+        />
+      )}
+      {isShareOpen && shareData && (
+        <Share
+          id={shareData.id}
+          imageUrl={shareData.imageUrl}
+          onClose={handleCloseShare}
         />
       )}
     </div>
