@@ -50,15 +50,17 @@ export const LeaderboardMemeCard: React.FC<{
         </p>
       </div>
       <div className="flex flex-col md:flex-row gap-x-1">
-        <div className="relative flex-grow cursor-pointer">
-          <img
-            onClick={() => {
-              onOpenMeme();
-            }}
-            src={meme.image_url}
-            alt={meme.name}
-            className="w-full aspect-square object-cover border-2 border-white"
-          />
+        <div className="">
+          <div className="w-[250px] h-[250px] rounded-lg cursor-pointer border-2 border-white">
+            <img
+              onClick={() => {
+                onOpenMeme();
+              }}
+              src={meme.image_url}
+              alt={meme.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div className="flex justify-between text-lg leading-tight md:text-xl">
             <p>{meme.name}</p>
             <p>{meme.createdAt.split("T")[0]}</p>

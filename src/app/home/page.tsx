@@ -364,7 +364,7 @@ export default function Page() {
 
   useEffect(() => {
     if (isInView && memeContainerRef.current) {
-      setAnimateSearchBar(330);
+      setAnimateSearchBar(300);
       memeContainerRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
