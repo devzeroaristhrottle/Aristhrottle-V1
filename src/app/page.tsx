@@ -8,7 +8,7 @@ export default function Home() {
 
   useEffect(() => {
     router.push('/home')
-  }, [])
+  }, [router])
 
   return null
   // return (
