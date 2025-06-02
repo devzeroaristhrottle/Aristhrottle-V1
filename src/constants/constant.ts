@@ -13,4 +13,5 @@ export interface User {
   totalVotesReceived: number;
   mintedCoins: number;
   bio?: string;
+  profile_pic?: string;
 }
