@@ -46,22 +46,12 @@ async function handleGetRequest(req: NextRequest) {
     const offset = off == null ? defaultOffset : parseInt(off.toString());
     const start = offset <= defaultOffset ? 0 : offset - defaultOffset;
 
-    // Get total memes count (include all memes regardless of voting status)
-    const memesCount = await Meme.countDocuments();
+    const memesCount = await Meme.find({
+      is_voting_close: false,
+    }).countDocuments();
 
     if (id) {
       const meme = await Meme.findOne().where({ _id: id }).populate("tags");
-      
-      // Remove vote_count if meme is not onchain
-      if (meme && !meme.is_onchain) {
-        meme.vote_count = 0;
-      }
-      
-      // Ensure is_onchain is included in response (it should be by default, but being explicit)
-      if (meme) {
-        meme.is_onchain = meme.is_onchain || false;
-      }
-      
       return NextResponse.json({ meme: meme }, { status: 200 });
     }
 
@@ -76,17 +66,6 @@ async function handleGetRequest(req: NextRequest) {
         .limit(defaultOffset)
         .populate("vote_to")
         .populate("vote_by");
-
-      // Filter out vote counts for non-onchain memes
-      for (const vote of memes) {
-        if (vote.vote_to) {
-          if (!vote.vote_to.is_onchain) {
-            vote.vote_to.vote_count = 0;
-          }
-          // Ensure is_onchain is included
-          vote.vote_to.is_onchain = vote.vote_to.is_onchain || false;
-        }
-      }
 
       return NextResponse.json(
         { memes: memes, votedMemesCount: votedMemesCount },
@@ -103,15 +82,6 @@ async function handleGetRequest(req: NextRequest) {
         .skip(start)
         .limit(defaultOffset)
         .populate("created_by");
-
-      // Remove vote_count for non-onchain memes
-      for (const meme of memes) {
-        if (!meme.is_onchain) {
-          meme.vote_count = 0;
-        }
-        // Ensure is_onchain is included
-        meme.is_onchain = meme.is_onchain || false;
-      }
 
       return NextResponse.json(
         { memes: memes, memesCount: memesCount },
@@ -132,18 +102,10 @@ async function handleGetRequest(req: NextRequest) {
           { tags: { $in: tagIds } }, // Search in tags
         ],
       })
+        .where({ is_voting_close: false })
         .populate("created_by")
         .populate("tags");
       // // .populate('categories')
-
-      // Remove vote_count for non-onchain memes
-      for (const meme of memes) {
-        if (!meme.is_onchain) {
-          meme.vote_count = 0;
-        }
-        // Ensure is_onchain is included
-        meme.is_onchain = meme.is_onchain || false;
-      }
 
       return NextResponse.json(
         { memes, memesCount: memes.length },
@@ -159,54 +121,26 @@ async function handleGetRequest(req: NextRequest) {
         .populate("tags")
         .sort({ createdAt: -1 });
 
-      // Remove vote_count for non-onchain memes (should be all in this case)
-      for (const meme of memes) {
-        if (!meme.is_onchain) {
-          meme.vote_count = 0;
-        }
-        // Ensure is_onchain is included (should be false for all in this case)
-        meme.is_onchain = meme.is_onchain || false;
-      }
-
       if (memes.length == 0) {
         const memes = await Meme.find()
           .limit(10)
           .populate("created_by")
           .populate("tags")
           .sort({ createdAt: -1 });
-          
-        // Remove vote_count for non-onchain memes
-        for (const meme of memes) {
-          if (!meme.is_onchain) {
-            meme.vote_count = 0;
-          }
-          // Ensure is_onchain is included
-          meme.is_onchain = meme.is_onchain || false;
-        }
-        
         return NextResponse.json({ memes: memes }, { status: 200 });
       }
       return NextResponse.json({ memes: memes }, { status: 200 });
       // // .populate("categories");
     }
 
-    // Get all memes regardless of voting status
     const memes = await Meme.find()
       .skip(start)
       .limit(defaultOffset)
+      .where({ is_voting_close: false })
       .populate("created_by")
       .populate("tags")
       .sort({ createdAt: -1 });
     // // .populate("categories");
-
-    // Remove vote_count for non-onchain memes
-    for (const meme of memes) {
-      if (!meme.is_onchain) {
-        meme.vote_count = 0;
-      }
-      // Ensure is_onchain is included
-      meme.is_onchain = meme.is_onchain || false;
-    }
 
     return NextResponse.json(
       { memes: memes, memesCount: memesCount },
