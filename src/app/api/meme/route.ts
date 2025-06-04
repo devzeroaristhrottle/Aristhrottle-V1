@@ -116,22 +116,22 @@ async function handleGetRequest(req: NextRequest) {
     }
 
     if (type == "carousel") {
-      const memes = await Meme.find()
+      const liveMemes = await Meme.find()
         .limit(10)
         .where({ is_onchain: false })
         .populate("created_by")
         .populate("tags")
         .sort({ createdAt: -1 });
 
-      if (memes.length == 0) {
+      if (liveMemes.length == 0 || liveMemes.length < 5) {
         const memes = await Meme.find()
           .limit(10)
           .populate("created_by")
           .populate("tags")
           .sort({ createdAt: -1 });
-        return NextResponse.json({ memes: memes }, { status: 200 });
+        return NextResponse.json({ memes: [...liveMemes,...memes] }, { status: 200 });
       }
-      return NextResponse.json({ memes: memes }, { status: 200 });
+      return NextResponse.json({ memes: liveMemes }, { status: 200 });
       // // .populate("categories");
     }
 
