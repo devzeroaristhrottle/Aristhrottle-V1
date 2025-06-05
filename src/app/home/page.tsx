@@ -397,6 +397,28 @@ export default function Page() {
     }
   };
 
+  const handleUpvoteDownvote = async (meme_id: string, rating: string) => {
+    try {
+      if (user && user.address && activeTab === "all") {
+        const response = await axiosInstance.post("/api/meme/rate", {
+          meme_id: meme_id,
+          rating: rating,
+        });
+        if (response?.data?.message === "Rating saved successfully") {
+          if (rating === "upvote") {
+            toast.success("Upvoted successfully!");
+          } else if (rating === "downvote") {
+            toast.success("Downvoted successfully!");
+          }
+          getMyMemes();
+        }
+      }
+    } catch (error: any) {
+      console.error("Error in handleUpvoteDownvote:", error);
+      toast.error(error.response.data.message);
+    }
+  };
+
   return (
     <div className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]">
       {/* Upload Button */}
@@ -726,7 +748,7 @@ export default function Page() {
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="flex flex-wrap gap-6 mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
+        className="flex flex-wrap md:gap-6 mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
       >
         {!loading &&
           activeTab === "live" &&
@@ -757,6 +779,9 @@ export default function Page() {
                   setSelectedMeme(item);
                   setIsMemeDetailOpen(true);
                 }}
+                onUpvoteDownvote={(memeId, rating) =>
+                  handleUpvoteDownvote(memeId, rating)
+                }
               />
             </div>
           ))}
