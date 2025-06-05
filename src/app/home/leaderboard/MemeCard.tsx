@@ -51,33 +51,31 @@ export const LeaderboardMemeCard: React.FC<{
       </div>
       <div className="flex flex-col md:flex-row gap-x-1">
         <div className="">
-          <div className="w-[250px] h-[250px] rounded-lg cursor-pointer border-2 border-white">
+          <div className="w-full h-full md:w-[16.875rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[22.1875rem] xl:h-[22.1875rem] object-cover border-2 border-white">
             <img
               onClick={() => {
                 onOpenMeme();
               }}
               src={meme.image_url}
               alt={meme.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full"
             />
           </div>
           <div className="flex justify-between text-lg leading-tight md:text-xl">
             <p>{meme.name}</p>
-            <p>{meme.createdAt.split("T")[0]}</p>
+            {/* <p>{meme.createdAt.split("T")[0]}</p> */}
           </div>
         </div>
-        <div className="flex flex-row md:flex-col justify-between">
-          <div>
-            <p className=" text-[#1783fb] text-lg md:text-2xl font-bold md:ml-1">
-              {meme.in_percentile.toFixed(2)}%
-            </p>
-          </div>
-          <div className="flex flex-row justify-center md:justify-normal md:flex-col gap-y-6 gap-x-6 md:gap-x-0 mb-14 md:mb-4">
+        <div className="flex flex-row md:flex-col justify-between md:ml-1">
+          <p className="text-[#1783fb] text-lg md:text-xl font-bold">
+            {meme.in_percentile.toFixed(2)}%
+          </p>
+          <div className="flex flex-row justify-center md:justify-normal md:flex-col items-start gap-y-2 gap-x-6 md:gap-x-0 mb-14 md:mb-4">
             <div className="flex flex-col items-center">
               <img
                 src={"/assets/vote-logo.svg"}
                 alt="vote"
-                className="w-4 h-4 md:w-6 md:h-6 cursor-not-allowed"
+                className="w-4 h-4 md:w-7 md:h-7 cursor-not-allowed"
               />
               <span className="text-base md:text-2xl text-[#1783fb]">
                 {meme.vote_count}
@@ -85,7 +83,7 @@ export const LeaderboardMemeCard: React.FC<{
             </div>
             <div className="flex flex-col items-center ">
               <FaRegShareFromSquare
-                className="w-4 h-4 md:w-6 md:h-6 cursor-pointer"
+                className="w-4 h-4 md:w-7 md:h-7 cursor-pointer"
                 onClick={() => {
                   setIsShareOpen(true);
                 }}
@@ -97,7 +95,7 @@ export const LeaderboardMemeCard: React.FC<{
                 {isBookmarked ? (
                   <div className="flex flex-col items-center cursor-pointer">
                     <FaBookmark
-                      className="w-4 h-4 md:w-6 md:h-6"
+                      className="w-4 h-4 md:w-7 md:h-7"
                       onClick={() => {
                         handleBookmark(meme._id, meme.name, meme.image_url);
                         getBookmarks();
@@ -110,7 +108,7 @@ export const LeaderboardMemeCard: React.FC<{
                 ) : (
                   <div className="flex flex-col items-center cursor-pointer">
                     <CiBookmark
-                      className="w-4 h-4 md:w-6 md:h-6"
+                      className="w-4 h-4 md:w-7 md:h-7"
                       onClick={() => {
                         handleBookmark(meme._id, meme.name, meme.image_url);
                         getBookmarks();
