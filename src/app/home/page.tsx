@@ -726,7 +726,7 @@ export default function Page() {
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-8 mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
+        className="flex flex-wrap gap-6 mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
       >
         {!loading &&
           activeTab === "live" &&
@@ -761,11 +761,13 @@ export default function Page() {
             </div>
           ))}
 
-        {!loading && displayedMemes.length === 0 && (
-          <p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
-            Meme not found
-          </p>
-        )}
+        {!loading &&
+          displayedMemes?.length === 0 &&
+          allMemeData?.length === 0 && (
+            <p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
+              Meme not found
+            </p>
+          )}
         {loading && (
           <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto md:col-span-12" />
         )}
