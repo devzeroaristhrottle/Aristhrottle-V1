@@ -140,7 +140,7 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col md:max-w-7xl px-3 md:mx-auto md:p-8">
+    <div className="flex flex-col md:max-w-[56.25rem] lg:max-w-[87.5rem] px-3 md:mx-auto md:p-8">
       <div className="flex flex-wrap md:flex-nowrap items-center justify-between">
         <div className="flex gap-1 md:gap-3 items-center justify-center w-1/2 md:w-auto">
           <h4 className="text-lg md:text-4xl">Total Votes -</h4>
@@ -230,6 +230,7 @@ export default function Page() {
                   setSelectedMeme(item);
                   setIsMemeDetailOpen(true);
                 }}
+                activeTab={activeTab}
               />
             </div>
           ))}

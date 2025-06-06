@@ -11,7 +11,9 @@ import { useUser } from "@account-kit/react";
 export const LeaderboardMemeCard: React.FC<{
   meme: LeaderboardMeme;
   onOpenMeme: () => void;
-}> = ({ meme, onOpenMeme }) => {
+  onUpvoteDownvote?: (memeId: string, rating: string) => void;
+  activeTab?: string;
+}> = ({ meme, onOpenMeme, onUpvoteDownvote, activeTab }) => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const user = useUser();
@@ -51,7 +53,7 @@ export const LeaderboardMemeCard: React.FC<{
       </div>
       <div className="flex flex-col md:flex-row gap-x-1">
         <div className="">
-          <div className="w-full h-full md:w-[16.875rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[22.1875rem] xl:h-[22.1875rem] object-cover border-2 border-white">
+          <div className="w-full h-full md:w-[16.875rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[22rem] xl:h-[22rem] object-cover border-2 border-white">
             <img
               onClick={() => {
                 onOpenMeme();
@@ -66,12 +68,28 @@ export const LeaderboardMemeCard: React.FC<{
             {/* <p>{meme.createdAt.split("T")[0]}</p> */}
           </div>
         </div>
-        <div className="flex flex-row md:flex-col justify-between md:ml-1">
-          <p className="text-[#1783fb] text-lg md:text-xl font-bold">
+        <div className="flex flex-row md:flex-col justify-between">
+          <p className="text-[#1783fb] text-lg md:text-xl font-bold ml-2">
             {meme.in_percentile.toFixed(2)}%
           </p>
-          <div className="flex flex-row justify-center md:justify-normal md:flex-col items-start gap-y-2 gap-x-6 md:gap-x-0 mb-14 md:mb-4">
+          <div className="flex flex-row justify-center md:justify-normal md:flex-col items-start gap-y-4 gap-x-6 md:gap-x-0 mb-14 md:mb-4">
             <div className="flex flex-col items-center">
+              {activeTab === "all" && (
+                <div
+                  title="upvote"
+                  className="upvote-img-wrapper cursor-pointer mb-5"
+                >
+                  <img
+                    src={"/assets/upvote.svg"}
+                    alt="vote"
+                    className="w-4 h-4 md:w-10 md:h-10"
+                    onClick={() => {
+                      onUpvoteDownvote(meme._id, "upvote");
+                    }}
+                  />
+                </div>
+              )}
+
               <img
                 src={"/assets/vote-logo.svg"}
                 alt="vote"
@@ -80,8 +98,24 @@ export const LeaderboardMemeCard: React.FC<{
               <span className="text-base md:text-2xl text-[#1783fb]">
                 {meme.vote_count}
               </span>
+
+              {activeTab === "all" && (
+                <div
+                  title="downvote"
+                  className="downvote-img-wrapper cursor-pointer"
+                >
+                  <img
+                    src={"/assets/downvote.svg"}
+                    alt="vote"
+                    className="w-4 h-4 md:w-10 md:h-10"
+                    onClick={() => {
+                      onUpvoteDownvote(meme._id, "downvote");
+                    }}
+                  />
+                </div>
+              )}
             </div>
-            <div className="flex flex-col items-center ">
+            <div className="flex flex-col items-center ml-2">
               <FaRegShareFromSquare
                 className="w-4 h-4 md:w-7 md:h-7 cursor-pointer"
                 onClick={() => {
@@ -93,7 +127,7 @@ export const LeaderboardMemeCard: React.FC<{
             {user && user.address ? (
               <div>
                 {isBookmarked ? (
-                  <div className="flex flex-col items-center cursor-pointer">
+                  <div className="flex flex-col items-center cursor-pointer ml-1">
                     <FaBookmark
                       className="w-4 h-4 md:w-7 md:h-7"
                       onClick={() => {
@@ -106,7 +140,7 @@ export const LeaderboardMemeCard: React.FC<{
                     </span>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center cursor-pointer">
+                  <div className="flex flex-col items-center cursor-pointer ml-1">
                     <CiBookmark
                       className="w-4 h-4 md:w-7 md:h-7"
                       onClick={() => {
