@@ -53,7 +53,7 @@ export const LeaderboardMemeCard: React.FC<{
       </div>
       <div className="flex flex-col md:flex-row gap-x-1">
         <div className="">
-          <div className="w-full h-full md:w-[16.875rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[22rem] xl:h-[22rem] object-cover border-2 border-white">
+          <div className="w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[22rem] xl:h-[22rem] object-cover border-2 border-white">
             <img
               onClick={() => {
                 onOpenMeme();
