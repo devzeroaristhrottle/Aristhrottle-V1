@@ -39,7 +39,7 @@ export const LeaderboardMemeCard: React.FC<{
   };
 
   return (
-    <div className="p-4 md:p-4 w-full">
+    <div className="p-4 md:p-4 w-full lg:mx-auto">
       <div className="flex justify-between items-center md:mb-1 md:mr-20">
         <div className="flex items-center gap-x-1 md:gap-x-2">
           <CgProfile className="md:w-7 md:h-7" />
