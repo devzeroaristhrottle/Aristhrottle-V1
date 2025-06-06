@@ -84,7 +84,9 @@ export const LeaderboardMemeCard: React.FC<{
                     alt="vote"
                     className="w-4 h-4 md:w-10 md:h-10"
                     onClick={() => {
-                      onUpvoteDownvote(meme._id, "upvote");
+                      if (onUpvoteDownvote) {
+                        onUpvoteDownvote(meme._id, "upvote");
+                      }
                     }}
                   />
                 </div>
@@ -109,7 +111,9 @@ export const LeaderboardMemeCard: React.FC<{
                     alt="vote"
                     className="w-4 h-4 md:w-10 md:h-10"
                     onClick={() => {
-                      onUpvoteDownvote(meme._id, "downvote");
+                      if (onUpvoteDownvote) {
+                        onUpvoteDownvote(meme._id, "upvote");
+                      }
                     }}
                   />
                 </div>
