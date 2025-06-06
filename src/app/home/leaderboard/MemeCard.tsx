@@ -39,7 +39,7 @@ export const LeaderboardMemeCard: React.FC<{
   };
 
   return (
-    <div className="p-4 md:p-4 w-full">
+    <div className="p-4 md:p-4 w-full lg:mx-auto">
       <div className="flex justify-between items-center md:mb-1 md:mr-20">
         <div className="flex items-center gap-x-1 md:gap-x-2">
           <CgProfile className="md:w-7 md:h-7" />
@@ -72,12 +72,12 @@ export const LeaderboardMemeCard: React.FC<{
           <p className="text-[#1783fb] text-lg md:text-xl font-bold ml-2">
             {meme.in_percentile.toFixed(2)}%
           </p>
-          <div className="flex flex-row justify-center md:justify-normal md:flex-col items-start gap-y-4 gap-x-6 md:gap-x-0 mb-14 md:mb-4">
+          <div className="flex flex-row justify-center md:justify-normal md:flex-col items-start gap-y-5 gap-x-6 md:gap-x-0 mb-14 md:mb-4">
             <div className="flex flex-col items-center">
               {activeTab === "all" && (
                 <div
                   title="upvote"
-                  className="upvote-img-wrapper cursor-pointer mb-5"
+                  className="upvote-img-wrapper cursor-pointer rotate-180"
                 >
                   <img
                     src={"/assets/upvote.svg"}
@@ -104,7 +104,7 @@ export const LeaderboardMemeCard: React.FC<{
               {activeTab === "all" && (
                 <div
                   title="downvote"
-                  className="downvote-img-wrapper cursor-pointer"
+                  className="downvote-img-wrapper cursor-pointer -mt-3"
                 >
                   <img
                     src={"/assets/downvote.svg"}

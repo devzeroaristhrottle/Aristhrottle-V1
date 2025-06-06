@@ -78,7 +78,7 @@ export function MemeCard({
   };
 
   return (
-    <div key={index} className="flex flex-col">
+    <div key={index} className="flex flex-col  lg:mx-auto">
       <div className="flex items-start gap-x-1 md:gap-x-2 mb-1 md:mb-2">
         <CgProfile className="md:w-7 md:h-7" />
         <span className="text-[#29e0ca] text-base md:text-2xl">
