@@ -44,7 +44,7 @@ export const Slide = ({
     const bookmarks = localStorage.getItem("bookmarks");
     if (bookmarks) {
       const bookmarksObj = JSON.parse(bookmarks);
-      setIsBookmarked(!!bookmarksObj[memeDetails[dataIndex]._id]);
+      setIsBookmarked(!!bookmarksObj[memeDetails[dataIndex]?._id]);
     }
   };
 
@@ -82,8 +82,8 @@ export const Slide = ({
         <div className="">
           <div className="aspect-square flex items-center justify-center rounded-lg cursor-pointer border-4 border-white">
             <img
-              src={memeDetails[dataIndex].image_url}
-              alt={memeDetails[dataIndex].name}
+              src={memeDetails[dataIndex]?.image_url}
+              alt={memeDetails[dataIndex]?.name}
               className="max-w-full max-h-full object-contain rounded-lg"
               onClick={() => {
                 if (isCenterSlide) {
@@ -96,13 +96,13 @@ export const Slide = ({
           {isCenterSlide && (
             <div className="grid grid-cols-12 mt-2">
               <div className="col-span-4" />
-              {!memeDetails[dataIndex].is_onchain && (
+              {!memeDetails[dataIndex]?.is_onchain && (
                 <div className="flex flex-col items-center text-center col-span-4">
                   <Logo
                     classNames="w-7 h-7 md:w-8 md:h-8"
                     onClick={() => {
                       if (user?.address) {
-                        voteToMeme(memeDetails[dataIndex]._id);
+                        voteToMeme(memeDetails[dataIndex]?._id);
                       } else {
                         openAuthModal?.();
                       }
@@ -117,7 +117,7 @@ export const Slide = ({
                     className="w-6 h-6 md:w-8 md:h-8 mr-3 cursor-pointer"
                     onClick={() => {
                       handleShare(
-                        memeDetails[dataIndex]._id,
+                        memeDetails[dataIndex]?._id,
                         memeDetails[dataIndex]?.image_url
                       );
                     }}
@@ -130,9 +130,9 @@ export const Slide = ({
                       onClick={() => {
                         if (user?.address) {
                           bookmark(
-                            memeDetails[dataIndex]._id,
-                            memeDetails[dataIndex].name,
-                            memeDetails[dataIndex].image_url
+                            memeDetails[dataIndex]?._id,
+                            memeDetails[dataIndex]?.name,
+                            memeDetails[dataIndex]?.image_url
                           );
                           getBookmarks();
                         } else {
@@ -148,9 +148,9 @@ export const Slide = ({
                       onClick={() => {
                         if (user?.address) {
                           bookmark(
-                            memeDetails[dataIndex]._id,
-                            memeDetails[dataIndex].name,
-                            memeDetails[dataIndex].image_url
+                            memeDetails[dataIndex]?._id,
+                            memeDetails[dataIndex]?.name,
+                            memeDetails[dataIndex]?.image_url
                           );
                           getBookmarks();
                         } else {

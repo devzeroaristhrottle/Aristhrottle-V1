@@ -782,6 +782,7 @@ export default function Page() {
                 onUpvoteDownvote={(memeId, rating) =>
                   handleUpvoteDownvote(memeId, rating)
                 }
+                activeTab={activeTab}
               />
             </div>
           ))}
