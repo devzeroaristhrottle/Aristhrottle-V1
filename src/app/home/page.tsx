@@ -748,7 +748,7 @@ export default function Page() {
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="flex flex-wrap md:gap-6 mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
+        className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-10 grid-cols-1 grid-flow-row mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
       >
         {!loading &&
           activeTab === "live" &&
