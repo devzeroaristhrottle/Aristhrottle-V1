@@ -10,7 +10,7 @@ import {
 import { CgCloseO, CgProfile } from 'react-icons/cg'
 import Share from './Share'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { Meme, TagI } from '@/app/home/page'
+import { Meme } from '@/app/home/page'
 import { LeaderboardMeme } from '@/app/home/leaderboard/page'
 import axiosInstance from '@/utils/axiosInstance'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
@@ -22,10 +22,6 @@ interface MemeDetailProps {
   onClose?: () => void
   meme: Meme | LeaderboardMeme | undefined
   searchRelatedMemes?: Dispatch<SetStateAction<string>>
-}
-
-interface Category {
-  name: string
 }
 
 export default function MemeDetail({
@@ -48,7 +44,7 @@ export default function MemeDetail({
   const getRelatedMemes = async () => {
     try {
       if (meme && isMeme(meme) && meme.tags.length > 0) {
-        const tags = meme.tags.map((t) => t.name).join(',')
+        const tags = meme.tags.map((t) => t).join(',')
         const response = await axiosInstance.get(`/api/meme?name=${tags}`)
         if (response.data.memes) {
           setRelatedMemes([...response.data.memes])
@@ -168,38 +164,18 @@ export default function MemeDetail({
                     </p>
                   </div>
 
-                  {'categories' in meme && meme.categories?.length > 0 && (
-                    <div className='flex flex-col'>
-                      <label className='text-[#1783fb] text-lg md:text-2xl'>
-                        Categories :
-                      </label>
-                      <div className='flex flex-wrap gap-3 mt-2'>
-                        {meme.categories.map(
-                          (category: Category, index: number) => (
-                            <button
-                              key={index}
-                              className='text-balance border-2 border-[#1783fb] rounded-lg px-3 py-1'
-                            >
-                              {category.name}
-                            </button>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
-
                   {isMeme(meme) && meme.tags.length > 0 && (
                     <div className='flex flex-col'>
                       <label className='text-[#1783fb] text-lg md:text-2xl'>
                         Tags :
                       </label>
                       <div className='flex flex-wrap gap-2 md:gap-3 md:mt-2'>
-                        {meme.tags.map((tag: TagI, index: number) => (
+                        {meme.tags.map((tag, index: number) => (
                           <button
                             key={index}
                             className='text-balance border-2 border-[#1783fb] rounded-lg px-1 md:px-3 md:py-1'
                           >
-                            {tag.name}
+                            {tag}
                           </button>
                         ))}
                       </div>
