@@ -364,7 +364,7 @@ export default function Page() {
 
   useEffect(() => {
     if (isInView && memeContainerRef.current) {
-      setAnimateSearchBar(330);
+      setAnimateSearchBar(300);
       memeContainerRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -394,6 +394,28 @@ export default function Page() {
       setAllMemeCount(0);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpvoteDownvote = async (meme_id: string, rating: string) => {
+    try {
+      if (user && user.address && activeTab === "all") {
+        const response = await axiosInstance.post("/api/meme/rate", {
+          meme_id: meme_id,
+          rating: rating,
+        });
+        if (response?.data?.message === "Rating saved successfully") {
+          if (rating === "upvote") {
+            toast.success("Upvoted successfully!");
+          } else if (rating === "downvote") {
+            toast.success("Downvoted successfully!");
+          }
+          getMyMemes();
+        }
+      }
+    } catch (error: any) {
+      console.error("Error in handleUpvoteDownvote:", error);
+      toast.error(error.response.data.message);
     }
   };
 
@@ -429,7 +451,7 @@ export default function Page() {
           active={0}
           setSelectedMeme={setSelectedMeme}
         /> */}
-        {carouselMemes.length > 0 && (
+        {carouselMemes.length >= 5 && (
           <Carousel1
             items={carouselMemes}
             setIsMemeDetailOpen={setIsMemeDetailOpen}
@@ -726,7 +748,7 @@ export default function Page() {
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-8 mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
+        className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-10 grid-cols-1 grid-flow-row mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
       >
         {!loading &&
           activeTab === "live" &&
@@ -757,15 +779,21 @@ export default function Page() {
                   setSelectedMeme(item);
                   setIsMemeDetailOpen(true);
                 }}
+                onUpvoteDownvote={(memeId, rating) =>
+                  handleUpvoteDownvote(memeId, rating)
+                }
+                activeTab={activeTab}
               />
             </div>
           ))}
 
-        {!loading && displayedMemes.length === 0 && (
-          <p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
-            Meme not found
-          </p>
-        )}
+        {!loading &&
+          displayedMemes?.length === 0 &&
+          allMemeData?.length === 0 && (
+            <p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
+              Meme not found
+            </p>
+          )}
         {loading && (
           <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto md:col-span-12" />
         )}

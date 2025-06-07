@@ -55,6 +55,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+      trim: true,
+    },
     tags: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Tags",
