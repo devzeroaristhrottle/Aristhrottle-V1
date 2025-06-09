@@ -1,24 +1,18 @@
-FROM node:lts-alpine AS base
-
-# Stage 1: Install dependencies
-FROM base AS deps
+# Stage 1: Build
+FROM node:20 AS builder
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm install --frozen-lockfile
-
-# Stage 2: Build the application
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
 COPY . .
-RUN corepack enable pnpm && pnpm run build
+RUN npm run build
 
-# Stage 3: Production server
-FROM base AS runner
+# Stage 2: Production
+FROM node:20-slim
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.* ./  # Copy next.config.js or .mjs
+RUN npm install --legacy-peer-deps --production
 EXPOSE 3000
-CMD ["node", "server.js"]
+CMD ["npm", "start"]

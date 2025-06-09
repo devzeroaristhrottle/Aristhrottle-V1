@@ -1,4 +1,0 @@
-steps:
- - name: 'node'
-   entrypoint: 'npm'
-   args: ['install','--legacy-peer-deps']
