@@ -1,33 +1,24 @@
-# Use an official Node.js runtime as a parent image
-FROM node:20-alpine AS builder
+FROM node:lts-alpine AS base
 
-# Set working directory
+# Stage 1: Install dependencies
+FROM base AS deps
 WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install --legacy-peer-deps
-
-# Copy the rest of the application
+# Stage 2: Build the application
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN corepack enable pnpm && pnpm run build
 
-# Build the Next.js application
-RUN npm run build
-
-# Production image
-FROM node:20-alpine
-
+# Stage 3: Production server
+FROM base AS runner
 WORKDIR /app
-
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
+ENV NODE_ENV=production
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Expose the port that Next.js runs on
 EXPOSE 3000
-
-# Command to run the application
 CMD ["node", "server.js"]
