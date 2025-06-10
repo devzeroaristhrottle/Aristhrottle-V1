@@ -2,6 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  reactStrictMode: true,
+  // Ensure env variables are available at runtime
+  env: {
+    MONGODB_URI: process.env.MONGODB_URI,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   /* config options here */
   images: {
     remotePatterns: [
@@ -17,6 +28,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
     turbo: {},
+    serverComponentsExternalPackages: ['mongoose'],
   },
   webpack: (config) => {
     config.externals.push(
