@@ -1,0 +1,17 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "module": "ESNext",
+      "target": "es2020",
+      "outDir": "./dist",
+      "moduleResolution": "node",
+      "strict": true,
+      "noEmit": false,
+      "isolatedModules": false,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true
+    },
+    "include": [
+      "server.mts"
+    ]
+  }
