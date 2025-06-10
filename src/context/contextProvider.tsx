@@ -1,6 +1,7 @@
 "use client";
 import { User } from "@/constants/constant";
 import React, { createContext, useState } from "react";
+import { WebSocketProvider } from "./WebSocketContext";
 
 type Props = {
   children: React.ReactNode;
@@ -41,7 +42,9 @@ export default function ContextProvider({ children }: Props) {
         setIsRefresh,
       }}
     >
-      {children}
+      <WebSocketProvider>
+        {children}
+      </WebSocketProvider>
     </Context.Provider>
   );
 }

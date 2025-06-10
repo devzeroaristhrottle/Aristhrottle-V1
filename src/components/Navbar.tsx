@@ -18,6 +18,7 @@ import { toast } from 'react-toastify'
 import { Context } from '@/context/contextProvider'
 import { useRouter } from 'next/navigation'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+import Link from 'next/link'
 
 import Notifications from './Notifications'
 import useCountdown from '@/app/hooks/useCountdown'
@@ -195,6 +196,9 @@ export default function Navbar() {
           </div>
 
           <div className='flex items-center justify-center gap-4'>
+            <Link href="/websocket" className="hidden md:flex px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              Global Chat
+            </Link>
             <div className='hidden md:block'>
               <GoogleTranslate />
             </div>
