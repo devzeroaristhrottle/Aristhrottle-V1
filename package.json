@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
+    "dev:socket": "NODE_OPTIONS='--loader ts-node/esm --trace-warnings --no-warnings' NEXT_TURBOPACK=true ts-node server.mts",
+    "build": "next build && tsc --project tsconfig.server.json",
+    "build:socket": "next build && tsc --project tsconfig.server.json",
+    "start": "node dist/server.mjs",
+    "start:socket": "node dist/server.mjs",
     "lint": "next lint"
   },
   "dependencies": {
@@ -46,7 +49,10 @@
     "recharts": "^2.15.1",
     "sharp": "^0.34.1",
     "siwe": "^3.0.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "three": "^0.172.0",
+    "ts-node": "^10.9.2",
     "typewriter-effect": "^2.21.0",
     "viem": "^2.21.54",
     "wagmi": "^2.14.1"
