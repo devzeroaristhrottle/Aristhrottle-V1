@@ -26,7 +26,7 @@ export async function POST() {
       userAddresses.length > 0 &&
       memeIds.length === userAddresses.length
     ) {
-      let {contract} = getContractUtils();
+      const {contract} = getContractUtils();
       
       const tx = await contract.addMemeVotesBulk(memeIds, userAddresses);
       await tx.wait();

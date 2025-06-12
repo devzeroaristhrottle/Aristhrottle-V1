@@ -32,7 +32,7 @@ async function handlePostRequest(req: NextRequest) {
     let points_mint
 
     if (points > 0) {
-      let {contract} = getContractUtils();
+      const {contract} = getContractUtils();
       points_mint = points * 5
       const amount = ethers.parseUnits(points_mint.toString(), 18)
       

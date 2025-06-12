@@ -121,7 +121,7 @@ async function handleGetRequest(request: NextRequest) {
         })
         .countDocuments();
 
-      let {contract} = getContractUtils();
+      const {contract} = getContractUtils();
 
       const mintedCoins = await contract.balanceOf(wallet_address);
 
@@ -263,7 +263,7 @@ async function handlePostRequest(request: NextRequest) {
     // Mint 5 tokens if the user was referred
     if (savedUser.referred_by && savedUser.user_wallet_address) {
       try {
-        let {contract} = getContractUtils();
+        const {contract} = getContractUtils();
 
         // Mint 5 tokens (adjust amount as needed)
         const amountToMint = 5;

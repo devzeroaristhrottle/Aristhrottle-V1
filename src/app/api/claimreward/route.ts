@@ -33,7 +33,7 @@ async function handlePostRequest(req: NextRequest) {
         milestoneData.created_by.user_wallet_address &&
         milestoneData.reward
       ) {
-        let {contract} = getContractUtils();
+        const {contract} = getContractUtils();
         
         const reward = ethers.parseUnits(milestoneData.reward.toString(), 18); 
         const tx = await contract.mintCoins(

@@ -92,7 +92,7 @@ export async function POST() {
 
     while (retries > 0) {
       try {
-        let {contract} = getContractUtils();
+        const {contract} = getContractUtils();
         
         tx = await contract.addUploadMemeBulk(
           memeIds,
