@@ -1,5 +1,5 @@
 # Use the official Node.js 18 image
-FROM node:18-alpine AS base
+FROM node:lts-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -12,14 +12,19 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# ✅ Set environment variables directly for build-time
+ENV NEXT_PUBLIC_API_URL=https://staging-aristhrottle-967605038619.asia-south2.run.app
+ENV NEXTAUTH_URL=https://staging-aristhrottle-967605038619.asia-south2.run.app
+
 RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV PORT 8080
+ENV NODE_ENV=production
+ENV PORT=8080
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
