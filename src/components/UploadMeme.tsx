@@ -206,19 +206,19 @@ export default function UploadModal() {
 
         if (response.status == 201) {
           setIsRefresh(!isRefreshMeme)
-          toast.update(loadId, { render: "Meme Upload SuccessFul", type: "success", isLoading: false})
+          toast.update(loadId, { render: "Meme Upload SuccessFul", type: "success", isLoading: false, autoClose: 5000})
           setSelectedTags([])
           setTitle('')
         }
 
         if (response.status == 200) {
-          toast.update(loadId, { render: 'Upload failed. Please select another meme and try again.', type: "error", isLoading: false})
+          toast.update(loadId, { render: 'Upload failed. Please select another meme and try again.', type: "error", isLoading: false, autoClose: 5000})
         }
       }
     } catch (error) {
       setLoading(false)
       console.log(error)
-      toast.update(loadId, { render: 'Upload failed. Please select another meme and try again.', type: "error", isLoading: false})
+      toast.update(loadId, { render: 'Upload failed. Please select another meme and try again.', type: "error", isLoading: false, autoClose: 5000})
     } finally {
       setLoading(false)
     }
