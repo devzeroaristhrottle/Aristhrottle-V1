@@ -1,5 +1,5 @@
 import cloudinary from "@/config/cloudinary";
-import { contract } from "@/ethers/contractUtils";
+import { getContractUtils } from "@/ethers/contractUtils";
 import connectToDatabase from "@/lib/db";
 import Meme from "@/models/Meme";
 import User from "@/models/User";
@@ -120,6 +120,8 @@ async function handleGetRequest(request: NextRequest) {
           match: { is_onchain: true, in_percentile: { $gte: 51 } },
         })
         .countDocuments();
+
+      let {contract} = getContractUtils();
 
       const mintedCoins = await contract.balanceOf(wallet_address);
 
@@ -261,6 +263,8 @@ async function handlePostRequest(request: NextRequest) {
     // Mint 5 tokens if the user was referred
     if (savedUser.referred_by && savedUser.user_wallet_address) {
       try {
+        let {contract} = getContractUtils();
+
         // Mint 5 tokens (adjust amount as needed)
         const amountToMint = 5;
         const tx = await contract.mintCoins(savedUser.user_wallet_address, ethers.parseUnits(amountToMint.toString(), 18));

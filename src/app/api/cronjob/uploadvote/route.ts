@@ -1,4 +1,4 @@
-import { contract } from "@/ethers/contractUtils";
+import { getContractUtils } from "@/ethers/contractUtils";
 import connectToDatabase from "@/lib/db";
 import Vote from "@/models/Vote";
 import { NextResponse } from "next/server";
@@ -26,6 +26,8 @@ export async function POST() {
       userAddresses.length > 0 &&
       memeIds.length === userAddresses.length
     ) {
+      let {contract} = getContractUtils();
+      
       const tx = await contract.addMemeVotesBulk(memeIds, userAddresses);
       await tx.wait();
     }

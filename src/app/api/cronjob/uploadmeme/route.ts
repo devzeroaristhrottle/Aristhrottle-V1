@@ -2,7 +2,7 @@ import connectToDatabase from "@/lib/db";
 import Meme from "@/models/Meme";
 import { NextResponse } from "next/server";
 import { ethers } from "ethers";
-import { contract } from "@/ethers/contractUtils";
+import { getContractUtils } from "@/ethers/contractUtils";
 import User from "@/models/User"; // Explicitly import User model
 import mongoose from "mongoose";
 
@@ -92,6 +92,8 @@ export async function POST() {
 
     while (retries > 0) {
       try {
+        let {contract} = getContractUtils();
+        
         tx = await contract.addUploadMemeBulk(
           memeIds,
           userAddresses,

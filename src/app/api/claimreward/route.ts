@@ -1,4 +1,4 @@
-import { contract } from "@/ethers/contractUtils";
+import { getContractUtils } from "@/ethers/contractUtils";
 import connectToDatabase from "@/lib/db";
 import Milestone from "@/models/Milestone";
 import { checkIsAuthenticated } from "@/utils/authFunctions";
@@ -33,6 +33,8 @@ async function handlePostRequest(req: NextRequest) {
         milestoneData.created_by.user_wallet_address &&
         milestoneData.reward
       ) {
+        let {contract} = getContractUtils();
+        
         const reward = ethers.parseUnits(milestoneData.reward.toString(), 18); 
         const tx = await contract.mintCoins(
           milestoneData.created_by.user_wallet_address,
