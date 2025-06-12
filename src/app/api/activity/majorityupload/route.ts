@@ -5,6 +5,8 @@ import connectToDatabase from "@/lib/db";
 import { checkIsAuthenticated } from "@/utils/authFunctions";
 import { withApiLogging } from "@/utils/apiLogger";
 
+export const dynamic = 'force-dynamic'; // Prevent static generation
+
 async function handleGetRequest(request: NextRequest) {
   try {
     await connectToDatabase();
