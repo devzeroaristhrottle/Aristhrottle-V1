@@ -398,6 +398,7 @@ export default function Page() {
   };
 
   const handleUpvoteDownvote = async (meme_id: string, rating: string) => {
+    setAllMemeData(prev => prev.map(meme => meme._id === meme_id ? { ...meme, vote_count: meme.vote_count + 1 } : meme).sort((a, b) => a.rank - b.rank));
     try {
       if (user && user.address && activeTab === "all") {
         const response = await axiosInstance.post("/api/meme/rate", {
@@ -410,10 +411,11 @@ export default function Page() {
           } else if (rating === "downvote") {
             toast.success("Downvoted successfully!");
           }
-          getMyMemes();
+          setAllMemeData(prev => prev.map(meme => meme._id === meme_id ? { ...meme, vote_count: response.data.upvotes - response.data.downvotes } : meme).sort((a, b) => a.rank - b.rank));
         }
       }
     } catch (error: any) {
+      setAllMemeData(prev => prev.map(meme => meme._id === meme_id ? { ...meme, vote_count: meme.vote_count - 1 } : meme).sort((a, b) => a.rank - b.rank));
       console.error("Error in handleUpvoteDownvote:", error);
       toast.error(error.response.data.message);
     }
@@ -572,7 +574,7 @@ export default function Page() {
           isHeaderFixed ? "hidden" : ""
         }`}
       >
-        <div className="flex justify-between gap-x-2 md:gap-x-3">
+        <div className="flex justify-between gap-x-2 md:gap-x-3 z-10">
           <TabButton
             label="Live"
             classname="!px-2 md:!px-5"
