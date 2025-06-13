@@ -582,7 +582,22 @@ export default function Page() {
           <div className='my-4 flex flex-wrap gap-2 md:gap-4'>
             {popularTags.map((tag, index) => (
               <div
-                onClick={() => setQuery(tag.name)}
+                onClick={() => {
+                  setQuery((prevQuery) => {
+                    // Split the query into an array of tags
+                    const currentTags = prevQuery
+                      .split(',')
+                      .map((t) => t.trim())
+                      .filter((t) => t.length > 0)
+                    // Only append if the tag isn't already in the query
+                    if (!currentTags.includes(tag.name)) {
+                      return prevQuery.length > 0
+                        ? `${prevQuery}, ${tag.name}`
+                        : tag.name
+                    }
+                    return prevQuery
+                  })
+                }}
                 key={index}
                 className='border-2 border-[#1783fb] px-1.5 md:px-3 rounded-lg cursor-pointer text-balance text-base md:text-xl py-0 md:py-1'
               >
