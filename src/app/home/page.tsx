@@ -583,7 +583,7 @@ export default function Page() {
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-10 grid-cols-1 grid-flow-row mx-auto !min-h-[47vh] h-[calc(100vh-800px)] mt-6 mb-4 overflow-y-auto no-scrollbar"
+        className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-10 grid-cols-1 grid-flow-row mx-auto !min-h-[47vh] h-[calc(100vh-350px)] mt-6 mb-4 overflow-y-auto no-scrollbar"
       >
         {!loading &&
           activeTab === "live" &&
