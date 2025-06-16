@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from PIPELINE.routers import generate
 from PIPELINE.dependencies import init_vertexai
 
@@ -18,7 +19,18 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Text-to-Image API", lifespan=lifespan)
 
 # ---------------------------------------------------------------------------
-# Optional root route so visiting http://127.0.0.1:8000/ doesn’t 404
+# CORS middleware configuration
+# ---------------------------------------------------------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Add your frontend URL
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
+
+# ---------------------------------------------------------------------------
+# Optional root route so visiting http://127.0.0.1:8000/ doesn't 404
 # ---------------------------------------------------------------------------
 @app.get("/", tags=["Health"])
 async def root():
