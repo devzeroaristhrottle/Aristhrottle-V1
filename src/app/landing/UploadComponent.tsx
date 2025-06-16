@@ -1,12 +1,21 @@
-import React, { useState } from 'react'
+import axios from 'axios'
+import React, { useState, useRef, useContext } from 'react'
 import { HiSparkles } from 'react-icons/hi2'
 import { IoCloudUploadOutline } from 'react-icons/io5'
+import axiosInstance from '@/utils/axiosInstance'
+import { Context } from '@/context/contextProvider'
+
 
 const UploadComponent: React.FC = () => {
 	const [tags, setTags] = useState<string[]>([])
 	const [tagInput, setTagInput] = useState<string>('')
 	const [title, setTitle] = useState<string>('')
-
+	const [generatedImage, setGeneratedImage] = useState<string | null>(null)
+	const [isGenerating, setIsGenerating] = useState<boolean>(false)
+	const [isUploading, setIsUploading] = useState<boolean>(false)
+	const fileInputRef = useRef<HTMLInputElement>(null)
+	const [isAI, setIsAI] = useState<boolean>(false);
+	const { userDetails } = useContext(Context);
 	const handleTagInputKeyPress = (
 		e: React.KeyboardEvent<HTMLInputElement>
 	): void => {
@@ -25,83 +34,180 @@ const UploadComponent: React.FC = () => {
 		setTags(tags.filter(tag => tag !== tagToRemove))
 	}
 
+	const getImage = async () => {
+		try {
+			setIsGenerating(true)
+			const response = await axios.post('http://localhost:8000/api/v1/images/generate', {
+				title,
+				tags,
+				filename: 'image.png',
+			}, {
+				responseType: 'blob', // Important for handling binary data
+			})
+
+			// Create blob URL from the response
+			const imageBlob = new Blob([response.data], { type: 'image/png' })
+			const imageUrl = URL.createObjectURL(imageBlob)
+			setGeneratedImage(imageUrl)
+		} catch (error) {
+			console.error('Error generating image:', error)
+		} finally {
+			setIsGenerating(false)
+			setIsAI(true);
+		}
+	}
+
+	const handleFileSelect = () => {
+		fileInputRef.current?.click()
+	}
+
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0]
+		if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+			const fileUrl = URL.createObjectURL(file)
+			setGeneratedImage(fileUrl)
+		}
+	}
+
+	const handleUpload = async () => {
+		if (generatedImage) {
+			try {
+				setIsUploading(true)
+				
+				const response = await fetch(generatedImage)
+				const blob = await response.blob()
+				
+				// Create FormData for meme upload
+				const formData = new FormData()
+				formData.append('name', title)
+				formData.append('file', blob, 'image.png') 
+				formData.append('created_by', userDetails!._id)
+				formData.append('new_tags', JSON.stringify(tags))
+				formData.append('existing_tags', JSON.stringify([])) 
+				const uploadResponse = await axiosInstance.post('/api/meme', formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
+				})
+				
+				if (uploadResponse.status === 201) {
+					console.log('Meme uploaded successfully:', uploadResponse.data)
+					
+					// Reset form after successful upload
+					setTitle('')
+					setTags([])
+					setGeneratedImage(null)
+					
+					alert('Meme uploaded successfully!')
+				} else {
+					throw new Error('Upload failed')
+				}
+				
+			} catch (error) {
+				console.error('Error uploading meme:', error)
+				alert('Failed to upload meme. Please try again.')
+			} finally {
+				setIsUploading(false)
+			}
+		} else {
+			setIsAI(false);
+			handleFileSelect()
+		}
+	}
+
 	return (
-		<div className="flex justify-center items-center gap-8 w-full py-8 flex-col lg:flex-row ">
-			{/* Left Section */}
-			<div className="border border-white rounded-xl p-5 text-gray-400 w-full max-w-md h-fit hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20">
-				{/* Upload Instructions */}
-				<div id="top-sec">
-					<div className="flex gap-x-2 mb-4">
-						<div className="flex justify-center items-center">
-							<IoCloudUploadOutline
-								size={50}
-								className="text-blue-400 hover:scale-110 transition-transform duration-200"
+		<div className="flex justify-center items-start gap-8 w-full py-8 flex-col lg:flex-row h-fit">
+			{/* Left Section - Instructions or Image */}
+			<div className="w-full max-w-md h-96 max-h-96">
+				{generatedImage ? (
+					/* Image Display */
+					<div className="flex flex-col items-center border border-blue-400 rounded-xl p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300">
+						<h3 className="text-xl mb-3 text-blue-400">{isAI ? "Generated Image" : "Uploaded Image"}</h3>
+						<div className="w-full">
+							<img 
+								src={generatedImage} 
+								alt="Generated content" 
+								className="w-full h-auto max-h-96 object-contain rounded"
 							/>
 						</div>
-						<div className="flex flex-col">
-							<div className="text-blue-400 text-2xl">Choose File</div>
-							<div className="text-sm">JPG / PNG Max. 10 MB</div>
+					</div>
+				) : (
+					/* Upload Instructions */
+					<div className="border border-white rounded-xl p-5 text-gray-400 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20">
+						<div id="top-sec">
+							<div className="flex gap-x-2 mb-4">
+								<div className="flex justify-center items-center">
+									<IoCloudUploadOutline
+										size={50}
+										className="text-blue-400 hover:scale-110 transition-transform duration-200"
+									/>
+								</div>
+								<div className="flex flex-col">
+									<div className="text-blue-400 text-2xl">Choose File</div>
+									<div className="text-sm">JPG / PNG Max. 10 MB</div>
+								</div>
+							</div>
+							<ul className="space-y-2 pb-4">
+								{[
+									'Click Here to Upload From device',
+									'Enter Title and Tags',
+									'Click on "Upload"',
+								].map((text, index) => (
+									<li key={index} className="flex items-start gap-3 group">
+										<div className="w-6 h-6 rounded-full bg-gray-400 text-black border font-semibold text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200">
+											{index + 1}
+										</div>
+										<span className="pr-5 break-words group-hover:text-white transition-colors duration-200">
+											{text}
+										</span>
+									</li>
+								))}
+							</ul>
+						</div>
+
+						{/* Divider */}
+						<div className="flex items-center w-full gap-4 my-4">
+							<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
+							<span className="px-4 text-sm font-medium hover:text-blue-400 transition-colors duration-200">
+								or
+							</span>
+							<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
+						</div>
+
+						{/* AI Instructions */}
+						<div id="top-sec">
+							<div className="flex gap-x-3 items-center mb-3">
+								<HiSparkles
+									size={40}
+									className="text-blue-400 hover:scale-110 hover:rotate-12 transition-all duration-300"
+								/>
+								<div className="text-blue-400 text-xl hover:text-white transition-colors duration-200">
+									Create with Aris Intelligence
+								</div>
+							</div>
+							<ul className="space-y-2">
+								{[
+									'Enter Title and Tags of Your Choice',
+									'Click on "Generate"',
+									'Click on "Upload" to Post',
+								].map((text, index) => (
+									<li key={index} className="flex items-start gap-3 group">
+										<div className="w-6 h-6 rounded-full bg-gray-400 text-black border font-semibold text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200">
+											{index + 1}
+										</div>
+										<span className="pr-5 break-words group-hover:text-white transition-colors duration-200">
+											{text}
+										</span>
+									</li>
+								))}
+							</ul>
 						</div>
 					</div>
-					<ul className="space-y-2 pb-4">
-						{[
-							'Click Here to Upload From device',
-							'Enter Title and Tags',
-							'Click on "Upload"',
-						].map((text, index) => (
-							<li key={index} className="flex items-start gap-3 group">
-								<div className="w-6 h-6 rounded-full bg-gray-400 text-black border font-semibold text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200">
-									{index + 1}
-								</div>
-								<span className="pr-5 break-words group-hover:text-white transition-colors duration-200">
-									{text}
-								</span>
-							</li>
-						))}
-					</ul>
-				</div>
-
-				{/* Divider */}
-				<div className="flex items-center w-full gap-4 my-4">
-					<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
-					<span className="px-4 text-sm font-medium hover:text-blue-400 transition-colors duration-200">
-						or
-					</span>
-					<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
-				</div>
-
-				{/* AI Instructions */}
-				<div id="top-sec">
-					<div className="flex gap-x-3 items-center mb-3">
-						<HiSparkles
-							size={40}
-							className="text-blue-400 hover:scale-110 hover:rotate-12 transition-all duration-300"
-						/>
-						<div className="text-blue-400 text-xl hover:text-white transition-colors duration-200">
-							Create with Aris Intelligence
-						</div>
-					</div>
-					<ul className="space-y-2">
-						{[
-							'Enter Title and Tags of Your Choice',
-							'Click on "Generate"',
-							'Click on "Upload" to Post',
-						].map((text, index) => (
-							<li key={index} className="flex items-start gap-3 group">
-								<div className="w-6 h-6 rounded-full bg-gray-400 text-black border font-semibold text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200">
-									{index + 1}
-								</div>
-								<span className="pr-5 break-words group-hover:text-white transition-colors duration-200">
-									{text}
-								</span>
-							</li>
-						))}
-					</ul>
-				</div>
+				)}
 			</div>
 
-			{/* Right Section */}
-			<div className="flex flex-col justify-evenly text-lg w-full max-w-4xl space-y-6 lg:h-96 text-[25px] h-fit">
+			{/* Middle Section - Form */}
+			<div className="flex flex-col justify-between text-lg w-full h-96 py-4 text-[32px]">
 				<div className="flex flex-col group">
 					<label className="text-2xl mb-1 group-hover:text-blue-400 transition-colors duration-200">
 						Title
@@ -165,16 +271,32 @@ const UploadComponent: React.FC = () => {
 					/>
 				</div>
 
-				<div className="flex flex-row justify-evenly gap-4">
-					<button className="rounded-full bg-[#28e0ca] px-4 py-2 w-64 text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95">
-						Upload
+				<div className="flex flex-row justify-evenly">
+					<button 
+						onClick={handleUpload}
+						disabled={isUploading}
+						className="rounded-full bg-[#28e0ca] px-4 py-2 w-96 text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+						{isUploading ? 'Uploading...' : 'Upload'}
 					</button>
-					<button className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-2 w-64 flex items-center justify-center gap-2 font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group">
-						Generate
+					<button 
+						onClick={getImage}
+						disabled={isGenerating}
+						className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-2 w-96 flex items-center justify-center gap-2 font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed">
+						{isGenerating ? 'Generating...' : 'Generate'}
 						<HiSparkles className="group-hover:rotate-12 transition-transform duration-200" />
 					</button>
 				</div>
+
+				{/* Hidden file input */}
+				<input
+					ref={fileInputRef}
+					type="file"
+					accept="image/png,image/jpeg"
+					onChange={handleFileChange}
+					className="hidden"
+				/>
 			</div>
+
 		</div>
 	)
 }
