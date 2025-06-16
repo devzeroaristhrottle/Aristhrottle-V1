@@ -11,7 +11,7 @@ const UploadComponent: React.FC = () => {
 	const [isGenerating, setIsGenerating] = useState<boolean>(false)
 	const [isUploading, setIsUploading] = useState<boolean>(false)
 	const fileInputRef = useRef<HTMLInputElement>(null)
-
+	const [isAI, setIsAI] = useState<boolean>(false);
 	const handleTagInputKeyPress = (
 		e: React.KeyboardEvent<HTMLInputElement>
 	): void => {
@@ -49,6 +49,7 @@ const UploadComponent: React.FC = () => {
 			console.error('Error generating image:', error)
 		} finally {
 			setIsGenerating(false)
+			setIsAI(true);
 		}
 	}
 
@@ -103,7 +104,7 @@ const UploadComponent: React.FC = () => {
 				setIsUploading(false)
 			}
 		} else {
-			// No generated image, open file selector
+			setIsAI(false);
 			handleFileSelect()
 		}
 	}
@@ -115,7 +116,7 @@ const UploadComponent: React.FC = () => {
 				{generatedImage ? (
 					/* Image Display */
 					<div className="flex flex-col items-center border border-blue-400 rounded-xl p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300">
-						<h3 className="text-xl mb-3 text-blue-400">Generated Image</h3>
+						<h3 className="text-xl mb-3 text-blue-400">{isAI ? "Generated Image" : "Uploaded Image"}</h3>
 						<div className="w-full">
 							<img 
 								src={generatedImage} 
