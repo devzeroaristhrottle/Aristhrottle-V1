@@ -2,7 +2,6 @@
 
 import { useContext, useEffect, useState, useRef } from 'react'
 import { LuSearch } from 'react-icons/lu'
-import { IoCloudUploadOutline } from 'react-icons/io5'
 import {
 	LiaSortAmountUpAltSolid,
 	LiaSortAmountDownSolid,
@@ -32,7 +31,7 @@ import {
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { Context } from '@/context/contextProvider'
 import { toast } from 'react-toastify'
-import { useAuthModal, useUser } from '@account-kit/react'
+import { useUser } from '@account-kit/react'
 import { useInView } from 'motion/react'
 import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { motion } from 'framer-motion'
@@ -92,7 +91,6 @@ export default function Page() {
 	const [query, setQuery] = useState('')
 	const [showRecommendations, setShowRecommendations] = useState(false)
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
-	const [carouselMemes, setCarouselMemes] = useState<Meme[]>([])
 	const [memes, setMemes] = useState<Meme[]>([])
 	const [filterMemes, setFilterMemes] = useState<Meme[]>([])
 	const [popularTags, setPopularTags] = useState<TagI[]>([])
@@ -114,9 +112,9 @@ export default function Page() {
 		imageUrl: string
 	} | null>(null)
 
+	/* eslint-disable @typescript-eslint/no-unused-vars */
 	const { userDetails, setIsUploadMemeOpen, isRefreshMeme } =
 		useContext(Context)
-	const { openAuthModal } = useAuthModal()
 
 	const user = useUser()
 
@@ -165,13 +163,6 @@ export default function Page() {
 	const onClose = () => {
 		setIsMemeDetailOpen(false)
 		setSelectedMeme(undefined)
-	}
-
-	const getCarouselMemes = async () => {
-		const response = await axiosInstance.get('/api/meme?type=carousel')
-		if (response.data.memes) {
-			setCarouselMemes([...response.data.memes])
-		}
 	}
 
 	const getPopularTags = async () => {
@@ -273,7 +264,6 @@ export default function Page() {
 
 	useEffect(() => {
 		getMemeById()
-		getCarouselMemes()
 		getPopularTags()
 	}, [user, isRefreshMeme])
 
