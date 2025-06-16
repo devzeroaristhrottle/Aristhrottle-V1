@@ -2,31 +2,34 @@
 from PIPELINE.dependencies import init_vertexai
 from fastapi import APIRouter, HTTPException
 from PIPELINE.dependencies import get_genai_client, get_genai_config
-from PIPELINE.schemas import ImageRequest, ImageResponse
+from PIPELINE.schemas import ImageRequest
+from fastapi.responses import StreamingResponse
 from google.api_core import exceptions
-
+import io
 
 # Save to outputs directory
-save_path = f"output/image.png"
-
 router = APIRouter()
 
-@router.post("/generate", response_model=ImageResponse)
+@router.post("/generate")
 async def generate_image(request: ImageRequest):
     try:
         # Generate prompt
         prompt = generate_prompt(request.title, request.tags)
         
         # Generate image
-        image_url = await generate_and_save_image(
+        image = await generate_and_save_image(
             prompt=prompt,
             filename=request.filename
         )
         
-        return {
-            "prompt": prompt,
-            "image_url": image_url
-        }
+        # Convert image to bytes (assuming image has _image_bytes attribute)
+        img_bytes = io.BytesIO(image._image_bytes)
+        
+        return StreamingResponse(
+            img_bytes,
+            media_type="image/png",
+            headers={"Content-Disposition": f"attachment; filename={request.filename}"}
+        )
         
     except exceptions.GoogleAPIError as e:
         raise HTTPException(500, f"Google API error: {e.message}")
@@ -69,14 +72,16 @@ def generate_prompt(title: str, tags: list[str]) -> str:
     )
     return response.text.strip()
 
-async def generate_and_save_image(prompt: str, filename: str) -> str:
+async def generate_and_save_image(prompt: str, filename: str):
     model = init_vertexai()
     response = model.generate_images(
         prompt=prompt,
         number_of_images=1
     )
     
-    
+    # Save the image to the specified path
+    save_path = f"static/{filename}"
     response.images[0].save(save_path)
     
-    return f"/static/{filename}"  # URL path for access
+    # Return the image object instead of URL
+    return response.images[0]
