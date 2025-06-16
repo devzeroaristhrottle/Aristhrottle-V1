@@ -1,7 +1,10 @@
 import axios from 'axios'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import { HiSparkles } from 'react-icons/hi2'
 import { IoCloudUploadOutline } from 'react-icons/io5'
+import axiosInstance from '@/utils/axiosInstance'
+import { Context } from '@/context/contextProvider'
+
 
 const UploadComponent: React.FC = () => {
 	const [tags, setTags] = useState<string[]>([])
@@ -12,6 +15,7 @@ const UploadComponent: React.FC = () => {
 	const [isUploading, setIsUploading] = useState<boolean>(false)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const [isAI, setIsAI] = useState<boolean>(false);
+	const { userDetails } = useContext(Context);
 	const handleTagInputKeyPress = (
 		e: React.KeyboardEvent<HTMLInputElement>
 	): void => {
@@ -70,36 +74,38 @@ const UploadComponent: React.FC = () => {
 			try {
 				setIsUploading(true)
 				
-				// Convert blob URL back to blob for upload
 				const response = await fetch(generatedImage)
 				const blob = await response.blob()
 				
-				// Create FormData for multipart upload
+				// Create FormData for meme upload
 				const formData = new FormData()
-				formData.append('image', blob, 'image.png')
-				formData.append('title', title)
-				formData.append('tags', JSON.stringify(tags))
-				
-				// Upload to your backend endpoint
-				const uploadResponse = await axios.post('https://localhost:8000/upload', formData, {
+				formData.append('name', title)
+				formData.append('file', blob, 'image.png') 
+				formData.append('created_by', userDetails!._id)
+				formData.append('new_tags', JSON.stringify(tags))
+				formData.append('existing_tags', JSON.stringify([])) 
+				const uploadResponse = await axiosInstance.post('/api/meme', formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
 				})
 				
-				console.log('Upload successful:', uploadResponse.data)
-				
-				// Reset form after successful upload
-				setTitle('')
-				setTags([])
-				setGeneratedImage(null)
-				
-				// Optional: Show success message
-				alert('Image uploaded successfully!')
+				if (uploadResponse.status === 201) {
+					console.log('Meme uploaded successfully:', uploadResponse.data)
+					
+					// Reset form after successful upload
+					setTitle('')
+					setTags([])
+					setGeneratedImage(null)
+					
+					alert('Meme uploaded successfully!')
+				} else {
+					throw new Error('Upload failed')
+				}
 				
 			} catch (error) {
-				console.error('Error uploading image:', error)
-				alert('Failed to upload image. Please try again.')
+				console.error('Error uploading meme:', error)
+				alert('Failed to upload meme. Please try again.')
 			} finally {
 				setIsUploading(false)
 			}
