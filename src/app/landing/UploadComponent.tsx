@@ -5,12 +5,17 @@ import { IoCloudUploadOutline } from 'react-icons/io5'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
 import { useAuthModal, useUser } from '@account-kit/react'
+import { Meme } from './page'
 
 interface TagResponse {
 	name: string
 }
 
-const UploadComponent: React.FC = () => {
+interface UploadCompProps {
+	onUpload(meme: Meme): void
+}
+
+const UploadComponent: React.FC<UploadCompProps> = ({ onUpload }) => {
 	const [tags, setTags] = useState<string[]>([])
 	const [tagInput, setTagInput] = useState<string>('')
 	const [title, setTitle] = useState<string>('')
@@ -154,6 +159,42 @@ const UploadComponent: React.FC = () => {
 		}
 	}
 
+	const handleUploadMeme = (generatedImage: string) => {
+		const newMeme: Meme = {
+			_id: '',
+			name: title,
+			image_url: generatedImage,
+			vote_count: 0,
+			tags: tags.map(tag => ({
+				_id: '',
+				name: tag,
+				count: 0,
+				type: 'Event' as const,
+				startTime: new Date().toISOString(),
+				endTime: new Date().toISOString(),
+				created_by: userDetails!._id,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+				__v: 0,
+			})),
+			categories: [],
+			created_by: {
+				...userDetails!,
+				updatedAt: new Date().toISOString(),
+				__v: 0,
+			},
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			shares: [],
+			bookmarks: [],
+			is_onchain: false,
+			__v: 0,
+			voted: false,
+		}
+
+		onUpload(newMeme)
+	}
+
 	const handleUpload = async () => {
 		if (!user || !user.address) {
 			if (openAuthModal) {
@@ -197,6 +238,7 @@ const UploadComponent: React.FC = () => {
 				console.error('Error uploading meme:', error)
 				alert('Failed to upload meme. Please try again.')
 			} finally {
+				handleUploadMeme(generatedImage)
 				setIsUploading(false)
 			}
 		}
@@ -220,7 +262,7 @@ const UploadComponent: React.FC = () => {
 							<img
 								src={generatedImage}
 								alt="Generated content"
-								className="w-full h-auto max-h-64 lg:max-h-96 object-contain rounded hover:opacity-90 transition-opacity duration-200"
+								className="w-full h-auto object-contain rounded hover:opacity-90 transition-opacity duration-200 max-h-80"
 							/>
 						</div>
 						<p className="text-sm text-gray-400 mt-2 text-center">

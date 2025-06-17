@@ -19,22 +19,16 @@ import {
 	PopoverRoot,
 	PopoverTrigger,
 } from '@/components/ui/popover'
-import { HStack, Input } from '@chakra-ui/react'
+import { Input } from '@chakra-ui/react'
 import axiosInstance from '@/utils/axiosInstance'
 import { FaPlus, FaSort } from 'react-icons/fa'
-import {
-	PaginationItems,
-	PaginationNextTrigger,
-	PaginationPrevTrigger,
-	PaginationRoot,
-} from '@/components/ui/pagination'
+import { PaginationRoot } from '@/components/ui/pagination'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { Context } from '@/context/contextProvider'
 import { toast } from 'react-toastify'
 import { useUser } from '@account-kit/react'
 import { useInView } from 'motion/react'
 import { useMemeActions } from '../home/bookmark/bookmarkHelper'
-import { motion } from 'framer-motion'
 import { LeaderboardMemeCard } from '../home/leaderboard/MemeCard'
 import { LeaderboardMeme } from '../home/leaderboard/page'
 import Share from '@/components/Share'
@@ -404,13 +398,20 @@ export default function Page() {
 		}
 	}
 
+	const addMeme = (meme: Meme) => {
+		setMemes([...memes, meme])
+		if (activeTab === 'live') {
+			setFilterMemes([meme, ...filterMemes])
+		}
+	}
+
 	return (
 		<div
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
 			style={{ height: '100vh' }}
 		>
 			{/* Upload Component */}
-			<UploadComponent />
+			<UploadComponent onUpload={addMeme} />
 			<div className="h-8" />
 			{/* Popular Tags */}
 			<div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">
@@ -557,7 +558,7 @@ export default function Page() {
 			{/* Meme Container */}
 			<div
 				ref={memeContainerRef}
-				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-10 grid-cols-1 grid-flow-row mx-auto !min-h-[47vh] h-[calc(100vh-350px)] mt-6 mb-4 overflow-y-auto no-scrollbar"
+				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-y-10 grid-cols-1 grid-flow-row !min-h-[47vh] h-[calc(100vh-350px)] mt-6 mb-4 no-scrollbar w-full"
 			>
 				{!loading &&
 					activeTab === 'live' &&
