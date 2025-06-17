@@ -405,13 +405,20 @@ export default function Page() {
 		}
 	}
 
+	const revertMeme = (meme: Meme) => {
+		setMemes(memes.filter(m => m._id !== meme._id))
+		if (activeTab === 'live') {
+			setFilterMemes(filterMemes.filter(m => m._id !== meme._id))
+		}
+	}
+
 	return (
 		<div
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
 			style={{ height: '100vh' }}
 		>
 			{/* Upload Component */}
-			<UploadComponent onUpload={addMeme} />
+			<UploadComponent onUpload={addMeme} onRevert={revertMeme} />
 			<div className="h-8" />
 			{/* Popular Tags */}
 			<div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">

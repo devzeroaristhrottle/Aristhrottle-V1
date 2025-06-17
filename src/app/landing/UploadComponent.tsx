@@ -13,9 +13,10 @@ interface TagResponse {
 
 interface UploadCompProps {
 	onUpload(meme: Meme): void
+	onRevert(meme: Meme): void
 }
 
-const UploadComponent: React.FC<UploadCompProps> = ({ onUpload }) => {
+const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [tags, setTags] = useState<string[]>([])
 	const [tagInput, setTagInput] = useState<string>('')
 	const [title, setTitle] = useState<string>('')
@@ -161,7 +162,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload }) => {
 
 	const handleUploadMeme = (generatedImage: string) => {
 		const newMeme: Meme = {
-			_id: '',
+			_id: `temp-${Date.now()}`,
 			name: title,
 			image_url: generatedImage,
 			vote_count: 0,
@@ -191,8 +192,9 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload }) => {
 			__v: 0,
 			voted: false,
 		}
-
+		
 		onUpload(newMeme)
+		return newMeme
 	}
 
 	const handleUpload = async () => {
@@ -203,6 +205,9 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload }) => {
 			return
 		}
 		if (generatedImage) {
+			// Show meme immediately (optimistic update)
+			const optimisticMeme = handleUploadMeme(generatedImage)
+
 			try {
 				setIsUploading(true)
 
@@ -235,10 +240,11 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload }) => {
 					throw new Error('Upload failed')
 				}
 			} catch (error) {
-				console.error('Error uploading meme:', error)
+				console.error('Error uploading meme:', error, optimisticMeme?._id)
 				alert('Failed to upload meme. Please try again.')
+
+				onRevert(optimisticMeme);
 			} finally {
-				handleUploadMeme(generatedImage)
 				setIsUploading(false)
 			}
 		}
