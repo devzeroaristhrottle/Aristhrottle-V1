@@ -9,17 +9,20 @@ interface Props {
 
 export default function Layout({ children }: Props) {
 	const gaId = process.env.NEXT_PUBLIC_GA_ID || 'G-FY44ED1KLP'
+
 	return (
-		<div className="bg1">
-			<div className="flex flex-col">
-				<div className="fixed h-screen max-h-dvh !z-[100]">
-					<Sidebar />
-				</div>
-				<div className="min-h-dvh max-w-screen">
-					<Navbar />
-					<div className="mt-2 md:mt-6">{children}</div>
-				</div>
-			</div>
+		<div className="bg1 min-h-screen flex">
+			{/* Sidebar */}
+			<aside className="w-20 h-screen sticky top-0 hidden lg:block">
+				<Sidebar />
+			</aside>
+
+			{/* Main content */}
+			<main className="flex-1 md:px-8 overflow-x-hidden">
+				<Navbar />
+				<div className="mt-2 md:mt-6">{children}</div>
+			</main>
+
 			<UploadMeme />
 			<GoogleAnalytics gaId={gaId} />
 		</div>
