@@ -13,14 +13,17 @@ export default function Layout({ children }: Props) {
 	return (
 		<div className="bg1 min-h-screen flex">
 			{/* Sidebar */}
-			<aside className="w-20 h-screen sticky top-0 hidden lg:block">
+			<aside className="w-20 h-screen top-0 lg:block hidden">
 				<Sidebar />
 			</aside>
 
 			{/* Main content */}
-			<main className="flex-1 md:px-8">
+			<main className="flex-1 md:px-8 lg:px-20">
 				<Navbar />
 				<div className="mt-2 md:mt-6">{children}</div>
+				<div className="lg:hidden block">
+					<Sidebar />
+				</div>
 			</main>
 
 			<UploadMeme />

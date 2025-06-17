@@ -192,7 +192,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			__v: 0,
 			voted: false,
 		}
-		
+
 		onUpload(newMeme)
 		return newMeme
 	}
@@ -243,7 +243,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				console.error('Error uploading meme:', error, optimisticMeme?._id)
 				alert('Failed to upload meme. Please try again.')
 
-				onRevert(optimisticMeme);
+				onRevert(optimisticMeme)
 			} finally {
 				setIsUploading(false)
 			}
@@ -253,7 +253,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	return (
 		<div className="flex justify-center items-start gap-4 lg:gap-8 w-full py-4 lg:py-8 flex-col lg:flex-row h-fit px-4 lg:px-0">
 			{/* Left Section - Instructions or Image */}
-			<div className="w-full lg:max-w-md h-auto lg:h-96 lg:max-h-96">
+			<div className="w-full max-w-md lg:w-[27rem] h-auto lg:h-96 lg:max-h-96 flex-shrink-0">
 				{generatedImage ? (
 					/* Image Display */
 					<div
@@ -362,9 +362,9 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			</div>
 
 			{/* Right Section - Form */}
-			<div className="flex flex-col justify-between w-full lg:h-96 py-2 lg:py-4 h-fit gap-y-4 lg:gap-y-4">
+			<div className="flex flex-col justify-between w-full max-w-4xl lg:flex-1 lg:h-96 py-2 lg:py-4 h-fit gap-y-4 lg:gap-y-4">
 				<div className="flex flex-col group">
-					<label className="text-xl lg:text-2xl mb-1 group-hover:text-blue-400 transition-colors duration-200">
+					<label className="text-lg sm:text-xl lg:text-2xl mb-1 group-hover:text-blue-400 transition-colors duration-200">
 						Title
 					</label>
 					<input
@@ -375,12 +375,12 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 							setTitle(e.target.value)
 						}
 						maxLength={250}
-						className="bg-transparent border rounded-lg px-3 py-2 lg:py-2 text-base lg:text-lg text-white placeholder:text-gray-400 focus:outline-none border-[#1583fb] hover:border-blue-300 focus:border-blue-300 focus:shadow-lg focus:shadow-blue-400/20 transition-all duration-200"
+						className="bg-transparent border rounded-lg px-3 py-2 lg:py-3 text-sm sm:text-base lg:text-lg text-white placeholder:text-gray-400 focus:outline-none border-[#1583fb] hover:border-blue-300 focus:border-blue-300 focus:shadow-lg focus:shadow-blue-400/20 transition-all duration-200 w-full"
 					/>
 				</div>
 
 				<div className="flex flex-col group">
-					<label className="text-xl lg:text-2xl mb-1 group-hover:text-blue-400 transition-colors duration-200">
+					<label className="text-lg sm:text-xl lg:text-2xl mb-1 group-hover:text-blue-400 transition-colors duration-200">
 						Tags{' '}
 						{tags.length > 0 && (
 							<span className="text-sm text-gray-400 group-hover:text-blue-300 transition-colors duration-200">
@@ -390,14 +390,14 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					</label>
 
 					{/* Tags input box with tags inside */}
-					<div className="relative" ref={dropdownRef}>
-						<div className="bg-transparent border rounded-lg px-3 py-2 lg:py-2 border-[#1583fb] hover:border-blue-300 focus-within:border-blue-300 focus-within:shadow-lg focus-within:shadow-blue-400/20 transition-all duration-200 min-h-[40px] lg:min-h-[44px]">
+					<div className="relative w-full" ref={dropdownRef}>
+						<div className="bg-transparent border rounded-lg px-3 py-2 lg:py-3 border-[#1583fb] hover:border-blue-300 focus-within:border-blue-300 focus-within:shadow-lg focus-within:shadow-blue-400/20 transition-all duration-200 min-h-[40px] sm:min-h-[44px] lg:min-h-[48px] w-full">
 							<div className="flex flex-wrap gap-1 lg:gap-2 items-center">
 								{/* Display existing tags inside the input */}
 								{tags.map((tag, index) => (
 									<span
 										key={index}
-										className="bg-[#1583fb] text-white px-2 py-1 rounded-full text-sm flex items-center gap-1 hover:bg-blue-600 transition-all duration-200 cursor-default"
+										className="bg-[#1583fb] text-white px-2 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1 hover:bg-blue-600 transition-all duration-200 cursor-default flex-shrink-0"
 									>
 										{tag}
 										<button
@@ -430,7 +430,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 										}
 									}}
 									disabled={tags.length >= 5}
-									className="bg-transparent outline-none text-base lg:text-lg text-white placeholder:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed flex-1 min-w-0"
+									className="bg-transparent outline-none text-sm sm:text-base lg:text-lg text-white placeholder:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed flex-1 min-w-0"
 								/>
 							</div>
 						</div>
@@ -462,18 +462,18 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					</div>
 				</div>
 
-				<div className="flex flex-col lg:flex-row justify-evenly gap-3 lg:gap-4">
+				<div className="flex flex-col sm:flex-row justify-center lg:justify-evenly gap-3 lg:gap-4 w-full">
 					<button
 						onClick={handleUpload}
 						disabled={isUploading}
-						className="rounded-full bg-[#28e0ca] px-4 py-2 lg:py-2 w-full lg:w-96 text-base lg:text-lg text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+						className="rounded-full bg-[#28e0ca] px-4 py-2 lg:py-3 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 text-sm sm:text-base lg:text-lg text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isUploading ? 'Uploading...' : 'Upload'}
 					</button>
 					<button
 						onClick={getImage}
 						disabled={isGenerating}
-						className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-2 lg:py-2 w-full lg:w-96 flex items-center justify-center gap-2 text-base lg:text-lg font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
+						className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-2 lg:py-3 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 flex items-center justify-center gap-2 text-sm sm:text-base lg:text-lg font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isGenerating ? 'Generating...' : 'Generate'}
 						<HiSparkles className="group-hover:rotate-12 transition-transform duration-200" />
