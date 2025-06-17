@@ -18,7 +18,7 @@ export default function Layout({ children }: Props) {
 			</aside>
 
 			{/* Main content */}
-			<main className="flex-1 md:px-8 overflow-x-hidden">
+			<main className="flex-1 md:px-8">
 				<Navbar />
 				<div className="mt-2 md:mt-6">{children}</div>
 			</main>
