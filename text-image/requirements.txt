@@ -4,3 +4,4 @@ google-cloud-aiplatform==1.67.1
 google-genai==1.20.0
 google-auth==2.27.0
 pillow==11.2.1
+dotenv
