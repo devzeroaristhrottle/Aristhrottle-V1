@@ -9,6 +9,7 @@ import { Meme } from './page'
 
 interface TagResponse {
 	name: string
+	_id: string
 }
 
 interface UploadCompProps {
@@ -26,6 +27,8 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [recommendedTags, setRecommendedTags] = useState<TagResponse[]>([])
 	const [showDropdown, setShowDropdown] = useState<boolean>(false)
 	const [isLoadingTags, setIsLoadingTags] = useState<boolean>(false)
+	const [exsistingTag, setExsistingTag] = useState<string[]>([])
+	const [newTags, setNewTags] = useState<string[]>([])
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const [isAI, setIsAI] = useState<boolean>(false)
@@ -35,7 +38,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 
 	// Fetch tag recommendations
 	const fetchTagRecommendations = async (searchTerm: string) => {
-		if (!searchTerm.trim() || searchTerm.length < 2) {
+		if (!searchTerm.trim() || searchTerm.length < 1) {
 			setRecommendedTags([])
 			setShowDropdown(false)
 			return
@@ -93,6 +96,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 
 			if (newTag && !tags.includes(newTag) && tags.length < 5) {
 				setTags([...tags, newTag])
+				setNewTags([...newTags, newTag])
 				setTagInput('')
 				setShowDropdown(false)
 			}
@@ -101,12 +105,13 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 		}
 	}
 
-	const selectRecommendedTag = (tagName: string) => {
+	const selectRecommendedTag = (tagName: string, tagId: string) => {
 		const normalizedTag = tagName.toLowerCase()
 		if (!tags.includes(normalizedTag) && tags.length < 5) {
 			setTags([...tags, normalizedTag])
 			setTagInput('')
 			setShowDropdown(false)
+			setExsistingTag([...exsistingTag, tagId])
 		}
 	}
 
@@ -219,8 +224,8 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				formData.append('name', title)
 				formData.append('file', blob, 'image.png')
 				formData.append('created_by', userDetails!._id)
-				formData.append('new_tags', JSON.stringify(tags))
-				formData.append('existing_tags', JSON.stringify([]))
+				formData.append('new_tags', JSON.stringify(newTags))
+				formData.append('existing_tags', JSON.stringify(exsistingTag))
 				const uploadResponse = await axiosInstance.post('/api/meme', formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
@@ -447,7 +452,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 										<div
 											key={index}
 											className="px-3 py-2 hover:bg-blue-600 cursor-pointer text-white text-sm transition-colors duration-200 border-b border-gray-700 last:border-b-0"
-											onClick={() => selectRecommendedTag(tag.name)}
+											onClick={() => selectRecommendedTag(tag.name, tag._id)}
 										>
 											{tag.name}
 										</div>

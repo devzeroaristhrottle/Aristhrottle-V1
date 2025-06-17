@@ -566,7 +566,7 @@ export default function Page() {
 			<div
 				ref={memeContainerRef}
 				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-y-10 grid-cols-1 grid-flow-row !min-h-[47vh]  mt-6 mb-4 no-scrollbar w-full"
-				style={{ height: 'calc(100vh - 100px)', paddingBottom: '200px' }}
+				style={{ height: 'calc(100vh - 125px)', paddingBottom: '200px' }}
 			>
 				{!loading &&
 					activeTab === 'live' &&
