@@ -469,18 +469,18 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					</div>
 				</div>
 
-				<div className="flex flex-col sm:flex-row justify-center lg:justify-evenly gap-3 lg:gap-4 w-full">
+				<div className="flex flex-col sm:flex-row justify-center lg:justify-evenly gap-3 lg:gap-4 w-full text-[24px]">
 					<button
 						onClick={handleUpload}
 						disabled={isUploading}
-						className="rounded-full bg-[#28e0ca] px-4 py-2 lg:py-3 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 text-sm sm:text-base lg:text-lg text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+						className="rounded-full bg-[#28e0ca] px-4 py-1 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isUploading ? 'Uploading...' : 'Upload'}
 					</button>
 					<button
 						onClick={getImage}
 						disabled={isGenerating}
-						className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-2 lg:py-3 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 flex items-center justify-center gap-2 text-sm sm:text-base lg:text-lg font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
+						className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-1 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 flex items-center justify-center gap-2 font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isGenerating ? 'Generating...' : 'Generate'}
 						<HiSparkles className="group-hover:rotate-12 transition-transform duration-200" />
