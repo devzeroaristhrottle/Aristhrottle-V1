@@ -1,35 +1,112 @@
 import axios from 'axios'
-import React, { useState, useRef, useContext } from 'react'
+import React, { useState, useRef, useContext, useEffect } from 'react'
 import { HiSparkles } from 'react-icons/hi2'
 import { IoCloudUploadOutline } from 'react-icons/io5'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
 import { useAuthModal, useUser } from '@account-kit/react'
+import { Meme } from './page'
 
-const UploadComponent: React.FC = () => {
+interface TagResponse {
+	name: string
+}
+
+interface UploadCompProps {
+	onUpload(meme: Meme): void
+	onRevert(meme: Meme): void
+}
+
+const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [tags, setTags] = useState<string[]>([])
 	const [tagInput, setTagInput] = useState<string>('')
 	const [title, setTitle] = useState<string>('')
 	const [generatedImage, setGeneratedImage] = useState<string | null>(null)
 	const [isGenerating, setIsGenerating] = useState<boolean>(false)
 	const [isUploading, setIsUploading] = useState<boolean>(false)
+	const [recommendedTags, setRecommendedTags] = useState<TagResponse[]>([])
+	const [showDropdown, setShowDropdown] = useState<boolean>(false)
+	const [isLoadingTags, setIsLoadingTags] = useState<boolean>(false)
 	const fileInputRef = useRef<HTMLInputElement>(null)
+	const dropdownRef = useRef<HTMLDivElement>(null)
 	const [isAI, setIsAI] = useState<boolean>(false)
 	const { userDetails } = useContext(Context)
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
+
+	// Fetch tag recommendations
+	const fetchTagRecommendations = async (searchTerm: string) => {
+		if (!searchTerm.trim() || searchTerm.length < 2) {
+			setRecommendedTags([])
+			setShowDropdown(false)
+			return
+		}
+
+		try {
+			setIsLoadingTags(true)
+			const response = await axiosInstance.get(
+				`/api/tags?name=${encodeURIComponent(searchTerm)}`
+			)
+			const filteredTags = response.data.tags.filter(
+				(tag: TagResponse) => !tags.includes(tag.name.toLowerCase())
+			)
+			setRecommendedTags(filteredTags)
+			setShowDropdown(filteredTags.length > 0)
+		} catch (error) {
+			console.error('Error fetching tag recommendations:', error)
+			setRecommendedTags([])
+			setShowDropdown(false)
+		} finally {
+			setIsLoadingTags(false)
+		}
+	}
+
+	// Debounce tag search
+	useEffect(() => {
+		const debounceTimer = setTimeout(() => {
+			fetchTagRecommendations(tagInput)
+		}, 300)
+
+		return () => clearTimeout(debounceTimer)
+	}, [tagInput, tags])
+
+	// Close dropdown when clicking outside
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setShowDropdown(false)
+			}
+		}
+
+		document.addEventListener('mousedown', handleClickOutside)
+		return () => document.removeEventListener('mousedown', handleClickOutside)
+	}, [])
 
 	const handleTagInputKeyPress = (
 		e: React.KeyboardEvent<HTMLInputElement>
 	): void => {
 		if (e.key === 'Enter') {
 			e.preventDefault()
-			const newTag = tagInput.trim()
+			const newTag = tagInput.trim().toLowerCase()
 
 			if (newTag && !tags.includes(newTag) && tags.length < 5) {
 				setTags([...tags, newTag])
 				setTagInput('')
+				setShowDropdown(false)
 			}
+		} else if (e.key === 'Escape') {
+			setShowDropdown(false)
+		}
+	}
+
+	const selectRecommendedTag = (tagName: string) => {
+		const normalizedTag = tagName.toLowerCase()
+		if (!tags.includes(normalizedTag) && tags.length < 5) {
+			setTags([...tags, normalizedTag])
+			setTagInput('')
+			setShowDropdown(false)
 		}
 	}
 
@@ -71,6 +148,7 @@ const UploadComponent: React.FC = () => {
 	}
 
 	const handleFileSelect = () => {
+		setIsAI(false)
 		fileInputRef.current?.click()
 	}
 
@@ -82,6 +160,43 @@ const UploadComponent: React.FC = () => {
 		}
 	}
 
+	const handleUploadMeme = (generatedImage: string) => {
+		const newMeme: Meme = {
+			_id: `temp-${Date.now()}`,
+			name: title,
+			image_url: generatedImage,
+			vote_count: 0,
+			tags: tags.map(tag => ({
+				_id: '',
+				name: tag,
+				count: 0,
+				type: 'Event' as const,
+				startTime: new Date().toISOString(),
+				endTime: new Date().toISOString(),
+				created_by: userDetails!._id,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+				__v: 0,
+			})),
+			categories: [],
+			created_by: {
+				...userDetails!,
+				updatedAt: new Date().toISOString(),
+				__v: 0,
+			},
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			shares: [],
+			bookmarks: [],
+			is_onchain: false,
+			__v: 0,
+			voted: false,
+		}
+		
+		onUpload(newMeme)
+		return newMeme
+	}
+
 	const handleUpload = async () => {
 		if (!user || !user.address) {
 			if (openAuthModal) {
@@ -90,6 +205,9 @@ const UploadComponent: React.FC = () => {
 			return
 		}
 		if (generatedImage) {
+			// Show meme immediately (optimistic update)
+			const optimisticMeme = handleUploadMeme(generatedImage)
+
 			try {
 				setIsUploading(true)
 
@@ -122,14 +240,13 @@ const UploadComponent: React.FC = () => {
 					throw new Error('Upload failed')
 				}
 			} catch (error) {
-				console.error('Error uploading meme:', error)
+				console.error('Error uploading meme:', error, optimisticMeme?._id)
 				alert('Failed to upload meme. Please try again.')
+
+				onRevert(optimisticMeme);
 			} finally {
 				setIsUploading(false)
 			}
-		} else {
-			setIsAI(false)
-			handleFileSelect()
 		}
 	}
 
@@ -139,7 +256,11 @@ const UploadComponent: React.FC = () => {
 			<div className="w-full lg:max-w-md h-auto lg:h-96 lg:max-h-96">
 				{generatedImage ? (
 					/* Image Display */
-					<div className="flex flex-col items-center border border-blue-400 rounded-xl p-3 lg:p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300">
+					<div
+						className="flex flex-col items-center border border-blue-400 rounded-xl p-3 lg:p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300 cursor-pointer hover:border-blue-300"
+						onClick={handleFileSelect}
+						title="Click to select a different image"
+					>
 						<h3 className="text-lg lg:text-xl mb-2 lg:mb-3 text-blue-400">
 							{isAI ? 'Generated Image' : 'Uploaded Image'}
 						</h3>
@@ -147,13 +268,19 @@ const UploadComponent: React.FC = () => {
 							<img
 								src={generatedImage}
 								alt="Generated content"
-								className="w-full h-auto max-h-64 lg:max-h-96 object-contain rounded"
+								className="w-full h-auto object-contain rounded hover:opacity-90 transition-opacity duration-200 max-h-80"
 							/>
 						</div>
+						<p className="text-sm text-gray-400 mt-2 text-center">
+							Click to select a different image
+						</p>
 					</div>
 				) : (
 					/* Upload Instructions */
-					<div className="border border-white rounded-xl p-4 lg:p-5 text-gray-400 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20">
+					<div
+						className="border border-white rounded-xl p-4 lg:p-5 text-gray-400 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20 cursor-pointer"
+						onClick={handleFileSelect}
+					>
 						<div id="top-sec">
 							<div className="flex gap-x-2 mb-3 lg:mb-4">
 								<div className="flex justify-center items-center">
@@ -262,41 +389,77 @@ const UploadComponent: React.FC = () => {
 						)}
 					</label>
 
-					{/* Display existing tags */}
-					{tags.length > 0 && (
-						<div className="flex flex-wrap gap-2 mb-2">
-							{tags.map((tag, index) => (
-								<span
-									key={index}
-									className="bg-[#1583fb] text-white px-2 lg:px-3 py-1 rounded-full text-sm lg:text-base flex items-center gap-2 hover:bg-blue-600 hover:scale-105 transition-all duration-200 cursor-default"
-								>
-									{tag}
-									<button
-										onClick={() => removeTag(tag)}
-										className="hover:bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs hover:scale-125 transition-all duration-200"
+					{/* Tags input box with tags inside */}
+					<div className="relative" ref={dropdownRef}>
+						<div className="bg-transparent border rounded-lg px-3 py-2 lg:py-2 border-[#1583fb] hover:border-blue-300 focus-within:border-blue-300 focus-within:shadow-lg focus-within:shadow-blue-400/20 transition-all duration-200 min-h-[40px] lg:min-h-[44px]">
+							<div className="flex flex-wrap gap-1 lg:gap-2 items-center">
+								{/* Display existing tags inside the input */}
+								{tags.map((tag, index) => (
+									<span
+										key={index}
+										className="bg-[#1583fb] text-white px-2 py-1 rounded-full text-sm flex items-center gap-1 hover:bg-blue-600 transition-all duration-200 cursor-default"
 									>
-										×
-									</button>
-								</span>
-							))}
-						</div>
-					)}
+										{tag}
+										<button
+											onClick={() => removeTag(tag)}
+											className="hover:bg-red-500 rounded-full w-3 h-3 flex items-center justify-center text-xs hover:scale-125 transition-all duration-200"
+										>
+											×
+										</button>
+									</span>
+								))}
 
-					<input
-						type="text"
-						placeholder={
-							tags.length >= 5
-								? 'Maximum 5 tags reached'
-								: 'Max 5, create your tag by pressing Enter'
-						}
-						value={tagInput}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-							setTagInput(e.target.value)
-						}
-						onKeyPress={handleTagInputKeyPress}
-						disabled={tags.length >= 5}
-						className="bg-transparent border rounded-lg px-3 py-2 lg:py-2 text-base lg:text-lg text-white placeholder:text-gray-400 focus:outline-none border-[#1583fb] hover:border-blue-300 focus:border-blue-300 focus:shadow-lg focus:shadow-blue-400/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-					/>
+								{/* Input field */}
+								<input
+									type="text"
+									placeholder={
+										tags.length === 0
+											? 'Max 5, create your tag by pressing Enter'
+											: tags.length >= 5
+											? 'Maximum 5 tags reached'
+											: 'Add tag...'
+									}
+									value={tagInput}
+									onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+										setTagInput(e.target.value)
+									}
+									onKeyPress={handleTagInputKeyPress}
+									onFocus={() => {
+										if (recommendedTags.length > 0) {
+											setShowDropdown(true)
+										}
+									}}
+									disabled={tags.length >= 5}
+									className="bg-transparent outline-none text-base lg:text-lg text-white placeholder:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed flex-1 min-w-0"
+								/>
+							</div>
+						</div>
+
+						{/* Dropdown for tag recommendations */}
+						{showDropdown && (
+							<div className="absolute z-10 w-full mt-1 bg-gray-800 border border-blue-400 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+								{isLoadingTags ? (
+									<div className="px-3 py-2 text-gray-400 text-sm">
+										Loading suggestions...
+									</div>
+								) : recommendedTags.length > 0 ? (
+									recommendedTags.map((tag, index) => (
+										<div
+											key={index}
+											className="px-3 py-2 hover:bg-blue-600 cursor-pointer text-white text-sm transition-colors duration-200 border-b border-gray-700 last:border-b-0"
+											onClick={() => selectRecommendedTag(tag.name)}
+										>
+											{tag.name}
+										</div>
+									))
+								) : (
+									<div className="px-3 py-2 text-gray-400 text-sm">
+										No suggestions found
+									</div>
+								)}
+							</div>
+						)}
+					</div>
 				</div>
 
 				<div className="flex flex-col lg:flex-row justify-evenly gap-3 lg:gap-4">
