@@ -299,9 +299,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 									/>
 								</div>
 								<div className="flex flex-col">
-									<div className="text-blue-400 text-xl lg:text-2xl">
-										Choose File
-									</div>
+									<div className="text-blue-400 text-xl">Choose File</div>
 									<div className="text-xs lg:text-sm">JPG / PNG Max. 10 MB</div>
 								</div>
 							</div>
