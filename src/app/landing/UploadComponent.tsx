@@ -259,7 +259,11 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 		<div className="flex justify-center items-start gap-4 lg:gap-8 w-full py-4 lg:py-8 flex-col lg:flex-row h-fit px-4 lg:px-0">
 			{/* Left Section - Instructions or Image */}
 			<div className="w-full max-w-md lg:w-[27rem] h-auto lg:h-96 lg:max-h-96 flex-shrink-0">
-				{generatedImage ? (
+				{isGenerating ? (
+					<div className="flex flex-col justify-center items-center border border-blue-400 rounded-xl p-3 lg:p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300 cursor-pointer hover:border-blue-300 h-full">
+						<div className="w-32 h-32 border-8 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+					</div>
+				) : generatedImage ? (
 					/* Image Display */
 					<div
 						className="flex flex-col items-center border border-blue-400 rounded-xl p-3 lg:p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300 cursor-pointer hover:border-blue-300"
