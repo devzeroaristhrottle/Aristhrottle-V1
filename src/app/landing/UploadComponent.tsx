@@ -4,8 +4,7 @@ import { HiSparkles } from 'react-icons/hi2'
 import { IoCloudUploadOutline } from 'react-icons/io5'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
-import { useAuthModal } from '@account-kit/react'
-
+import { useAuthModal, useUser } from '@account-kit/react'
 
 const UploadComponent: React.FC = () => {
 	const [tags, setTags] = useState<string[]>([])
@@ -15,10 +14,11 @@ const UploadComponent: React.FC = () => {
 	const [isGenerating, setIsGenerating] = useState<boolean>(false)
 	const [isUploading, setIsUploading] = useState<boolean>(false)
 	const fileInputRef = useRef<HTMLInputElement>(null)
-	const [isAI, setIsAI] = useState<boolean>(false);
-	const { userDetails } = useContext(Context);
-	const { openAuthModal } = useAuthModal();
-	
+	const [isAI, setIsAI] = useState<boolean>(false)
+	const { userDetails } = useContext(Context)
+	const { openAuthModal } = useAuthModal()
+	const user = useUser()
+
 	const handleTagInputKeyPress = (
 		e: React.KeyboardEvent<HTMLInputElement>
 	): void => {
@@ -38,19 +38,25 @@ const UploadComponent: React.FC = () => {
 	}
 
 	const getImage = async () => {
-		if(!userDetails || !userDetails._id){
-			openAuthModal();
-			return;
+		if (!user || !user.address) {
+			if (openAuthModal) {
+				openAuthModal()
+			}
+			return
 		}
 		try {
 			setIsGenerating(true)
-			const response = await axios.post('http://localhost:8000/api/v1/images/generate', {
-				title,
-				tags,
-				filename: 'image.png',
-			}, {
-				responseType: 'blob', // Important for handling binary data
-			})
+			const response = await axios.post(
+				'https://gen-image-84192368251.europe-west1.run.app/api/v1/images/generate',
+				{
+					title,
+					tags,
+					filename: 'image.png',
+				},
+				{
+					responseType: 'blob', // Important for handling binary data
+				}
+			)
 
 			// Create blob URL from the response
 			const imageBlob = new Blob([response.data], { type: 'image/png' })
@@ -60,7 +66,7 @@ const UploadComponent: React.FC = () => {
 			console.error('Error generating image:', error)
 		} finally {
 			setIsGenerating(false)
-			setIsAI(true);
+			setIsAI(true)
 		}
 	}
 
@@ -77,43 +83,44 @@ const UploadComponent: React.FC = () => {
 	}
 
 	const handleUpload = async () => {
-		if(!userDetails || !userDetails._id){
-			openAuthModal();
-			return;
+		if (!user || !user.address) {
+			if (openAuthModal) {
+				openAuthModal()
+			}
+			return
 		}
 		if (generatedImage) {
 			try {
 				setIsUploading(true)
-				
+
 				const response = await fetch(generatedImage)
 				const blob = await response.blob()
-				
+
 				// Create FormData for meme upload
 				const formData = new FormData()
 				formData.append('name', title)
-				formData.append('file', blob, 'image.png') 
+				formData.append('file', blob, 'image.png')
 				formData.append('created_by', userDetails!._id)
 				formData.append('new_tags', JSON.stringify(tags))
-				formData.append('existing_tags', JSON.stringify([])) 
+				formData.append('existing_tags', JSON.stringify([]))
 				const uploadResponse = await axiosInstance.post('/api/meme', formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
 				})
-				
+
 				if (uploadResponse.status === 201) {
 					console.log('Meme uploaded successfully:', uploadResponse.data)
-					
+
 					// Reset form after successful upload
 					setTitle('')
 					setTags([])
 					setGeneratedImage(null)
-					
+
 					alert('Meme uploaded successfully!')
 				} else {
 					throw new Error('Upload failed')
 				}
-				
 			} catch (error) {
 				console.error('Error uploading meme:', error)
 				alert('Failed to upload meme. Please try again.')
@@ -121,7 +128,7 @@ const UploadComponent: React.FC = () => {
 				setIsUploading(false)
 			}
 		} else {
-			setIsAI(false);
+			setIsAI(false)
 			handleFileSelect()
 		}
 	}
@@ -133,11 +140,13 @@ const UploadComponent: React.FC = () => {
 				{generatedImage ? (
 					/* Image Display */
 					<div className="flex flex-col items-center border border-blue-400 rounded-xl p-3 lg:p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300">
-						<h3 className="text-lg lg:text-xl mb-2 lg:mb-3 text-blue-400">{isAI ? "Generated Image" : "Uploaded Image"}</h3>
+						<h3 className="text-lg lg:text-xl mb-2 lg:mb-3 text-blue-400">
+							{isAI ? 'Generated Image' : 'Uploaded Image'}
+						</h3>
 						<div className="w-full">
-							<img 
-								src={generatedImage} 
-								alt="Generated content" 
+							<img
+								src={generatedImage}
+								alt="Generated content"
 								className="w-full h-auto max-h-64 lg:max-h-96 object-contain rounded"
 							/>
 						</div>
@@ -154,7 +163,9 @@ const UploadComponent: React.FC = () => {
 									/>
 								</div>
 								<div className="flex flex-col">
-									<div className="text-blue-400 text-xl lg:text-2xl">Choose File</div>
+									<div className="text-blue-400 text-xl lg:text-2xl">
+										Choose File
+									</div>
 									<div className="text-xs lg:text-sm">JPG / PNG Max. 10 MB</div>
 								</div>
 							</div>
@@ -164,7 +175,10 @@ const UploadComponent: React.FC = () => {
 									'Enter Title and Tags',
 									'Click on "Upload"',
 								].map((text, index) => (
-									<li key={index} className="flex items-start gap-2 lg:gap-3 group">
+									<li
+										key={index}
+										className="flex items-start gap-2 lg:gap-3 group"
+									>
 										<div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-gray-400 text-black border font-semibold text-xs lg:text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200 flex-shrink-0">
 											{index + 1}
 										</div>
@@ -202,7 +216,10 @@ const UploadComponent: React.FC = () => {
 									'Click on "Generate"',
 									'Click on "Upload" to Post',
 								].map((text, index) => (
-									<li key={index} className="flex items-start gap-2 lg:gap-3 group">
+									<li
+										key={index}
+										className="flex items-start gap-2 lg:gap-3 group"
+									>
 										<div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-gray-400 text-black border font-semibold text-xs lg:text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200 flex-shrink-0">
 											{index + 1}
 										</div>
@@ -283,16 +300,18 @@ const UploadComponent: React.FC = () => {
 				</div>
 
 				<div className="flex flex-col lg:flex-row justify-evenly gap-3 lg:gap-4">
-					<button 
+					<button
 						onClick={handleUpload}
 						disabled={isUploading}
-						className="rounded-full bg-[#28e0ca] px-4 py-2 lg:py-2 w-full lg:w-96 text-base lg:text-lg text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+						className="rounded-full bg-[#28e0ca] px-4 py-2 lg:py-2 w-full lg:w-96 text-base lg:text-lg text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+					>
 						{isUploading ? 'Uploading...' : 'Upload'}
 					</button>
-					<button 
+					<button
 						onClick={getImage}
 						disabled={isGenerating}
-						className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-2 lg:py-2 w-full lg:w-96 flex items-center justify-center gap-2 text-base lg:text-lg font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed">
+						className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-2 lg:py-2 w-full lg:w-96 flex items-center justify-center gap-2 text-base lg:text-lg font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
+					>
 						{isGenerating ? 'Generating...' : 'Generate'}
 						<HiSparkles className="group-hover:rotate-12 transition-transform duration-200" />
 					</button>
@@ -307,7 +326,6 @@ const UploadComponent: React.FC = () => {
 					className="hidden"
 				/>
 			</div>
-
 		</div>
 	)
 }

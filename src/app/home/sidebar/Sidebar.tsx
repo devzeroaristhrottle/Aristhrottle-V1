@@ -26,7 +26,7 @@ const sidebarItems = [
         width={50}
       />
     ),
-    action: (route: AppRouterInstance) => route.replace("/home"),
+    action: (route: AppRouterInstance) => route.replace("/landing"),
   },
   {
     title: "Upload",
