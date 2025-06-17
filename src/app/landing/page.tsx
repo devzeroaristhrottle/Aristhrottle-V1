@@ -405,83 +405,13 @@ export default function Page() {
 	}
 
 	return (
-		<div className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]">
+		<div
+			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
+			style={{ height: '100vh' }}
+		>
 			{/* Upload Component */}
 			<UploadComponent />
-
-			{/* Search Bar (Normal Layout) */}
-			<div className="relative mt-10 mb-8 md:mt-20">
-				<motion.div
-					initial={{ opacity: 0, y: 0 }}
-					animate={{
-						opacity: 1,
-						y: animateSearchBar,
-						transition: { duration: 0.5, ease: 'easeInOut' },
-					}}
-				>
-					<div className="border-2 border-slate-500 rounded-2xl w-full md:w-1/2 md:py-1 mt-12 md:mx-auto bg-gray-600/15">
-						<InputGroup
-							flex="2"
-							className="w-full"
-							startElement={
-								query.length === 0 ? (
-									<LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
-								) : undefined
-							}
-							endElement={
-								query.length > 0 ? (
-									<LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
-								) : undefined
-							}
-						>
-							<Input
-								placeholder="Separate by comma to search for multiple tags, titles and usernames"
-								className={`text-xl md:text-2xl focus:outline-none w-full placeholder:text-sm placeholder:leading-none placeholder:md:text-lg  ${
-									query.length === 0
-										? '!pl-10 md:!pl-14 pr-2 md:pr-4'
-										: 'pl-4 md:pl-6 pr-8 md:pr-12'
-								}`}
-								value={query}
-								onChange={e => setQuery(e.target.value)}
-								onFocus={() => setShowRecommendations(true)}
-								onBlur={() =>
-									setTimeout(() => setShowRecommendations(false), 200)
-								}
-							/>
-						</InputGroup>
-					</div>
-					{/* <p className="text-center my-1 text-sm leading-none md:text-lg">
-            Separate by comma to search for multiple tags, titles and usernames
-          </p> */}
-					{showRecommendations && query.length > 0 && (
-						<div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto md:w-1/2 absolute translate-x-1/2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C]">
-							{filteredTags.length > 0 ? (
-								<div className="flex flex-wrap items-center justify-start gap-4">
-									{filteredTags.map(tag => (
-										<Tag
-											key={tag._id}
-											className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
-											onClick={() => {
-												setQuery(tag.name)
-												setShowRecommendations(false)
-											}}
-										>
-											<div className="flex gap-2 text-lg text-white items-center">
-												{tag.name} <FaPlus size={14} className="stroke-[2px]" />
-											</div>
-										</Tag>
-									))}
-								</div>
-							) : (
-								<div className="md:px-4 md:py-2 w-full text-gray-400">
-									No recommendations found
-								</div>
-							)}
-						</div>
-					)}
-				</motion.div>
-			</div>
-
+			<div className="h-8" />
 			{/* Popular Tags */}
 			<div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">
 				<div className="md:col-span-12 md:mx-auto">
@@ -506,21 +436,9 @@ export default function Page() {
 			</div>
 
 			{/* Tabs and Sort (Normal Layout) */}
-			<div ref={tabsRef} className="flex justify-between mt-36">
-				<div className="flex justify-between gap-x-2 md:gap-x-3 z-10">
-					<TabButton
-						label="Live"
-						classname="!px-2 md:!px-5"
-						isActive={activeTab === 'live'}
-						onClick={() => handleTabChange('live')}
-					/>
-					<TabButton
-						label={`All${activeTab.includes('all') ? ` ${allMemeCount}` : ''}`}
-						classname="!px-2 md:!px-5"
-						isActive={activeTab === 'all'}
-						onClick={() => handleTabChange('all')}
-					/>
-				</div>
+			{/* Sort and Tabs Row */}
+			<div className="flex items-center justify-between">
+				{/* Sort Button */}
 				<div className="">
 					<PopoverRoot>
 						<PopoverTrigger asChild>
@@ -556,6 +474,83 @@ export default function Page() {
 							</PopoverBody>
 						</PopoverContent>
 					</PopoverRoot>
+				</div>
+
+				{/* Tab Buttons */}
+				<div className="flex gap-x-2 md:gap-x-3">
+					<TabButton
+						label="Live"
+						classname="!px-2 md:!px-5 rounded-full"
+						isActive={activeTab === 'live'}
+						onClick={() => handleTabChange('live')}
+					/>
+					<TabButton
+						label={`All${activeTab.includes('all') ? ` ${allMemeCount}` : ''}`}
+						classname="!px-2 md:!px-5 rounded-full"
+						isActive={activeTab === 'all'}
+						onClick={() => handleTabChange('all')}
+					/>
+				</div>
+
+				{/* Search Bar Row */}
+				<div className="relative w-full max-w-sm">
+					<div className="border-2 border-slate-500 rounded-2xl py-1 bg-gray-600/15">
+						<InputGroup
+							flex="2"
+							className="w-full"
+							startElement={
+								query.length === 0 ? (
+									<LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
+								) : undefined
+							}
+							endElement={
+								query.length > 0 ? (
+									<LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
+								) : undefined
+							}
+						>
+							<Input
+								placeholder="Separate by comma to search for multiple tags, titles and usernames"
+								className={`text-xl md:text-2xl focus:outline-none w-full placeholder:text-sm placeholder:leading-none placeholder:md:text-lg  ${
+									query.length === 0
+										? '!pl-10 md:!pl-14 pr-2 md:pr-4'
+										: 'pl-4 md:pl-6 pr-8 md:pr-12'
+								}`}
+								value={query}
+								onChange={e => setQuery(e.target.value)}
+								onFocus={() => setShowRecommendations(true)}
+								onBlur={() =>
+									setTimeout(() => setShowRecommendations(false), 200)
+								}
+							/>
+						</InputGroup>
+					</div>
+					{showRecommendations && query.length > 0 && (
+						<div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto w-full absolute top-full mt-2 left-0 right-0 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C] z-50">
+							{filteredTags.length > 0 ? (
+								<div className="flex flex-wrap items-center justify-start gap-4">
+									{filteredTags.map(tag => (
+										<Tag
+											key={tag._id}
+											className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
+											onClick={() => {
+												setQuery(tag.name)
+												setShowRecommendations(false)
+											}}
+										>
+											<div className="flex gap-2 text-lg text-white items-center">
+												{tag.name} <FaPlus size={14} className="stroke-[2px]" />
+											</div>
+										</Tag>
+									))}
+								</div>
+							) : (
+								<div className="md:px-4 md:py-2 w-full text-gray-400">
+									No recommendations found
+								</div>
+							)}
+						</div>
+					)}
 				</div>
 			</div>
 
@@ -624,11 +619,11 @@ export default function Page() {
 				page={page}
 				onPageChange={e => setPage(e.page)}
 			>
-				<HStack className="justify-center">
+				{/* <HStack className="justify-center">
 					<PaginationPrevTrigger />
 					<PaginationItems />
 					<PaginationNextTrigger />
-				</HStack>
+				</HStack> */}
 			</PaginationRoot>
 			{/* )} */}
 			{/* Meme Detail Modal */}
