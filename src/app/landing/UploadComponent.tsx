@@ -22,7 +22,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [selectedTags, setSelectedTags] = useState<Tags[]>([])
 	const [filteredTags, setFilteredTags] = useState<Tags[]>([])
 	const [newTagInput, setNewTagInput] = useState('')
-	const [tags, setTags] = useState<Tags[]>([])
 	const [generatedImage, setGeneratedImage] = useState<string | null>(null)
 	const [isGenerating, setIsGenerating] = useState<boolean>(false)
 	const [isUploading, setIsUploading] = useState<boolean>(false)
@@ -416,24 +415,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 								<span className="text-xs hover:bg-red-500 rounded-full w-3 h-3 flex items-center justify-center">
 									×
 								</span>
-							</span>
-						))}
-					</div>
-
-					{/* Sample Tags */}
-					<div className="items-center flex-wrap gap-2 lg:gap-4 mt-2 max-h-14 lg:max-h-36 overflow-y-auto hidden">
-						{tags.map((tag, index) => (
-							<span
-								key={index}
-								className="bg-gray-800 border-2 border-[#1583fb] hover:opacity-50 rounded-lg cursor-pointer px-2 py-1 flex items-center gap-1"
-								onClick={() => {
-									if (tag._id) {
-										handleTagSelect(tag.name, false, tag._id)
-									}
-								}}
-							>
-								{tag.name}
-								<span className="text-xs">+</span>
 							</span>
 						))}
 					</div>
