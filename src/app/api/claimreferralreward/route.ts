@@ -1,4 +1,4 @@
-import { contract } from '@/ethers/contractUtils'
+import { getContractUtils } from '@/ethers/contractUtils'
 import connectToDatabase from '@/lib/db'
 import Referrals from '@/models/Referrals'
 import User from '@/models/User'
@@ -32,9 +32,10 @@ async function handlePostRequest(req: NextRequest) {
     let points_mint
 
     if (points > 0) {
+      const {contract} = getContractUtils();
       points_mint = points * 5
       const amount = ethers.parseUnits(points_mint.toString(), 18)
-
+      
       const tx = await contract.mintCoins(user.user_wallet_address, amount)
       await tx.wait()
 

@@ -107,7 +107,7 @@ export default function Page() {
   const [loading, setLoading] = useState<boolean>(false);
   const [filteredTags, setFilteredTags] = useState<TagI[]>([]);
   const [activeTab, setActiveTab] = useState<"live" | "all">("live");
-  const [isHeaderFixed, setIsHeaderFixed] = useState(false);
+
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [shareData, setShareData] = useState<{
     id: string;
@@ -137,42 +137,7 @@ export default function Page() {
     setShareData(null);
   };
 
-  // Sticky header logic
-  useEffect(() => {
-    const handleScroll = () => {
-      if (tabsRef.current && memeContainerRef.current) {
-        const tabsBottom = tabsRef.current.getBoundingClientRect().bottom;
-        const viewportTop = 0;
-        const isPastTabs = tabsBottom <= viewportTop + 80; // Account for 80px navbar
-        setIsHeaderFixed(isPastTabs);
-      } else {
-        console.log("Refs missing:", {
-          tabsRef: tabsRef.current,
-          memeContainerRef: memeContainerRef.current,
-        });
-      }
-    };
 
-    // Wait for refs to be assigned
-    const setupScrollListener = () => {
-      const container = memeContainerRef.current;
-      if (container) {
-        console.log("Adding scroll listener to memeContainerRef");
-        container.addEventListener("scroll", handleScroll);
-        return () => {
-          console.log("Removing scroll listener from memeContainerRef");
-          container.removeEventListener("scroll", handleScroll);
-        };
-      } else {
-        console.log("memeContainerRef not available yet");
-      }
-    };
-
-    // Run immediately and set up cleanup
-    const cleanup = setupScrollListener();
-
-    return cleanup;
-  }, []);
 
   const findTag = async () => {
     if (query.length > 0) {
@@ -364,7 +329,7 @@ export default function Page() {
 
   useEffect(() => {
     if (isInView && memeContainerRef.current) {
-      setAnimateSearchBar(330);
+      setAnimateSearchBar(300);
       memeContainerRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -394,6 +359,30 @@ export default function Page() {
       setAllMemeCount(0);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpvoteDownvote = async (meme_id: string, rating: string) => {
+    setAllMemeData(prev => prev.map(meme => meme._id === meme_id ? { ...meme, vote_count: meme.vote_count + (rating === "upvote" ? 1 : (-1)) } : meme).sort((a, b) => a.rank - b.rank));
+    try {
+      if (user && user.address && activeTab === "all") {
+        const response = await axiosInstance.post("/api/meme/rate", {
+          meme_id: meme_id,
+          rating: rating,
+        });
+        if (response?.data?.message === "Rating saved successfully") {
+          if (rating === "upvote") {
+            toast.success("Upvoted successfully!");
+          } else if (rating === "downvote") {
+            toast.success("Downvoted successfully!");
+          }
+          setAllMemeData(prev => prev.map(meme => meme._id === meme_id ? { ...meme, vote_count: response.data.total } : meme).sort((a, b) => a.rank - b.rank));
+        }
+      }
+    } catch (error: any) {
+      setAllMemeData(prev => prev.map(meme => meme._id === meme_id ? { ...meme,vote_count: meme.vote_count + (rating === "upvote" ? (-1) : (1)) } : meme).sort((a, b) => a.rank - b.rank));
+      console.error("Error in handleUpvoteDownvote:", error);
+      toast.error(error.response.data.message);
     }
   };
 
@@ -429,7 +418,7 @@ export default function Page() {
           active={0}
           setSelectedMeme={setSelectedMeme}
         /> */}
-        {carouselMemes.length > 0 && (
+        {carouselMemes.length >= 5 && (
           <Carousel1
             items={carouselMemes}
             setIsMemeDetailOpen={setIsMemeDetailOpen}
@@ -440,11 +429,7 @@ export default function Page() {
         )}
       </div>
       {/* Search Bar (Normal Layout) */}
-      <div
-        className={`relative mt-10 mb-8 md:mt-20 ${
-          isHeaderFixed ? "hidden" : ""
-        }`}
-      >
+      <div className="relative mt-10 mb-8 md:mt-20">
         <motion.div
           initial={{ opacity: 0, y: 0 }}
           animate={{
@@ -517,11 +502,7 @@ export default function Page() {
       </div>
 
       {/* Popular Tags */}
-      <div
-        className={`mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto ${
-          isHeaderFixed ? "hidden" : ""
-        }`}
-      >
+      <div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">
         <div className="md:col-span-12 md:mx-auto">
           <p className="font-bold text-[#1783fb] text-base md:text-xl">
             Popular Tags
@@ -544,13 +525,8 @@ export default function Page() {
       </div>
 
       {/* Tabs and Sort (Normal Layout) */}
-      <div
-        ref={tabsRef}
-        className={`flex justify-between mt-36 ${
-          isHeaderFixed ? "hidden" : ""
-        }`}
-      >
-        <div className="flex justify-between gap-x-2 md:gap-x-3">
+      <div ref={tabsRef} className="flex justify-between mt-36">
+        <div className="flex justify-between gap-x-2 md:gap-x-3 z-10">
           <TabButton
             label="Live"
             classname="!px-2 md:!px-5"
@@ -602,131 +578,12 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Fixed Header */}
-      {isHeaderFixed && (
-        <div className="fixed top-0 left-0 right-0 bg-[#141e29] z-50 shadow-md py-4 px-16">
-          <div className="flex items-center max-w-7xl mx-auto">
-            {/* Tabs (Left) */}
-            <div className="flex space-x-5">
-              <TabButton
-                label="Live"
-                classname="!px-5"
-                isActive={activeTab === "live"}
-                onClick={() => handleTabChange("live")}
-              />
-              <TabButton
-                label={`All${
-                  activeTab.includes("all") ? ` ${allMemeCount}` : ""
-                }`}
-                classname="!px-5"
-                isActive={activeTab === "all"}
-                onClick={() => handleTabChange("all")}
-              />
-            </div>
-            {/* Search Bar (Center) */}
-            <div className="flex-1 max-w-[500px] mx-4">
-              <InputGroup
-                flex="2"
-                className="w-full"
-                startElement={
-                  query.length === 0 ? (
-                    <LuSearch className="text-white text-2xl ml-2" />
-                  ) : undefined
-                }
-                endElement={
-                  query.length > 0 ? (
-                    <LuSearch className="text-white text-2xl mr-2" />
-                  ) : undefined
-                }
-              >
-                <Input
-                  placeholder="Search"
-                  className={`text-2xl focus:outline-none w-full ${
-                    query.length === 0 ? "!pl-12 pr-4" : "pl-4 pr-12"
-                  } bg-gray-600/15 border-2 border-slate-500 rounded-2xl`}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onFocus={() => setShowRecommendations(true)}
-                  onBlur={() =>
-                    setTimeout(() => setShowRecommendations(false), 200)
-                  }
-                />
-              </InputGroup>
-            </div>
-            {/* Sort (Right) */}
-            <div>
-              <PopoverRoot>
-                <PopoverTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border border-[#1783fb] px-3 rounded-full text-[#1783fb] text-lg hover:scale-105"
-                  >
-                    <FaSort />
-                    <span>sort</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  alignContent="end"
-                  className="bg-[#141e29] w-fit border-none shadow-xl z-50"
-                >
-                  <PopoverBody className="bg-[#141e29] border-2 border-[#1783fb] rounded-md p-0">
-                    <div className="flex gap-3 items-center hover:bg-[#224063] px-4 py-1">
-                      <p className="text-xl text-nowrap mr-2">
-                        By Creation Time
-                      </p>
-                      <div className="flex items-center gap-3">
-                        <LiaSortAmountUpAltSolid
-                          onClick={() => filterByTime("ASC")}
-                          className="cursor-pointer"
-                          size={20}
-                        />
-                        <LiaSortAmountDownSolid
-                          onClick={() => filterByTime("DESC")}
-                          className="cursor-pointer"
-                          size={20}
-                        />
-                      </div>
-                    </div>
-                  </PopoverBody>
-                </PopoverContent>
-              </PopoverRoot>
-            </div>
-          </div>
-          {/* Recommendations Dropdown (Fixed Header) */}
-          {showRecommendations && query.length > 0 && (
-            <div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto mt-10 w-1/3 min-w-[200px] absolute left-1/2 transform -translate-x-1/2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C] z-50">
-              {filteredTags.length > 0 ? (
-                <div className="flex flex-wrap items-center justify-start gap-4">
-                  {filteredTags.map((tag) => (
-                    <Tag
-                      key={tag._id}
-                      className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
-                      onClick={() => {
-                        setQuery(tag.name);
-                        setShowRecommendations(false);
-                      }}
-                    >
-                      <div className="flex gap-2 text-lg text-white items-center">
-                        {tag.name} <FaPlus size={14} className="stroke-[2px]" />
-                      </div>
-                    </Tag>
-                  ))}
-                </div>
-              ) : (
-                <div className="px-4 py-2 text-gray-400">
-                  No recommendations found
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+
 
       {/* Meme Container */}
       <div
         ref={memeContainerRef}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-8 mx-auto !min-h-[500px] max-h-[calc(100vh-300px)]  mt-10 mb-6 overflow-y-auto no-scrollbar"
+        className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-10 grid-cols-1 grid-flow-row mx-auto !min-h-[47vh] h-[calc(100vh-350px)] mt-6 mb-4 overflow-y-auto no-scrollbar"
       >
         {!loading &&
           activeTab === "live" &&
@@ -757,15 +614,21 @@ export default function Page() {
                   setSelectedMeme(item);
                   setIsMemeDetailOpen(true);
                 }}
+                onUpvoteDownvote={(memeId, rating) =>
+                  handleUpvoteDownvote(memeId, rating)
+                }
+                activeTab={activeTab}
               />
             </div>
           ))}
 
-        {!loading && displayedMemes.length === 0 && (
-          <p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
-            Meme not found
-          </p>
-        )}
+        {!loading &&
+          displayedMemes?.length === 0 &&
+          allMemeData?.length === 0 && (
+            <p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
+              Meme not found
+            </p>
+          )}
         {loading && (
           <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto md:col-span-12" />
         )}

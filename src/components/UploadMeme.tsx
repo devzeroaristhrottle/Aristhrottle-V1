@@ -164,6 +164,7 @@ export default function UploadModal() {
     }
 
     setError({ ...errors })
+    const loadId = toast.loading("Uploading meme....")
 
     try {
       setLoading(true)
@@ -175,6 +176,8 @@ export default function UploadModal() {
         selectedTags.length > 0 &&
         selectedTags.length <= 5
       ) {
+        
+        setIsUploadMemeOpen(false)
         const formData = new FormData()
         formData.append('created_by', userDetails._id)
         formData.append('name', title)
@@ -203,22 +206,19 @@ export default function UploadModal() {
 
         if (response.status == 201) {
           setIsRefresh(!isRefreshMeme)
-          setIsUploadMemeOpen(false)
-          setOpenUploadSuccess(true)
+          toast.update(loadId, { render: "Meme Upload SuccessFul", type: "success", isLoading: false, autoClose: 5000})
           setSelectedTags([])
           setTitle('')
         }
 
         if (response.status == 200) {
-          toast.error(
-            'Upload failed. Please select another meme and try again.'
-          )
+          toast.update(loadId, { render: 'Upload failed. Please select another meme and try again.', type: "error", isLoading: false, autoClose: 5000})
         }
       }
     } catch (error) {
       setLoading(false)
       console.log(error)
-      toast.error('Upload failed. Please select another meme and try again.')
+      toast.update(loadId, { render: 'Upload failed. Please select another meme and try again.', type: "error", isLoading: false, autoClose: 5000})
     } finally {
       setLoading(false)
     }

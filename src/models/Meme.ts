@@ -52,6 +52,14 @@ const MemeSchema = new mongoose.Schema(
     is_onchain: {
       type: Boolean,
     },
+    upvotes_count: {
+      type: Number,
+      default: 0,
+    },
+    downvotes_count: {
+      type: Number,
+      default: 0,
+    },
     shares: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "User",

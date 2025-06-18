@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useRef } from "react";
+import React, { useRef, useEffect, Dispatch, SetStateAction } from "react";
 import {
   StackedCarousel,
   ResponsiveContainer,
@@ -26,7 +26,17 @@ const Carousel1: React.FC<Carousel1Props> = ({
   bookmark,
   handleShare,
 }) => {
-  const ref = useRef<StackedCarousel | undefined>(undefined);
+  const ref = useRef<any | null>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (ref.current) {
+        ref.current.goNext();
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const renderSlide = React.useCallback(
     (props: any) => (

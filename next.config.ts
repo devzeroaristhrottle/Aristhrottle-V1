@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   /* config options here */
   images: {
     remotePatterns: [
@@ -15,9 +16,9 @@ const nextConfig: NextConfig = {
   transpilePackages: [],
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
-    turbo: {},
   },
   webpack: (config) => {
+    config.turbo,
     config.externals.push(
       "pino-pretty" /* add any other modules that might be causing the error */
     );
