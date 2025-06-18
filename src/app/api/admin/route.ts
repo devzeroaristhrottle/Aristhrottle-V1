@@ -11,6 +11,8 @@ import Referrals from "@/models/Referrals";
 import ApiLog from "@/models/ApiLog";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { getContractUtils } from "@/ethers/contractUtils";
+import { ethers } from "ethers";
 
 export async function GET(request: NextRequest) {
   try {
@@ -49,7 +51,34 @@ export async function GET(request: NextRequest) {
     if (modelParam) {
       switch(modelParam.toLowerCase()) {
         case "users":
-          data = await User.find();
+          // Fetch all users
+          const users = await User.find();
+          
+          // Get contract instance to fetch balances
+          const { contract } = getContractUtils();
+          
+          // Add token balance for each user
+          const usersWithBalance = await Promise.all(
+            users.map(async (user) => {
+              const userData = user.toObject();
+              try {
+                if (user.user_wallet_address) {
+                  const balance = await contract.balanceOf(user.user_wallet_address);
+                  // Convert BigInt to string and format to show as decimal
+                  const formattedBalance = ethers.formatUnits(balance, 18);
+                  userData.balance = formattedBalance;
+                } else {
+                  userData.balance = "0";
+                }
+              } catch (error) {
+                console.error(`Error fetching balance for ${user.username}:`, error);
+                userData.balance = "Error";
+              }
+              return userData;
+            })
+          );
+          
+          data = usersWithBalance;
           break;
         case "memes":
           data = await Meme.find().populate("created_by").populate("tags").populate("categories");
