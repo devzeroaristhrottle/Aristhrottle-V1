@@ -447,7 +447,7 @@ export default function Page() {
 			{/* Sort and Tabs Row */}
 			<div className="flex items-center justify-between">
 				{/* Sort Button */}
-				<div className="">
+				<div className="flex-1">
 					<PopoverRoot>
 						<PopoverTrigger asChild>
 							<Button
@@ -485,7 +485,7 @@ export default function Page() {
 				</div>
 
 				{/* Tab Buttons */}
-				<div className="flex gap-x-2 md:gap-x-3">
+				<div className="flex gap-x-2 md:gap-x-3 flex-1">
 					<TabButton
 						label="Live"
 						classname="!px-2 md:!px-5 rounded-full"
@@ -501,8 +501,8 @@ export default function Page() {
 				</div>
 
 				{/* Search Bar Row */}
-				<div className="relative w-full max-w-sm">
-					<div className="border-2 border-slate-500 rounded-2xl py-1 bg-gray-600/15">
+				<div className="flex justify-center items-center flex-1">
+					<div className="border-2 border-slate-500 rounded-2xl py-1 bg-gray-600/15 ">
 						<InputGroup
 							flex="2"
 							className="w-full"
@@ -565,7 +565,8 @@ export default function Page() {
 			{/* Meme Container */}
 			<div
 				ref={memeContainerRef}
-				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-y-10 grid-cols-1 grid-flow-row !min-h-[47vh] h-[calc(100vh-350px)] mt-6 mb-4 no-scrollbar w-full"
+				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-y-10 grid-cols-1 grid-flow-row !min-h-[47vh]  mt-6 mb-4 no-scrollbar w-full"
+				style={{ height: 'calc(100vh - 150px)', paddingBottom: '200px' }}
 			>
 				{!loading &&
 					activeTab === 'live' &&
