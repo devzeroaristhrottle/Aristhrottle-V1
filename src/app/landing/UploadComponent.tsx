@@ -146,6 +146,9 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			setGeneratedImage(imageUrl)
 		} catch (error) {
 			console.error('Error generating image:', error)
+			alert(
+				'Error generating meme: Please change title and tags and try again!'
+			)
 		} finally {
 			setIsGenerating(false)
 			setIsAI(true)

@@ -2,7 +2,7 @@
 
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { HStack } from '@chakra-ui/react'
-import { MdEdit, MdHistoryEdu } from 'react-icons/md'
+import { MdEdit } from 'react-icons/md'
 import { FilterPopover } from '@/components/FilterPopover'
 import { SortPopover } from '@/components/SortPopover'
 import EditProfile from '@/components/EditProfile'
@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/pagination'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import axiosInstance from '@/utils/axiosInstance'
-import Link from 'next/link'
 import { TabButton } from '@/components/TabButton'
 import { LeaderboardMeme } from '../leaderboard/page'
 import { ethers } from 'ethers'
