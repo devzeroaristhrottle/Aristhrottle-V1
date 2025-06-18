@@ -249,7 +249,7 @@ async function handlePostRequest(req: NextRequest) {
 		const created_by = formData.get('created_by') as string
 		const name = formData.get('name') as string
 		const file = formData.get('file') as File
-		const tagsGot = JSON.parse(formData.get('tags') as string) || []
+		const gotTags = JSON.parse((formData.get('tags') as string) || '[]')
 
 		// const categories = JSON.parse(
 		//   (formData.get("categories") as string) || "[]"
@@ -295,11 +295,22 @@ async function handlePostRequest(req: NextRequest) {
 		//   );
 		// }
 
-		const exsistTagIds = []
-		const tagIds = []
-		for (const gotTag of tagsGot) {
-			const update = await Tags.updateOne(
-				{ name: gotTag },
+		const existingTags = await Tags.find({ name: { $in: gotTags } })
+		const existing_tags = existingTags.map(tag => tag._id)
+		const existingTagNames = new Set(existingTags.map(tag => tag.name))
+		const new_tags = gotTags.filter(
+			(name: string) => !existingTagNames.has(name)
+		)
+
+		if (existing_tags.length > 0) {
+			const tagIds = existing_tags.map(
+				(id: string) => new mongoose.Types.ObjectId(id)
+			)
+			tags = [...tags, ...tagIds]
+
+			// Update count and upload_count field for each tag
+			await Tags.updateMany(
+				{ _id: { $in: tagIds } },
 				{
 					$inc: {
 						count: 1,
@@ -308,63 +319,28 @@ async function handlePostRequest(req: NextRequest) {
 				}
 			)
 
-			if (update.matchedCount > 0) {
-				// Tag was updated, get its ID
-				const tag = await Tags.findOne({ name: gotTag })
-				exsistTagIds.push(tag._id)
-				tagIds.push(tag._id)
-			} else {
-				// Tag didn't exist, insert it
-				const newTag = await Tags.insertOne({
-					name: gotTag,
-					count: 1,
-					upload_count: 1,
-				})
-				tagIds.push(newTag.insertedId)
-			}
+			// Update the relevance scores for the tags
+			await updateTagsRelevance(tagIds)
 		}
 
-		if (exsistTagIds.length > 0) await updateTagsRelevance(exsistTagIds)
+		if (new_tags.length > 0) {
+			const tagData = new_tags.map((tag: string) => ({
+				count: 1,
+				upload_count: 1,
+				name: tag,
+				created_by,
+			}))
 
-		// if (existing_tags.length > 0) {
-		// 	const tagIds = existing_tags.map(
-		// 		(id: string) => new mongoose.Types.ObjectId(id)
-		// 	)
-		// 	tags = [...tags, ...tagIds]
-
-		// 	// Update count and upload_count field for each tag
-		// 	await Tags.updateMany(
-		// 		{ _id: { $in: tagIds } },
-		// 		{
-		// 			$inc: {
-		// 				count: 1,
-		// 				upload_count: 1,
-		// 			},
-		// 		}
-		// 	)
-
-		// 	// Update the relevance scores for the tags
-		// 	await updateTagsRelevance(tagIds)
-		// }
-
-		// if (new_tags.length > 0) {
-		// 	const tagData = new_tags.map((tag: string) => ({
-		// 		count: 1,
-		// 		upload_count: 1,
-		// 		name: tag,
-		// 		created_by,
-		// 	}))
-
-		// 	const insertedTags = (await Tags.insertMany(tagData, {
-		// 		ordered: false,
-		// 	})) as Tag[]
-		// 	const tagIds = insertedTags.map(tag => tag._id)
-		// 	tags = [...tags, ...tagIds]
-		// }
+			const insertedTags = (await Tags.insertMany(tagData, {
+				ordered: false,
+			})) as Tag[]
+			const tagIds = insertedTags.map(tag => tag._id)
+			tags = [...tags, ...tagIds]
+		}
 
 		// Update tag co-occurrences if there are multiple tags
-		if (tagIds.length > 1) {
-			await updateTagCooccurrences(tagIds)
+		if (tags.length > 1) {
+			await updateTagCooccurrences(tags)
 		}
 
 		// Create a new meme entry
@@ -372,7 +348,7 @@ async function handlePostRequest(req: NextRequest) {
 			vote_count: 0,
 			name,
 			image_url,
-			tagIds,
+			tags,
 			categories: [],
 			created_by: new mongoose.Types.ObjectId(created_by),
 			winning_number: 0,
