@@ -445,9 +445,9 @@ export default function Page() {
 
 			{/* Tabs and Sort (Normal Layout) */}
 			{/* Sort and Tabs Row */}
-			<div className="flex items-center justify-between">
+			<div className="flex items-center justify-between flex-wrap gap-y-4">
 				{/* Sort Button */}
-				<div className="flex-1">
+				<div className="lg:flex-1">
 					<PopoverRoot>
 						<PopoverTrigger asChild>
 							<Button
@@ -485,7 +485,7 @@ export default function Page() {
 				</div>
 
 				{/* Tab Buttons */}
-				<div className="flex gap-x-2 md:gap-x-3 flex-1">
+				<div className="flex gap-x-2 md:gap-x-3 lg:flex-1 justify-center">
 					<TabButton
 						label="Live"
 						classname="!px-2 md:!px-5 rounded-full"
@@ -501,8 +501,8 @@ export default function Page() {
 				</div>
 
 				{/* Search Bar Row */}
-				<div className="flex justify-center items-center flex-1">
-					<div className="border-2 border-slate-500 rounded-2xl py-1 bg-gray-600/15 ">
+				<div className="flex items-center lg:flex-1 w-full justify-end">
+					<div className="border-2 border-slate-500 rounded-2xl py-1 bg-gray-600/15 w-full lg:w-64">
 						<InputGroup
 							flex="2"
 							className="w-full"
