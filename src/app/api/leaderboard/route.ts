@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import User from "@/models/User";
 import mongoose from "mongoose";
+import { PipelineStage } from "mongoose";
 
 export async function GET(req: NextRequest) {
   await connectToDatabase();
@@ -75,7 +76,7 @@ export async function GET(req: NextRequest) {
       const totalVotes = totalVotesResult[0]?.totalVotes || 0;
 
       // Fetch memes with ranking and user info
-      const basePipeline = [
+      const basePipeline: PipelineStage[] = [
         {
           $match: {
             is_voting_close: true,
@@ -239,7 +240,7 @@ export async function GET(req: NextRequest) {
       ]);
 
       // Create base pipeline
-      const basePipeline = [
+      const basePipeline: PipelineStage[] = [
         {
           $match: { is_voting_close: true },
         },
