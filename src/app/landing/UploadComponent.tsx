@@ -7,16 +7,9 @@ import { Context } from '@/context/contextProvider'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { Meme } from './page'
 
-interface TagResponse {
-	name: string
-	_id: string
-}
-
 interface Tags {
 	name: string
-	isNew?: boolean
 	_id?: string
-	id?: string
 }
 
 interface UploadCompProps {
@@ -39,11 +32,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const { userDetails } = useContext(Context)
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
-
-	useEffect(() => {
-		getTag()
-	}, [])
-
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			findTag()
@@ -62,19 +50,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			}
 		} else {
 			setFilteredTags([])
-		}
-	}
-
-	const getTag = async () => {
-		const response = await axiosInstance.get('/api/tags')
-
-		if (response.data.tags) {
-			const tags: Tags[] = []
-
-			response.data.tags.map((tag: TagResponse) => {
-				tags.push({ name: tag.name, _id: tag._id, isNew: false })
-			})
-			setTags([...tags])
 		}
 	}
 
@@ -170,7 +145,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				type: 'Event' as const,
 				startTime: new Date().toISOString(),
 				endTime: new Date().toISOString(),
-				created_by: userDetails!._id,
+				created_by: '',
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 				__v: 0,
@@ -214,25 +189,12 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 
 				// Create FormData for meme upload
 				const formData = new FormData()
+				const reqTag = selectedTags.map(tag => tag.name)
 				formData.append('name', title)
 				formData.append('file', blob, 'image.png')
 				formData.append('created_by', userDetails!._id)
 
-				const newTags: string[] = []
-				const existingTags: string[] = []
-
-				selectedTags.forEach(tag => {
-					if (tag.isNew) {
-						newTags.push(tag.name)
-					} else {
-						if (!tag.isNew && tag.id) {
-							existingTags.push(tag.id)
-						}
-					}
-				})
-
-				formData.append('new_tags', JSON.stringify(newTags))
-				formData.append('existing_tags', JSON.stringify(existingTags))
+				formData.append('tags', JSON.stringify(reqTag))
 
 				const uploadResponse = await axiosInstance.post('/api/meme', formData, {
 					headers: {
@@ -253,7 +215,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					throw new Error('Upload failed')
 				}
 			} catch (error) {
-				console.error('Error uploading meme:', error, optimisticMeme?._id)
+				console.error('Error uploading meme:', error)
 				alert('Failed to upload meme. Please try again.')
 
 				onRevert(optimisticMeme)
