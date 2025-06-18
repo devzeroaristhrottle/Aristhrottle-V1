@@ -33,7 +33,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [generatedImage, setGeneratedImage] = useState<string | null>(null)
 	const [isGenerating, setIsGenerating] = useState<boolean>(false)
 	const [isUploading, setIsUploading] = useState<boolean>(false)
-	const [loading, setLoading] = useState<boolean>(false)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const [isAI, setIsAI] = useState<boolean>(false)
