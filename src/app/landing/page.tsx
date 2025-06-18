@@ -107,7 +107,7 @@ export default function Page() {
 	} | null>(null)
 
 	/* eslint-disable @typescript-eslint/no-unused-vars */
-	const { userDetails, setIsUploadMemeOpen, isRefreshMeme } =
+	const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
 		useContext(Context)
 
 	const user = useUser()
@@ -169,6 +169,12 @@ export default function Page() {
 	const voteToMeme = async (vote_to: string) => {
 		try {
 			if (user && user.address && activeTab === 'live') {
+				if (userDetails) {
+					setUserDetails({
+						...userDetails,
+						votes: userDetails.votes + 1,
+					})
+				}
 				const response = await axiosInstance.post('/api/vote', {
 					vote_to: vote_to,
 					vote_by: userDetails?._id,
@@ -179,6 +185,12 @@ export default function Page() {
 				}
 			}
 		} catch (error: any) {
+			if (userDetails) {
+				setUserDetails({
+					...userDetails,
+					votes: userDetails.votes,
+				})
+			}
 			if (error.response.data.message === 'You cannot vote on your own meme') {
 				toast.error(error.response.data.message)
 			} else {
@@ -264,7 +276,7 @@ export default function Page() {
 	useEffect(() => {
 		getMemes()
 		getMyMemes()
-	}, [user, page, isRefreshMeme, userDetails])
+	}, [user, page, isRefreshMeme])
 
 	useEffect(() => {
 		const time = setTimeout(() => {
@@ -399,14 +411,30 @@ export default function Page() {
 	}
 
 	const addMeme = (meme: Meme) => {
-		setMemes([...memes, meme])
+		setMemes(prevMemes => [...prevMemes, meme])
+
+		if (userDetails) {
+			setUserDetails({
+				...userDetails,
+				uploads: userDetails.uploads + 1,
+			})
+		}
+
 		if (activeTab === 'live') {
-			setFilterMemes([meme, ...filterMemes])
+			setFilterMemes(prevFilterMemes => {
+				return [meme, ...prevFilterMemes]
+			})
 		}
 	}
 
 	const revertMeme = (meme: Meme) => {
 		setMemes(memes.filter(m => m._id !== meme._id))
+		if (userDetails) {
+			setUserDetails({
+				...userDetails,
+				uploads: userDetails.uploads,
+			})
+		}
 		if (activeTab === 'live') {
 			setFilterMemes(filterMemes.filter(m => m._id !== meme._id))
 		}
