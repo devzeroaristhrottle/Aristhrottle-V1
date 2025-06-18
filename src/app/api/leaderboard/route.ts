@@ -1,6 +1,9 @@
 import connectToDatabase from "@/lib/db";
 import Meme from "@/models/Meme";
 import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import User from "@/models/User";
+import mongoose from "mongoose";
 
 export async function GET(req: NextRequest) {
   await connectToDatabase();
@@ -11,6 +14,16 @@ export async function GET(req: NextRequest) {
   const defaultOffset = 30;
   const offset = off == null ? defaultOffset : parseInt(off.toString());
   const start = offset <= defaultOffset ? 0 : offset - defaultOffset;
+
+  // Get authenticated user if available
+  let userId = null;
+  const token = await getToken({ req });
+  if (token && token.address) {
+    const user = await User.findOne({ user_wallet_address: token.address });
+    if (user) {
+      userId = user._id;
+    }
+  }
 
   try {
     if (daily === 'true') {
@@ -62,7 +75,7 @@ export async function GET(req: NextRequest) {
       const totalVotes = totalVotesResult[0]?.totalVotes || 0;
 
       // Fetch memes with ranking and user info
-      const memes = await Meme.aggregate([
+      const basePipeline = [
         {
           $match: {
             is_voting_close: true,
@@ -78,7 +91,35 @@ export async function GET(req: NextRequest) {
               rank: { $denseRank: {} },
             },
           },
-        },
+        }
+      ];
+
+      // Add user rating lookup if user is authenticated
+      if (userId) {
+        basePipeline.push({
+          $lookup: {
+            from: "voteratings",
+            let: { memeId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$meme_id", "$$memeId"] },
+                      { $eq: ["$user_id", new mongoose.Types.ObjectId(userId)] },
+                    ],
+                  },
+                },
+              },
+              { $limit: 1 },
+            ],
+            as: "userRating",
+          },
+        });
+      }
+
+      // Continue with the rest of the pipeline
+      basePipeline.push(
         {
           $lookup: {
             from: "users",
@@ -137,12 +178,21 @@ export async function GET(req: NextRequest) {
                 as: "tag",
                 in: "$$tag.name"
               }
+            },
+            user_rating: {
+              $cond: {
+                if: { $gt: [{ $size: "$userRating" }, 0] },
+                then: { $arrayElemAt: ["$userRating.rating", 0] },
+                else: "none"
+              }
             }
           },
         },
         { $skip: start },
         { $limit: defaultOffset },
-      ]);
+      );
+
+      const memes = await Meme.aggregate(basePipeline);
 
       return NextResponse.json(
         {
@@ -188,7 +238,8 @@ export async function GET(req: NextRequest) {
         },
       ]);
 
-      const memes = await Meme.aggregate([
+      // Create base pipeline
+      const basePipeline = [
         {
           $match: { is_voting_close: true },
         },
@@ -200,7 +251,35 @@ export async function GET(req: NextRequest) {
               rank: { $denseRank: {} },
             },
           },
-        },
+        }
+      ];
+
+      // Add user rating lookup if user is authenticated
+      if (userId) {
+        basePipeline.push({
+          $lookup: {
+            from: "voteratings",
+            let: { memeId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$meme_id", "$$memeId"] },
+                      { $eq: ["$user_id", new mongoose.Types.ObjectId(userId)] },
+                    ],
+                  },
+                },
+              },
+              { $limit: 1 },
+            ],
+            as: "userRating",
+          },
+        });
+      }
+
+      // Continue with the rest of the pipeline
+      basePipeline.push(
         {
           $lookup: {
             from: "users",
@@ -256,12 +335,21 @@ export async function GET(req: NextRequest) {
                 as: "tag",
                 in: "$$tag.name"
               }
+            },
+            user_rating: {
+              $cond: {
+                if: { $gt: [{ $size: "$userRating" }, 0] },
+                then: { $arrayElemAt: ["$userRating.rating", 0] },
+                else: "none"
+              }
             }
           },
         },
         { $skip: start },
         { $limit: defaultOffset },
-      ]);
+      );
+
+      const memes = await Meme.aggregate(basePipeline);
 
       return NextResponse.json(
         {
