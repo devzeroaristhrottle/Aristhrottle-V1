@@ -1,275 +1,336 @@
-"use client";
+'use client'
 
-import { FaBookmark, FaRegShareFromSquare } from "react-icons/fa6";
+import { FaBookmark, FaRegShareFromSquare } from 'react-icons/fa6'
 import {
-  DialogContent,
-  DialogBody,
-  DialogBackdrop,
-  DialogRoot,
-} from "@chakra-ui/react";
-import { CgCloseO, CgProfile } from "react-icons/cg";
-import Share from "./Share";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Meme, TagI } from "@/app/home/page";
-import { LeaderboardMeme } from "@/app/home/leaderboard/page";
-import { MdOutlineExpandMore } from "react-icons/md";
-import axiosInstance from "@/utils/axiosInstance";
-import { useMemeActions } from "@/app/home/bookmark/bookmarkHelper";
-import { CiBookmark } from "react-icons/ci";
-import { useUser } from "@account-kit/react";
+	DialogContent,
+	DialogBody,
+	DialogBackdrop,
+	DialogRoot,
+} from '@chakra-ui/react'
+import { CgCloseO, CgProfile } from 'react-icons/cg'
+import Share from './Share'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Meme, TagI } from '@/app/home/page'
+import { LeaderboardMeme } from '@/app/home/leaderboard/page'
+import { MdOutlineExpandMore } from 'react-icons/md'
+import axiosInstance from '@/utils/axiosInstance'
+import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
+import { CiBookmark } from 'react-icons/ci'
+import { useUser } from '@account-kit/react'
+import Image from 'next/image'
 
 interface MemeDetailProps {
-  isOpen?: boolean;
-  onClose?: () => void;
-  meme: Meme | LeaderboardMeme | undefined;
-  searchRelatedMemes?: Dispatch<SetStateAction<string>>;
+	isOpen?: boolean
+	onClose?: () => void
+	meme: Meme | LeaderboardMeme | undefined
+	searchRelatedMemes?: Dispatch<SetStateAction<string>>
 }
 
 interface Category {
-  name: string;
+	name: string
 }
 
 export default function MemeDetail({
-  isOpen = true,
-  onClose = () => {},
-  meme,
-  searchRelatedMemes,
+	isOpen = true,
+	onClose = () => {},
+	meme,
+	searchRelatedMemes,
 }: MemeDetailProps) {
-  const [isShareOpen, setIsShareOpen] = useState(false);
-  const [relatedMemes, setRelatedMemes] = useState<Meme[]>([]);
-  const user = useUser();
-  const { handleBookmark } = useMemeActions();
-  const [isBookmarked, setIsBookmarked] = useState(false);
+	const [isShareOpen, setIsShareOpen] = useState(false)
+	const [relatedMemes, setRelatedMemes] = useState<Meme[]>([])
+	const user = useUser()
+	const { handleBookmark } = useMemeActions()
+	const [isBookmarked, setIsBookmarked] = useState(false)
 
-  const handleShareClose = () => setIsShareOpen(false);
+	const handleShareClose = () => setIsShareOpen(false)
 
-  const isMeme = (meme: Meme | LeaderboardMeme): meme is Meme =>
-    "tags" in meme && Array.isArray(meme.tags);
+	const isMeme = (meme: Meme | LeaderboardMeme): meme is Meme =>
+		'tags' in meme && Array.isArray(meme.tags)
 
-  const getRelatedMemes = async () => {
-    try {
-      if (meme && isMeme(meme) && meme.tags.length > 0) {
-        const tags = meme.tags.map((t) => t.name).join(",");
-        const response = await axiosInstance.get(`/api/meme?name=${tags}`);
-        if (response.data.memes) {
-          setRelatedMemes([...response.data.memes]);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+	const getRelatedMemes = async () => {
+		try {
+			if (meme && isMeme(meme) && meme.tags.length > 0) {
+				const tags = meme.tags.map(t => t.name).join(',')
+				const response = await axiosInstance.get(`/api/meme?name=${tags}`)
+				if (response.data.memes) {
+					setRelatedMemes([...response.data.memes])
+				}
+			}
+		} catch (error) {
+			console.log(error)
+		}
+	}
 
-  const getBookmarks = () => {
-    const bookmarks = localStorage.getItem("bookmarks");
-    if (bookmarks) {
-      const bookmarksObj = JSON.parse(bookmarks);
-      if (meme && bookmarksObj[meme._id]) {
-        setIsBookmarked(true);
-      } else {
-        setIsBookmarked(false);
-      }
-    }
-  };
+	const getBookmarks = () => {
+		const bookmarks = localStorage.getItem('bookmarks')
+		if (bookmarks) {
+			const bookmarksObj = JSON.parse(bookmarks)
+			if (meme && bookmarksObj[meme._id]) {
+				setIsBookmarked(true)
+			} else {
+				setIsBookmarked(false)
+			}
+		}
+	}
 
-  useEffect(() => {
-    getRelatedMemes();
-  }, [meme]);
+	useEffect(() => {
+		getRelatedMemes()
+		getBookmarks()
+	}, [meme])
 
-  if (!meme) return null;
+	// Close dialog on Escape key press
+	useEffect(() => {
+		const handleKeyPress = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				onClose()
+			}
+		}
 
-  return (
-    <>
-      <DialogRoot open={isOpen} motionPreset="slide-in-bottom">
-        <DialogBackdrop className="backdrop-blur-md" />
-        <div className="flex justify-center items-center h-screen">
-          <DialogContent className="fixed inset-1 md:inset-2 bg-[#141e29] border border-white w-[90vw] md:w-[60vw] h-[70vh] md:h-[80vh] max-w-none p-0">
-            <DialogBody className="overflow-y-auto no-scrollbar mx-4 md:mx-8 my-4">
-              <CgCloseO
-                onClick={onClose}
-                className="z-50 absolute -top-6 -right-4 text-white w-5 h-5 cursor-pointer"
-              />
-              <div className="flex items-center gap-x-2 mb-1">
-                <CgProfile className="w-5 h-5" />
-                <span className="text-[#29e0ca] text-lg font-semibold">
-                  {meme.created_by.username}
-                </span>
-              </div>
+		if (isOpen) {
+			document.addEventListener('keydown', handleKeyPress)
+		}
 
-              <div className="flex flex-col md:flex-row gap-x-8">
-                {/* Left side */}
-                <div className="w-[250px] h-[250px] md:w-[330px] md:h-[330px] col-span-5">
-                  <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer border-2 border-white">
-                    <img
-                      src={meme.image_url}
-                      alt={meme.name}
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
+		return () => {
+			document.removeEventListener('keydown', handleKeyPress)
+		}
+	}, [isOpen, onClose])
 
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="flex items-center gap-4">
-                      <div onClick={() => setIsShareOpen(true)}>
-                        <FaRegShareFromSquare className="text-xl cursor-pointer" />
-                        <p className="text-[#1783fb] text-center">
-                          {meme.shares}
-                        </p>
-                      </div>
-                      {user && user.address ? (
-                        <div>
-                          {isBookmarked ? (
-                            <div className="flex flex-col items-center cursor-pointer">
-                              <FaBookmark
-                                className="w-4 h-4 md:w-6 md:h-6"
-                                onClick={() => {
-                                  handleBookmark(
-                                    meme._id,
-                                    meme.name,
-                                    meme.image_url
-                                  );
-                                  getBookmarks();
-                                }}
-                              />
-                              <span className="text-xl md:text-2xl text-[#1783fb]">
-                                {meme.bookmarks}
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="flex flex-col items-center cursor-pointer">
-                              <CiBookmark
-                                className="w-4 h-4 md:w-6 md:h-6"
-                                onClick={() => {
-                                  handleBookmark(
-                                    meme._id,
-                                    meme.name,
-                                    meme.image_url
-                                  );
-                                  getBookmarks();
-                                }}
-                              />
-                              <span className="text-xl md:text-2xl text-[#1783fb]">
-                                {meme.bookmarks}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
+	if (!meme) return null
 
-                {/* Right side */}
-                <div className="mt-4 space-y-2 md:space-y-6">
-                  <div className="flex items-center gap-4">
-                    <label className="text-[#1783fb] text-lg md:text-2xl">
-                      Title :
-                    </label>
-                    <p className="text-lg md:text-2xl font-semibold">
-                      {meme.name}
-                    </p>
-                  </div>
+	return (
+		<>
+			<DialogRoot open={isOpen} motionPreset="slide-in-bottom">
+				<DialogBackdrop className="backdrop-blur-md" />
+				<div className="flex justify-center items-center h-screen">
+					<DialogContent className="fixed inset-2 md:inset-4 bg-[#141e29] border border-white w-[90vw] md:w-[70vw] lg:w-[60vw] h-[85vh] md:h-[80vh] max-w-none p-0 rounded-lg">
+						<DialogBody className="overflow-y-auto no-scrollbar mx-4 md:mx-8 my-4">
+							{/* Close Button */}
+							<button
+								onClick={onClose}
+								className="absolute top-3 right-3 z-50 p-1 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200"
+							>
+								<CgCloseO className="text-white w-5 h-5" />
+							</button>
 
-                  {"categories" in meme && meme.categories?.length > 0 && (
-                    <div className="flex flex-col">
-                      <label className="text-[#1783fb] text-lg md:text-2xl">
-                        Categories :
-                      </label>
-                      <div className="flex flex-wrap gap-3 mt-2">
-                        {meme.categories.map(
-                          (category: Category, index: number) => (
-                            <button
-                              key={index}
-                              className="text-balance border-2 border-[#1783fb] rounded-lg px-3 py-1"
-                            >
-                              {category.name}
-                            </button>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
+							{/* Header */}
+							<div className="flex items-center gap-3 mb-4 sm:mb-6">
+								<div className="p-2 rounded-full bg-[#29e0ca]/20">
+									<CgProfile className="w-5 h-5 sm:w-6 sm:h-6 text-[#29e0ca]" />
+								</div>
+								<span className="text-[#29e0ca] text-lg sm:text-xl font-semibold">
+									{meme.created_by.username}
+								</span>
+							</div>
 
-                  {isMeme(meme) && meme.tags.length > 0 && (
-                    <div className="flex flex-col">
-                      <label className="text-[#1783fb] text-lg md:text-2xl">
-                        Tags :
-                      </label>
-                      <div className="flex flex-wrap gap-2 md:gap-3 md:mt-2">
-                        {meme.tags.map((tag: TagI, index: number) => (
-                          <button
-                            key={index}
-                            className="text-balance border-2 border-[#1783fb] rounded-lg px-1 md:px-3 md:py-1"
-                          >
-                            {tag.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+							{/* Main Content */}
+							<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+								{/* Left side - Image and Actions */}
+								<div className="space-y-3">
+									{/* Image Container */}
+									<div className="relative group">
+										<div className="aspect-square w-3/4 mx-auto bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-white/20 rounded-lg transition-all duration-300 group-hover:border-white/40">
+											<img
+												src={meme.image_url}
+												alt={meme.name}
+												className="max-w-full max-h-full object-contain"
+											/>
+										</div>
+									</div>
 
-                  <div className="flex items-center gap-4">
-                    <label className="text-nowrap text-[#1783fb] text-base md:text-2xl">
-                      Uploaded on:
-                    </label>
-                    <p className="text-nowrap text-base md:text-2xl font-semibold">
-                      {new Date(meme.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
+									{/* Action Buttons */}
+									<div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4">
+										{/* Vote Count */}
+										<div className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm">
+											<Image
+												src={'/assets/vote/icon1.png'}
+												width={24}
+												height={24}
+												alt="vote"
+												className="transition-all duration-300"
+											/>
+											<span className="text-[#1783fb] font-bold text-lg sm:text-xl">
+												{meme.vote_count}
+											</span>
+										</div>
 
-              {/* Related content */}
-              {isMeme(meme) &&
-                relatedMemes.length > 0 &&
-                searchRelatedMemes && (
-                  <div className="mt-6 md:mt-16">
-                    <p className="text-xl md:text-3xl text-[#1783fb] mb-1 md:mb-3">
-                      Related Contents :
-                    </p>
-                    <div className="flex flex-wrap items-center gap-3.5  md:gap-8">
-                      {relatedMemes.map((item, index) => {
-                        if (index < 6 && meme.name !== item.name) {
-                          return (
-                            <div
-                              key={item._id}
-                              className="w-28 h-28 md:w-36 md:h-36 border-2 border-white cursor-pointer"
-                              onClick={() => {
-                                if (item.categories.length > 0) {
-                                  searchRelatedMemes(item.categories[0].name);
-                                  onClose();
-                                }
-                              }}
-                            >
-                              <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
-                                <img
-                                  src={item.image_url}
-                                  alt={`meme${index}`}
-                                  className="max-w-full max-h-full object-contain"
-                                />
-                              </div>
-                            </div>
-                          );
-                        }
-                      })}
-                    </div>
-                    <div className="flex justify-between items-center text-center cursor-pointer border-2 border-white rounded-lg w-min mx-auto mt-6 px-2">
-                      <span className="text-base md:text-lg">More</span>
-                      <MdOutlineExpandMore className="text-lg md:text-2xl" />
-                    </div>
-                  </div>
-                )}
-            </DialogBody>
-          </DialogContent>
-        </div>
-      </DialogRoot>
+										{/* Share */}
+										<button
+											onClick={() => setIsShareOpen(true)}
+											className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
+										>
+											<FaRegShareFromSquare className="text-white w-5 h-5" />
+											<span className="text-[#1783fb] font-bold text-lg sm:text-xl">
+												{meme.shares.length}
+											</span>
+										</button>
 
-      {isShareOpen && (
-        <Share
-          onClose={handleShareClose}
-          imageUrl={meme?.image_url}
-          id={meme?._id}
-        />
-      )}
-    </>
-  );
+										{/* Bookmark */}
+										{user && user.address && (
+											<button
+												onClick={() => {
+													handleBookmark(meme._id, meme.name, meme.image_url)
+													getBookmarks()
+												}}
+												className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
+											>
+												{isBookmarked ? (
+													<FaBookmark className="text-yellow-400 w-4 h-4 sm:w-5 sm:h-5" />
+												) : (
+													<CiBookmark className="text-white w-4 h-4 sm:w-5 sm:h-5" />
+												)}
+												<span className="text-[#1783fb] font-bold text-lg sm:text-xl">
+													{meme.bookmarks.length}
+												</span>
+											</button>
+										)}
+									</div>
+								</div>
+
+								{/* Right side - Details */}
+								<div className="space-y-3 sm:space-y-4">
+									{/* Title */}
+									<div className="space-y-2">
+										<label className="text-[#1783fb] text-lg sm:text-xl font-semibold block">
+											Title
+										</label>
+										<p className="text-white text-base sm:text-lg font-medium bg-white/5 rounded-lg p-2 border border-white/10">
+											{meme.name}
+										</p>
+									</div>
+
+									{/* Categories */}
+									{'categories' in meme && meme.categories?.length > 0 && (
+										<div className="space-y-3">
+											<label className="text-[#1783fb] text-lg sm:text-xl font-semibold block">
+												Categories
+											</label>
+											<div className="flex flex-wrap gap-2">
+												{meme.categories.map(
+													(category: Category, index: number) => (
+														<span
+															key={index}
+															className="bg-gradient-to-r from-[#1783fb]/20 to-[#1783fb]/10 border border-[#1783fb]/50 rounded-lg px-3 py-1.5 text-sm sm:text-base text-white font-medium backdrop-blur-sm"
+														>
+															{category.name}
+														</span>
+													)
+												)}
+											</div>
+										</div>
+									)}
+
+									{/* Tags */}
+									{isMeme(meme) && meme.tags.length > 0 && (
+										<div className="space-y-3">
+											<label className="text-[#1783fb] text-lg sm:text-xl font-semibold block">
+												Tags
+											</label>
+											<div className="flex flex-wrap gap-2">
+												{meme.tags.map((tag: TagI, index: number) => (
+													<span
+														key={index}
+														className="bg-gradient-to-r from-[#29e0ca]/20 to-[#29e0ca]/10 border border-[#29e0ca]/50 rounded-lg px-3 py-1.5 text-sm sm:text-base text-white font-medium backdrop-blur-sm"
+													>
+														{tag.name}
+													</span>
+												))}
+											</div>
+										</div>
+									)}
+
+									{/* Vote Count Info */}
+									{meme.vote_count && (
+										<div className="space-y-2">
+											<label className="text-[#1783fb] text-lg sm:text-xl font-semibold block">
+												Vote Count
+											</label>
+											<div className="bg-white/5 rounded-lg p-2 border border-white/10">
+												<span className="text-white text-base sm:text-lg font-medium">
+													{meme.vote_count} votes
+												</span>
+											</div>
+										</div>
+									)}
+
+									{/* Upload Date */}
+									<div className="space-y-2">
+										<label className="text-[#1783fb] text-lg sm:text-xl font-semibold block">
+											Uploaded on
+										</label>
+										<div className="bg-white/5 rounded-lg p-3 border border-white/10">
+											<span className="text-white text-sm sm:text-base font-medium">
+												{new Date(meme.createdAt).toLocaleString('en-IN', {
+													day: '2-digit',
+													month: 'short',
+													year: 'numeric',
+													hour: '2-digit',
+													minute: '2-digit',
+													hour12: false,
+													timeZoneName: 'short',
+												})}
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							{/* Related Content */}
+							{isMeme(meme) &&
+								relatedMemes.length > 0 &&
+								searchRelatedMemes && (
+									<div className="mt-4 lg:mt-6 space-y-3">
+										<h3 className="text-xl sm:text-2xl lg:text-3xl text-[#1783fb] font-bold">
+											Related Contents
+										</h3>
+
+										<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+											{relatedMemes.map((item, index) => {
+												if (index < 6 && meme.name !== item.name) {
+													return (
+														<div
+															key={item._id}
+															onClick={() => {
+																if (item.categories.length > 0) {
+																	searchRelatedMemes(item.categories[0].name)
+																	onClose()
+																}
+															}}
+															className="group relative aspect-square border-2 border-white/20 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-white/40 hover:scale-105"
+														>
+															<img
+																src={item.image_url}
+																alt={`Related meme ${index + 1}`}
+																className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+															/>
+															<div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+														</div>
+													)
+												}
+											})}
+										</div>
+
+										<div className="flex justify-center mt-6">
+											<button className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 border border-white/20 rounded-lg px-4 py-2 hover:bg-white/20 transition-all duration-300">
+												<span className="text-white text-base sm:text-lg font-medium">
+													More
+												</span>
+												<MdOutlineExpandMore className="text-white text-lg sm:text-xl" />
+											</button>
+										</div>
+									</div>
+								)}
+						</DialogBody>
+					</DialogContent>
+				</div>
+			</DialogRoot>
+
+			{isShareOpen && (
+				<Share
+					onClose={handleShareClose}
+					imageUrl={meme?.image_url}
+					id={meme?._id}
+				/>
+			)}
+		</>
+	)
 }
