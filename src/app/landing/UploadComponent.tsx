@@ -18,8 +18,7 @@ interface UploadCompProps {
 }
 
 const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
-	const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
-		useContext(Context)
+	const { setUserDetails, userDetails } = useContext(Context)
 	const [title, setTitle] = useState('')
 	const [selectedTags, setSelectedTags] = useState<Tags[]>([])
 	const [filteredTags, setFilteredTags] = useState<Tags[]>([])
