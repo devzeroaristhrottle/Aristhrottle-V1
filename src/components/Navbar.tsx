@@ -252,7 +252,7 @@ export default function Navbar() {
                             setOpen(false)
                             setUserDetails(undefined)
 
-                            route.replace('/home')
+                            route.replace('/landing')
                           }}
                         >
                           Disconnect
