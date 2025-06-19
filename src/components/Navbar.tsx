@@ -99,7 +99,7 @@ export default function Navbar() {
 				if (res.status == 200 && res.data.error === 'User not found') {
 					setIsOpenModel(true)
 				}
-				var genCount = 0
+				let genCount = 0
 				if (res.data.user.generations) genCount = res.data.user.generations
 				if (res.status == 200 && res.data) {
 					setUserDetails({
