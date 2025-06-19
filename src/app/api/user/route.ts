@@ -262,18 +262,20 @@ async function handlePostRequest(request: NextRequest) {
 
     // Mint 5 tokens if the user was referred
     if (savedUser.referred_by && savedUser.user_wallet_address) {
-      try {
-        const {contract} = getContractUtils();
-
-        // Mint 5 tokens (adjust amount as needed)
-        const amountToMint = 5;
-        const tx = await contract.mintCoins(savedUser.user_wallet_address, ethers.parseUnits(amountToMint.toString(), 18));
-        await tx.wait(); // Wait for the transaction to be mined
-        console.log(`Minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for referral.`);
-      } catch (mintError) {
-        console.error("Error minting tokens for referred user:", mintError);
-        // Optionally handle the error, e.g., log to a specific table or notify admin
-      }
+      // Process blockchain transaction asynchronously after response
+      setTimeout(async () => {
+        try {
+          // Mint 5 tokens (adjust amount as needed)
+          const {contract} = getContractUtils();
+          const amountToMint = 5;
+          const tx = await contract.mintCoins(savedUser.user_wallet_address, ethers.parseUnits(amountToMint.toString(), 18));
+          await tx.wait(); // Wait for the transaction to be mined
+          console.log(`Minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for referral.`);
+        } catch (mintError) {
+          console.error("Error minting tokens for referred user:", mintError);
+          // Optionally handle the error, e.g., log to a specific table or notify admin
+        }
+      }, 0);
     }
 
     return NextResponse.json({ user: savedUser }, { status: 201 });
