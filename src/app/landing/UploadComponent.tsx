@@ -18,8 +18,7 @@ interface UploadCompProps {
 }
 
 const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
-	const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
-		useContext(Context)
+	const { setUserDetails, userDetails } = useContext(Context)
 	const [title, setTitle] = useState('')
 	const [selectedTags, setSelectedTags] = useState<Tags[]>([])
 	const [filteredTags, setFilteredTags] = useState<Tags[]>([])
@@ -92,7 +91,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 		try {
 			setIsGenerating(true)
 			if (userDetails) {
-				if(userDetails.generations > 5) return;
+				if (userDetails.generations > 5) return
 				setUserDetails({
 					...userDetails,
 					generations: userDetails.generations + 1,
