@@ -123,3 +123,15 @@ body {
 .css-aphhdw {
   padding: 0 !important;
 }
+
+/* Custom animation for flying up points */
+@keyframes flyUp {
+  0% {
+    opacity: 1;
+    transform: translateX(-10%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-10%) translateY(-30px);
+  }
+}
