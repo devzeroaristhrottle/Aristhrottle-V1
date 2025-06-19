@@ -445,6 +445,19 @@ export default function Page() {
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
 			style={{ height: '100vh' }}
 		>
+			<div className="w-full overflow-hidden">
+				<div className="animate-marquee whitespace-nowrap">
+					<span className="text-base sm:text-xl md:text-2xl font-semibold text-white inline-flex gap-1 sm:gap-2">
+						<span>🚀 Welcome to the</span>
+						<span className="text-[#28e0ca]">Beta!</span>
+						<span className="hidden sm:inline">
+							Explore, break, and give feedback!
+						</span>
+						<span>🚀</span>
+					</span>
+				</div>
+			</div>
+
 			{/* Upload Component */}
 			<UploadComponent onUpload={addMeme} onRevert={revertMeme} />
 			<div className="h-8" />
@@ -546,7 +559,7 @@ export default function Page() {
 							}
 						>
 							<Input
-								placeholder="Separate by comma to search for multiple tags, titles and usernames"
+								placeholder="Search"
 								className={`text-xl md:text-2xl focus:outline-none w-full placeholder:text-sm placeholder:leading-none placeholder:md:text-lg  ${
 									query.length === 0
 										? '!pl-10 md:!pl-14 pr-2 md:pr-4'
