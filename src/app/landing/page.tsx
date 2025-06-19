@@ -447,13 +447,14 @@ export default function Page() {
 		>
 			<div className="w-full overflow-hidden">
 				<div className="animate-marquee whitespace-nowrap">
-					<span className="text-base sm:text-xl md:text-2xl font-semibold text-white inline-flex gap-1 sm:gap-2">
-						<span>🚀 Welcome to the</span>
-						<span className="text-[#28e0ca]">Beta!</span>
-						<span className="hidden sm:inline">
-							Explore, break, and give feedback!
-						</span>
-						<span>🚀</span>
+					<span className="text-xs sm:text-xl md:text-2xl font-semibold text-white inline-flex gap-1 sm:gap-2">
+						<span>🚀 Welcome to </span>
+						<span className="text-[#28e0ca]">Aristhrottle!</span>
+						<span>🚀 Mint $eART today for </span>
+						<span className="text-[#28e0ca]">$USD tomorrow.</span>
+						<span>💸 Airdrops, Incentives and Other Rewards</span>
+						<span className="text-[#28e0ca]">Coming Soon!</span>
+						<span>💰</span>
 					</span>
 				</div>
 			</div>
