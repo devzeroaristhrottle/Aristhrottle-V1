@@ -18,6 +18,8 @@ interface UploadCompProps {
 }
 
 const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
+	const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
+		useContext(Context)
 	const [title, setTitle] = useState('')
 	const [selectedTags, setSelectedTags] = useState<Tags[]>([])
 	const [filteredTags, setFilteredTags] = useState<Tags[]>([])
@@ -28,7 +30,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const [isAI, setIsAI] = useState<boolean>(false)
-	const { userDetails } = useContext(Context)
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
 	useEffect(() => {
@@ -90,6 +91,13 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 		}
 		try {
 			setIsGenerating(true)
+			if (userDetails) {
+				if(userDetails.generations > 5) return;
+				setUserDetails({
+					...userDetails,
+					generations: userDetails.generations + 1,
+				})
+			}
 			const tagNames = selectedTags.map(tag => tag.name)
 			const response = await axios.post(
 				'https://gen-image-84192368251.europe-west1.run.app/api/v1/images/generate',
@@ -109,6 +117,12 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			setGeneratedImage(imageUrl)
 		} catch (error) {
 			console.error('Error generating image:', error)
+			if (userDetails) {
+				setUserDetails({
+					...userDetails,
+					generations: userDetails.generations,
+				})
+			}
 			alert(
 				'Error generating meme: Please change title and tags and try again!'
 			)
