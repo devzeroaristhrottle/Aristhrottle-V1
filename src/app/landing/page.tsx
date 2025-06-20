@@ -445,7 +445,7 @@ export default function Page() {
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
 			style={{ height: '100vh' }}
 		>
-			<div className="w-full overflow-hidden">
+			<div className="w-full overflow-hidden hidden lg:block">
 				<div className="animate-marquee whitespace-nowrap">
 					<span className="text-xs sm:text-xl md:text-2xl font-semibold text-white inline-flex gap-1 sm:gap-2">
 						<span>🚀 Welcome to </span>
@@ -544,63 +544,68 @@ export default function Page() {
 
 				{/* Search Bar Row */}
 				<div className="flex items-center lg:flex-1 w-full justify-end">
-					<div className="border-2 border-slate-500 rounded-2xl py-1 bg-gray-600/15 w-full lg:w-64">
-						<InputGroup
-							flex="2"
-							className="w-full"
-							startElement={
-								query.length === 0 ? (
-									<LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
-								) : undefined
-							}
-							endElement={
-								query.length > 0 ? (
-									<LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
-								) : undefined
-							}
-						>
-							<Input
-								placeholder="Search"
-								className={`text-xl md:text-2xl focus:outline-none w-full placeholder:text-sm placeholder:leading-none placeholder:md:text-lg  ${
-									query.length === 0
-										? '!pl-10 md:!pl-14 pr-2 md:pr-4'
-										: 'pl-4 md:pl-6 pr-8 md:pr-12'
-								}`}
-								value={query}
-								onChange={e => setQuery(e.target.value)}
-								onFocus={() => setShowRecommendations(true)}
-								onBlur={() =>
-									setTimeout(() => setShowRecommendations(false), 200)
+					<div className="relative w-full lg:w-64">
+						<div className="border-2 border-slate-500 rounded-2xl py-1 bg-gray-600/15 w-full">
+							<InputGroup
+								flex="2"
+								className="w-full"
+								startElement={
+									query.length === 0 ? (
+										<LuSearch className="text-white text-lg md:text-2xl md:ml-2" />
+									) : undefined
 								}
-							/>
-						</InputGroup>
-					</div>
-					{showRecommendations && query.length > 0 && (
-						<div className="border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto w-full absolute top-full mt-2 left-0 right-0 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C] z-50">
-							{filteredTags.length > 0 ? (
-								<div className="flex flex-wrap items-center justify-start gap-4">
-									{filteredTags.map(tag => (
-										<Tag
-											key={tag._id}
-											className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
-											onClick={() => {
-												setQuery(tag.name)
-												setShowRecommendations(false)
-											}}
-										>
-											<div className="flex gap-2 text-lg text-white items-center">
-												{tag.name} <FaPlus size={14} className="stroke-[2px]" />
-											</div>
-										</Tag>
-									))}
-								</div>
-							) : (
-								<div className="md:px-4 md:py-2 w-full text-gray-400">
-									No recommendations found
-								</div>
-							)}
+								endElement={
+									query.length > 0 ? (
+										<LuSearch className="text-white text-lg md:text-2xl md:mr-2" />
+									) : undefined
+								}
+							>
+								<Input
+									placeholder="Search"
+									className={`text-xl md:text-2xl focus:outline-none w-full placeholder:text-sm placeholder:leading-none placeholder:md:text-lg  ${
+										query.length === 0
+											? '!pl-10 md:!pl-14 pr-2 md:pr-4'
+											: 'pl-4 md:pl-6 pr-8 md:pr-12'
+									}`}
+									value={query}
+									onChange={e => setQuery(e.target.value)}
+									onFocus={() => setShowRecommendations(true)}
+									onBlur={() =>
+										setTimeout(() => setShowRecommendations(false), 200)
+									}
+								/>
+							</InputGroup>
 						</div>
-					)}
+
+						{/* Recommendations positioned absolutely below the search bar */}
+						{showRecommendations && query.length > 0 && (
+							<div className="absolute top-full left-0 right-0 border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto w-full mt-2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C] z-50">
+								{filteredTags.length > 0 ? (
+									<div className="flex flex-wrap items-center justify-start gap-4">
+										{filteredTags.map(tag => (
+											<Tag
+												key={tag._id}
+												className="px-4 py-2 cursor-pointer border rounded-xl border-[#1783fb] !bg-gradient-to-b from-[#050D28] to-[#0F345C] whitespace-nowrap"
+												onClick={() => {
+													setQuery(tag.name)
+													setShowRecommendations(false)
+												}}
+											>
+												<div className="flex gap-2 text-lg text-white items-center">
+													{tag.name}{' '}
+													<FaPlus size={14} className="stroke-[2px]" />
+												</div>
+											</Tag>
+										))}
+									</div>
+								) : (
+									<div className="md:px-4 md:py-2 w-full text-gray-400">
+										No recommendations found
+									</div>
+								)}
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 
