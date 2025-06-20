@@ -658,6 +658,7 @@ export default function Page() {
           onClose={onClose}
           meme={selectedMeme}
           searchRelatedMemes={setQuery}
+          tab={activeTab}
         />
       )}
       {isShareOpen && shareData && (
