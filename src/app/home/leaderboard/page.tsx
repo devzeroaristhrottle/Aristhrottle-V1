@@ -282,7 +282,7 @@ export default function Page() {
       </div>
       {/* Meme Detail Modal */}
       {isMemeDetailOpen && selectedMeme && (
-        <MemeDetail onClose={onClose} meme={selectedMeme} />
+        <MemeDetail onClose={onClose} meme={selectedMeme} tab={activeTab}/>
       )}
     </div>
   );

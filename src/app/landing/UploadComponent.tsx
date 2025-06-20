@@ -7,16 +7,9 @@ import { Context } from '@/context/contextProvider'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { Meme } from './page'
 
-interface TagResponse {
-	name: string
-	_id: string
-}
-
 interface Tags {
 	name: string
-	isNew?: boolean
 	_id?: string
-	id?: string
 }
 
 interface UploadCompProps {
@@ -25,25 +18,19 @@ interface UploadCompProps {
 }
 
 const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
+	const { setUserDetails, userDetails } = useContext(Context)
 	const [title, setTitle] = useState('')
 	const [selectedTags, setSelectedTags] = useState<Tags[]>([])
 	const [filteredTags, setFilteredTags] = useState<Tags[]>([])
 	const [newTagInput, setNewTagInput] = useState('')
-	const [tags, setTags] = useState<Tags[]>([])
 	const [generatedImage, setGeneratedImage] = useState<string | null>(null)
 	const [isGenerating, setIsGenerating] = useState<boolean>(false)
 	const [isUploading, setIsUploading] = useState<boolean>(false)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const [isAI, setIsAI] = useState<boolean>(false)
-	const { userDetails } = useContext(Context)
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
-
-	useEffect(() => {
-		getTag()
-	}, [])
-
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			findTag()
@@ -62,19 +49,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			}
 		} else {
 			setFilteredTags([])
-		}
-	}
-
-	const getTag = async () => {
-		const response = await axiosInstance.get('/api/tags')
-
-		if (response.data.tags) {
-			const tags: Tags[] = []
-
-			response.data.tags.map((tag: TagResponse) => {
-				tags.push({ name: tag.name, _id: tag._id, isNew: false })
-			})
-			setTags([...tags])
 		}
 	}
 
@@ -116,6 +90,13 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 		}
 		try {
 			setIsGenerating(true)
+			if (userDetails) {
+				if(userDetails.generations > 5) return;
+				setUserDetails({
+					...userDetails,
+					generations: userDetails.generations + 1,
+				})
+			}
 			const tagNames = selectedTags.map(tag => tag.name)
 			const response = await axios.post(
 				'https://gen-image-84192368251.europe-west1.run.app/api/v1/images/generate',
@@ -135,6 +116,12 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			setGeneratedImage(imageUrl)
 		} catch (error) {
 			console.error('Error generating image:', error)
+			if (userDetails) {
+				setUserDetails({
+					...userDetails,
+					generations: userDetails.generations,
+				})
+			}
 			alert(
 				'Error generating meme: Please change title and tags and try again!'
 			)
@@ -170,7 +157,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				type: 'Event' as const,
 				startTime: new Date().toISOString(),
 				endTime: new Date().toISOString(),
-				created_by: userDetails!._id,
+				created_by: '',
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 				__v: 0,
@@ -214,25 +201,12 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 
 				// Create FormData for meme upload
 				const formData = new FormData()
+				const reqTag = selectedTags.map(tag => tag.name)
 				formData.append('name', title)
 				formData.append('file', blob, 'image.png')
 				formData.append('created_by', userDetails!._id)
 
-				const newTags: string[] = []
-				const existingTags: string[] = []
-
-				selectedTags.forEach(tag => {
-					if (tag.isNew) {
-						newTags.push(tag.name)
-					} else {
-						if (!tag.isNew && tag.id) {
-							existingTags.push(tag.id)
-						}
-					}
-				})
-
-				formData.append('new_tags', JSON.stringify(newTags))
-				formData.append('existing_tags', JSON.stringify(existingTags))
+				formData.append('tags', JSON.stringify(reqTag))
 
 				const uploadResponse = await axiosInstance.post('/api/meme', formData, {
 					headers: {
@@ -253,7 +227,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					throw new Error('Upload failed')
 				}
 			} catch (error) {
-				console.error('Error uploading meme:', error, optimisticMeme?._id)
+				console.error('Error uploading meme:', error)
 				alert('Failed to upload meme. Please try again.')
 
 				onRevert(optimisticMeme)
@@ -454,24 +428,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 								<span className="text-xs hover:bg-red-500 rounded-full w-3 h-3 flex items-center justify-center">
 									×
 								</span>
-							</span>
-						))}
-					</div>
-
-					{/* Sample Tags */}
-					<div className="items-center flex-wrap gap-2 lg:gap-4 mt-2 max-h-14 lg:max-h-36 overflow-y-auto hidden">
-						{tags.map((tag, index) => (
-							<span
-								key={index}
-								className="bg-gray-800 border-2 border-[#1583fb] hover:opacity-50 rounded-lg cursor-pointer px-2 py-1 flex items-center gap-1"
-								onClick={() => {
-									if (tag._id) {
-										handleTagSelect(tag.name, false, tag._id)
-									}
-								}}
-							>
-								{tag.name}
-								<span className="text-xs">+</span>
 							</span>
 						))}
 					</div>
