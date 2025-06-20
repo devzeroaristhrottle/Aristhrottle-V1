@@ -135,3 +135,5 @@ body {
     transform: translateX(-10%) translateY(-30px);
   }
 }
+
+@custom-variant dark (&:where(.dark, .dark *));
