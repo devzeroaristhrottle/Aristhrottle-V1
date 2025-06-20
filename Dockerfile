@@ -14,8 +14,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # ✅ Set environment variables directly for build-time
-ENV NEXT_PUBLIC_API_URL=https://staging-aristhrottle-967605038619.asia-south2.run.app
-ENV NEXTAUTH_URL=https://staging-aristhrottle-967605038619.asia-south2.run.app
+ENV NEXT_PUBLIC_API_URL=https://beta-aristhrottle-967605038619.asia-south2.run.app
+ENV NEXTAUTH_URL=https://beta-aristhrottle-967605038619.asia-south2.run.app
 
 RUN npm run build
 
