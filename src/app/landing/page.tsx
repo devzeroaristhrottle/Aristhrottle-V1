@@ -685,6 +685,7 @@ export default function Page() {
 			{/* Meme Detail Modal */}
 			{isMemeDetailOpen && selectedMeme && (
 				<MemeDetail
+					tab={activeTab}
 					onClose={onClose}
 					meme={selectedMeme}
 					searchRelatedMemes={setQuery}

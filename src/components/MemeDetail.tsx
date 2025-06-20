@@ -24,6 +24,7 @@ interface MemeDetailProps {
 	onClose?: () => void
 	meme: Meme | LeaderboardMeme | undefined
 	searchRelatedMemes?: Dispatch<SetStateAction<string>>
+	tab: string
 }
 
 interface Category {
@@ -35,6 +36,7 @@ export default function MemeDetail({
 	onClose = () => {},
 	meme,
 	searchRelatedMemes,
+	tab,
 }: MemeDetailProps) {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [relatedMemes, setRelatedMemes] = useState<Meme[]>([])
@@ -160,7 +162,7 @@ export default function MemeDetail({
 										>
 											<FaRegShareFromSquare className="text-white w-5 h-5" />
 											<span className="text-[#1783fb] font-bold text-lg sm:text-xl">
-												{meme.shares.length}
+												{tab === 'live' ? meme.shares.length : meme.shares}
 											</span>
 										</button>
 
@@ -179,7 +181,9 @@ export default function MemeDetail({
 													<CiBookmark className="text-white w-4 h-4 sm:w-5 sm:h-5" />
 												)}
 												<span className="text-[#1783fb] font-bold text-lg sm:text-xl">
-													{meme.bookmarks.length}
+													{tab === 'live'
+														? meme.bookmarks.length
+														: meme.bookmarks}
 												</span>
 											</button>
 										)}
@@ -231,7 +235,9 @@ export default function MemeDetail({
 														key={index}
 														className="bg-gradient-to-r from-[#29e0ca]/20 to-[#29e0ca]/10 border border-[#29e0ca]/50 rounded-lg px-3 py-1.5 text-sm sm:text-base text-white font-medium backdrop-blur-sm"
 													>
-														{tag.name}
+														{tab === 'live'
+															? tag.name
+															: JSON.parse(JSON.stringify(tag))}
 													</span>
 												))}
 											</div>

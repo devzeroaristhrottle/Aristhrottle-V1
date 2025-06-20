@@ -115,7 +115,7 @@ async function handlePostRequest(req: NextRequest) {
         is_onchain: meme.is_onchain,
         upvotes: upvotesCount,
         downvotes: downvotesCount,
-        total: meme.vote_count
+        total: meme.vote_count + upvotesCount - downvotesCount
       },
       { status: 200 }
     );
