@@ -104,7 +104,7 @@ export default function MemeDetail({
 			<DialogRoot open={isOpen} motionPreset="slide-in-bottom">
 				<DialogBackdrop className="backdrop-blur-md" />
 				<div className="flex justify-center items-center h-screen">
-					<DialogContent className="fixed inset-2 md:inset-4 bg-[#141e29] border border-white w-[90vw] md:w-[70vw] lg:w-[60vw] h-[85vh] md:h-[80vh] max-w-none p-0 rounded-lg">
+					<DialogContent className="fixed inset-2 md:inset-4 bg-[#141e29] border border-white lg:w-[80em] w-[90vw] h-[85vh] max-w-none rounded-lg lg:px-[2em] p-0">
 						<DialogBody className="overflow-y-auto no-scrollbar mx-4 md:mx-8 my-4">
 							{/* Close Button */}
 							<button
@@ -125,12 +125,12 @@ export default function MemeDetail({
 							</div>
 
 							{/* Main Content */}
-							<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+							<div className="flex flex-col lg:flex-row gap-6">
 								{/* Left side - Image and Actions */}
-								<div className="space-y-3">
+								<div className="space-y-4 flex-1 lg:flex-[2]">
 									{/* Image Container */}
 									<div className="relative group">
-										<div className="aspect-square w-3/4 mx-auto bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-white/20 rounded-lg transition-all duration-300 group-hover:border-white/40">
+										<div className="w-full h-fit flex items-center justify-center overflow-hidden border-2 border-white/20 rounded-lg transition-all duration-300 group-hover:border-white/40">
 											<img
 												src={meme.image_url}
 												alt={meme.name}
@@ -191,7 +191,7 @@ export default function MemeDetail({
 								</div>
 
 								{/* Right side - Details */}
-								<div className="space-y-3 sm:space-y-4">
+								<div className="space-y-3 sm:space-y-4 flex-1 lg:flex-[1]">
 									{/* Title */}
 									<div className="space-y-2">
 										<label className="text-[#1783fb] text-lg sm:text-xl font-semibold block">
@@ -245,7 +245,7 @@ export default function MemeDetail({
 									)}
 
 									{/* Vote Count Info */}
-									{meme.vote_count && (
+									{/* {meme.vote_count && (
 										<div className="space-y-2">
 											<label className="text-[#1783fb] text-lg sm:text-xl font-semibold block">
 												Vote Count
@@ -256,10 +256,10 @@ export default function MemeDetail({
 												</span>
 											</div>
 										</div>
-									)}
+									)} */}
 
 									{/* Upload Date */}
-									<div className="space-y-2">
+									{/* <div className="space-y-2">
 										<label className="text-[#1783fb] text-lg sm:text-xl font-semibold block">
 											Uploaded on
 										</label>
@@ -276,55 +276,57 @@ export default function MemeDetail({
 												})}
 											</span>
 										</div>
-									</div>
+									</div> */}
+
+									{isMeme(meme) &&
+										relatedMemes.length > 0 &&
+										searchRelatedMemes && (
+											<div className="mt-4 lg:mt-6 space-y-3">
+												<h3 className="text-xl sm:text-2xl lg:text-3xl text-[#1783fb] font-bold">
+													Related Contents
+												</h3>
+
+												<div className="grid grid-cols-2 gap-3 sm:gap-4">
+													{relatedMemes.map((item, index) => {
+														if (index < 4 && meme.name !== item.name) {
+															return (
+																<div
+																	key={item._id}
+																	onClick={() => {
+																		if (item.categories.length > 0) {
+																			searchRelatedMemes(
+																				item.categories[0].name
+																			)
+																			onClose()
+																		}
+																	}}
+																	className="group relative aspect-square border-2 border-white/20 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-white/40 hover:scale-105"
+																>
+																	<img
+																		src={item.image_url}
+																		alt={`Related meme ${index + 1}`}
+																		className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+																	/>
+																</div>
+															)
+														}
+													})}
+												</div>
+
+												<div className="flex justify-center mt-6">
+													<button className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 border border-white/20 rounded-lg px-4 py-2 hover:bg-white/20 transition-all duration-300">
+														<span className="text-white text-base sm:text-lg font-medium">
+															More
+														</span>
+														<MdOutlineExpandMore className="text-white text-lg sm:text-xl" />
+													</button>
+												</div>
+											</div>
+										)}
 								</div>
 							</div>
 
 							{/* Related Content */}
-							{isMeme(meme) &&
-								relatedMemes.length > 0 &&
-								searchRelatedMemes && (
-									<div className="mt-4 lg:mt-6 space-y-3">
-										<h3 className="text-xl sm:text-2xl lg:text-3xl text-[#1783fb] font-bold">
-											Related Contents
-										</h3>
-
-										<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-											{relatedMemes.map((item, index) => {
-												if (index < 6 && meme.name !== item.name) {
-													return (
-														<div
-															key={item._id}
-															onClick={() => {
-																if (item.categories.length > 0) {
-																	searchRelatedMemes(item.categories[0].name)
-																	onClose()
-																}
-															}}
-															className="group relative aspect-square border-2 border-white/20 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-white/40 hover:scale-105"
-														>
-															<img
-																src={item.image_url}
-																alt={`Related meme ${index + 1}`}
-																className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-															/>
-															<div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-														</div>
-													)
-												}
-											})}
-										</div>
-
-										<div className="flex justify-center mt-6">
-											<button className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 border border-white/20 rounded-lg px-4 py-2 hover:bg-white/20 transition-all duration-300">
-												<span className="text-white text-base sm:text-lg font-medium">
-													More
-												</span>
-												<MdOutlineExpandMore className="text-white text-lg sm:text-xl" />
-											</button>
-										</div>
-									</div>
-								)}
 						</DialogBody>
 					</DialogContent>
 				</div>
