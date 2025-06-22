@@ -460,6 +460,15 @@ export default function Page() {
 		}
 	}
 
+	useEffect(() => {
+		if (memeContainerRef.current) {
+			memeContainerRef.current.style.overflow = isMemeDetailOpen
+				? 'hidden'
+				: 'auto'
+		}
+		document.body.style.overflow = isMemeDetailOpen ? 'hidden' : 'auto'
+	}, [isMemeDetailOpen])
+
 	return (
 		<div
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
