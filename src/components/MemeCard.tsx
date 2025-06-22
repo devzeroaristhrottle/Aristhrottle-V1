@@ -10,6 +10,7 @@ import { Tooltip } from './ui/tooltip'
 import { FaBookmark } from 'react-icons/fa'
 import { useUser, useAuthModal } from '@account-kit/react'
 import Image from 'next/image'
+import { LazyImage } from './LazyImage'
 
 export interface MemeCardI {
 	index: number
@@ -85,7 +86,7 @@ export function MemeCard({
 	}
 
 	return (
-		<div key={index} className="flex flex-col  lg:mx-auto">
+		<div key={index} className="flex flex-col  lg:mx-auto cursor-s">
 			<div className="flex items-start gap-x-1 md:gap-x-2 mb-1 md:mb-2">
 				<CgProfile className="md:w-7 md:h-7" />
 				<span className="text-[#29e0ca] text-base md:text-2xl">
@@ -93,7 +94,7 @@ export function MemeCard({
 				</span>
 			</div>
 			<div className="flex cursor-pointer">
-				<img
+				<LazyImage
 					onClick={() => {
 						onOpenMeme()
 					}}

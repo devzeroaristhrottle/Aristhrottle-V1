@@ -8,6 +8,7 @@ import { useMemeActions } from "../bookmark/bookmarkHelper";
 import { CiBookmark } from "react-icons/ci";
 import { useUser } from "@account-kit/react";
 import { BiDownArrow, BiUpArrow } from "react-icons/bi";
+import { LazyImage } from "@/components/LazyImage";
 
 export const LeaderboardMemeCard: React.FC<{
   meme: LeaderboardMeme;
@@ -55,13 +56,13 @@ export const LeaderboardMemeCard: React.FC<{
             </p>
           </div>
           <div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[22rem] xl:h-[22rem] object-cover border-2 border-white">
-            <img
+            <LazyImage
               onClick={() => {
                 onOpenMeme();
               }}
               src={meme.image_url}
               alt={meme.name}
-              className="w-full h-full"
+              className="w-full h-full cursor-pointer"
             />
           </div>
           <div className="title_wrapper flex justify-between text-lg leading-tight md:text-xl">
