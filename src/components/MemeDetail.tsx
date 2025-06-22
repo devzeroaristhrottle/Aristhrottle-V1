@@ -204,7 +204,7 @@ export default function MemeDetail({
 						{/* Mobile Image with Touch Events */}
 						<div 
 							className="inset-0 sm:right-80 lg:right-96 flex sm:hidden items-center justify-center backdrop-blur-lg " 
-							style={{height: "calc(100vh - 200px)"}}
+							style={{height: "calc(100vh - 350px)"}}
 							onTouchStart={onTouchStart}
 							onTouchMove={onTouchMove}
 							onTouchEnd={onTouchEnd}
