@@ -6,6 +6,7 @@ import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { Meme } from './page'
+import { toast } from 'react-toastify'
 
 interface Tags {
 	name: string
@@ -122,7 +123,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					generations: userDetails.generations,
 				})
 			}
-			alert(
+			toast.error(
 				'Error generating meme: Please change title and tags and try again!'
 			)
 		} finally {
@@ -222,13 +223,13 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					setSelectedTags([])
 					setGeneratedImage(null)
 
-					alert('Meme uploaded successfully!')
+					toast.success('Meme uploaded successfully!')
 				} else {
 					throw new Error('Upload failed')
 				}
 			} catch (error) {
 				console.error('Error uploading meme:', error)
-				alert('Failed to upload meme. Please try again.')
+				toast.error('Failed to upload meme. Please try again.')
 
 				onRevert(optimisticMeme)
 			} finally {

@@ -1,6 +1,7 @@
 'use client'
 
 import { FaBookmark, FaRegShareFromSquare } from 'react-icons/fa6'
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 
 import { CgCloseO, CgProfile } from 'react-icons/cg'
 import Share from './Share'
@@ -17,6 +18,8 @@ import Image from 'next/image'
 interface MemeDetailProps {
 	isOpen?: boolean
 	onClose?: () => void
+	onNext?: () => void
+	onPrev?: () => void
 	meme: Meme | LeaderboardMeme | undefined
 	searchRelatedMemes?: Dispatch<SetStateAction<string>>
 	tab: string
@@ -29,6 +32,8 @@ interface Category {
 export default function MemeDetail({
 	isOpen = true,
 	onClose = () => {},
+	onNext,
+	onPrev,
 	meme,
 	searchRelatedMemes,
 	tab,
@@ -38,6 +43,13 @@ export default function MemeDetail({
 	const user = useUser()
 	const { handleBookmark } = useMemeActions()
 	const [isBookmarked, setIsBookmarked] = useState(false)
+	
+	// Touch/swipe state
+	const [touchStart, setTouchStart] = useState<number | null>(null)
+	const [touchEnd, setTouchEnd] = useState<number | null>(null)
+
+	// Minimum swipe distance (in px)
+	const minSwipeDistance = 50
 
 	const handleShareClose = () => setIsShareOpen(false)
 
@@ -70,16 +82,45 @@ export default function MemeDetail({
 		}
 	}
 
+	// Touch handlers for swipe functionality
+	const onTouchStart = (e: React.TouchEvent) => {
+		setTouchEnd(null)
+		setTouchStart(e.targetTouches[0].clientX)
+	}
+
+	const onTouchMove = (e: React.TouchEvent) => {
+		setTouchEnd(e.targetTouches[0].clientX)
+	}
+
+	const onTouchEnd = () => {
+		if (!touchStart || !touchEnd) return
+		
+		const distance = touchStart - touchEnd
+		const isLeftSwipe = distance > minSwipeDistance
+		const isRightSwipe = distance < -minSwipeDistance
+
+		if (isLeftSwipe && onNext) {
+			onNext()
+		}
+		if (isRightSwipe && onPrev) {
+			onPrev()
+		}
+	}
+
 	useEffect(() => {
 		getRelatedMemes()
 		getBookmarks()
 	}, [meme])
 
-	// Close dialog on Escape key press
+	// Close dialog on Escape key press and handle arrow keys
 	useEffect(() => {
 		const handleKeyPress = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
 				onClose()
+			} else if (event.key === 'ArrowLeft' && onPrev) {
+				onPrev()
+			} else if (event.key === 'ArrowRight' && onNext) {
+				onNext()
 			}
 		}
 
@@ -90,7 +131,7 @@ export default function MemeDetail({
 		return () => {
 			document.removeEventListener('keydown', handleKeyPress)
 		}
-	}, [isOpen, onClose])
+	}, [isOpen, onClose, onNext, onPrev])
 
 	if (!meme) return null
 
@@ -115,16 +156,38 @@ export default function MemeDetail({
 						<CgCloseO className="text-white w-6 h-6" />
 					</button>
 
-					{/* Fullscreen Meme Image */}
-					<div className="absolute inset-0 sm:right-80 lg:right-96 items-center justify-center backdrop-blur-lg hidden sm:flex">
+					{/* Navigation Arrows for Large Screens */}
+					{onPrev && (
+						<button
+							onClick={onPrev}
+							className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 hidden sm:flex items-center justify-center"
+						>
+							<FaChevronLeft className="text-white w-6 h-6" />
+						</button>
+					)}
+
+					{onNext && (
+						<button
+							onClick={onNext}
+							className="absolute right-4 sm:right-80 lg:right-96 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 hidden sm:flex items-center justify-center"
+						>
+							<FaChevronRight className="text-white w-6 h-6" />
+						</button>
+					)}
+
+					{/* Fullscreen Meme Image with Touch Events */}
+					<div 
+						className="absolute inset-0 sm:right-80 lg:right-96 items-center justify-center backdrop-blur-lg hidden sm:flex"
+						onTouchStart={onTouchStart}
+						onTouchMove={onTouchMove}
+						onTouchEnd={onTouchEnd}
+					>
 						<img
 							src={meme.image_url}
 							alt={meme.name}
 							className="max-w-full max-h-full object-contain hidden sm:block"
 						/>
 					</div>
-
-
 
 					{/* Right Side Details Overlay */}
 					<div className="absolute top-0 right-0 w-full sm:w-80 lg:w-96 h-full bg-black/90 backdrop-blur-md overflow-y-auto scrollbar-hide p-4 sm:p-6">
@@ -138,13 +201,20 @@ export default function MemeDetail({
 							</span>
 						</div>
 
-						<div className="inset-0 sm:right-80 lg:right-96 flex sm:hidden items-center justify-center backdrop-blur-lg " style={{height: "calc(100vh - 200px)"}}>
-						<img
-							src={meme.image_url}
-							alt={meme.name}
-							className="max-w-full max-h-full object-contain block sm:hidden"
-						/>
-					</div>
+						{/* Mobile Image with Touch Events */}
+						<div 
+							className="inset-0 sm:right-80 lg:right-96 flex sm:hidden items-center justify-center backdrop-blur-lg " 
+							style={{height: "calc(100vh - 350px)"}}
+							onTouchStart={onTouchStart}
+							onTouchMove={onTouchMove}
+							onTouchEnd={onTouchEnd}
+						>
+							<img
+								src={meme.image_url}
+								alt={meme.name}
+								className="max-w-full max-h-full object-contain block sm:hidden"
+							/>
+						</div>
 
 						{/* Action Buttons */}
 						<div className="flex flex-wrap gap-3 mb-6">
