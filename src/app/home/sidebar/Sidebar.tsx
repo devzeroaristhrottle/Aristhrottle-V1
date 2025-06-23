@@ -141,7 +141,7 @@ const Sidebar = () => {
 		<>
 			<div
 				ref={itemRef}
-				className="hidden md:fixed left-0 top-1/2 -translate-y-1/2 h-50vh md:flex items-center"
+				className="hidden md:fixed left-0 top-1/2 -translate-y-1/2 h-50vh md:flex items-center z-[100]"
 				onMouseEnter={() => setIsHovered(true)}
 				onMouseLeave={() => setIsHovered(false)}
 			>
