@@ -32,6 +32,8 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [isAI, setIsAI] = useState<boolean>(false)
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
+	const titleRef = useRef<HTMLInputElement>(null)
+
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			findTag()
@@ -89,10 +91,15 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			}
 			return
 		}
+		if (!title || selectedTags.length < 1) {
+			toast.error('Please add a title and atleast a tag to continue')
+			titleRef.current?.focus()
+			return
+		}
 		try {
 			setIsGenerating(true)
 			if (userDetails) {
-				if(userDetails.generations > 5) return;
+				if (userDetails.generations > 5) return
 				setUserDetails({
 					...userDetails,
 					generations: userDetails.generations + 1,
@@ -269,42 +276,26 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					</div>
 				) : (
 					/* Upload Instructions */
-					<div
-						className="border border-white rounded-xl p-4 lg:p-5 text-gray-400 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20 cursor-pointer"
-						onClick={handleFileSelect}
-					>
-						<div id="top-sec">
-							<div className="flex gap-x-2 mb-3 lg:mb-4">
+					<div className="border h-full flex flex-col justify-between border-white rounded-xl p-4 lg:p-5 text-gray-400 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20 cursor-pointer">
+						<div
+							id="top-sec"
+							className="flex justify-center items-center"
+							onClick={handleFileSelect}
+						>
+							<div className="flex gap-x-2 mb-3 lg:mb-4 flex-col w-full">
 								<div className="flex justify-center items-center">
 									<IoCloudUploadOutline
 										size={40}
 										className="lg:w-12 lg:h-12 text-blue-400 hover:scale-110 transition-transform duration-200"
 									/>
 								</div>
-								<div className="flex flex-col">
-									<div className="text-blue-400 text-xl">Choose File</div>
-									<div className="text-xs lg:text-sm">JPG / PNG Max. 10 MB</div>
+								<div className="flex flex-col items-center">
+									<div className="text-blue-400 text-3xl">Choose File</div>
+									<div className="text-xs lg:text-2xl">
+										JPG / PNG Max. 10 MB
+									</div>
 								</div>
 							</div>
-							<ul className="space-y-2 pb-3 lg:pb-4">
-								{[
-									'Click Here to Upload From device',
-									'Enter Title and Tags',
-									'Click on "Upload"',
-								].map((text, index) => (
-									<li
-										key={index}
-										className="flex items-start gap-2 lg:gap-3 group"
-									>
-										<div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-gray-400 text-black border font-semibold text-xs lg:text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200 flex-shrink-0">
-											{index + 1}
-										</div>
-										<span className="text-sm lg:text-base break-words group-hover:text-white transition-colors duration-200">
-											{text}
-										</span>
-									</li>
-								))}
-							</ul>
 						</div>
 
 						{/* Divider */}
@@ -317,35 +308,20 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 						</div>
 
 						{/* AI Instructions */}
-						<div id="top-sec">
-							<div className="flex gap-x-2 lg:gap-x-3 items-center mb-2 lg:mb-3">
+						<div
+							id="top-sec"
+							className="flex justify-center items-center"
+							onClick={getImage}
+						>
+							<div className="flex flex-col gap-x-2 lg:gap-x-3 items-center mb-2 lg:mb-3">
 								<HiSparkles
 									size={32}
 									className="lg:w-10 lg:h-10 text-blue-400 hover:scale-110 hover:rotate-12 transition-all duration-300 flex-shrink-0"
 								/>
-								<div className="text-blue-400 text-lg lg:text-xl hover:text-white transition-colors duration-200">
-									Create with Aris Intelligence
+								<div className="text-blue-400 text-lg lg:text-3xl hover:text-white transition-colors duration-200">
+									Create
 								</div>
 							</div>
-							<ul className="space-y-2">
-								{[
-									'Enter Title and Tags of Your Choice',
-									'Click on "Generate"',
-									'Click on "Upload" to Post',
-								].map((text, index) => (
-									<li
-										key={index}
-										className="flex items-start gap-2 lg:gap-3 group"
-									>
-										<div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-gray-400 text-black border font-semibold text-xs lg:text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200 flex-shrink-0">
-											{index + 1}
-										</div>
-										<span className="text-sm lg:text-base break-words group-hover:text-white transition-colors duration-200">
-											{text}
-										</span>
-									</li>
-								))}
-							</ul>
 						</div>
 					</div>
 				)}
@@ -366,6 +342,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 						}
 						maxLength={250}
 						className="bg-transparent border rounded-lg px-3 py-2 lg:py-3 text-sm sm:text-base lg:text-lg text-white placeholder:text-gray-400 focus:outline-none border-[#1583fb] hover:border-blue-300 focus:border-blue-300 focus:shadow-lg focus:shadow-blue-400/20 transition-all duration-200 w-full"
+						ref={titleRef}
 					/>
 				</div>
 
@@ -440,7 +417,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 						disabled={isUploading}
 						className="rounded-full bg-[#28e0ca] px-4 py-1 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isUploading ? 'Uploading...' : 'Upload'}
+						{isUploading ? 'Posting...' : 'Post'}
 					</button>
 					<button
 						onClick={getImage}
