@@ -86,8 +86,10 @@ export const alchemyConfig = createConfig(
     enablePopupOauth: true, // must be set to "true" if you plan on using popup rather than redirect in the social login flow
     // optional config to override default session manager config
     sessionConfig: {
-      expirationTimeMs: 1000 * 60 * 60, // 60 minutes (default is 15 min)
+      expirationTimeMs:  1000 * 60 * 60 * 24 * 7 // week in seconds , // 7 days,
+
     },
+    policyId: "3f009126-a65f-46b9-9191-74ac1970f22e", // TODO: add your policy ID if you have one
   },
   config
 );
