@@ -474,7 +474,7 @@ export default function Page() {
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
 			style={{ height: '100vh' }}
 		>
-			<div className="w-full overflow-hidden hidden lg:block">
+			<div className="w-full overflow-hidden" style={{ width: 'calc(80vw)' }}>
 				<div className="animate-marquee whitespace-nowrap">
 					<span className="text-xs sm:text-xl md:text-2xl font-semibold text-white inline-flex gap-1 sm:gap-2">
 						<span>🚀 Welcome to </span>
