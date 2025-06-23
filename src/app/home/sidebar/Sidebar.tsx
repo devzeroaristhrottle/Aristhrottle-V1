@@ -26,32 +26,32 @@ const sidebarItems = [
 				width={50}
 			/>
 		),
-		action: (route: AppRouterInstance) => route.replace('/landing'),
+		action: (route: AppRouterInstance) => route.push('/landing'),
 	},
-	{
-		title: 'Upload',
-		icon: (isActive: boolean) => (
-			<GrCloudUpload
-				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-					isActive ? 'text-[#1783FB]' : 'text-slate-100'
-				}`}
-			/>
-		),
-		action: (
-			_: AppRouterInstance,
-			setIsUploadMemeOpen: Dispatch<SetStateAction<boolean>>,
-			isConnected: boolean,
-			openConnectModal: (() => void) | undefined
-		) => {
-			if (isConnected) {
-				setIsUploadMemeOpen(true)
-			} else {
-				if (openConnectModal) {
-					openConnectModal()
-				}
-			}
-		},
-	},
+	// {
+	// 	title: 'Upload',
+	// 	icon: (isActive: boolean) => (
+	// 		<GrCloudUpload
+	// 			className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+	// 				isActive ? 'text-[#1783FB]' : 'text-slate-100'
+	// 			}`}
+	// 		/>
+	// 	),
+	// 	action: (
+	// 		_: AppRouterInstance,
+	// 		setIsUploadMemeOpen: Dispatch<SetStateAction<boolean>>,
+	// 		isConnected: boolean,
+	// 		openConnectModal: (() => void) | undefined
+	// 	) => {
+	// 		if (isConnected) {
+	// 			setIsUploadMemeOpen(true)
+	// 		} else {
+	// 			if (openConnectModal) {
+	// 				openConnectModal()
+	// 			}
+	// 		}
+	// 	},
+	// },
 	{
 		title: 'Leaderboard',
 		icon: (isActive: boolean) => (
@@ -67,7 +67,7 @@ const sidebarItems = [
 				</span>
 			</div>
 		),
-		action: (route: AppRouterInstance) => route.replace('/home/leaderboard'),
+		action: (route: AppRouterInstance) => route.push('/home/leaderboard'),
 	},
 	{
 		title: 'Rewards',
@@ -84,7 +84,7 @@ const sidebarItems = [
 				</span>
 			</div>
 		),
-		action: (route: AppRouterInstance) => route.replace('/home/rewards'),
+		action: (route: AppRouterInstance) => route.push('/home/rewards'),
 	},
 	{
 		title: 'My Votes',
@@ -100,7 +100,7 @@ const sidebarItems = [
 				width={48}
 			/>
 		),
-		action: (route: AppRouterInstance) => route.replace('/home/myVotes'),
+		action: (route: AppRouterInstance) => route.push('/home/myVotes'),
 	},
 	{
 		title: 'Bookmarks',
@@ -111,7 +111,7 @@ const sidebarItems = [
 				}`}
 			/>
 		),
-		action: (route: AppRouterInstance) => route.replace('/home/bookmark'),
+		action: (route: AppRouterInstance) => route.push('/home/bookmark'),
 	},
 ]
 
@@ -149,16 +149,8 @@ const Sidebar = () => {
 					{sidebarItems.map(item => {
 						const isActive = activeTab === item.title
 						return (
-							<div key={item.title}>
+							<div key={item.title} onClick={() => item.action(route)}>
 								<div
-									onClick={() =>
-										item.action(
-											route,
-											setIsUploadMemeOpen,
-											user != null && user.address != null,
-											openAuthModal
-										)
-									}
 									onMouseEnter={() => setHoveredItem(item.title)}
 									onMouseLeave={() => setHoveredItem(null)}
 									className="hidden md:group md:flex gap-6 items-center justify-center p-2 rounded-lg cursor-pointer"
@@ -198,14 +190,7 @@ const Sidebar = () => {
 						return (
 							<div
 								key={item.title}
-								onClick={() =>
-									item.action(
-										route,
-										setIsUploadMemeOpen,
-										user != null && user.address != null,
-										openAuthModal
-									)
-								}
+								onClick={() => item.action(route)}
 								className="flex flex-col items-center"
 							>
 								<div
