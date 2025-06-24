@@ -15,4 +15,5 @@ export interface User {
 	bio?: string
 	profile_pic?: string
 	generations: number
+	lastGenerationReset?: string
 }
