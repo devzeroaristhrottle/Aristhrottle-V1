@@ -157,11 +157,12 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			}
 			
 			// Show appropriate error message
-			if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+			const err = error as any; // Type assertion to handle error properties
+			if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
 				toast.error(
 					'The image generation timed out. Please try again with a simpler prompt.'
 				)
-			} else if (error.response?.status === 403) {
+			} else if (err.response?.status === 403) {
 				toast.error('Daily generation limit reached.')
 			} else {
 				toast.error(
