@@ -153,6 +153,11 @@ async function handleGetRequest(req: NextRequest) {
 			{ $sort: { createdAt: -1 } },
 			{ $skip: start },
 			{ $limit: defaultOffset },
+			{
+				$project: {
+				vote_count: 0,
+				},
+			}
 		]
 
 		// Add common population lookups
@@ -175,6 +180,7 @@ async function handleGetRequest(req: NextRequest) {
 				},
 			}
 		)
+
 
 		// If userId is provided, inject vote check logic
 		if (userId != null && userId != 'undefined') {

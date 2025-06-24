@@ -1,4 +1,3 @@
-import axios from 'axios'
 import React, { useState, useRef, useContext, useEffect } from 'react'
 import { HiSparkles } from 'react-icons/hi2'
 import { IoCloudUploadOutline } from 'react-icons/io5'
@@ -7,6 +6,7 @@ import { Context } from '@/context/contextProvider'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { Meme } from './page'
 import { toast } from 'react-toastify'
+import { getTimeUntilReset } from '@/utils/dateUtils'
 
 interface Tags {
 	name: string
@@ -33,6 +33,29 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
 	const titleRef = useRef<HTMLInputElement>(null)
+
+	// Check for generation reset when component loads
+	useEffect(() => {
+		if (user && user.address && userDetails) {
+			checkGenerationReset()
+		}
+	}, [user, userDetails])
+
+	const checkGenerationReset = async () => {
+		try {
+			const response = await axiosInstance.get('/api/user/check-generations')
+			if (response.data.wasReset && userDetails) {
+				// Update local user state if generations were reset
+				setUserDetails({
+					...userDetails,
+					generations: 0,
+				})
+				toast.info('Your daily generation limit has been reset!')
+			}
+		} catch (error) {
+			console.error('Error checking generation reset:', error)
+		}
+	}
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -99,22 +122,30 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 		try {
 			setIsGenerating(true)
 			if (userDetails) {
-				if (userDetails.generations > 5) return
+				if (userDetails.generations >= 5) {
+					toast.error(
+						'You have reached your daily generation limit of 5 images! Limit resets daily.'
+					)
+					setIsGenerating(false)
+					return
+				}
 				setUserDetails({
 					...userDetails,
 					generations: userDetails.generations + 1,
 				})
 			}
 			const tagNames = selectedTags.map(tag => tag.name)
-			const response = await axios.post(
-				'https://gen-image-84192368251.europe-west1.run.app/api/v1/images/generate',
+
+			// Use our backend API as a proxy instead of directly calling the external service
+			const response = await axiosInstance.post(
+				'/api/generate-image',
 				{
 					title,
 					tags: tagNames,
-					filename: 'image.png',
 				},
 				{
 					responseType: 'blob', // Important for handling binary data
+					timeout: 180000, // 3 minute timeout (longer than backend to account for network)
 				}
 			)
 
@@ -122,20 +153,32 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			const imageBlob = new Blob([response.data], { type: 'image/png' })
 			const imageUrl = URL.createObjectURL(imageBlob)
 			setGeneratedImage(imageUrl)
+			setIsAI(true)
 		} catch (error) {
 			console.error('Error generating image:', error)
 			if (userDetails) {
+				// Revert the optimistic update
 				setUserDetails({
 					...userDetails,
-					generations: userDetails.generations,
+					generations: Math.max(0, userDetails.generations - 1),
 				})
 			}
-			toast.error(
-				'Error generating meme: Please change title and tags and try again!'
-			)
+
+			// Show appropriate error message
+			const err = error as any // Type assertion to handle error properties
+			if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+				toast.error(
+					'The image generation timed out. Please try again with a simpler prompt.'
+				)
+			} else if (err.response?.status === 403) {
+				toast.error('Daily generation limit reached.')
+			} else {
+				toast.error(
+					'Error generating meme: Please change title and tags and try again!'
+				)
+			}
 		} finally {
 			setIsGenerating(false)
-			setIsAI(true)
 		}
 	}
 
@@ -252,6 +295,14 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				{isGenerating ? (
 					<div className="flex flex-col justify-center items-center border border-blue-400 rounded-xl p-3 lg:p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300 cursor-pointer hover:border-blue-300 h-full">
 						<div className="w-32 h-32 border-8 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+						<div className="mt-4 text-center">
+							<p className="text-blue-400 font-medium">
+								Generating your meme...
+							</p>
+							<p className="text-gray-400 text-xs mt-1">
+								Please don&apos;t refresh the page.
+							</p>
+						</div>
 					</div>
 				) : generatedImage ? (
 					/* Image Display */
@@ -428,6 +479,33 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 						<HiSparkles className="group-hover:rotate-12 transition-transform duration-200" />
 					</button>
 				</div>
+
+				{/* Generation limit indicator */}
+				{userDetails && (
+					<div className="text-center text-sm text-gray-400 mt-2">
+						<div className="flex items-center justify-center gap-1">
+							{[...Array(5)].map((_, i) => (
+								<div
+									key={i}
+									className={`w-2 h-2 rounded-full ${
+										i < (userDetails.generations || 0)
+											? 'bg-blue-500'
+											: 'bg-gray-600'
+									}`}
+								/>
+							))}
+						</div>
+						<div className="mt-1">
+							<span className="font-medium">
+								{Math.max(0, 5 - (userDetails.generations || 0))} of 5
+							</span>{' '}
+							daily generations remaining
+							{userDetails.generations >= 5 && (
+								<span> • Resets in ~{getTimeUntilReset()}</span>
+							)}
+						</div>
+					</div>
+				)}
 
 				{/* Hidden file input */}
 				<input
