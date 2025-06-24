@@ -33,6 +33,7 @@ import { LeaderboardMemeCard } from '../home/leaderboard/MemeCard'
 import { LeaderboardMeme } from '../home/leaderboard/page'
 import Share from '@/components/Share'
 import UploadComponent from './UploadComponent'
+import WelcomeCard from '@/components/WelcomeCard'
 
 export interface Meme {
 	_id: string
@@ -106,7 +107,7 @@ export default function Page() {
 		id: string
 		imageUrl: string
 	} | null>(null)
-
+	const [welcOpen, setWelcOpen] = useState<boolean>(true)
 	/* eslint-disable @typescript-eslint/no-unused-vars */
 	const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
 		useContext(Context)
@@ -462,12 +463,12 @@ export default function Page() {
 
 	useEffect(() => {
 		if (memeContainerRef.current) {
-			memeContainerRef.current.style.overflow = isMemeDetailOpen
-				? 'hidden'
-				: 'auto'
+			memeContainerRef.current.style.overflow =
+				isMemeDetailOpen || welcOpen ? 'hidden' : 'auto'
 		}
-		document.body.style.overflow = isMemeDetailOpen ? 'hidden' : 'auto'
-	}, [isMemeDetailOpen])
+		document.body.style.overflow =
+			isMemeDetailOpen || welcOpen ? 'hidden' : 'auto'
+	}, [isMemeDetailOpen, welcOpen])
 
 	return (
 		<div
@@ -490,6 +491,7 @@ export default function Page() {
 
 			{/* Upload Component */}
 			<UploadComponent onUpload={addMeme} onRevert={revertMeme} />
+			<WelcomeCard isOpen={welcOpen} onClose={() => setWelcOpen(false)} />
 			<div className="h-8" />
 			{/* Popular Tags */}
 			<div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">
