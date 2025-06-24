@@ -319,7 +319,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 									className="lg:w-10 lg:h-10 text-blue-400 hover:scale-110 hover:rotate-12 transition-all duration-300 flex-shrink-0"
 								/>
 								<div className="text-blue-400 text-lg lg:text-3xl hover:text-white transition-colors duration-200">
-									Create
+									Create with Aris-Intelligence
 								</div>
 							</div>
 						</div>
@@ -399,7 +399,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 						{selectedTags.map((tag, index) => (
 							<span
 								key={index}
-								className="bg-blue-500 rounded-lg cursor-pointer text-balance px-2 py-1 flex items-center gap-1"
+								className="bg-transparent rounded-lg cursor-pointer text-balance px-2 py-1 flex items-center gap-1 border-2 border-[#1783fb]"
 								onClick={() => removeTag(tag.name)}
 							>
 								{tag.name}

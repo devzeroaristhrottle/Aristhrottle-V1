@@ -205,7 +205,7 @@ export function MemeCard({
 				</div>
 			</div>
 			<div className="flex justify-between mt-1">
-				<p className="text-lg md:text-2xl text-wrap">{meme.name}</p>
+				<p className="text-lg md:text-2xl text-wrap pr-8">{meme.name}</p>
 				{/* For mobile */}
 				<div className="md:hidden flex items-center gap-x-6 md:gap-x-0">
 					{loading ? (
