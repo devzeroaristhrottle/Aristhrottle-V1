@@ -91,6 +91,7 @@ export default function Page() {
 	const [selectedMeme, setSelectedMeme] = useState<
 		Meme | undefined | LeaderboardMeme
 	>()
+	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(-1)
 	const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
 	const [allMemeCount, setAllMemeCount] = useState<number>(0)
 	const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([])
@@ -157,6 +158,25 @@ export default function Page() {
 	const onClose = () => {
 		setIsMemeDetailOpen(false)
 		setSelectedMeme(undefined)
+		setSelectedMemeIndex(-1)
+	}
+
+	const handleNext = () => {
+		const currentData = activeTab === 'live' ? displayedMemes : allMemeData
+		if (selectedMemeIndex < currentData.length - 1) {
+			const nextIndex = selectedMemeIndex + 1
+			setSelectedMemeIndex(nextIndex)
+			setSelectedMeme(currentData[nextIndex])
+		}
+	}
+
+	const handlePrev = () => {
+		const currentData = activeTab === 'live' ? displayedMemes : allMemeData
+		if (selectedMemeIndex > 0) {
+			const prevIndex = selectedMemeIndex - 1
+			setSelectedMemeIndex(prevIndex)
+			setSelectedMeme(currentData[prevIndex])
+		}
 	}
 
 	const getPopularTags = async () => {
@@ -440,6 +460,15 @@ export default function Page() {
 		}
 	}
 
+	useEffect(() => {
+		if (memeContainerRef.current) {
+			memeContainerRef.current.style.overflow = isMemeDetailOpen
+				? 'hidden'
+				: 'auto'
+		}
+		document.body.style.overflow = isMemeDetailOpen ? 'hidden' : 'auto'
+	}, [isMemeDetailOpen])
+
 	return (
 		<div
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
@@ -627,6 +656,7 @@ export default function Page() {
 							activeTab={activeTab}
 							onOpenMeme={() => {
 								setSelectedMeme(meme)
+								setSelectedMemeIndex(index)
 								setIsMemeDetailOpen(true)
 							}}
 							onVoteMeme={() => voteToMeme(meme._id)}
@@ -642,6 +672,7 @@ export default function Page() {
 								meme={item}
 								onOpenMeme={() => {
 									setSelectedMeme(item)
+									setSelectedMemeIndex(index)
 									setIsMemeDetailOpen(true)
 								}}
 								onUpvoteDownvote={(memeId, rating) =>
@@ -689,6 +720,8 @@ export default function Page() {
 					onClose={onClose}
 					meme={selectedMeme}
 					searchRelatedMemes={setQuery}
+					onNext={handleNext}
+					onPrev={handlePrev}
 				/>
 			)}
 			{isShareOpen && shareData && (

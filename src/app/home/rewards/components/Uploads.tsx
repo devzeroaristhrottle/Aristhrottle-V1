@@ -43,13 +43,18 @@ const Uploads = () => {
     client,
     // optional parameter that will wait for the transaction to be mined before returning
     waitForTxn: true,
-    onSuccess: ({ hash, request }) => {
-      // [optional] Do something with the hash and request
-      console.log('User operation sent successfully:', hash, request)
+    onSuccess: async () => {
+      await axiosInstance
+        .post("/api/rewards/upload/updateall", {
+          userId: userId,
+        })
+        .catch(() => {
+          toast.error("Failed to update upload status. Please try again.");
+        });
+      toast.success("Rewards claimed successfully!");
     },
-    onError: (error) => {
-      console.error('Error sending user operation:', error)
-      // [optional] Do something with the error
+    onError: () => {
+      toast.error("Failed to send user operation. Please try again.");
     },
   })
 
@@ -122,7 +127,7 @@ const Uploads = () => {
           {uploadData?.unClaimedReward ? (
             <button
               className='bg-[#040f2b] border-2 border-[#1783FB] rounded-lg text-xl md:text-3xl px-4 md:px-8 md:py-1 hover:bg-blue-500/20 bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]'
-              onClick={() => {
+              onClick={async () => {
                 try {
                   const uoCallData = encodeFunctionData({
                     abi: EArtTokenABI,
@@ -131,7 +136,7 @@ const Uploads = () => {
                   })
 
                   if (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS) {
-                    sendUserOperation({
+                    await sendUserOperation({
                       uo: {
                         target: `0x${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS.slice(
                           2,

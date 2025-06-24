@@ -40,13 +40,17 @@ const Votes = () => {
     client,
     // optional parameter that will wait for the transaction to be mined before returning
     waitForTxn: true,
-    onSuccess: ({ hash, request }) => {
-      // [optional] Do something with the hash and request
-      console.log('User operation sent successfully:', hash, request)
+    onSuccess: async () => {
+    
+      await axiosInstance.post("/api/rewards/votes/updateall", {
+        userId: userId,
+      }).catch(() => {
+        toast.error("Failed to update vote status. Please try again.");
+      });
+      toast.success("Rewards claimed successfully!");
     },
-    onError: (error) => {
-      console.error('Error sending user operation:', error)
-      // [optional] Do something with the error
+    onError: () => {
+     toast.error("Failed to send user operation. Please try again.");
     },
   })
 
