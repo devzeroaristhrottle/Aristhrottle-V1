@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { HiSparkles } from 'react-icons/hi2'
 import { IoCloudUploadOutline } from 'react-icons/io5'
 import { FiShare2 } from 'react-icons/fi'
