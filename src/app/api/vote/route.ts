@@ -9,6 +9,9 @@ import { NextRequest, NextResponse } from "next/server";
 import Tags from "@/models/Tags";
 import { updateTagsRelevance } from "@/utils/tagUtils";
 import { generateReferralCodeIfEligible } from "@/utils/referralUtils";
+import { getContractUtils } from "@/ethers/contractUtils";
+import { ethers } from "ethers";
+import User from "@/models/User";
 
 async function handlePostRequest(request: NextRequest) {
   try {
@@ -79,6 +82,41 @@ async function handlePostRequest(request: NextRequest) {
 
     // Generate a referral code for the user if they don't have one yet
     await generateReferralCodeIfEligible(vote_by);
+
+    // Get voter and creator wallet addresses for token rewards
+    const voter = await User.findById(vote_by);
+    const creator = meme.created_by;
+
+    // Process token rewards asynchronously
+    setTimeout(async () => {
+      try {
+        const { contract } = getContractUtils();
+        
+        // Mint 0.25 tokens to the meme creator
+        if (creator && creator.user_wallet_address) {
+          const creatorAmount = 0.25;
+          const creatorTx = await contract.mintCoins(
+            creator.user_wallet_address, 
+            ethers.parseUnits(creatorAmount.toString(), 18)
+          );
+          await creatorTx.wait();
+          console.log(`Minted ${creatorAmount} tokens to creator ${creator.user_wallet_address} for receiving a vote`);
+        }
+        
+        // Mint 0.1 tokens to the voter
+        if (voter && voter.user_wallet_address) {
+          const voterAmount = 0.1;
+          const voterTx = await contract.mintCoins(
+            voter.user_wallet_address, 
+            ethers.parseUnits(voterAmount.toString(), 18)
+          );
+          await voterTx.wait();
+          console.log(`Minted ${voterAmount} tokens to voter ${voter.user_wallet_address} for voting`);
+        }
+      } catch (mintError) {
+        console.error("Error minting tokens for vote rewards:", mintError);
+      }
+    }, 0);
 
     await axiosInstance.post("/api/notification", {
       title: "🔥 Your Meme Got a Vote!",
