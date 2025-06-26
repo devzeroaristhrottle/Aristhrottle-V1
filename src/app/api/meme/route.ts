@@ -12,6 +12,7 @@ import cloudinary from '@/config/cloudinary'
 import { withApiLogging } from '@/utils/apiLogger'
 import { updateTagsRelevance, updateTagCooccurrences } from '@/utils/tagUtils'
 import { generateReferralCodeIfEligible } from '@/utils/referralUtils'
+import { getToken } from 'next-auth/jwt'
 
 type Tag = {
 	_id: mongoose.Types.ObjectId
@@ -47,13 +48,45 @@ async function handleGetRequest(req: NextRequest) {
 		const offset = off == null ? defaultOffset : parseInt(off.toString())
 		const start = offset <= defaultOffset ? 0 : offset - defaultOffset
 
+		// Get authenticated user if available
+		let authenticatedUserId = null
+		const token = await getToken({ req })
+		if (token && token.address) {
+			const user = await User.findOne({ user_wallet_address: token.address })
+			if (user) {
+				authenticatedUserId = user._id
+			}
+		}
+
+		// Use either provided userId or authenticated userId
+		const effectiveUserId = userId != null && userId != 'undefined' 
+			? userId 
+			: authenticatedUserId ? authenticatedUserId.toString() : null
+
 		const memesCount = await Meme.find({
 			is_voting_close: false,
 			is_onchain: false,
 		}).countDocuments()
 
 		if (id) {
-			const meme = await Meme.findOne().where({ _id: id }).populate('tags')
+			// For single meme fetch, check if user has voted for it
+			const memeQuery = Meme.findOne().where({ _id: id }).populate('tags')
+			
+			let meme = await memeQuery.exec()
+			
+			// If we have a user, check if they've voted for this meme
+			if (effectiveUserId && meme) {
+				const userObjectId = new mongoose.Types.ObjectId(effectiveUserId)
+				const voteExists = await Vote.exists({
+					vote_to: meme._id,
+					vote_by: userObjectId
+				})
+				
+				// Convert to plain object if it's a Mongoose document
+				meme = meme.toObject ? meme.toObject() : meme
+				meme.has_user_voted = !!voteExists
+			}
+			
 			return NextResponse.json({ meme: meme }, { status: 200 })
 		}
 
@@ -79,11 +112,61 @@ async function handleGetRequest(req: NextRequest) {
 			const memesCount = await Meme.where({
 				created_by: created_by,
 			}).countDocuments()
-			const memes = await Meme.find()
-				.where({ created_by: created_by })
-				.skip(start)
-				.limit(defaultOffset)
-				.populate('created_by')
+			
+			// Create base pipeline for user's memes
+			const userMemesPipeline: any[] = [
+				{ $match: { created_by: new mongoose.Types.ObjectId(created_by) } },
+				{ $skip: start },
+				{ $limit: defaultOffset },
+				{
+					$lookup: {
+						from: 'users',
+						localField: 'created_by',
+						foreignField: '_id',
+						as: 'created_by',
+					},
+				},
+				{ $unwind: '$created_by' }
+			]
+			
+			// Add user vote check if authenticated
+			if (effectiveUserId) {
+				const userObjectId = new mongoose.Types.ObjectId(effectiveUserId)
+				userMemesPipeline.push(
+					{
+						$lookup: {
+							from: 'votes',
+							let: { memeId: '$_id' },
+							pipeline: [
+								{
+									$match: {
+										$expr: {
+											$and: [
+												{ $eq: ['$vote_to', '$$memeId'] },
+												{ $eq: ['$vote_by', userObjectId] },
+											],
+										},
+									},
+								},
+								{ $limit: 1 },
+							],
+							as: 'userVote',
+						},
+					},
+					{
+						$addFields: {
+							has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
+						},
+					},
+					{
+						$project: {
+							userVote: 0,
+						},
+					}
+				)
+			}
+			
+			const memes = await Meme.aggregate(userMemesPipeline)
 
 			return NextResponse.json(
 				{ memes: memes, memesCount: memesCount },
@@ -97,17 +180,75 @@ async function handleGetRequest(req: NextRequest) {
 			const tagIds = await Tags.find({
 				name: { $in: names.map(n => new RegExp(n, 'i')) }, // Case-insensitive search for multiple names
 			}).distinct('_id')
-
-			const memes = await Meme.find({
-				$or: [
-					{ name: { $in: names.map(n => new RegExp(n, 'i')) } }, // Search in names
-					{ tags: { $in: tagIds } }, // Search in tags
-				],
-			})
-				.where({ is_voting_close: false })
-				.populate('created_by')
-				.populate('tags')
-			// // .populate('categories')
+			
+			// Create search pipeline
+			const searchPipeline: any[] = [
+				{
+					$match: {
+						$or: [
+							{ name: { $in: names.map(n => new RegExp(n, 'i')) } }, // Search in names
+							{ tags: { $in: tagIds } }, // Search in tags
+						],
+						is_voting_close: false
+					}
+				},
+				{
+					$lookup: {
+						from: 'users',
+						localField: 'created_by',
+						foreignField: '_id',
+						as: 'created_by',
+					},
+				},
+				{ $unwind: '$created_by' },
+				{
+					$lookup: {
+						from: 'tags',
+						localField: 'tags',
+						foreignField: '_id',
+						as: 'tags',
+					},
+				}
+			]
+			
+			// Add user vote check if authenticated
+			if (effectiveUserId) {
+				const userObjectId = new mongoose.Types.ObjectId(effectiveUserId)
+				searchPipeline.push(
+					{
+						$lookup: {
+							from: 'votes',
+							let: { memeId: '$_id' },
+							pipeline: [
+								{
+									$match: {
+										$expr: {
+											$and: [
+												{ $eq: ['$vote_to', '$$memeId'] },
+												{ $eq: ['$vote_by', userObjectId] },
+											],
+										},
+									},
+								},
+								{ $limit: 1 },
+							],
+							as: 'userVote',
+						},
+					},
+					{
+						$addFields: {
+							has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
+						},
+					},
+					{
+						$project: {
+							userVote: 0,
+						},
+					}
+				)
+			}
+			
+			const memes = await Meme.aggregate(searchPipeline)
 
 			return NextResponse.json(
 				{ memes, memesCount: memes.length },
@@ -116,36 +257,83 @@ async function handleGetRequest(req: NextRequest) {
 		}
 
 		if (type == 'carousel') {
-			const liveMemes = await Meme.find()
-				.limit(10)
-				.where({ is_onchain: false })
-				.populate('created_by')
-				.populate('tags')
-				.sort({ createdAt: -1 })
+			// Create carousel pipeline
+			const carouselPipeline: any[] = [
+				{ $match: { is_onchain: false } },
+				{ $sort: { createdAt: -1 } },
+				{ $limit: 10 },
+				{
+					$lookup: {
+						from: 'users',
+						localField: 'created_by',
+						foreignField: '_id',
+						as: 'created_by',
+					},
+				},
+				{ $unwind: '$created_by' },
+				{
+					$lookup: {
+						from: 'tags',
+						localField: 'tags',
+						foreignField: '_id',
+						as: 'tags',
+					},
+				}
+			]
+			
+			// Add user vote check if authenticated
+			if (effectiveUserId) {
+				const userObjectId = new mongoose.Types.ObjectId(effectiveUserId)
+				carouselPipeline.push(
+					{
+						$lookup: {
+							from: 'votes',
+							let: { memeId: '$_id' },
+							pipeline: [
+								{
+									$match: {
+										$expr: {
+											$and: [
+												{ $eq: ['$vote_to', '$$memeId'] },
+												{ $eq: ['$vote_by', userObjectId] },
+											],
+										},
+									},
+								},
+								{ $limit: 1 },
+							],
+							as: 'userVote',
+						},
+					},
+					{
+						$addFields: {
+							has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
+						},
+					},
+					{
+						$project: {
+							userVote: 0,
+						},
+					}
+				)
+			}
+			
+			const liveMemes = await Meme.aggregate(carouselPipeline)
 
 			if (liveMemes.length == 0 || liveMemes.length < 5) {
-				const memes = await Meme.find()
-					.limit(10)
-					.populate('created_by')
-					.populate('tags')
-					.sort({ createdAt: -1 })
+				// Fallback to get more memes if needed
+				const fallbackPipeline = [...carouselPipeline]
+				// Remove the is_onchain filter
+				fallbackPipeline.splice(0, 1)
+				
+				const memes = await Meme.aggregate(fallbackPipeline)
 				return NextResponse.json(
 					{ memes: [...liveMemes, ...memes] },
 					{ status: 200 }
 				)
 			}
 			return NextResponse.json({ memes: liveMemes }, { status: 200 })
-			// // .populate("categories");
 		}
-
-		// const memes = await Meme.find()
-		//   .skip(start)
-		//   .limit(defaultOffset)
-		//   .where({ is_voting_close: false })
-		//   .populate("created_by")
-		//   .populate("tags")
-		//   .sort({ createdAt: -1 });
-		// // // .populate("categories");
 
 		const basePipeline: any[] = [
 			{ $match: { is_voting_close: false } },
@@ -181,10 +369,9 @@ async function handleGetRequest(req: NextRequest) {
 			}
 		)
 
-
-		// If userId is provided, inject vote check logic
-		if (userId != null && userId != 'undefined') {
-			const userObjectId = new mongoose.Types.ObjectId(userId)
+		// If userId is provided or user is authenticated, inject vote check logic
+		if (effectiveUserId) {
+			const userObjectId = new mongoose.Types.ObjectId(effectiveUserId)
 			basePipeline.splice(
 				3,
 				0, // insert before lookups
@@ -210,7 +397,7 @@ async function handleGetRequest(req: NextRequest) {
 				},
 				{
 					$addFields: {
-						voted: { $gt: [{ $size: '$userVote' }, 0] },
+						has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
 					},
 				},
 				{

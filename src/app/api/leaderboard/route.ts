@@ -129,6 +129,30 @@ export async function GET(req: NextRequest) {
 						as: 'userRating',
 					},
 				})
+				
+				// Add lookup to check if user has voted for this meme
+				basePipeline.push({
+					$lookup: {
+						from: 'votes',
+						let: { memeId: '$_id' },
+						pipeline: [
+							{
+								$match: {
+									$expr: {
+										$and: [
+											{ $eq: ['$meme_id', '$$memeId'] },
+											{
+												$eq: ['$user_id', new mongoose.Types.ObjectId(userId)],
+											},
+										],
+									},
+								},
+							},
+							{ $limit: 1 },
+						],
+						as: 'userVote',
+					},
+				})
 			}
 
 			// Continue with the rest of the pipeline
@@ -194,6 +218,13 @@ export async function GET(req: NextRequest) {
 								if: { $gt: [{ $size: '$userRating' }, 0] },
 								then: { $arrayElemAt: ['$userRating.rating', 0] },
 								else: 'none',
+							},
+						},
+						has_user_voted: {
+							$cond: {
+								if: userId,
+								then: { $gt: [{ $size: '$userVote' }, 0] },
+								else: false,
 							},
 						},
 					},
@@ -288,6 +319,30 @@ export async function GET(req: NextRequest) {
 						as: 'userRating',
 					},
 				})
+				
+				// Add lookup to check if user has voted for this meme
+				basePipeline.push({
+					$lookup: {
+						from: 'votes',
+						let: { memeId: '$_id' },
+						pipeline: [
+							{
+								$match: {
+									$expr: {
+										$and: [
+											{ $eq: ['$meme_id', '$$memeId'] },
+											{
+												$eq: ['$user_id', new mongoose.Types.ObjectId(userId)],
+											},
+										],
+									},
+								},
+							},
+							{ $limit: 1 },
+						],
+						as: 'userVote',
+					},
+				})
 			}
 
 			// Continue with the rest of the pipeline
@@ -353,6 +408,13 @@ export async function GET(req: NextRequest) {
 								if: { $gt: [{ $size: '$userRating' }, 0] },
 								then: { $arrayElemAt: ['$userRating.rating', 0] },
 								else: 'none',
+							},
+						},
+						has_user_voted: {
+							$cond: {
+								if: userId,
+								then: { $gt: [{ $size: '$userVote' }, 0] },
+								else: false,
 							},
 						},
 					},
