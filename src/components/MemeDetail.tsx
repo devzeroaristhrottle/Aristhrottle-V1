@@ -43,7 +43,7 @@ export default function MemeDetail({
 	const user = useUser()
 	const { handleBookmark } = useMemeActions()
 	const [isBookmarked, setIsBookmarked] = useState(false)
-	
+
 	// Touch/swipe state
 	const [touchStart, setTouchStart] = useState<number | null>(null)
 	const [touchEnd, setTouchEnd] = useState<number | null>(null)
@@ -94,7 +94,7 @@ export default function MemeDetail({
 
 	const onTouchEnd = () => {
 		if (!touchStart || !touchEnd) return
-		
+
 		const distance = touchStart - touchEnd
 		const isLeftSwipe = distance > minSwipeDistance
 		const isRightSwipe = distance < -minSwipeDistance
@@ -176,7 +176,7 @@ export default function MemeDetail({
 					)}
 
 					{/* Fullscreen Meme Image with Touch Events */}
-					<div 
+					<div
 						className="absolute inset-0 sm:right-80 lg:right-96 items-center justify-center backdrop-blur-lg hidden sm:flex"
 						onTouchStart={onTouchStart}
 						onTouchMove={onTouchMove}
@@ -202,9 +202,9 @@ export default function MemeDetail({
 						</div>
 
 						{/* Mobile Image with Touch Events */}
-						<div 
-							className="inset-0 sm:right-80 lg:right-96 flex sm:hidden items-center justify-center backdrop-blur-lg " 
-							style={{height: "calc(100vh - 350px)"}}
+						<div
+							className="inset-0 sm:right-80 lg:right-96 flex sm:hidden items-center justify-center backdrop-blur-lg "
+							style={{ height: 'calc(100vh - 350px)' }}
 							onTouchStart={onTouchStart}
 							onTouchMove={onTouchMove}
 							onTouchEnd={onTouchEnd}
@@ -221,7 +221,7 @@ export default function MemeDetail({
 							{/* Vote Count */}
 							<div className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm">
 								<Image
-									src={'/assets/vote/icon1.png'}
+									src={'/assets/vote/icon2.png'}
 									width={20}
 									height={20}
 									alt="vote"
@@ -307,11 +307,14 @@ export default function MemeDetail({
 										{meme.tags.map((tag: TagI, index: number) => (
 											<span
 												key={index}
-												className="bg-gradient-to-r from-[#29e0ca]/20 to-[#29e0ca]/10 border border-[#29e0ca]/50 rounded-lg px-3 py-1.5 text-sm text-white font-medium backdrop-blur-sm"
+												className="bg-transparent border-2 border-[#1783fb] rounded-lg px-3 py-1.5 text-sm text-white font-medium backdrop-blur-sm flex flex-row items-center justify-center gap-1"
 											>
 												{tab === 'live'
 													? tag.name
 													: JSON.parse(JSON.stringify(tag))}
+												<span className="text-xl hover:bg-red-500 rounded-full w-3 h-3 flex items-center justify-center">
+													×
+												</span>
 											</span>
 										))}
 									</div>

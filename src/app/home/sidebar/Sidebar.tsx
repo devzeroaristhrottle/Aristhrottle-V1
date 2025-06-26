@@ -1,10 +1,8 @@
 'use client'
-import { Context } from '@/context/contextProvider'
-import { useAuthModal, useUser } from '@account-kit/react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Dispatch, SetStateAction, useContext, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { FaRegBookmark } from 'react-icons/fa'
 import { GrCloudUpload } from 'react-icons/gr'
 import { IoPodiumOutline } from 'react-icons/io5'
@@ -26,32 +24,32 @@ const sidebarItems = [
 				width={50}
 			/>
 		),
-		action: (route: AppRouterInstance) => route.replace('/landing'),
+		action: (route: AppRouterInstance) => route.push('/landing'),
 	},
-	{
-		title: 'Upload',
-		icon: (isActive: boolean) => (
-			<GrCloudUpload
-				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-					isActive ? 'text-[#1783FB]' : 'text-slate-100'
-				}`}
-			/>
-		),
-		action: (
-			_: AppRouterInstance,
-			setIsUploadMemeOpen: Dispatch<SetStateAction<boolean>>,
-			isConnected: boolean,
-			openConnectModal: (() => void) | undefined
-		) => {
-			if (isConnected) {
-				setIsUploadMemeOpen(true)
-			} else {
-				if (openConnectModal) {
-					openConnectModal()
-				}
-			}
-		},
-	},
+	// {
+	// 	title: 'Upload',
+	// 	icon: (isActive: boolean) => (
+	// 		<GrCloudUpload
+	// 			className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+	// 				isActive ? 'text-[#1783FB]' : 'text-slate-100'
+	// 			}`}
+	// 		/>
+	// 	),
+	// 	action: (
+	// 		_: AppRouterInstance,
+	// 		setIsUploadMemeOpen: Dispatch<SetStateAction<boolean>>,
+	// 		isConnected: boolean,
+	// 		openConnectModal: (() => void) | undefined
+	// 	) => {
+	// 		if (isConnected) {
+	// 			setIsUploadMemeOpen(true)
+	// 		} else {
+	// 			if (openConnectModal) {
+	// 				openConnectModal()
+	// 			}
+	// 		}
+	// 	},
+	// },
 	{
 		title: 'Leaderboard',
 		icon: (isActive: boolean) => (
@@ -67,7 +65,7 @@ const sidebarItems = [
 				</span>
 			</div>
 		),
-		action: (route: AppRouterInstance) => route.replace('/home/leaderboard'),
+		action: (route: AppRouterInstance) => route.push('/home/leaderboard'),
 	},
 	{
 		title: 'Rewards',
@@ -84,7 +82,7 @@ const sidebarItems = [
 				</span>
 			</div>
 		),
-		action: (route: AppRouterInstance) => route.replace('/home/rewards'),
+		action: (route: AppRouterInstance) => route.push('/home/rewards'),
 	},
 	{
 		title: 'My Votes',
@@ -100,7 +98,7 @@ const sidebarItems = [
 				width={48}
 			/>
 		),
-		action: (route: AppRouterInstance) => route.replace('/home/myVotes'),
+		action: (route: AppRouterInstance) => route.push('/home/myVotes'),
 	},
 	{
 		title: 'Bookmarks',
@@ -111,22 +109,18 @@ const sidebarItems = [
 				}`}
 			/>
 		),
-		action: (route: AppRouterInstance) => route.replace('/home/bookmark'),
+		action: (route: AppRouterInstance) => route.push('/home/bookmark'),
 	},
 ]
 
 const Sidebar = () => {
 	const route = useRouter()
-	const { isUploadMemeOpen, setIsUploadMemeOpen } = useContext(Context)
 	const pathname = usePathname()
 	const itemRef = useRef(null)
 	const [isHovered, setIsHovered] = useState(false)
 	const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-	const { openAuthModal } = useAuthModal()
-	const user = useUser()
 
 	const getActiveTab = () => {
-		if (isUploadMemeOpen) return 'Upload'
 		if (pathname?.includes('leaderboard')) return 'Leaderboard'
 		if (pathname?.includes('rewards')) return 'Rewards'
 		if (pathname?.includes('myVotes')) return 'My Votes'
@@ -141,7 +135,7 @@ const Sidebar = () => {
 		<>
 			<div
 				ref={itemRef}
-				className="hidden md:fixed left-0 top-1/2 -translate-y-1/2 h-50vh md:flex items-center"
+				className="hidden md:fixed left-0 top-1/2 -translate-y-1/2 h-50vh md:flex items-center z-[100]"
 				onMouseEnter={() => setIsHovered(true)}
 				onMouseLeave={() => setIsHovered(false)}
 			>
@@ -149,16 +143,8 @@ const Sidebar = () => {
 					{sidebarItems.map(item => {
 						const isActive = activeTab === item.title
 						return (
-							<div key={item.title}>
+							<div key={item.title} onClick={() => item.action(route)}>
 								<div
-									onClick={() =>
-										item.action(
-											route,
-											setIsUploadMemeOpen,
-											user != null && user.address != null,
-											openAuthModal
-										)
-									}
 									onMouseEnter={() => setHoveredItem(item.title)}
 									onMouseLeave={() => setHoveredItem(null)}
 									className="hidden md:group md:flex gap-6 items-center justify-center p-2 rounded-lg cursor-pointer"
@@ -198,14 +184,7 @@ const Sidebar = () => {
 						return (
 							<div
 								key={item.title}
-								onClick={() =>
-									item.action(
-										route,
-										setIsUploadMemeOpen,
-										user != null && user.address != null,
-										openAuthModal
-									)
-								}
+								onClick={() => item.action(route)}
 								className="flex flex-col items-center"
 							>
 								<div

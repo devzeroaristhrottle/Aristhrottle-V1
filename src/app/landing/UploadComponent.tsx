@@ -32,30 +32,31 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [isAI, setIsAI] = useState<boolean>(false)
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
-	
+	const titleRef = useRef<HTMLInputElement>(null)
+
 	// Check for generation reset when component loads
 	useEffect(() => {
 		if (user && user.address && userDetails) {
-			checkGenerationReset();
+			checkGenerationReset()
 		}
-	}, [user, userDetails]);
-	
+	}, [user, userDetails])
+
 	const checkGenerationReset = async () => {
 		try {
-			const response = await axiosInstance.get('/api/user/check-generations');
+			const response = await axiosInstance.get('/api/user/check-generations')
 			if (response.data.wasReset && userDetails) {
 				// Update local user state if generations were reset
 				setUserDetails({
 					...userDetails,
-					generations: 0
-				});
-				toast.info('Your daily generation limit has been reset!');
+					generations: 0,
+				})
+				toast.info('Your daily generation limit has been reset!')
 			}
 		} catch (error) {
-			console.error('Error checking generation reset:', error);
+			console.error('Error checking generation reset:', error)
 		}
-	};
-	
+	}
+
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			findTag()
@@ -113,11 +114,18 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			}
 			return
 		}
+		if (!title || selectedTags.length < 1) {
+			toast.error('Please add a title and atleast a tag to continue')
+			titleRef.current?.focus()
+			return
+		}
 		try {
 			setIsGenerating(true)
 			if (userDetails) {
-				if(userDetails.generations >= 5) {
-					toast.error('You have reached your daily generation limit of 5 images! Limit resets daily.')
+				if (userDetails.generations >= 5) {
+					toast.error(
+						'You have reached your daily generation limit of 5 images! Limit resets daily.'
+					)
 					setIsGenerating(false)
 					return
 				}
@@ -127,7 +135,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				})
 			}
 			const tagNames = selectedTags.map(tag => tag.name)
-			
+
 			// Use our backend API as a proxy instead of directly calling the external service
 			const response = await axiosInstance.post(
 				'/api/generate-image',
@@ -155,9 +163,9 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					generations: Math.max(0, userDetails.generations - 1),
 				})
 			}
-			
+
 			// Show appropriate error message
-			const err = error as any; // Type assertion to handle error properties
+			const err = error as any // Type assertion to handle error properties
 			if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
 				toast.error(
 					'The image generation timed out. Please try again with a simpler prompt.'
@@ -288,8 +296,12 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					<div className="flex flex-col justify-center items-center border border-blue-400 rounded-xl p-3 lg:p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300 cursor-pointer hover:border-blue-300 h-full">
 						<div className="w-32 h-32 border-8 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
 						<div className="mt-4 text-center">
-							<p className="text-blue-400 font-medium">Generating your meme...</p>
-							<p className="text-gray-400 text-xs mt-1">Please don&apos;t refresh the page.</p>
+							<p className="text-blue-400 font-medium">
+								Generating your meme...
+							</p>
+							<p className="text-gray-400 text-xs mt-1">
+								Please don&apos;t refresh the page.
+							</p>
 						</div>
 					</div>
 				) : generatedImage ? (
@@ -315,42 +327,26 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					</div>
 				) : (
 					/* Upload Instructions */
-					<div
-						className="border border-white rounded-xl p-4 lg:p-5 text-gray-400 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20 cursor-pointer"
-						onClick={handleFileSelect}
-					>
-						<div id="top-sec">
-							<div className="flex gap-x-2 mb-3 lg:mb-4">
+					<div className="border h-full flex flex-col justify-between border-white rounded-xl p-4 lg:p-5 text-gray-400 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20 cursor-pointer">
+						<div
+							id="top-sec"
+							className="flex justify-center items-center"
+							onClick={handleFileSelect}
+						>
+							<div className="flex gap-x-2 mb-3 lg:mb-4 flex-col w-full">
 								<div className="flex justify-center items-center">
 									<IoCloudUploadOutline
 										size={40}
 										className="lg:w-12 lg:h-12 text-blue-400 hover:scale-110 transition-transform duration-200"
 									/>
 								</div>
-								<div className="flex flex-col">
-									<div className="text-blue-400 text-xl">Choose File</div>
-									<div className="text-xs lg:text-sm">JPG / PNG Max. 10 MB</div>
+								<div className="flex flex-col items-center">
+									<div className="text-blue-400 text-3xl">Choose File</div>
+									<div className="text-xs lg:text-2xl">
+										JPG / PNG Max. 10 MB
+									</div>
 								</div>
 							</div>
-							<ul className="space-y-2 pb-3 lg:pb-4">
-								{[
-									'Click Here to Upload From device',
-									'Enter Title and Tags',
-									'Click on "Upload"',
-								].map((text, index) => (
-									<li
-										key={index}
-										className="flex items-start gap-2 lg:gap-3 group"
-									>
-										<div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-gray-400 text-black border font-semibold text-xs lg:text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200 flex-shrink-0">
-											{index + 1}
-										</div>
-										<span className="text-sm lg:text-base break-words group-hover:text-white transition-colors duration-200">
-											{text}
-										</span>
-									</li>
-								))}
-							</ul>
 						</div>
 
 						{/* Divider */}
@@ -363,35 +359,20 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 						</div>
 
 						{/* AI Instructions */}
-						<div id="top-sec">
-							<div className="flex gap-x-2 lg:gap-x-3 items-center mb-2 lg:mb-3">
+						<div
+							id="top-sec"
+							className="flex justify-center items-center"
+							onClick={getImage}
+						>
+							<div className="flex flex-col gap-x-2 lg:gap-x-3 items-center mb-2 lg:mb-3">
 								<HiSparkles
 									size={32}
 									className="lg:w-10 lg:h-10 text-blue-400 hover:scale-110 hover:rotate-12 transition-all duration-300 flex-shrink-0"
 								/>
-								<div className="text-blue-400 text-lg lg:text-xl hover:text-white transition-colors duration-200">
-									Create with Aris Intelligence
+								<div className="text-blue-400 text-lg lg:text-3xl hover:text-white transition-colors duration-200">
+									Create with Aris-Intelligence
 								</div>
 							</div>
-							<ul className="space-y-2">
-								{[
-									'Enter Title and Tags of Your Choice',
-									'Click on "Generate"',
-									'Click on "Upload" to Post',
-								].map((text, index) => (
-									<li
-										key={index}
-										className="flex items-start gap-2 lg:gap-3 group"
-									>
-										<div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-gray-400 text-black border font-semibold text-xs lg:text-sm flex items-center justify-center group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-200 flex-shrink-0">
-											{index + 1}
-										</div>
-										<span className="text-sm lg:text-base break-words group-hover:text-white transition-colors duration-200">
-											{text}
-										</span>
-									</li>
-								))}
-							</ul>
 						</div>
 					</div>
 				)}
@@ -412,6 +393,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 						}
 						maxLength={250}
 						className="bg-transparent border rounded-lg px-3 py-2 lg:py-3 text-sm sm:text-base lg:text-lg text-white placeholder:text-gray-400 focus:outline-none border-[#1583fb] hover:border-blue-300 focus:border-blue-300 focus:shadow-lg focus:shadow-blue-400/20 transition-all duration-200 w-full"
+						ref={titleRef}
 					/>
 				</div>
 
@@ -468,7 +450,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 						{selectedTags.map((tag, index) => (
 							<span
 								key={index}
-								className="bg-blue-500 rounded-lg cursor-pointer text-balance px-2 py-1 flex items-center gap-1"
+								className="bg-transparent rounded-lg cursor-pointer text-balance px-2 py-1 flex items-center gap-1 border-2 border-[#1783fb]"
 								onClick={() => removeTag(tag.name)}
 							>
 								{tag.name}
@@ -486,7 +468,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 						disabled={isUploading}
 						className="rounded-full bg-[#28e0ca] px-4 py-1 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isUploading ? 'Uploading...' : 'Upload'}
+						{isUploading ? 'Posting...' : 'Post'}
 					</button>
 					<button
 						onClick={getImage}
@@ -503,9 +485,13 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					<div className="text-center text-sm text-gray-400 mt-2">
 						<div className="flex items-center justify-center gap-1">
 							{[...Array(5)].map((_, i) => (
-								<div 
-									key={i} 
-									className={`w-2 h-2 rounded-full ${i < (userDetails.generations || 0) ? 'bg-blue-500' : 'bg-gray-600'}`}
+								<div
+									key={i}
+									className={`w-2 h-2 rounded-full ${
+										i < (userDetails.generations || 0)
+											? 'bg-blue-500'
+											: 'bg-gray-600'
+									}`}
 								/>
 							))}
 						</div>

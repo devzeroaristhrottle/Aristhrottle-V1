@@ -81,7 +81,7 @@ const Notifications = () => {
 			<PopoverTrigger asChild>
 				<div className="relative inline-block">
 					<IoMdNotificationsOutline className="cursor-pointer" size={30} />
-					<span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center">
+					<span className="absolute -top-1 right-1 flex h-3 w-3 items-center justify-center">
 						<span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
 						<span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
 					</span>
