@@ -54,7 +54,7 @@ export const LeaderboardMemeCard: React.FC<{
 							#{meme.rank}
 						</p>
 					</div>
-					<div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[22rem] xl:h-[22rem] object-cover border-2 border-white">
+					<div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[23rem] xl:h-[23rem] object-cover border-2 border-white">
 						<LazyImage
 							onClick={() => {
 								onOpenMeme()

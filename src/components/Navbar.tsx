@@ -47,11 +47,10 @@ export default function Navbar() {
 	const { openAuthModal } = useAuthModal()
 	const { logout } = useLogout()
 
-	const signer = useSigner();
-	
+	const signer = useSigner()
 
 	const message = 'signUsingAlchemyWallet'
-	const { client,address } = useSmartAccountClient({})
+	const { client, address } = useSmartAccountClient({})
 	const [open, setOpen] = useState(false)
 
 	const { signMessageAsync, isSigningMessage } = useSignMessage({
@@ -251,8 +250,14 @@ export default function Navbar() {
 													fontWeight="medium"
 													className="text-slate-900 text-base mb-4"
 												>
-													<p><strong>Wallet (EOA): </strong>{user?.address}</p>
-													<p><strong>Smart Account: </strong>{address}</p>
+													<p>
+														<strong>Wallet (EOA): </strong>
+														{user?.address}
+													</p>
+													<p>
+														<strong>Smart Account: </strong>
+														{address}
+													</p>
 												</Popover.Title>
 												<Button
 													size="lg"

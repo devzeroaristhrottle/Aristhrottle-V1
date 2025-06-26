@@ -11,20 +11,26 @@ export default function Layout({ children }: Props) {
 	const gaId = process.env.NEXT_PUBLIC_GA_ID || 'G-FY44ED1KLP'
 
 	return (
-		<div className="bg1 min-h-screen flex">
-			{/* Sidebar */}
-			<aside className="w-20 h-screen top-0 lg:block hidden">
-				<Sidebar />
-			</aside>
-
-			{/* Main content */}
-			<main className="flex-1 md:px-8 lg:px-20">
+		<div className="bg1 min-h-screen flex flex-col">
+			<div className="px-6 sticky top-0">
 				<Navbar />
-				<div className="mt-2 md:mt-6">{children}</div>
-				<div className="lg:hidden block">
+			</div>
+			<div className="flex flex-1">
+				{/* Sidebar - only visible on large screens */}
+				<aside className="w-20 h-screen sticky top-0 lg:block hidden">
 					<Sidebar />
-				</div>
-			</main>
+				</aside>
+
+				{/* Main content */}
+				<main className="flex-1 md:px-8 lg:px-20">
+					<div className="mt-2 md:mt-6">{children}</div>
+				</main>
+			</div>
+
+			{/* Bottom sidebar for small devices */}
+			<div className="lg:hidden block">
+				<Sidebar />
+			</div>
 
 			<UploadMeme />
 			<GoogleAnalytics gaId={gaId} />

@@ -29,7 +29,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [isUploading, setIsUploading] = useState<boolean>(false)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
-	const [isAI, setIsAI] = useState<boolean>(false)
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
 	const titleRef = useRef<HTMLInputElement>(null)
@@ -153,7 +152,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			const imageBlob = new Blob([response.data], { type: 'image/png' })
 			const imageUrl = URL.createObjectURL(imageBlob)
 			setGeneratedImage(imageUrl)
-			setIsAI(true)
 		} catch (error) {
 			console.error('Error generating image:', error)
 			if (userDetails) {
@@ -183,7 +181,6 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	}
 
 	const handleFileSelect = () => {
-		setIsAI(false)
 		fileInputRef.current?.click()
 	}
 
@@ -307,20 +304,18 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				) : generatedImage ? (
 					/* Image Display */
 					<div
-						className="flex flex-col items-center border border-blue-400 rounded-xl p-3 lg:p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300 cursor-pointer hover:border-blue-300"
+						className="h-auto w-auto flex flex-col items-center "
 						onClick={handleFileSelect}
 						title="Click to select a different image"
 					>
-						<h3 className="text-lg lg:text-xl mb-2 lg:mb-3 text-blue-400">
-							{isAI ? 'Generated Image' : 'Uploaded Image'}
-						</h3>
-						<div className="w-full">
+						<div className="w-full border border-blue-400 rounded-xl p-3 lg:p-4 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300 cursor-pointer hover:border-blue-300">
 							<img
 								src={generatedImage}
 								alt="Generated content"
-								className="w-full h-auto object-contain rounded hover:opacity-90 transition-opacity duration-200 max-h-80"
+								className="w-full aspect-square object-contain rounded hover:opacity-90 transition-opacity duration-200 max-h-80"
 							/>
 						</div>
+
 						<p className="text-sm text-gray-400 mt-2 text-center">
 							Click to select a different image
 						</p>
