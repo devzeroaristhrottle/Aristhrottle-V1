@@ -92,7 +92,7 @@ export const LeaderboardMemeCard: React.FC<{
 								<img
 									src={'/assets/vote-logo.svg'}
 									alt="vote"
-									className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 cursor-not-allowed"
+									className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7"
 								/>
 								<span className="text-base md:text-2xl text-[#1783fb]">
 									{meme.vote_count}

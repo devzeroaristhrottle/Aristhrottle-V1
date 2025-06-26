@@ -121,7 +121,6 @@ export function MemeCard({
 							) : (
 								<Logo
 									onClick={() => {
-										if (activeTab === 'all') return // Disable click in 'all' tab
 										if (user && user.address) {
 											voteMeme()
 										} else if (openAuthModal) {
