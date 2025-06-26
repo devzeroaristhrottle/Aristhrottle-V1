@@ -1,10 +1,8 @@
 'use client'
-import { Context } from '@/context/contextProvider'
-import { useAuthModal, useUser } from '@account-kit/react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Dispatch, SetStateAction, useContext, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { FaRegBookmark } from 'react-icons/fa'
 import { GrCloudUpload } from 'react-icons/gr'
 import { IoPodiumOutline } from 'react-icons/io5'
@@ -117,16 +115,12 @@ const sidebarItems = [
 
 const Sidebar = () => {
 	const route = useRouter()
-	const { isUploadMemeOpen, setIsUploadMemeOpen } = useContext(Context)
 	const pathname = usePathname()
 	const itemRef = useRef(null)
 	const [isHovered, setIsHovered] = useState(false)
 	const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-	const { openAuthModal } = useAuthModal()
-	const user = useUser()
 
 	const getActiveTab = () => {
-		if (isUploadMemeOpen) return 'Upload'
 		if (pathname?.includes('leaderboard')) return 'Leaderboard'
 		if (pathname?.includes('rewards')) return 'Rewards'
 		if (pathname?.includes('myVotes')) return 'My Votes'
