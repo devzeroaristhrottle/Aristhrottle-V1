@@ -69,6 +69,7 @@ export default function Page() {
 	const [memes, setMemes] = useState<LeaderboardMeme[]>([])
 	const [filterOpen, setFilterOpen] = useState(false)
 	const [sortOpen, setSortOpen] = useState(false)
+	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
 
 	const onClose = () => {
 		setIsMemeDetailOpen(false)
@@ -137,6 +138,24 @@ export default function Page() {
 	const handleTabChange = (tab: string) => {
 		setMemes([])
 		setActiveTab(tab.toLowerCase() as 'live' | 'all' | 'daily')
+	}
+
+	const handleNext = () => {
+		const currentData = filteredMemes
+		if (selectedMemeIndex < currentData.length - 1) {
+			const nextIndex = selectedMemeIndex + 1
+			setSelectedMemeIndex(nextIndex)
+			setSelectedMeme(currentData[nextIndex])
+		}
+	}
+
+	const handlePrev = () => {
+		const currentData = filteredMemes
+		if (selectedMemeIndex > 0) {
+			const prevIndex = selectedMemeIndex - 1
+			setSelectedMemeIndex(prevIndex)
+			setSelectedMeme(currentData[prevIndex])
+		}
 	}
 
 	return (
@@ -243,6 +262,7 @@ export default function Page() {
 							onOpenMeme={() => {
 								setSelectedMeme(item)
 								setIsMemeDetailOpen(true)
+								setSelectedMemeIndex(index)
 							}}
 						/>
 					</div>
@@ -276,7 +296,13 @@ export default function Page() {
 			</div>
 			{/* Meme Detail Modal */}
 			{isMemeDetailOpen && selectedMeme && (
-				<MemeDetail onClose={onClose} meme={selectedMeme} tab={activeTab} />
+				<MemeDetail
+					onClose={onClose}
+					meme={selectedMeme}
+					tab={activeTab}
+					onNext={handleNext}
+					onPrev={handlePrev}
+				/>
 			)}
 		</div>
 	)
