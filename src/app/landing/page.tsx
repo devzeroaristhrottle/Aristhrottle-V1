@@ -107,7 +107,7 @@ export default function Page() {
 		id: string
 		imageUrl: string
 	} | null>(null)
-	const [welcOpen, setWelcOpen] = useState<boolean>(true)
+	const [welcOpen, setWelcOpen] = useState<boolean>(false)
 	/* eslint-disable @typescript-eslint/no-unused-vars */
 	const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
 		useContext(Context)
@@ -161,6 +161,12 @@ export default function Page() {
 		setSelectedMeme(undefined)
 		setSelectedMemeIndex(-1)
 	}
+
+	useEffect(() => {
+		axiosInstance.get('/api/new-ip').then(response => {
+			if (response.data.message) setWelcOpen(true)
+		})
+	}, [])
 
 	const handleNext = () => {
 		const currentData = activeTab === 'live' ? displayedMemes : allMemeData
