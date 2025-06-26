@@ -101,7 +101,7 @@ export default function Page() {
 	const [loading, setLoading] = useState<boolean>(false)
 	const [filteredTags, setFilteredTags] = useState<TagI[]>([])
 	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')
-
+	const [displayedMemes, setDisplayedMeme] = useState<Meme[]>([])
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [shareData, setShareData] = useState<{
 		id: string
@@ -271,17 +271,31 @@ export default function Page() {
 	}
 
 	const filterByTime = (mode: string) => {
-		const filter = [...filterMemes]
-		filter.sort((a, b) => {
-			const dateA = Date.parse(a.createdAt)
-			const dateB = Date.parse(b.createdAt)
-			if (mode === 'ASC') {
-				return dateA - dateB
-			} else {
-				return dateB - dateA
-			}
-		})
-		setFilterMemes(filter)
+		if (activeTab == 'live') {
+			const filter = [...filterMemes]
+			filter.sort((a, b) => {
+				const dateA = Date.parse(a.createdAt)
+				const dateB = Date.parse(b.createdAt)
+				if (mode === 'ASC') {
+					return dateA - dateB
+				} else {
+					return dateB - dateA
+				}
+			})
+			setFilterMemes(filter)
+		} else {
+			const amd = [...allMemeData]
+			amd.sort((a: LeaderboardMeme, b: LeaderboardMeme) => {
+				const dateA = Date.parse(a.createdAt)
+				const dateB = Date.parse(b.createdAt)
+				if (mode == 'ASC') {
+					return dateA - dateB
+				} else {
+					return dateB - dateA
+				}
+			})
+			setAllMemeData(amd)
+		}
 	}
 
 	const getMemeById = async () => {
@@ -342,7 +356,10 @@ export default function Page() {
 		setPage(1)
 	}
 
-	const displayedMemes = getFilteredMemes()
+	useEffect(() => {
+		const displayedMemes = getFilteredMemes()
+		setDisplayedMeme(displayedMemes)
+	}, [filterMemes])
 
 	const isInView = useInView(memeContainerRef, {
 		amount: 0.1, // Trigger when 10% visible
