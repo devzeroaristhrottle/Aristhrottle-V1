@@ -175,23 +175,143 @@ async function handleGetRequest(req: NextRequest) {
 		}
 
 		if (name) {
-			const names = name.split(',').map(n => n.trim()) // Trim spaces for clean search
-
+			// Split and clean search terms
+			const searchTerms = name.split(',')
+				.map(term => term.trim())
+				.filter(term => term.length > 0)
+			
+			if (searchTerms.length === 0) {
+				return NextResponse.json(
+					{ memes: [], memesCount: 0 },
+					{ status: 200 }
+				)
+			}
+			
+			// Log the search terms for debugging
+			console.log('Searching for terms:', searchTerms)
+			
+			// Create regex patterns for tag search
+			const searchPatterns = searchTerms.map(term => {
+				// Escape special regex characters to prevent regex injection
+				const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+				return new RegExp(escapedTerm, 'i')
+			})
+			
+			// Find matching tag IDs
 			const tagIds = await Tags.find({
-				name: { $in: names.map(n => new RegExp(n, 'i')) }, // Case-insensitive search for multiple names
+				name: { $in: searchPatterns }
 			}).distinct('_id')
 			
-			// Create search pipeline
+			// For direct name search, use simple string comparison instead of regex
+			// This is more reliable for certain types of content
+			const nameSearchConditions = searchTerms.map(term => ({
+				name: { $regex: term, $options: 'i' }
+			}))
+			
+			// Create search pipeline with scoring
 			const searchPipeline: any[] = [
 				{
 					$match: {
 						$or: [
-							{ name: { $in: names.map(n => new RegExp(n, 'i')) } }, // Search in names
-							{ tags: { $in: tagIds } }, // Search in tags
+							// Direct name search
+							...nameSearchConditions,
+							// Tag search
+							{ tags: { $in: tagIds } },
 						],
-						is_voting_close: false
+						// Don't filter by is_voting_close for search - show all memes
+						// is_voting_close: false
 					}
 				},
+				// Add relevance scoring
+				{
+					$addFields: {
+						relevanceScore: {
+							$add: [
+								// Exact name match gets highest score
+								{
+									$cond: {
+										if: {
+											$or: searchTerms.map(term => ({
+												$regexMatch: {
+													input: "$name",
+													regex: new RegExp(`^${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, "i")
+												}
+											}))
+										},
+										then: 100,
+										else: 0
+									}
+								},
+								// Name starts with search term gets high score
+								{
+									$cond: {
+										if: {
+											$or: searchTerms.map(term => ({
+												$regexMatch: {
+													input: "$name",
+													regex: new RegExp(`^${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, "i")
+												}
+											}))
+										},
+										then: 50,
+										else: 0
+									}
+								},
+								// Word in name starts with search term gets medium-high score
+								{
+									$cond: {
+										if: {
+											$or: searchTerms.map(term => ({
+												$regexMatch: {
+													input: "$name",
+													regex: new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, "i")
+												}
+											}))
+										},
+										then: 40,
+										else: 0
+									}
+								},
+								// Name contains search term gets medium score
+								{
+									$cond: {
+										if: {
+											$or: searchTerms.map(term => ({
+												$regexMatch: {
+													input: "$name",
+													regex: new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), "i")
+												}
+											}))
+										},
+										then: 25,
+										else: 0
+									}
+								},
+								// Tag match gets lower score
+								{
+									$cond: {
+										if: { $gt: [{ $size: { $setIntersection: ["$tags", tagIds] } }, 0] },
+										then: 10,
+										else: 0
+									}
+								},
+								// Newer memes get a slight boost
+								{
+									$divide: [
+										{ $subtract: ["$createdAt", new Date(0)] },
+										86400000 * 30 // Normalize by 30 days
+									]
+								}
+							]
+						}
+					}
+				},
+				// Sort by relevance score
+				{ $sort: { relevanceScore: -1, createdAt: -1 } },
+				// Limit results
+				{ $skip: start },
+				{ $limit: defaultOffset },
+				// Lookup related data
 				{
 					$lookup: {
 						from: 'users',
@@ -243,15 +363,47 @@ async function handleGetRequest(req: NextRequest) {
 					{
 						$project: {
 							userVote: 0,
+							relevanceScore: 0 // Remove the scoring field from final results
 						},
 					}
 				)
+			} else {
+				// Remove the scoring field if no user
+				searchPipeline.push({
+					$project: {
+						relevanceScore: 0
+					}
+				})
 			}
 			
-			const memes = await Meme.aggregate(searchPipeline)
+			// Get total count for pagination
+			const countPipeline = [
+				{
+					$match: {
+						$or: [
+							...nameSearchConditions,
+							{ tags: { $in: tagIds } },
+						],
+						// Don't filter by is_voting_close for search
+						// is_voting_close: false
+					}
+				},
+				{ $count: "total" }
+			]
+			
+			// Execute the search and get the results
+			const [memes, countResult] = await Promise.all([
+				Meme.aggregate(searchPipeline),
+				Meme.aggregate(countPipeline)
+			])
+			
+			// Log the number of results found
+			console.log(`Found ${memes.length} memes matching search terms`)
+			
+			const totalCount = countResult.length > 0 ? countResult[0].total : 0
 
 			return NextResponse.json(
-				{ memes, memesCount: memes.length },
+				{ memes, memesCount: totalCount },
 				{ status: 200 }
 			)
 		}
