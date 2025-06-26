@@ -17,7 +17,7 @@ export default function Layout({ children }: Props) {
 			</div>
 			<div className="flex flex-1">
 				{/* Sidebar - only visible on large screens */}
-				<aside className="w-20 h-screen sticky top-0 lg:block hidden">
+				<aside className="w-20 h-screen sticky top-0 lg:block hidden z-[500]">
 					<Sidebar />
 				</aside>
 
