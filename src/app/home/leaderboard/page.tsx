@@ -3,13 +3,7 @@
 import { useRouter } from 'next/navigation'
 import React, { useContext, useEffect, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
-import { HStack } from '@chakra-ui/react'
-import {
-	PaginationItems,
-	PaginationNextTrigger,
-	PaginationPrevTrigger,
-	PaginationRoot,
-} from '@/components/ui/pagination'
+import { PaginationRoot } from '@/components/ui/pagination'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'

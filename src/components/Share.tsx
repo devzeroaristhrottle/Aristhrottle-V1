@@ -138,7 +138,7 @@ const Share = ({
 			}
 
 			// For better platform-specific sharing, use the full message
-			let platformMessage = fullShareMessage
+			const platformMessage = fullShareMessage
 			let shareLink = ''
 
 			switch (platform) {
@@ -263,7 +263,7 @@ const Share = ({
 								)}
 							</button>
 							<p className="text-sm text-gray-400 mt-2">
-								Use your device's native sharing options
+								Use your device&apos;s native sharing options
 							</p>
 							<div className="border-t border-gray-600 my-4"></div>
 						</div>

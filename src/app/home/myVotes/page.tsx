@@ -1,13 +1,7 @@
 'use client'
 
-import {
-	PaginationItems,
-	PaginationNextTrigger,
-	PaginationPrevTrigger,
-	PaginationRoot,
-} from '@/components/ui/pagination'
 import { Context } from '@/context/contextProvider'
-import { Button, HStack } from '@chakra-ui/react'
+import { Button } from '@chakra-ui/react'
 import axiosInstance from '@/utils/axiosInstance'
 import React, { useContext, useEffect, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
@@ -35,9 +29,6 @@ interface MyVotedMeme {
 }
 
 export default function Page({}: Props) {
-	const [page, setPage] = useState(1)
-	const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
-
 	const [loading, setLoading] = useState<boolean>(false)
 	const [memes, setMemes] = useState<MyVotedMeme[]>([])
 
@@ -47,7 +38,7 @@ export default function Page({}: Props) {
 
 	useEffect(() => {
 		getMyMemes()
-	}, [userDetails, page])
+	}, [userDetails])
 
 	const getMyMemes = async () => {
 		try {
@@ -55,13 +46,12 @@ export default function Page({}: Props) {
 				throw new Error('User not found')
 			}
 			setLoading(true)
-			const offsetI = offset * page
+			const offsetI = offset
 			const response = await axiosInstance.get(
 				`/api/meme?vote_by=${userDetails._id}&offset=${offsetI}`
 			)
 
 			if (response.data.memes) {
-				setTotalMemeCount(response.data.votedMemesCount)
 				setMemes([...response.data.memes])
 			}
 		} catch (error) {

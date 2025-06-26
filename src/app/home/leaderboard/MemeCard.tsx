@@ -14,7 +14,7 @@ export const LeaderboardMemeCard: React.FC<{
 	onOpenMeme: () => void
 	onUpvoteDownvote?: (memeId: string, rating: string) => void
 	activeTab?: string
-}> = ({ meme, onOpenMeme, onUpvoteDownvote, activeTab }) => {
+}> = ({ meme, onOpenMeme }) => {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [isBookmarked, setIsBookmarked] = useState(false)
 	const user = useUser()
