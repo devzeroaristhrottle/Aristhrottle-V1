@@ -106,7 +106,10 @@ export const LeaderboardMemeCard: React.FC<{
 									<img
 										src={'/assets/vote/icon2.png'}
 										alt="vote"
-										className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 cursor-pointer"
+										className={
+											'w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 ' +
+											(voteMeme ? 'cursor-pointer' : 'cursor-not-allowed')
+										}
 										onClick={() => localVoteMeme(meme._id)}
 									/>
 								)}

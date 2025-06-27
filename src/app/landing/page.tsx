@@ -420,7 +420,7 @@ export default function Page() {
 					vote_to: meme_id,
 					vote_by: userDetails?._id,
 				})
-				if (response?.data?.message === 'Rating saved successfully') {
+				if (response.status == 201) {
 					toast.success('Voted successfully!')
 				}
 			}
