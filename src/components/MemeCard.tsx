@@ -37,6 +37,7 @@ export function MemeCard({
 	const [shareCount, setShareCount] = useState(0)
 	const [voteCount, setVoteCount] = useState(0)
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
+	const [eyeOpen, setEyeOpen] = useState<boolean>(false)
 	const user = useUser()
 
 	useEffect(() => {
@@ -72,6 +73,11 @@ export function MemeCard({
 			setVoteCount(voteCount + 1)
 			setShowPointsAnimation(true)
 			onVoteMeme()
+
+			setTimeout(() => {
+				setShowPointsAnimation(false)
+			}, 2000)
+			setEyeOpen(true)
 		} catch (error) {
 			console.log(error)
 			setVoteCount(voteCount - 1)
@@ -79,9 +85,6 @@ export function MemeCard({
 			setTimeout(() => {
 				setLoading(false)
 			}, 1000)
-			setTimeout(() => {
-				setShowPointsAnimation(false)
-			}, 2000)
 		}
 	}
 
@@ -108,7 +111,7 @@ export function MemeCard({
 						<AiOutlineLoading3Quarters className="animate-spin text-2xl" />
 					) : (
 						<div className="flex flex-col items-center font-bold text-xl space-y-1 relative">
-							{meme.voted ? (
+							{eyeOpen ? (
 								<>
 									<Image
 										src={'/assets/vote/icon1.png'}

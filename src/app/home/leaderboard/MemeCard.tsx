@@ -12,9 +12,9 @@ import { LazyImage } from '@/components/LazyImage'
 export const LeaderboardMemeCard: React.FC<{
 	meme: LeaderboardMeme
 	onOpenMeme: () => void
-	onUpvoteDownvote?: (memeId: string, rating: string) => void
+	voteMeme?: (memeId: string) => void
 	activeTab?: string
-}> = ({ meme, onOpenMeme }) => {
+}> = ({ meme, onOpenMeme, voteMeme }) => {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [isBookmarked, setIsBookmarked] = useState(false)
 	const user = useUser()
@@ -37,6 +37,10 @@ export const LeaderboardMemeCard: React.FC<{
 				setIsBookmarked(false)
 			}
 		}
+	}
+
+	const localVoteMeme = (memeid: string) => {
+		if (voteMeme) voteMeme(memeid)
 	}
 
 	return (
@@ -92,11 +96,20 @@ export const LeaderboardMemeCard: React.FC<{
 							)} */}
 
 							<div className="flex flex-col items-center justify-center gap-x-2">
-								<img
-									src={'/assets/vote-logo.svg'}
-									alt="vote"
-									className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7"
-								/>
+								{meme.has_user_voted ? (
+									<img
+										src={'/assets/vote/icon1.png'}
+										alt="vote"
+										className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7"
+									/>
+								) : (
+									<img
+										src={'/assets/vote/icon2.png'}
+										alt="vote"
+										className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 cursor-pointer"
+										onClick={() => localVoteMeme(meme._id)}
+									/>
+								)}
 								<span className="text-base md:text-2xl text-[#1783fb]">
 									{meme.vote_count}
 								</span>

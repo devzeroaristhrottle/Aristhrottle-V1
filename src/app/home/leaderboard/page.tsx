@@ -31,6 +31,7 @@ export type LeaderboardMeme = {
 	onVoteMeme: () => void
 	bookmark?: (id: string, name: string, image_url: string) => void
 	activeTab?: 'all' | 'live'
+	has_user_voted: boolean
 }
 
 export interface TagI {

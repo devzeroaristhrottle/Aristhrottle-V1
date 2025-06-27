@@ -400,14 +400,15 @@ export default function Page() {
 		}
 	}
 
-	const handleUpvoteDownvote = async (meme_id: string, rating: string) => {
+	const handleUpvoteDownvote = async (meme_id: string) => {
 		setAllMemeData(prev =>
 			prev
 				.map(meme =>
 					meme._id === meme_id
 						? {
 								...meme,
-								vote_count: meme.vote_count + (rating === 'upvote' ? 1 : -1),
+								vote_count: meme.vote_count + 1,
+								has_user_voted: true,
 						  }
 						: meme
 				)
@@ -415,25 +416,12 @@ export default function Page() {
 		)
 		try {
 			if (user && user.address && activeTab === 'all') {
-				const response = await axiosInstance.post('/api/meme/rate', {
-					meme_id: meme_id,
-					rating: rating,
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: meme_id,
+					vote_by: userDetails?._id,
 				})
 				if (response?.data?.message === 'Rating saved successfully') {
-					if (rating === 'upvote') {
-						toast.success('Upvoted successfully!')
-					} else if (rating === 'downvote') {
-						toast.success('Downvoted successfully!')
-					}
-					setAllMemeData(prev =>
-						prev
-							.map(meme =>
-								meme._id === meme_id
-									? { ...meme, vote_count: response.data.total }
-									: meme
-							)
-							.sort((a, b) => a.rank - b.rank)
-					)
+					toast.success('Voted successfully!')
 				}
 			}
 		} catch (error: any) {
@@ -443,7 +431,7 @@ export default function Page() {
 						meme._id === meme_id
 							? {
 									...meme,
-									vote_count: meme.vote_count + (rating === 'upvote' ? -1 : 1),
+									vote_count: meme.vote_count - 1,
 							  }
 							: meme
 					)
@@ -700,9 +688,7 @@ export default function Page() {
 									setSelectedMemeIndex(index)
 									setIsMemeDetailOpen(true)
 								}}
-								onUpvoteDownvote={(memeId, rating) =>
-									handleUpvoteDownvote(memeId, rating)
-								}
+								voteMeme={memeId => handleUpvoteDownvote(memeId)}
 								activeTab={activeTab}
 							/>
 						</div>
