@@ -34,27 +34,7 @@ import { LeaderboardMeme } from '../home/leaderboard/page'
 import Share from '@/components/Share'
 import UploadComponent from './UploadComponent'
 import WelcomeCard from '@/components/WelcomeCard'
-
-export interface Meme {
-	_id: string
-	vote_count: number
-	name: string
-	image_url: string
-	tags: TagI[]
-	categories: Category[]
-	created_by: User
-	createdAt: string
-	updatedAt: string
-	shares: string[]
-	bookmarks: string[]
-	is_onchain?: boolean
-	__v: number
-	voted?: boolean
-}
-
-interface Category {
-	name: string
-}
+import { type Meme } from '../home/page'
 
 export interface TagI {
 	_id: string
@@ -67,15 +47,6 @@ export interface TagI {
 	__v: number
 	createdAt: string
 	updatedAt: string
-}
-
-interface User {
-	_id: string
-	username: string
-	user_wallet_address: string
-	createdAt: string // ISO 8601 format date
-	updatedAt: string // ISO 8601 format date
-	__v: number
 }
 
 export interface Bookmark {
@@ -97,6 +68,7 @@ export default function Page() {
 	const [allMemeCount, setAllMemeCount] = useState<number>(0)
 	const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([])
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
+	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [filteredTags, setFilteredTags] = useState<TagI[]>([])
@@ -166,6 +138,7 @@ export default function Page() {
 		axiosInstance.get('/api/new-ip').then(response => {
 			if (response.data.message) setWelcOpen(true)
 		})
+		fetchLeaderBoard()
 	}, [])
 
 	const handleNext = () => {
@@ -400,14 +373,26 @@ export default function Page() {
 		}
 	}
 
-	const handleUpvoteDownvote = async (meme_id: string, rating: string) => {
+	const fetchLeaderBoard = async () => {
+		try {
+			const resp = await axiosInstance.get('/api/bookmark')
+			if (resp.status == 200) {
+				setBookMarks(resp.data.memes)
+			}
+		} catch (err) {
+			toast.error('Error fetching bookmarks')
+		}
+	}
+
+	const handleUpvoteDownvote = async (meme_id: string) => {
 		setAllMemeData(prev =>
 			prev
 				.map(meme =>
 					meme._id === meme_id
 						? {
 								...meme,
-								vote_count: meme.vote_count + (rating === 'upvote' ? 1 : -1),
+								vote_count: meme.vote_count + 1,
+								has_user_voted: true,
 						  }
 						: meme
 				)
@@ -415,25 +400,12 @@ export default function Page() {
 		)
 		try {
 			if (user && user.address && activeTab === 'all') {
-				const response = await axiosInstance.post('/api/meme/rate', {
-					meme_id: meme_id,
-					rating: rating,
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: meme_id,
+					vote_by: userDetails?._id,
 				})
-				if (response?.data?.message === 'Rating saved successfully') {
-					if (rating === 'upvote') {
-						toast.success('Upvoted successfully!')
-					} else if (rating === 'downvote') {
-						toast.success('Downvoted successfully!')
-					}
-					setAllMemeData(prev =>
-						prev
-							.map(meme =>
-								meme._id === meme_id
-									? { ...meme, vote_count: response.data.total }
-									: meme
-							)
-							.sort((a, b) => a.rank - b.rank)
-					)
+				if (response.status == 201) {
+					toast.success('Voted successfully!')
 				}
 			}
 		} catch (error: any) {
@@ -443,7 +415,7 @@ export default function Page() {
 						meme._id === meme_id
 							? {
 									...meme,
-									vote_count: meme.vote_count + (rating === 'upvote' ? -1 : 1),
+									vote_count: meme.vote_count - 1,
 							  }
 							: meme
 					)
@@ -684,6 +656,7 @@ export default function Page() {
 								setSelectedMemeIndex(index)
 								setIsMemeDetailOpen(true)
 							}}
+							bmk={bookMarks.some(get_meme => get_meme._id == meme._id)}
 							onVoteMeme={() => voteToMeme(meme._id)}
 						/>
 					))}
@@ -700,9 +673,8 @@ export default function Page() {
 									setSelectedMemeIndex(index)
 									setIsMemeDetailOpen(true)
 								}}
-								onUpvoteDownvote={(memeId, rating) =>
-									handleUpvoteDownvote(memeId, rating)
-								}
+								voteMeme={memeId => handleUpvoteDownvote(memeId)}
+								bmk={bookMarks.some(get_meme => get_meme._id == item._id)}
 								activeTab={activeTab}
 							/>
 						</div>

@@ -56,6 +56,7 @@ export interface Meme {
   is_onchain?: boolean;
   __v: number;
   voted?: boolean;
+  has_user_voted: boolean
 }
 
 interface Category {
@@ -614,8 +615,8 @@ export default function Page() {
                   setSelectedMeme(item);
                   setIsMemeDetailOpen(true);
                 }}
-                onUpvoteDownvote={(memeId, rating) =>
-                  handleUpvoteDownvote(memeId, rating)
+                voteMeme={() =>
+                  handleUpvoteDownvote(item._id, "upvote")
                 }
                 activeTab={activeTab}
               />

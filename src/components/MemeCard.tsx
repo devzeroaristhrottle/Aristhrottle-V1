@@ -19,6 +19,7 @@ export interface MemeCardI {
 	onVoteMeme: () => void
 	bookmark: (id: string, name: string, image_url: string) => void
 	activeTab?: 'all' | 'live'
+	bmk?: boolean
 }
 
 export function MemeCard({
@@ -28,35 +29,24 @@ export function MemeCard({
 	onVoteMeme,
 	bookmark,
 	activeTab = 'all',
+	bmk,
 }: MemeCardI) {
 	const [loading, setLoading] = useState(false)
 	const { openAuthModal } = useAuthModal()
 	const [isShareOpen, setIsShareOpen] = useState(false)
-	const [isBookmarked, setIsBookmarked] = useState(false)
+	const [isBookmarked, setIsBookmarked] = useState(bmk)
 	const [bookmarkCount, setBookmarkCount] = useState(0)
 	const [shareCount, setShareCount] = useState(0)
 	const [voteCount, setVoteCount] = useState(0)
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
+	const [eyeOpen, setEyeOpen] = useState<boolean>(meme.has_user_voted)
 	const user = useUser()
 
 	useEffect(() => {
-		getBookmarks()
 		setBookmarkCount(meme.bookmarks.length)
 		setShareCount(meme.shares.length)
 		setVoteCount(meme.vote_count)
 	}, [])
-
-	const getBookmarks = () => {
-		const bookmarks = localStorage.getItem('bookmarks')
-		if (bookmarks) {
-			const bookmarksObj = JSON.parse(bookmarks)
-			if (bookmarksObj[meme._id]) {
-				setIsBookmarked(true)
-			} else {
-				setIsBookmarked(false)
-			}
-		}
-	}
 
 	const handleShareClose = () => {
 		setIsShareOpen(false)
@@ -72,6 +62,11 @@ export function MemeCard({
 			setVoteCount(voteCount + 1)
 			setShowPointsAnimation(true)
 			onVoteMeme()
+
+			setTimeout(() => {
+				setShowPointsAnimation(false)
+			}, 2000)
+			setEyeOpen(true)
 		} catch (error) {
 			console.log(error)
 			setVoteCount(voteCount - 1)
@@ -79,9 +74,6 @@ export function MemeCard({
 			setTimeout(() => {
 				setLoading(false)
 			}, 1000)
-			setTimeout(() => {
-				setShowPointsAnimation(false)
-			}, 2000)
 		}
 	}
 
@@ -108,7 +100,7 @@ export function MemeCard({
 						<AiOutlineLoading3Quarters className="animate-spin text-2xl" />
 					) : (
 						<div className="flex flex-col items-center font-bold text-xl space-y-1 relative">
-							{meme.voted ? (
+							{eyeOpen ? (
 								<>
 									<Image
 										src={'/assets/vote/icon1.png'}
@@ -173,7 +165,7 @@ export function MemeCard({
 									onClick={() => {
 										bookmark(meme._id, meme.name, meme.image_url)
 										setBookmarkCount(bookmarkCount - 1)
-										getBookmarks()
+										setIsBookmarked(!isBookmarked)
 									}}
 								/>
 								{meme.bookmarks && !activeTab?.includes('live') && (
@@ -192,7 +184,7 @@ export function MemeCard({
 									onClick={() => {
 										bookmark(meme._id, meme.name, meme.image_url)
 										setBookmarkCount(bookmarkCount + 1)
-										getBookmarks()
+										setIsBookmarked(!isBookmarked)
 									}}
 								/>
 								{meme.bookmarks && !activeTab?.includes('live') && (
@@ -271,7 +263,7 @@ export function MemeCard({
 									onClick={() => {
 										bookmark(meme._id, meme.name, meme.image_url)
 										setBookmarkCount(bookmarkCount - 1)
-										getBookmarks()
+										setIsBookmarked(!isBookmarked)
 									}}
 								/>
 								{meme.bookmarks && !activeTab?.includes('live') && (
@@ -292,7 +284,7 @@ export function MemeCard({
 									onClick={() => {
 										bookmark(meme._id, meme.name, meme.image_url)
 										setBookmarkCount(bookmarkCount + 1)
-										getBookmarks()
+										setIsBookmarked(!isBookmarked)
 									}}
 								/>
 								{meme.bookmarks && !activeTab?.includes('live') && (

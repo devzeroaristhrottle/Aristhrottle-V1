@@ -146,7 +146,7 @@ export default function MemeDetail({
 			/>
 
 			{/* Main Container */}
-			<div className="fixed inset-0 z-50 pl-16">
+			<div className="fixed inset-0 z-50 sm:pt-16 pt-0">
 				<div className="relative w-full h-full bg-transparent">
 					{/* Close Button */}
 					<button
@@ -247,7 +247,7 @@ export default function MemeDetail({
 							{user && user.address && (
 								<button
 									onClick={() => {
-										handleBookmark(meme._id, meme.name, meme.image_url)
+										handleBookmark(meme._id)
 										getBookmarks()
 									}}
 									className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
