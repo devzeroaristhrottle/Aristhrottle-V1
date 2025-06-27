@@ -64,9 +64,12 @@ export const LeaderboardMemeCard: React.FC<{
 							className="w-full h-full cursor-pointer"
 						/>
 					</div>
-					<div className="title_wrapper flex justify-between text-lg leading-tight md:text-xl">
-						<p>{meme.name}</p>
-						{/* <p>{meme.createdAt.split("T")[0]}</p> */}
+					<div className="title_wrapper flex justify-between text-lg leading-tight md:text-xl max-w-full">
+						<p>
+							{meme.name.length > 30
+								? meme.name.slice(0, 30) + '...'
+								: meme.name}
+						</p>
 					</div>
 				</div>
 				<div className="flex flex-row md:flex-col justify-between ml-1 md:pt-8 md:pb-4">

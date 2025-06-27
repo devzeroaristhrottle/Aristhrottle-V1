@@ -146,7 +146,7 @@ export default function MemeDetail({
 			/>
 
 			{/* Main Container */}
-			<div className="fixed inset-0 z-50 pl-16">
+			<div className="fixed inset-0 z-50 sm:pt-16 pt-0">
 				<div className="relative w-full h-full bg-transparent">
 					{/* Close Button */}
 					<button
