@@ -103,6 +103,16 @@ export async function GET(req: NextRequest) {
 						},
 					},
 				},
+				{
+					$addFields: {
+						// Make sure shares and bookmarks fields exist before using $size
+						sharesArray: { $ifNull: ['$shares', []] },
+						bookmarksArray: { $ifNull: ['$bookmarks', []] },
+						// Initialize these fields for non-logged-in users
+						userRating: { $ifNull: ['$userRating', []] },
+						userVote: { $ifNull: ['$userVote', []] }
+					}
+				},
 			]
 
 			// Add user rating lookup if user is authenticated
@@ -180,15 +190,10 @@ export async function GET(req: NextRequest) {
 					},
 				},
 				{
-					$project: {
-						_id: 1,
-						name: 1,
-						vote_count: 1,
-						image_url: 1,
-						rank: 1,
-						createdAt: 1,
-						share_count: { $size: { $ifNull: ['$shares', []] } },
-						bookmark_count: { $size: { $ifNull: ['$bookmarks', []] } },
+					$addFields: {
+						// Calculate derived fields
+						share_count: { $size: '$sharesArray' },
+						bookmark_count: { $size: '$bookmarksArray' },
 						in_percentile: {
 							$cond: {
 								if: { $gt: [maxVotes, 0] },
@@ -201,16 +206,6 @@ export async function GET(req: NextRequest) {
 									],
 								},
 								else: 0,
-							},
-						},
-						'created_by._id': 1,
-						'created_by.username': 1,
-						'created_by.profile_image': 1,
-						tags: {
-							$map: {
-								input: '$tags',
-								as: 'tag',
-								in: '$$tag.name',
 							},
 						},
 						user_rating: {
@@ -227,6 +222,31 @@ export async function GET(req: NextRequest) {
 								else: false,
 							},
 						},
+					}
+				},
+				{
+					$project: {
+						_id: 1,
+						name: 1,
+						vote_count: 1,
+						image_url: 1,
+						rank: 1,
+						createdAt: 1,
+						share_count: 1,
+						bookmark_count: 1,
+						in_percentile: 1,
+						'created_by._id': 1,
+						'created_by.username': 1,
+						'created_by.profile_image': 1,
+						tags: {
+							$map: {
+								input: '$tags',
+								as: 'tag',
+								in: '$$tag.name',
+							},
+						},
+						user_rating: 1,
+						has_user_voted: 1,
 					},
 				},
 				{ $skip: start }
@@ -293,6 +313,16 @@ export async function GET(req: NextRequest) {
 						},
 					},
 				},
+				{
+					$addFields: {
+						// Make sure shares and bookmarks fields exist before using $size
+						sharesArray: { $ifNull: ['$shares', []] },
+						bookmarksArray: { $ifNull: ['$bookmarks', []] },
+						// Initialize these fields for non-logged-in users
+						userRating: { $ifNull: ['$userRating', []] },
+						userVote: { $ifNull: ['$userVote', []] }
+					}
+				},
 			]
 
 			// Add user rating lookup if user is authenticated
@@ -370,15 +400,10 @@ export async function GET(req: NextRequest) {
 					},
 				},
 				{
-					$project: {
-						_id: 1,
-						name: 1,
-						vote_count: 1,
-						image_url: 1,
-						rank: 1,
-						createdAt: 1,
-						share_count: { $size: { $ifNull: ['$shares', []] } },
-						bookmark_count: { $size: { $ifNull: ['$bookmarks', []] } },
+					$addFields: {
+						// Calculate derived fields
+						share_count: { $size: '$sharesArray' },
+						bookmark_count: { $size: '$bookmarksArray' },
 						in_percentile: {
 							$cond: {
 								if: { $gt: [maxVotes, 0] },
@@ -391,16 +416,6 @@ export async function GET(req: NextRequest) {
 									],
 								},
 								else: 0,
-							},
-						},
-						'created_by._id': 1,
-						'created_by.username': 1,
-						'created_by.profile_image': 1,
-						tags: {
-							$map: {
-								input: '$tags',
-								as: 'tag',
-								in: '$$tag.name',
 							},
 						},
 						user_rating: {
@@ -417,6 +432,31 @@ export async function GET(req: NextRequest) {
 								else: false,
 							},
 						},
+					}
+				},
+				{
+					$project: {
+						_id: 1,
+						name: 1,
+						vote_count: 1,
+						image_url: 1,
+						rank: 1,
+						createdAt: 1,
+						share_count: 1,
+						bookmark_count: 1,
+						in_percentile: 1,
+						'created_by._id': 1,
+						'created_by.username': 1,
+						'created_by.profile_image': 1,
+						tags: {
+							$map: {
+								input: '$tags',
+								as: 'tag',
+								in: '$$tag.name',
+							},
+						},
+						user_rating: 1,
+						has_user_voted: 1,
 					},
 				},
 				{ $skip: start }
