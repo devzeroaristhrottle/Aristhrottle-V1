@@ -34,27 +34,7 @@ import { LeaderboardMeme } from '../home/leaderboard/page'
 import Share from '@/components/Share'
 import UploadComponent from './UploadComponent'
 import WelcomeCard from '@/components/WelcomeCard'
-
-export interface Meme {
-	_id: string
-	vote_count: number
-	name: string
-	image_url: string
-	tags: TagI[]
-	categories: Category[]
-	created_by: User
-	createdAt: string
-	updatedAt: string
-	shares: string[]
-	bookmarks: string[]
-	is_onchain?: boolean
-	__v: number
-	voted?: boolean
-}
-
-interface Category {
-	name: string
-}
+import { type Meme } from '../home/page'
 
 export interface TagI {
 	_id: string
@@ -67,15 +47,6 @@ export interface TagI {
 	__v: number
 	createdAt: string
 	updatedAt: string
-}
-
-interface User {
-	_id: string
-	username: string
-	user_wallet_address: string
-	createdAt: string // ISO 8601 format date
-	updatedAt: string // ISO 8601 format date
-	__v: number
 }
 
 export interface Bookmark {

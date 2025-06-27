@@ -39,7 +39,7 @@ export function MemeCard({
 	const [shareCount, setShareCount] = useState(0)
 	const [voteCount, setVoteCount] = useState(0)
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
-	const [eyeOpen, setEyeOpen] = useState<boolean>(false)
+	const [eyeOpen, setEyeOpen] = useState<boolean>(meme.has_user_voted)
 	const user = useUser()
 
 	useEffect(() => {
