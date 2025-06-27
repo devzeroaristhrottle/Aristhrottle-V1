@@ -4,7 +4,7 @@ import { IoCloudUploadOutline } from 'react-icons/io5'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
 import { useAuthModal, useUser } from '@account-kit/react'
-import { Meme } from './page'
+import { type Meme } from '../home/page'
 import { toast } from 'react-toastify'
 import { getTimeUntilReset } from '@/utils/dateUtils'
 
@@ -223,6 +223,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			is_onchain: false,
 			__v: 0,
 			voted: false,
+			has_user_voted: false,
 		}
 
 		onUpload(newMeme)
