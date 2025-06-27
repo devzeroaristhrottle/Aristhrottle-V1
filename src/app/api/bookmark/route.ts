@@ -13,27 +13,35 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
 
+    // Get authenticated user from token
+    const token = await getToken({ req });
+    if (!token || !token.address) {
+      return NextResponse.json(
+        { 
+          memes: [], 
+          memesCount: 0, 
+          message: "Authentication required to view bookmarks" 
+        },
+        { status: 200 } // Return 200 but with empty results for better UX
+      );
+    }
+
     const query = new URLSearchParams(req.nextUrl.search);
     const off = query.get('offset');
     const defaultOffset = 30;
     const offset = off == null ? defaultOffset : parseInt(off.toString());
     const start = offset <= defaultOffset ? 0 : offset - defaultOffset;
 
-    // Get authenticated user from token
-    const token = await getToken({ req });
-    if (!token || !token.address) {
-      return NextResponse.json(
-        { message: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
     // Find user by wallet address
     const user = await User.findOne({ user_wallet_address: token.address });
     if (!user) {
       return NextResponse.json(
-        { message: "User not found" },
-        { status: 404 }
+        { 
+          memes: [], 
+          memesCount: 0,
+          message: "User not found" 
+        },
+        { status: 200 } // Return 200 but with empty results for better UX
       );
     }
 
@@ -98,7 +106,8 @@ export async function GET(req: NextRequest) {
         },
         {
           $addFields: {
-            has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
+            userVote: { $ifNull: ['$userVote', []] },
+            has_user_voted: { $gt: [{ $size: { $ifNull: ['$userVote', []] } }, 0] },
           },
         },
         {
@@ -121,15 +130,25 @@ export async function GET(req: NextRequest) {
     } catch (error) {
       console.error("Error fetching bookmarked memes:", error);
       return NextResponse.json(
-        { message: "Error fetching bookmarked memes", error },
-        { status: 500 }
+        { 
+          memes: [], 
+          memesCount: 0, 
+          message: "Error fetching bookmarked memes", 
+          error 
+        },
+        { status: 200 } // Return 200 but with empty results for better UX
       );
     }
   } catch (error) {
     console.error("Server error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error", details: error },
-      { status: 500 }
+      { 
+        memes: [], 
+        memesCount: 0, 
+        error: "Internal Server Error", 
+        details: error 
+      },
+      { status: 200 } // Return 200 but with empty results for better UX
     );
   }
 }
