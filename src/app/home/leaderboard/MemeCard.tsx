@@ -14,30 +14,16 @@ export const LeaderboardMemeCard: React.FC<{
 	onOpenMeme: () => void
 	voteMeme?: (memeId: string) => void
 	activeTab?: string
-}> = ({ meme, onOpenMeme, voteMeme }) => {
+	bmk?: boolean
+}> = ({ meme, onOpenMeme, voteMeme, bmk }) => {
 	const [isShareOpen, setIsShareOpen] = useState(false)
-	const [isBookmarked, setIsBookmarked] = useState(false)
+	const [isBookmarked, setIsBookmarked] = useState(bmk)
 	const user = useUser()
 
 	const handleShareClose = () => {
 		setIsShareOpen(false)
 	}
 	const { handleBookmark } = useMemeActions()
-	useEffect(() => {
-		getBookmarks()
-	}, [])
-
-	const getBookmarks = () => {
-		const bookmarks = localStorage.getItem('bookmarks')
-		if (bookmarks) {
-			const bookmarksObj = JSON.parse(bookmarks)
-			if (bookmarksObj[meme._id]) {
-				setIsBookmarked(true)
-			} else {
-				setIsBookmarked(false)
-			}
-		}
-	}
 
 	const localVoteMeme = (memeid: string) => {
 		if (voteMeme) voteMeme(memeid)
@@ -150,8 +136,8 @@ export const LeaderboardMemeCard: React.FC<{
 										<FaBookmark
 											className="w-4 h-4 md:w-6 md:h-6 lg:w-8 lg:h-8"
 											onClick={() => {
-												handleBookmark(meme._id, meme.name, meme.image_url)
-												getBookmarks()
+												handleBookmark(meme._id)
+												setIsBookmarked(!isBookmarked)
 											}}
 										/>
 										<span className="text-lg md:text-2xl text-[#1783fb]">
@@ -163,8 +149,8 @@ export const LeaderboardMemeCard: React.FC<{
 										<CiBookmark
 											className="w-4 h-4 md:w-6 md:h-6 lg:w-8 lg:h-8"
 											onClick={() => {
-												handleBookmark(meme._id, meme.name, meme.image_url)
-												getBookmarks()
+												handleBookmark(meme._id)
+												setIsBookmarked(!isBookmarked)
 											}}
 										/>
 										<span className="text-lg md:text-2xl text-[#1783fb]">

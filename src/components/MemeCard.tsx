@@ -19,6 +19,7 @@ export interface MemeCardI {
 	onVoteMeme: () => void
 	bookmark: (id: string, name: string, image_url: string) => void
 	activeTab?: 'all' | 'live'
+	bmk: boolean
 }
 
 export function MemeCard({
@@ -28,11 +29,12 @@ export function MemeCard({
 	onVoteMeme,
 	bookmark,
 	activeTab = 'all',
+	bmk,
 }: MemeCardI) {
 	const [loading, setLoading] = useState(false)
 	const { openAuthModal } = useAuthModal()
 	const [isShareOpen, setIsShareOpen] = useState(false)
-	const [isBookmarked, setIsBookmarked] = useState(false)
+	const [isBookmarked, setIsBookmarked] = useState(bmk)
 	const [bookmarkCount, setBookmarkCount] = useState(0)
 	const [shareCount, setShareCount] = useState(0)
 	const [voteCount, setVoteCount] = useState(0)
@@ -41,23 +43,10 @@ export function MemeCard({
 	const user = useUser()
 
 	useEffect(() => {
-		getBookmarks()
 		setBookmarkCount(meme.bookmarks.length)
 		setShareCount(meme.shares.length)
 		setVoteCount(meme.vote_count)
 	}, [])
-
-	const getBookmarks = () => {
-		const bookmarks = localStorage.getItem('bookmarks')
-		if (bookmarks) {
-			const bookmarksObj = JSON.parse(bookmarks)
-			if (bookmarksObj[meme._id]) {
-				setIsBookmarked(true)
-			} else {
-				setIsBookmarked(false)
-			}
-		}
-	}
 
 	const handleShareClose = () => {
 		setIsShareOpen(false)
@@ -176,7 +165,7 @@ export function MemeCard({
 									onClick={() => {
 										bookmark(meme._id, meme.name, meme.image_url)
 										setBookmarkCount(bookmarkCount - 1)
-										getBookmarks()
+										setIsBookmarked(!isBookmarked)
 									}}
 								/>
 								{meme.bookmarks && !activeTab?.includes('live') && (
@@ -195,7 +184,7 @@ export function MemeCard({
 									onClick={() => {
 										bookmark(meme._id, meme.name, meme.image_url)
 										setBookmarkCount(bookmarkCount + 1)
-										getBookmarks()
+										setIsBookmarked(!isBookmarked)
 									}}
 								/>
 								{meme.bookmarks && !activeTab?.includes('live') && (
@@ -274,7 +263,7 @@ export function MemeCard({
 									onClick={() => {
 										bookmark(meme._id, meme.name, meme.image_url)
 										setBookmarkCount(bookmarkCount - 1)
-										getBookmarks()
+										setIsBookmarked(!isBookmarked)
 									}}
 								/>
 								{meme.bookmarks && !activeTab?.includes('live') && (
@@ -295,7 +284,7 @@ export function MemeCard({
 									onClick={() => {
 										bookmark(meme._id, meme.name, meme.image_url)
 										setBookmarkCount(bookmarkCount + 1)
-										getBookmarks()
+										setIsBookmarked(!isBookmarked)
 									}}
 								/>
 								{meme.bookmarks && !activeTab?.includes('live') && (

@@ -97,6 +97,7 @@ export default function Page() {
 	const [allMemeCount, setAllMemeCount] = useState<number>(0)
 	const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([])
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
+	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [filteredTags, setFilteredTags] = useState<TagI[]>([])
@@ -166,6 +167,7 @@ export default function Page() {
 		axiosInstance.get('/api/new-ip').then(response => {
 			if (response.data.message) setWelcOpen(true)
 		})
+		fetchLeaderBoard()
 	}, [])
 
 	const handleNext = () => {
@@ -397,6 +399,17 @@ export default function Page() {
 			setAllMemeCount(0)
 		} finally {
 			setLoading(false)
+		}
+	}
+
+	const fetchLeaderBoard = async () => {
+		try {
+			const resp = await axiosInstance.get('/api/bookmark')
+			if (resp.status == 200) {
+				setBookMarks(resp.data.memes)
+			}
+		} catch (err) {
+			toast.error('Error fetching bookmarks')
 		}
 	}
 
@@ -672,6 +685,7 @@ export default function Page() {
 								setSelectedMemeIndex(index)
 								setIsMemeDetailOpen(true)
 							}}
+							bmk={bookMarks.some(get_meme => get_meme._id == meme._id)}
 							onVoteMeme={() => voteToMeme(meme._id)}
 						/>
 					))}
@@ -689,6 +703,7 @@ export default function Page() {
 									setIsMemeDetailOpen(true)
 								}}
 								voteMeme={memeId => handleUpvoteDownvote(memeId)}
+								bmk={bookMarks.some(get_meme => get_meme._id == item._id)}
 								activeTab={activeTab}
 							/>
 						</div>
