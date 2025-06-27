@@ -19,7 +19,7 @@ export interface MemeCardI {
 	onVoteMeme: () => void
 	bookmark: (id: string, name: string, image_url: string) => void
 	activeTab?: 'all' | 'live'
-	bmk: boolean
+	bmk?: boolean
 }
 
 export function MemeCard({

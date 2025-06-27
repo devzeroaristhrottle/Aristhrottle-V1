@@ -614,8 +614,8 @@ export default function Page() {
                   setSelectedMeme(item);
                   setIsMemeDetailOpen(true);
                 }}
-                onUpvoteDownvote={(memeId, rating) =>
-                  handleUpvoteDownvote(memeId, rating)
+                voteMeme={() =>
+                  handleUpvoteDownvote(item._id, "upvote")
                 }
                 activeTab={activeTab}
               />
