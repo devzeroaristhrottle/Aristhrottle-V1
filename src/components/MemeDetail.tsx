@@ -146,7 +146,7 @@ export default function MemeDetail({
 			/>
 
 			{/* Main Container */}
-			<div className="fixed inset-0 z-50">
+			<div className="fixed inset-0 z-50 pl-16">
 				<div className="relative w-full h-full bg-transparent">
 					{/* Close Button */}
 					<button
@@ -312,9 +312,6 @@ export default function MemeDetail({
 												{tab === 'live'
 													? tag.name
 													: JSON.parse(JSON.stringify(tag))}
-												<span className="text-xl hover:bg-red-500 rounded-full w-3 h-3 flex items-center justify-center">
-													×
-												</span>
 											</span>
 										))}
 									</div>

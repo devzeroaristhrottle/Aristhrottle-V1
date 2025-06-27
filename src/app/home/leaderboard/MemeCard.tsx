@@ -7,7 +7,6 @@ import Share from '@/components/Share'
 import { useMemeActions } from '../bookmark/bookmarkHelper'
 import { CiBookmark } from 'react-icons/ci'
 import { useUser } from '@account-kit/react'
-import { BiDownArrow, BiUpArrow } from 'react-icons/bi'
 import { LazyImage } from '@/components/LazyImage'
 
 export const LeaderboardMemeCard: React.FC<{
@@ -15,7 +14,7 @@ export const LeaderboardMemeCard: React.FC<{
 	onOpenMeme: () => void
 	onUpvoteDownvote?: (memeId: string, rating: string) => void
 	activeTab?: string
-}> = ({ meme, onOpenMeme, onUpvoteDownvote, activeTab }) => {
+}> = ({ meme, onOpenMeme }) => {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [isBookmarked, setIsBookmarked] = useState(false)
 	const user = useUser()
@@ -55,7 +54,7 @@ export const LeaderboardMemeCard: React.FC<{
 							#{meme.rank}
 						</p>
 					</div>
-					<div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[22rem] xl:h-[22rem] object-cover border-2 border-white">
+					<div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[23rem] xl:h-[23rem] object-cover border-2 border-white">
 						<LazyImage
 							onClick={() => {
 								onOpenMeme()
@@ -76,7 +75,7 @@ export const LeaderboardMemeCard: React.FC<{
 					</p>
 					<div className="flex flex-row justify-center md:justify-normal md:flex-col items-center md:items-start gap-y-0 md:gap-y-5 gap-x-4 md:gap-x-0">
 						<div className="flex flex-row md:flex-col items-start gap-x-0.5 md:gap-y-0 lg:gap-y-2">
-							{activeTab === 'all' && (
+							{/* {activeTab === 'all' && (
 								<div title="upvote" className="upvote-wrapper cursor-pointer">
 									<BiUpArrow
 										className="w-3 h-3 md:w-5 md:h-5 lg:w-7 lg:h-7"
@@ -87,20 +86,20 @@ export const LeaderboardMemeCard: React.FC<{
 										}}
 									/>
 								</div>
-							)}
+							)} */}
 
-							<div className="flex flex-col md:flex-row items-center justify-center gap-x-2">
+							<div className="flex flex-col items-center justify-center gap-x-2">
 								<img
 									src={'/assets/vote-logo.svg'}
 									alt="vote"
-									className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 cursor-not-allowed"
+									className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7"
 								/>
 								<span className="text-base md:text-2xl text-[#1783fb]">
 									{meme.vote_count}
 								</span>
 							</div>
 
-							{activeTab === 'all' && (
+							{/* {activeTab === 'all' && (
 								<div
 									title="downvote"
 									className="downvote-wrapper cursor-pointer"
@@ -114,7 +113,7 @@ export const LeaderboardMemeCard: React.FC<{
 										}}
 									/>
 								</div>
-							)}
+							)} */}
 						</div>
 						<div className="flex flex-col items-center">
 							<FaRegShareFromSquare
