@@ -108,9 +108,6 @@ export async function GET(req: NextRequest) {
 						// Make sure shares and bookmarks fields exist before using $size
 						sharesArray: { $ifNull: ['$shares', []] },
 						bookmarksArray: { $ifNull: ['$bookmarks', []] },
-						// Initialize these fields for non-logged-in users
-						userRating: { $ifNull: ['$userRating', []] },
-						userVote: { $ifNull: ['$userVote', []] }
 					}
 				},
 			]
@@ -150,9 +147,9 @@ export async function GET(req: NextRequest) {
 								$match: {
 									$expr: {
 										$and: [
-											{ $eq: ['$meme_id', '$$memeId'] },
+											{ $eq: ['$vote_to', '$$memeId'] },
 											{
-												$eq: ['$user_id', new mongoose.Types.ObjectId(userId)],
+												$eq: ['$vote_by', new mongoose.Types.ObjectId(userId)],
 											},
 										],
 									},
@@ -210,7 +207,7 @@ export async function GET(req: NextRequest) {
 						},
 						user_rating: {
 							$cond: {
-								if: { $gt: [{ $size: '$userRating' }, 0] },
+								if: userId && { $isArray: '$userRating' } && { $gt: [{ $size: '$userRating' }, 0] },
 								then: { $arrayElemAt: ['$userRating.rating', 0] },
 								else: 'none',
 							},
@@ -218,7 +215,7 @@ export async function GET(req: NextRequest) {
 						has_user_voted: {
 							$cond: {
 								if: userId,
-								then: { $gt: [{ $size: '$userVote' }, 0] },
+								then: { $gt: [{ $size: { $ifNull: ['$userVote', []] } }, 0] },
 								else: false,
 							},
 						},
@@ -318,9 +315,6 @@ export async function GET(req: NextRequest) {
 						// Make sure shares and bookmarks fields exist before using $size
 						sharesArray: { $ifNull: ['$shares', []] },
 						bookmarksArray: { $ifNull: ['$bookmarks', []] },
-						// Initialize these fields for non-logged-in users
-						userRating: { $ifNull: ['$userRating', []] },
-						userVote: { $ifNull: ['$userVote', []] }
 					}
 				},
 			]
@@ -360,9 +354,9 @@ export async function GET(req: NextRequest) {
 								$match: {
 									$expr: {
 										$and: [
-											{ $eq: ['$meme_id', '$$memeId'] },
+											{ $eq: ['$vote_to', '$$memeId'] },
 											{
-												$eq: ['$user_id', new mongoose.Types.ObjectId(userId)],
+												$eq: ['$vote_by', new mongoose.Types.ObjectId(userId)],
 											},
 										],
 									},
@@ -420,7 +414,7 @@ export async function GET(req: NextRequest) {
 						},
 						user_rating: {
 							$cond: {
-								if: { $gt: [{ $size: '$userRating' }, 0] },
+								if: userId && { $isArray: '$userRating' } && { $gt: [{ $size: '$userRating' }, 0] },
 								then: { $arrayElemAt: ['$userRating.rating', 0] },
 								else: 'none',
 							},
@@ -428,7 +422,7 @@ export async function GET(req: NextRequest) {
 						has_user_voted: {
 							$cond: {
 								if: userId,
-								then: { $gt: [{ $size: '$userVote' }, 0] },
+								then: { $gt: [{ $size: { $ifNull: ['$userVote', []] } }, 0] },
 								else: false,
 							},
 						},
