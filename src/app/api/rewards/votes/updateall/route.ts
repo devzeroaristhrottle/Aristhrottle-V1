@@ -1,48 +1,52 @@
 import connectToDatabase from "@/lib/db";
-import { checkIsAuthenticated } from "@/utils/authFunctions";
-import { withApiLogging } from "@/utils/apiLogger";
-import { NextRequest, NextResponse } from "next/server";
 import Vote from "@/models/Vote";
+import { NextRequest, NextResponse } from "next/server";
+import { checkIsAuthenticated } from "@/utils/authFunctions";
 
-async function handlePostRequest(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
-
+    
     const { userId } = await req.json();
-
+    
     if (!userId) {
       return NextResponse.json(
-        { message: "All filed required" },
+        { message: "User ID is required" },
         { status: 400 }
       );
     }
-
-    await checkIsAuthenticated(userId, req);
-
-    await Vote.findByIdAndUpdate(
+    
+    try {
+      await checkIsAuthenticated(userId, req);
+    } catch (authError) {
+      return NextResponse.json(
+        { message: "Authentication failed", error: authError instanceof Error ? authError.message : String(authError) },
+        { status: 401 }
+      );
+    }
+    
+    // Update all unclaimed votes for this user
+    const updateResult = await Vote.updateMany(
       {
-        is_onchain: true,
-        is_claimed: false,
         vote_by: userId,
+        is_claimed: false,
+        is_onchain: true
       },
-      { is_claimed: true }
-    );
-
-    return NextResponse.json(
-      { message: "Votes status updated" },
       {
-        status: 200,
+        is_claimed: true
       }
     );
+    
+    return NextResponse.json({
+      message: "Successfully updated vote claims",
+      updatedCount: updateResult.modifiedCount
+    }, { status: 200 });
+    
   } catch (error) {
-    console.log(error);
+    console.error("Error updating vote claims:", error);
     return NextResponse.json(
-      { error: error },
-      {
-        status: 500,
-      }
+      { message: "Failed to update vote claims", error: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
     );
   }
 }
-
-export const POST = withApiLogging(handlePostRequest, "Claim_Reward_Votes");
