@@ -107,7 +107,7 @@ async function handleGetRequest(request: NextRequest) {
       const majorityUploads = await Meme.find({
         is_onchain: true,
         created_by: user.id,
-        in_percentile: { $gte: 51 },
+        in_percentile: { $gte: 50 },
       }).countDocuments();
 
       const majorityVotes = await Vote.find({
@@ -117,7 +117,7 @@ async function handleGetRequest(request: NextRequest) {
         .populate("vote_by")
         .populate({
           path: "vote_to",
-          match: { is_onchain: true, in_percentile: { $gte: 51 } },
+          match: { is_onchain: true, in_percentile: { $gte: 50 } },
         })
         .countDocuments();
 
