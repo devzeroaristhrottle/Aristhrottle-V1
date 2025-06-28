@@ -556,9 +556,9 @@ export default function Page() {
 							className="bg-[#141e29] w-fit border-none shadow-xl z-50"
 						>
 							<PopoverBody className="bg-[#141e29] border-2 border-[#1783fb] rounded-md p-0">
-								<div className="flex gap-3 items-center hover:bg-[#224063] px-4 py-1">
+								<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
 									<p className="text-xl text-nowrap mr-2">By Time</p>
-									<div className="flex items-center gap-3">
+									<div className="flex items-end gap-3">
 										<LiaSortAmountUpAltSolid
 											onClick={() => filterByTime('ASC')}
 											className="cursor-pointer"
@@ -571,9 +571,9 @@ export default function Page() {
 										/>
 									</div>
 								</div>
-								<div className="flex gap-3 items-center hover:bg-[#224063] px-4 py-1">
+								<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
 									<p className="text-xl text-nowrap mr-2">By Votes</p>
-									<div className="flex items-center gap-3">
+									<div className="flex items-end gap-3">
 										<LiaSortAmountUpAltSolid
 											onClick={() => filterByVotes('ASC')}
 											className="cursor-pointer"
