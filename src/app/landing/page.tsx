@@ -67,6 +67,10 @@ export default function Page() {
 	const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
 	const [allMemeCount, setAllMemeCount] = useState<number>(0)
 	const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([])
+	const [allMemeDataFilter, setAllMemeDataFilter] = useState<LeaderboardMeme[]>(
+		[]
+	)
+
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
@@ -231,7 +235,10 @@ export default function Page() {
 				const response = await axiosInstance.get(`/api/meme?name=${q}`)
 				if (response.data.memes) {
 					setFilterMemes([...response.data.memes])
+					setAllMemeDataFilter([...response.data.memes])
 				}
+			} else {
+				setAllMemeDataFilter([...allMemeData])
 			}
 			if (query.length === 0 && memes.length > 0) {
 				setFilterMemes([...memes])
@@ -267,7 +274,7 @@ export default function Page() {
 					return dateB - dateA
 				}
 			})
-			setAllMemeData(amd)
+			setAllMemeDataFilter(amd)
 		}
 	}
 
@@ -362,11 +369,13 @@ export default function Page() {
 
 			if (response?.data?.memes) {
 				setAllMemeData(response.data.memes)
+				setAllMemeDataFilter(response.data.memes)
 				setAllMemeCount(response.data.memesCount)
 			}
 		} catch (error) {
 			console.log(error)
 			setAllMemeData([])
+			setAllMemeDataFilter([])
 			setAllMemeCount(0)
 		} finally {
 			setLoading(false)
@@ -385,7 +394,7 @@ export default function Page() {
 	}
 
 	const handleUpvoteDownvote = async (meme_id: string) => {
-		setAllMemeData(prev =>
+		setAllMemeDataFilter(prev =>
 			prev
 				.map(meme =>
 					meme._id === meme_id
@@ -409,7 +418,7 @@ export default function Page() {
 				}
 			}
 		} catch (error: any) {
-			setAllMemeData(prev =>
+			setAllMemeDataFilter(prev =>
 				prev
 					.map(meme =>
 						meme._id === meme_id
@@ -663,8 +672,8 @@ export default function Page() {
 
 				{!loading &&
 					activeTab === 'all' &&
-					allMemeData?.length > 0 &&
-					allMemeData.map((item, index) => (
+					allMemeDataFilter?.length > 0 &&
+					allMemeDataFilter.map((item, index) => (
 						<div key={index}>
 							<LeaderboardMemeCard
 								meme={item}

@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation'
 import React, { useContext, useEffect, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
-import { PaginationRoot } from '@/components/ui/pagination'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
@@ -13,6 +12,7 @@ import { SortPopover } from '@/components/SortPopover'
 import { TabButton } from '@/components/TabButton'
 import MemeDetail from '@/components/MemeDetail'
 import { LeaderboardMemeCard } from './MemeCard'
+import { toast } from 'react-toastify'
 
 export type LeaderboardMeme = {
 	_id: string
@@ -57,7 +57,6 @@ export default function Page() {
 	>()
 
 	const [page, setPage] = useState(1)
-	const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
 	const [totalVoteCount, setTotalVoteCount] = useState<number>(0)
 	const [totalUploadCount, setTotalUploadCount] = useState<number>(0)
 	const [loading, setLoading] = useState<boolean>(false)
@@ -65,7 +64,7 @@ export default function Page() {
 	const [filterOpen, setFilterOpen] = useState(false)
 	const [sortOpen, setSortOpen] = useState(false)
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
-
+	const [finalFilterMeme, setFinalFilterMeme] = useState<LeaderboardMeme[]>([])
 	const onClose = () => {
 		setIsMemeDetailOpen(false)
 		setSelectedMeme(undefined)
@@ -99,14 +98,12 @@ export default function Page() {
 			)
 
 			if (response.data.memes) {
-				setTotalMemeCount(response.data.memesCount)
 				setTotalVoteCount(response.data.totalVotes)
 				setTotalUploadCount(response.data.totalUpload)
 				setMemes(response.data.memes)
 			}
 		} catch (error) {
 			console.log(error)
-			setTotalMemeCount(0)
 			setTotalVoteCount(0)
 			setTotalUploadCount(0)
 			setMemes([])
@@ -116,7 +113,6 @@ export default function Page() {
 	}
 
 	useEffect(() => {
-		setTotalMemeCount(0)
 		setTotalVoteCount(0)
 		setTotalUploadCount(0)
 		setMemes([])
@@ -136,7 +132,7 @@ export default function Page() {
 	}
 
 	const handleNext = () => {
-		const currentData = filteredMemes
+		const currentData = finalFilterMeme
 		if (selectedMemeIndex < currentData.length - 1) {
 			const nextIndex = selectedMemeIndex + 1
 			setSelectedMemeIndex(nextIndex)
@@ -145,11 +141,43 @@ export default function Page() {
 	}
 
 	const handlePrev = () => {
-		const currentData = filteredMemes
+		const currentData = finalFilterMeme
 		if (selectedMemeIndex > 0) {
 			const prevIndex = selectedMemeIndex - 1
 			setSelectedMemeIndex(prevIndex)
 			setSelectedMeme(currentData[prevIndex])
+		}
+	}
+
+	useEffect(() => {
+		setFinalFilterMeme(filteredMemes)
+	}, [filteredMemes])
+
+	const handleVote = async (meme_id: string) => {
+		try {
+			if (userDetails) {
+				setFinalFilterMeme(prev =>
+					prev.map(meme =>
+						meme._id == meme_id
+							? {
+									...meme,
+									vote_count: meme.vote_count + 1,
+									has_user_voted: true,
+							  }
+							: meme
+					)
+				)
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: meme_id,
+					vote_by: userDetails._id,
+				})
+				if (response.status == 201) {
+					toast.success('Voted successfully!')
+				}
+			}
+		} catch (err) {
+			console.log('error: ', err)
+			toast.error('Error voting meme')
 		}
 	}
 
@@ -236,7 +264,7 @@ export default function Page() {
 			<div className="grid grid-cols-1 md:grid-cols-3 md:gap-8">
 				{/* For mobile */}
 				<div className="md:hidden w-full flex flex-col items-center justify-center">
-					{filteredMemes.map((item, index) => (
+					{finalFilterMeme.map((item, index) => (
 						<div key={index} className="w-full max-w-sm">
 							<LeaderboardMemeCard
 								meme={item}
@@ -245,12 +273,13 @@ export default function Page() {
 									setIsMemeDetailOpen(true)
 								}}
 								activeTab={activeTab}
+								voteMeme={meme_id => handleVote(meme_id)}
 							/>
 						</div>
 					))}
 				</div>
 
-				{filteredMemes.map((item, index) => (
+				{finalFilterMeme.map((item, index) => (
 					<div key={index} className="hidden md:block">
 						<LeaderboardMemeCard
 							meme={item}
@@ -259,6 +288,7 @@ export default function Page() {
 								setIsMemeDetailOpen(true)
 								setSelectedMemeIndex(index)
 							}}
+							voteMeme={meme_id => handleVote(meme_id)}
 						/>
 					</div>
 				))}
@@ -266,28 +296,12 @@ export default function Page() {
 					{loading && (
 						<AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto" />
 					)}
-					{!loading && filteredMemes.length === 0 && (
+					{!loading && finalFilterMeme.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto">
 							Meme not found
 						</p>
 					)}
 				</div>
-				{filteredMemes.length > 0 && (
-					<div className="col-span-1 md:col-span-3">
-						<PaginationRoot
-							count={totalMemeCount}
-							pageSize={30}
-							defaultPage={1}
-							variant="solid"
-							className="mx-auto mb-10"
-							page={page}
-							onPageChange={e => {
-								setMemes([])
-								setPage(e.page)
-							}}
-						></PaginationRoot>
-					</div>
-				)}
 			</div>
 			{/* Meme Detail Modal */}
 			{isMemeDetailOpen && selectedMeme && (
