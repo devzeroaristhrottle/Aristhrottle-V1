@@ -26,7 +26,7 @@ import { PaginationRoot } from '@/components/ui/pagination'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { Context } from '@/context/contextProvider'
 import { toast } from 'react-toastify'
-import { useUser } from '@account-kit/react'
+import { useAuthModal, useUser } from '@account-kit/react'
 import { useInView } from 'motion/react'
 import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { LeaderboardMemeCard } from '../home/leaderboard/MemeCard'
@@ -70,6 +70,7 @@ export default function Page() {
 	const [allMemeDataFilter, setAllMemeDataFilter] = useState<LeaderboardMeme[]>(
 		[]
 	)
+	const { openAuthModal } = useAuthModal()
 
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
@@ -171,6 +172,7 @@ export default function Page() {
 	}
 
 	const voteToMeme = async (vote_to: string) => {
+		if (!userDetails && openAuthModal) openAuthModal()
 		try {
 			if (user && user.address && activeTab === 'live') {
 				if (userDetails) {
@@ -256,11 +258,8 @@ export default function Page() {
 			filter.sort((a, b) => {
 				const dateA = Date.parse(a.createdAt)
 				const dateB = Date.parse(b.createdAt)
-				if (mode === 'ASC') {
-					return dateA - dateB
-				} else {
-					return dateB - dateA
-				}
+				if (mode === 'ASC') return dateA - dateB
+				else return dateB - dateA
 			})
 			setFilterMemes(filter)
 		} else {
@@ -268,11 +267,26 @@ export default function Page() {
 			amd.sort((a: LeaderboardMeme, b: LeaderboardMeme) => {
 				const dateA = Date.parse(a.createdAt)
 				const dateB = Date.parse(b.createdAt)
-				if (mode == 'ASC') {
-					return dateA - dateB
-				} else {
-					return dateB - dateA
-				}
+				if (mode === 'ASC') return dateA - dateB
+				else return dateB - dateA
+			})
+			setAllMemeDataFilter(amd)
+		}
+	}
+
+	const filterByVotes = (mode: string) => {
+		if (activeTab == 'live') {
+			const filter = [...filterMemes]
+			filter.sort((a, b) => {
+				if (mode === 'ASC') return a.vote_count - b.vote_count
+				else return b.vote_count - a.vote_count
+			})
+			setFilterMemes(filter)
+		} else {
+			const amd = [...allMemeData]
+			amd.sort((a: LeaderboardMeme, b: LeaderboardMeme) => {
+				if (mode === 'ASC') return a.vote_count - b.vote_count
+				else return b.vote_count - a.vote_count
 			})
 			setAllMemeDataFilter(amd)
 		}
@@ -394,6 +408,7 @@ export default function Page() {
 	}
 
 	const handleUpvoteDownvote = async (meme_id: string) => {
+		if (!userDetails && openAuthModal) openAuthModal()
 		setAllMemeDataFilter(prev =>
 			prev
 				.map(meme =>
@@ -436,7 +451,7 @@ export default function Page() {
 	}
 
 	const addMeme = (meme: Meme) => {
-		setMemes(prevMemes => [...prevMemes, meme])
+		setDisplayedMeme(prevMemes => [...prevMemes, meme])
 
 		if (userDetails) {
 			setUserDetails({
@@ -542,7 +557,7 @@ export default function Page() {
 						>
 							<PopoverBody className="bg-[#141e29] border-2 border-[#1783fb] rounded-md p-0">
 								<div className="flex gap-3 items-center hover:bg-[#224063] px-4 py-1">
-									<p className="text-xl text-nowrap mr-2">By Creation Time</p>
+									<p className="text-xl text-nowrap mr-2">By Time</p>
 									<div className="flex items-center gap-3">
 										<LiaSortAmountUpAltSolid
 											onClick={() => filterByTime('ASC')}
@@ -551,6 +566,21 @@ export default function Page() {
 										/>
 										<LiaSortAmountDownSolid
 											onClick={() => filterByTime('DESC')}
+											className="cursor-pointer"
+											size={20}
+										/>
+									</div>
+								</div>
+								<div className="flex gap-3 items-center hover:bg-[#224063] px-4 py-1">
+									<p className="text-xl text-nowrap mr-2">By Votes</p>
+									<div className="flex items-center gap-3">
+										<LiaSortAmountUpAltSolid
+											onClick={() => filterByVotes('ASC')}
+											className="cursor-pointer"
+											size={20}
+										/>
+										<LiaSortAmountDownSolid
+											onClick={() => filterByVotes('DESC')}
 											className="cursor-pointer"
 											size={20}
 										/>

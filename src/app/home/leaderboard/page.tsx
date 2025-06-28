@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
@@ -69,6 +69,7 @@ export default function Page() {
 		setIsMemeDetailOpen(false)
 		setSelectedMeme(undefined)
 	}
+	const memeContainerRef = useRef<HTMLDivElement>(null)
 
 	const {
 		percentage,
@@ -181,6 +182,15 @@ export default function Page() {
 		}
 	}
 
+	useEffect(() => {
+		if (memeContainerRef.current) {
+			memeContainerRef.current.style.overflow = isMemeDetailOpen
+				? 'hidden'
+				: 'auto'
+		}
+		document.body.style.overflow = isMemeDetailOpen ? 'hidden' : 'auto'
+	}, [isMemeDetailOpen])
+
 	return (
 		<div className="flex flex-col md:max-w-[56.25rem] lg:max-w-[87.5rem] px-3 md:mx-auto md:p-8">
 			<div className="flex flex-wrap md:flex-nowrap items-center justify-between">
@@ -261,7 +271,10 @@ export default function Page() {
 				/>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-3 md:gap-8">
+			<div
+				className="grid grid-cols-1 md:grid-cols-3 md:gap-8"
+				ref={memeContainerRef}
+			>
 				{/* For mobile */}
 				<div className="md:hidden w-full flex flex-col items-center justify-center">
 					{finalFilterMeme.map((item, index) => (
