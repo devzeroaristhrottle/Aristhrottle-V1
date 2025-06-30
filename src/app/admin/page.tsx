@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const [selectedModel, setSelectedModel] = useState<string>('')
   const [models] = useState<string[]>([
     'users', 'memes', 'votes', 'tags', 'categories', 
-    'followers', 'milestones', 'notifications', 'referrals', 'apilogs'
+    'followers', 'milestones', 'notifications', 'referrals', 'apilogs', 'mintlogs'
   ])
 
   // Fetch data from admin API
@@ -116,6 +116,36 @@ export default function AdminDashboard() {
     )
   }
 
+  // Special formatter for mint logs
+  const formatMintLogValue = (key: string, value: any): string => {
+    if (key === 'status') {
+      const statusColors = {
+        pending: '🟠',
+        success: '🟢',
+        failed: '🔴'
+      };
+      return `${statusColors[value as keyof typeof statusColors] || ''} ${value}`;
+    }
+    
+    if (key === 'reason') {
+      return value.replace(/_/g, ' ');
+    }
+    
+    if (key === 'amount') {
+      return `${value} tokens`;
+    }
+    
+    if (key === 'transactionHash' && value) {
+      return `${value.substring(0, 6)}...${value.substring(value.length - 4)}`;
+    }
+    
+    if (key === 'recipient') {
+      return `${value.substring(0, 6)}...${value.substring(value.length - 4)}`;
+    }
+    
+    return renderCellValue(value);
+  }
+
   // Render data table for specific model
   const renderTable = () => {
     if (!data || !Array.isArray(data)) return null
@@ -132,6 +162,65 @@ export default function AdminDashboard() {
       // Only show first level of populated fields
       (typeof firstItem[key] !== 'object' || key === '_id' || Array.isArray(firstItem[key]))
     )
+    
+    // For mint logs, prioritize certain columns and exclude others
+    if (selectedModel === 'mintlogs') {
+      const priorityHeaders = ['createdAt', 'recipient', 'amount', 'reason', 'status', 'transactionHash'];
+      const filteredHeaders = headers.filter(h => 
+        priorityHeaders.includes(h) || !['tokenAmount', 'details', 'updatedAt', '__v'].includes(h)
+      );
+      
+      // Sort headers to match priority order
+      const sortedHeaders = [...priorityHeaders].filter(h => filteredHeaders.includes(h));
+      
+      // Add any remaining headers not in the priority list
+      filteredHeaders.forEach(h => {
+        if (!sortedHeaders.includes(h)) {
+          sortedHeaders.push(h);
+        }
+      });
+      
+      return (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-100">
+              <tr>
+                {sortedHeaders.map(header => (
+                  <th 
+                    key={header} 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    {header === '_id' ? 'ID' : header.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {data.map((item: any, index: number) => (
+                <tr key={item._id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  {sortedHeaders.map(header => (
+                    <td key={`${item._id}-${header}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {header === 'transactionHash' && item[header] ? (
+                        <a 
+                          href={`https://amoy.polygonscan.com/tx/${item[header]}`}
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          {formatMintLogValue(header, item[header])}
+                        </a>
+                      ) : (
+                        formatMintLogValue(header, item[header])
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
     
     return (
       <div className="overflow-x-auto">

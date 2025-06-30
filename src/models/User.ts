@@ -84,7 +84,11 @@ const UserSchema = new mongoose.Schema(
     },
     lastGenerationReset: {
       type: Date,
-      default: Date.now
+      default: function() {
+        // Initialize with current UTC date (00:00 UTC of the current day)
+        const now = new Date();
+        return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+      }
     },
   },
   {
