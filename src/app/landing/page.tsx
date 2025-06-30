@@ -758,6 +758,8 @@ export default function Page() {
 					searchRelatedMemes={setQuery}
 					onNext={handleNext}
 					onPrev={handlePrev}
+					onVoteMeme={activeTab === 'live' ? voteToMeme : handleUpvoteDownvote}
+					bmk={bookMarks.some(get_meme => get_meme._id == selectedMeme._id)}
 				/>
 			)}
 			{isShareOpen && shareData && (
