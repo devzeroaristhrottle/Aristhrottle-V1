@@ -1,0 +1,509 @@
+'use client'
+
+import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { HStack } from '@chakra-ui/react'
+import { FilterPopover } from '@/components/FilterPopover'
+import { SortPopover } from '@/components/SortPopover'
+import { Context } from '@/context/contextProvider'
+import { useFilterAndSort } from '@/hooks/useFilterAndSort'
+import {
+	PaginationItems,
+	PaginationNextTrigger,
+	PaginationPrevTrigger,
+	PaginationRoot,
+} from '@/components/ui/pagination'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+import axiosInstance from '@/utils/axiosInstance'
+import { TabButton } from '@/components/TabButton'
+import { LeaderboardMeme } from '../../leaderboard/page'
+import { ethers } from 'ethers'
+import { useParams, useRouter } from 'next/navigation'
+import { toast } from 'react-toastify'
+import { FaUsers } from 'react-icons/fa'
+
+interface UserProfileData {
+	_id: string
+	username: string
+	bio: string
+	profile_pic?: string
+	user_wallet_address: string
+	totalCastedVotesCount?: number
+	majorityVotes?: number
+	totalUploadsCount?: number
+	majorityUploads?: number
+	totalVotesReceived?: number
+	mintedCoins?: string
+	followersCount?: number
+	followingCount?: number
+}
+
+export default function UserProfilePage() {
+	const params = useParams()
+	const router = useRouter()
+	const userId = params.userId as string
+	
+	const [page, setPage] = useState(1)
+	const [loading, setLoading] = useState<boolean>(false)
+	const [profileLoading, setProfileLoading] = useState<boolean>(true)
+	const [memes, setMemes] = useState<LeaderboardMeme[]>([])
+	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')
+	const [filterOpen, setFilterOpen] = useState(false)
+	const [sortOpen, setSortOpen] = useState(false)
+	const [userProfile, setUserProfile] = useState<UserProfileData | null>(null)
+	const [isFollowing, setIsFollowing] = useState<boolean>(false)
+	const [followLoading, setFollowLoading] = useState<boolean>(false)
+
+	const { userDetails } = useContext(Context)
+
+	// Tab-based filtering (primary)
+	const tabFilteredMemes = useMemo(() => {
+		const today = new Date()
+		today.setUTCHours(0, 0, 0, 0) // Start of today in UTC
+
+		if (activeTab === 'live') {
+			// Memes from today (00:00 to 23:59 UTC)
+			return memes.filter(meme => {
+				const createdAt = new Date(meme.createdAt)
+				return (
+					createdAt >= today &&
+					createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)
+				)
+			})
+		}
+		// All-time tab: no date filtering
+		return memes
+	}, [memes, activeTab])
+
+	const {
+		percentage,
+		setPercentage,
+		selectedTags,
+		tagInput,
+		dateRange,
+		setDateRange,
+		sortCriteria,
+		filteredMemes,
+		filteredTags,
+		handleTagInputChange,
+		handleTagClick,
+		handleTagRemove,
+		handleSort,
+		handleResetSort,
+		resetFilters,
+	} = useFilterAndSort(tabFilteredMemes, activeTab)
+
+	const offset = 30
+	const pageSize = 30
+
+	const getUserProfile = async () => {
+		try {
+			setProfileLoading(true)
+			const response = await axiosInstance.get(`/api/user/${userId}`)
+			
+			if (response.data.user) {
+				const userData = {
+					...response.data.user,
+					followersCount: response.data.followersCount,
+					followingCount: response.data.followingCount,
+					totalUploadsCount: response.data.totalUploadsCount,
+					totalVotesReceived: response.data.totalVotesReceived,
+					majorityUploads: response.data.majorityUploads,
+				}
+				setUserProfile(userData)
+			}
+		} catch (error: any) {
+			console.log(error)
+			if (error.response?.status === 404) {
+				toast.error('User not found')
+				router.push('/home')
+			} else {
+				toast.error('Failed to load user profile')
+			}
+		} finally {
+			setProfileLoading(false)
+		}
+	}
+
+	const getUserMemes = async () => {
+		try {
+			setLoading(true)
+			const offsetI = offset * (page - 1)
+			const response = await axiosInstance.get(
+				`/api/meme?created_by=${userId}&offset=${offsetI}`
+			)
+
+			if (response.data.memes) {
+				setMemes(response.data.memes)
+			}
+		} catch (error) {
+			console.log(error)
+			setMemes([])
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const checkFollowStatus = async () => {
+		try {
+			if (!userDetails?._id) return
+			const response = await axiosInstance.get(
+				`/api/user/follow?userId=${userDetails._id}&type=following`
+			)
+			
+			if (response.data.users) {
+				const followingIds = response.data.users.map((user: any) => user._id)
+				setIsFollowing(followingIds.includes(userId))
+			}
+		} catch (error) {
+			console.log('Error checking follow status:', error)
+		}
+	}
+
+	const handleFollow = async () => {
+		try {
+			if (!userDetails?._id) {
+				toast.error('Please login to follow users')
+				return
+			}
+
+			setFollowLoading(true)
+			
+			if (isFollowing) {
+				// Unfollow
+				await axiosInstance.delete(`/api/user/follow?userId=${userId}`)
+				setIsFollowing(false)
+				toast.success('User unfollowed successfully')
+				// Update follower count
+				setUserProfile(prev => prev ? { ...prev, followersCount: (prev.followersCount || 0) - 1 } : null)
+			} else {
+				// Follow
+				await axiosInstance.post('/api/user/follow', { userIdToFollow: userId })
+				setIsFollowing(true)
+				toast.success('User followed successfully')
+				// Update follower count
+				setUserProfile(prev => prev ? { ...prev, followersCount: (prev.followersCount || 0) + 1 } : null)
+			}
+		} catch (error: any) {
+			const errorMessage = error.response?.data?.error || 'An error occurred'
+			toast.error(errorMessage)
+		} finally {
+			setFollowLoading(false)
+		}
+	}
+
+	useEffect(() => {
+		if (userId) {
+			getUserProfile()
+			setMemes([])
+			resetFilters()
+			getUserMemes()
+			checkFollowStatus()
+		}
+	}, [userId, userDetails])
+
+	useEffect(() => {
+		setMemes([])
+		resetFilters()
+		getUserMemes()
+	}, [page, activeTab])
+
+	const applyFilters = () => {
+		setPage(1)
+		getUserMemes()
+		setFilterOpen(false)
+	}
+
+	const handleTabChange = (tab: string) => {
+		setMemes([])
+		setActiveTab(tab.toLowerCase() as 'live' | 'all')
+	}
+
+	if (profileLoading) {
+		return (
+			<div className="flex justify-center items-center min-h-[400px]">
+				<AiOutlineLoading3Quarters className="animate-spin text-4xl text-[#1783fb]" />
+			</div>
+		)
+	}
+
+	if (!userProfile) {
+		return (
+			<div className="flex justify-center items-center min-h-[400px]">
+				<p className="text-center text-lg md:text-2xl text-gray-400">
+					User not found
+				</p>
+			</div>
+		)
+	}
+
+	const isOwnProfile = userDetails?._id === userId
+
+	return (
+		<div className="md:max-w-7xl md:mx-auto mx-4">
+			{/* Top Section */}
+			<div className="flex items-center justify-between pb-4 md:pb-6">
+				<div className="flex items-center space-x-2 md:space-x-4 rounded-lg">
+					<div className="h-20 w-20 md:h-44 md:w-44 bg-black rounded-full overflow-hidden flex items-center justify-center">
+						<img
+							src={
+								userProfile?.profile_pic
+									? userProfile?.profile_pic
+									: '/assets/meme1.jpeg'
+							}
+							alt="Profile"
+							className="w-full h-full object-cover"
+						/>
+					</div>
+					<div>
+						<p className="text-white text-lg md:text-4xl font-bold">
+							{isOwnProfile ? 'Welcome' : 'Profile'}
+						</p>
+						<h1 className="text-[#29e0ca] text-2xl md:text-6xl font-bold">
+							{userProfile?.username}
+						</h1>
+					</div>
+				</div>
+				<div className="flex flex-col items-end space-y-2">
+					{!isOwnProfile && userDetails && (
+						<>
+							<button
+								onClick={handleFollow}
+								disabled={followLoading}
+								className={`flex justify-between items-center gap-2 px-2 md:px-4 py-1 md:py-2 rounded-lg font-medium transition-colors ${
+									isFollowing
+										? 'border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+										: 'border-2 border-[#1783fb] text-[#1783fb] hover:bg-[#1783fb] hover:text-white'
+								} ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+							>
+								{followLoading ? (
+									<AiOutlineLoading3Quarters className="animate-spin" />
+								) : isFollowing ? (
+									'Unfollow'
+								) : (
+									'Follow'
+								)}
+							</button>
+							<button
+								onClick={() => router.push(`/home/followers?user=${userId}`)}
+								className="flex justify-between items-center gap-2 px-2 md:px-4 py-1 md:py-2 border border-[#29e0ca] rounded-lg hover:opacity-40"
+							>
+								<FaUsers className="w-4 h-4 md:w-6 md:h-6" fill="#29e0ca" />
+								<p className="text-[#29e0ca] text-sm md:text-lg font-bold">
+									View Followers
+								</p>
+							</button>
+						</>
+					)}
+					{isOwnProfile && (
+						<button
+							onClick={() => router.push('/home/profile')}
+							className="flex justify-between items-center gap-2 px-2 md:px-4 py-1 md:py-2 border border-[#1783fb] rounded-lg hover:opacity-40"
+						>
+							<p className="text-[#1783fb] text-sm md:text-lg font-bold">
+								Edit Profile
+							</p>
+						</button>
+					)}
+				</div>
+			</div>
+
+			{/* Stats Section */}
+			<div className="flex flex-col md:flex-row gap-10 mt-3">
+				<div className="md:flex-1 py-3 border-[.1875rem] border-[#1783fb] rounded-xl">
+					<p className="text-[28px] h-16 md:h-8 leading-none px-4">
+						{userProfile?.bio || 'No bio available'}
+					</p>
+				</div>
+				<div className="flex justify-between gap-x-6 md:gap-x-0 flex-row md:flex-col">
+					<div className="votescast_majorityvotes_uploads_majorityuploads_mobile_wrapper flex-1 md:hidden space-y-2 md:space-y-0">
+						<div className="flex justify-between items-center gap-x-2 ">
+							<p className="text-lg text-[#1783FB]">Followers</p>
+							<p className="text-lg">{userProfile?.followersCount || 0}</p>
+						</div>
+						<div className="flex justify-between items-center gap-x-2">
+							<p className="text-lg text-[#1783FB]">Following</p>
+							<p className="text-lg">{userProfile?.followingCount || 0}</p>
+						</div>
+						<div className="flex justify-between items-center gap-x-2">
+							<p className="text-lg text-[#1783FB]">Uploads</p>
+							<p className="text-lg">{userProfile?.totalUploadsCount || 0}</p>
+						</div>
+						<div className="flex justify-between items-center gap-x-2">
+							<p className="text-lg text-[#1783FB]">Majority Uploads</p>
+							<p className="text-lg">{userProfile?.majorityUploads || 0}</p>
+						</div>
+					</div>
+					<div className="md:!w-[200px] flex flex-col md:justify-between gap-y-4">
+						<div className="order-2 md:order-1 flex flex-col md:gap-2 md:px-2 md:py-4 border-[.1875rem] border-[#1783fb] rounded-xl">
+							<p className="text-lg md:text-[28px] h-5 md:h-8 text-[#1783FB] text-center">
+								eART Minted
+							</p>
+							<p className="text-2xl md:text-[30px] md:h-8 text-center">
+								{userProfile?.mintedCoins
+									? ethers.formatEther(userProfile.mintedCoins)
+									: 0}
+							</p>
+						</div>
+						<div className="order-1 md:order-2 flex flex-col md:gap-2 px-2 md:py-4 border-[.1875rem] border-[#1783fb] rounded-xl">
+							<p className="text-lg md:text-[28px] h-5 md:h-8 text-[#1783FB] text-center">
+								Votes Received
+							</p>
+							<p className="text-2xl md:text-[30px] md:h-8 text-center">
+								{userProfile?.totalVotesReceived || 0}
+							</p>
+						</div>
+					</div>
+				</div>
+				<div className="w-[200px] px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl hidden md:flex flex-col justify-between">
+					<div className="flex flex-col gap-2">
+						<p className="text-[28px] h-8 text-[#1783FB] text-center">
+							Followers
+						</p>
+						<p className="text-[30px] h-8 text-center">
+							{userProfile?.followersCount || 0}
+						</p>
+					</div>
+					<div className="flex flex-col gap-2">
+						<p className="text-[28px] h-8 text-[#1783FB] text-center">
+							Following
+						</p>
+						<p className="text-[30px] h-8 text-center">
+							{userProfile?.followingCount || 0}
+						</p>
+					</div>
+				</div>
+				<div className="w-[200px] px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl hidden md:flex flex-col justify-between">
+					<div className="flex flex-col gap-2">
+						<p className="text-[28px] h-8 text-[#1783FB] text-center">
+							Uploads
+						</p>
+						<p className="text-[30px] h-8 text-center">
+							{userProfile?.totalUploadsCount || 0}
+						</p>
+					</div>
+					<div className="flex flex-col gap-2">
+						<p className="text-[28px] h-8 text-[#1783FB] text-center">
+							Majority Uploads
+						</p>
+						<p className="text-[30px] h-8 text-center">
+							{userProfile?.majorityUploads || 0}
+						</p>
+					</div>
+				</div>
+			</div>
+
+			{/* Gallery Section */}
+			<div className="mt-16 md:mt-12">
+				<div className="flex items-center justify-between">
+					<div className="flex space-x-2.5 md:space-x-5">
+						<FilterPopover
+							activeTab={activeTab}
+							filterOpen={filterOpen}
+							setFilterOpen={setFilterOpen}
+							percentage={percentage}
+							setPercentage={setPercentage}
+							selectedTags={selectedTags}
+							tagInput={tagInput}
+							dateRange={dateRange}
+							setDateRange={setDateRange}
+							filteredTags={filteredTags}
+							handleTagInputChange={handleTagInputChange}
+							handleTagClick={handleTagClick}
+							handleTagRemove={handleTagRemove}
+							resetFilters={resetFilters}
+							applyFilters={applyFilters}
+						/>
+						<SortPopover
+							activeTab={activeTab}
+							sortOpen={sortOpen}
+							setSortOpen={setSortOpen}
+							sortCriteria={sortCriteria}
+							handleSort={handleSort}
+							handleResetSort={handleResetSort}
+						/>
+					</div>
+					<div className="space-x-2.5 md:space-x-5 flex justify-center">
+						<TabButton
+							classname="!text-base md:!text-xl !px-2  md:!px-8 !rounded-md md:!rounded-10px"
+							isActive={activeTab === 'live'}
+							label="Live"
+							onClick={() => handleTabChange('live')}
+						/>
+						<TabButton
+							classname="!text-base md:!text-xl !px-2 md:!px-5 !rounded-md md:!rounded-10px"
+							isActive={activeTab === 'all'}
+							label="All-Time"
+							onClick={() => handleTabChange('all')}
+						/>
+					</div>
+				</div>
+				<div>
+					<h2 className="text-[#29e0ca] text-xl md:text-4xl font-medium text-center mt-8 md:my-2">
+						{isOwnProfile ? 'Your Uploads' : `${userProfile?.username}'s Uploads`}
+					</h2>
+				</div>
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6">
+					{filteredMemes.map((item, index) => (
+						<div key={index} className="px-2 md:px-3 lg:px-4">
+							<div className="flex justify-between items-center mb-1">
+								{item.rank && (
+									<p className="text-[#29e0ca] font-medium">#{item.rank}</p>
+								)}
+							</div>
+							<div className="flex gap-4">
+								<div className="relative flex-grow">
+									<img
+										src={item.image_url}
+										alt="Content"
+										className="w-full aspect-square object-cover border-2 border-white"
+									/>
+									<div className="flex justify-between text-base lg:text-2xl mt-1">
+										<p>{item.name}</p>
+										<p>{item.createdAt.split('T')[0]}</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					))}
+
+					<div className="col-span-full">
+						{loading && (
+							<AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto" />
+						)}
+						{!loading && filteredMemes.length === 0 && (
+							<p className="text-center text-nowrap text-lg md:text-2xl mx-auto">
+								{isOwnProfile ? 'You have no uploads yet' : `${userProfile?.username} has no uploads yet`}
+							</p>
+						)}
+					</div>
+
+					{filteredMemes.length > 0 && (
+						<div className="col-span-full">
+							<PaginationRoot
+								count={Math.max(
+									1,
+									Math.ceil(tabFilteredMemes.length / pageSize)
+								)}
+								pageSize={pageSize}
+								defaultPage={1}
+								variant="solid"
+								className="mx-auto mb-10"
+								page={page}
+								onPageChange={e => {
+									setMemes([])
+									setPage(e.page)
+								}}
+							>
+								<HStack className="justify-center mb-5">
+									<PaginationPrevTrigger />
+									<PaginationItems />
+									<PaginationNextTrigger />
+								</HStack>
+							</PaginationRoot>
+						</div>
+					)}
+				</div>
+			</div>
+		</div>
+	)
+} 

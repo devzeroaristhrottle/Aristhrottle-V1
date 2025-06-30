@@ -324,6 +324,8 @@ export default function Page() {
 					tab={activeTab}
 					onNext={handleNext}
 					onPrev={handlePrev}
+					onVoteMeme={meme_id => handleVote(meme_id)}
+					bmk={false}
 				/>
 			)}
 		</div>
