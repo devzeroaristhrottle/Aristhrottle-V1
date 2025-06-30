@@ -660,6 +660,8 @@ export default function Page() {
           meme={selectedMeme}
           searchRelatedMemes={setQuery}
           tab={activeTab}
+          onVoteMeme={voteToMeme}
+		  bmk={false}
         />
       )}
       {isShareOpen && shareData && (
