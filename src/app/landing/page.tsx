@@ -225,6 +225,24 @@ export default function Page() {
 		}
 	}
 
+	// Background polling function that doesn't show loader
+	const pollMemes = async () => {
+		try {
+			const offsetI = offset * page
+			const response = await axiosInstance.get(
+				`/api/meme?offset=${offsetI}&userId=${userDetails?._id}`
+			)
+			if (response.data.memes) {
+				setTotalMemeCount(response.data.memesCount)
+				setMemes([...response.data.memes])
+				setFilterMemes([...response.data.memes])
+			}
+		} catch (error) {
+			console.log(error)
+		}
+		// Note: No loading state changes here
+	}
+
 	const getMemesByName = async () => {
 		try {
 			setLoading(true)
@@ -312,6 +330,35 @@ export default function Page() {
 		getMemes()
 		getMyMemes()
 	}, [user, page, isRefreshMeme])
+
+	useEffect(() => {
+		let pollInterval: NodeJS.Timeout | null = null
+
+		const handleVisibilityChange = () => {
+			if (document.hidden && pollInterval) {
+				clearInterval(pollInterval)
+				pollInterval = null
+			} else if (!document.hidden && activeTab === 'live') {
+				pollInterval = setInterval(() => {
+					pollMemes()
+				}, 1000)
+			}
+		}
+
+		if (activeTab === 'live') {
+			pollInterval = setInterval(() => {
+				pollMemes()
+			}, 1000)
+			document.addEventListener('visibilitychange', handleVisibilityChange)
+		}
+
+		return () => {
+			if (pollInterval) {
+				clearInterval(pollInterval)
+			}
+			document.removeEventListener('visibilitychange', handleVisibilityChange)
+		}
+	}, [activeTab, page, userDetails?._id])
 
 	useEffect(() => {
 		const time = setTimeout(() => {
