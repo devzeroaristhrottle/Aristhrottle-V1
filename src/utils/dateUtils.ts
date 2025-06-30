@@ -1,22 +1,19 @@
 /**
- * Checks if a day has passed between the given date and now
+ * Checks if the current UTC day is different from the stored date's UTC day
  * @param date The date to compare against
- * @returns boolean True if at least one day has passed
+ * @returns boolean True if the UTC day has changed
  */
 export function hasDayPassed(date: Date): boolean {
   if (!date) return true;
   
   const now = new Date();
-  // Reset at midnight
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const lastDate = new Date(
-    date.getFullYear(), 
-    date.getMonth(), 
-    date.getDate()
-  );
+  
+  // Get UTC day for both dates
+  const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const lastDateUtc = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   
   // Compare dates (ignoring time)
-  return today > lastDate;
+  return todayUtc > lastDateUtc;
 }
 
 /**
@@ -36,18 +33,18 @@ export function formatDate(date: Date | string): string {
 }
 
 /**
- * Gets the next reset date (tomorrow at midnight)
+ * Gets the next reset date (next day at 00:00 UTC)
  * @returns Date The next reset date
  */
 export function getNextResetDate(): Date {
   const now = new Date();
-  // Get tomorrow's date at midnight
-  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  // Get tomorrow's date at midnight UTC
+  const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
   return tomorrow;
 }
 
 /**
- * Calculates time remaining until next reset
+ * Calculates time remaining until next reset (00:00 UTC)
  * @returns string Time remaining in human readable format
  */
 export function getTimeUntilReset(): string {

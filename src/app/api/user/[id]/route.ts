@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
 
     const majorityUploads = await Meme.countDocuments({
       created_by: userId,
-      in_percentile: { $gte: 51 },
+      in_percentile: { $gte: 50 },
     });
 
     return NextResponse.json({

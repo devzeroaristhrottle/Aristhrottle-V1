@@ -6,13 +6,17 @@ import mongoose from 'mongoose'
 import { NextRequest, NextResponse } from 'next/server'
 import Vote from '@/models/Vote'
 import axiosInstance from '@/utils/axiosInstance'
-import Milestone from '@/models/Milestone'
 import { checkIsAuthenticated } from '@/utils/authFunctions'
 import cloudinary from '@/config/cloudinary'
 import { withApiLogging } from '@/utils/apiLogger'
 import { updateTagsRelevance, updateTagCooccurrences } from '@/utils/tagUtils'
 import { generateReferralCodeIfEligible } from '@/utils/referralUtils'
 import { getToken } from 'next-auth/jwt'
+import { 
+	MAJORITY_PERCENTILE_THRESHOLD,
+	DAILY_LIMITS
+} from "@/config/rewardsConfig";
+import { processActivityMilestones } from "@/utils/milestoneUtils";
 
 type Tag = {
 	_id: mongoose.Types.ObjectId
@@ -730,91 +734,18 @@ async function handlePostRequest(req: NextRequest) {
 	}
 }
 
-const majorityRewards = {
-	10: 50,
-	50: 250,
-	100: 650,
-	250: 1500,
-}
-
-const totalRewards = {
-	50: 50,
-	100: 150,
-	250: 500,
-	500: 1000,
-}
-
 async function milestoneReward(created_by: string) {
-	const memeCount = await Meme.find({
-		created_by: created_by,
-	}).countDocuments()
-
-	if (memeCount == 1) {
-		const milestone = new Milestone({
-			milestone: 1,
-			reward: 5,
-			is_claimed: false,
-			created_by: created_by,
-			type: 'upload-total',
-		})
-		await milestone.save()
-	}
-
-	const totalMemeCount = await Meme.find({
-		vote_by: created_by,
-	}).countDocuments()
-
-	if (
-		totalMemeCount == 50 ||
-		totalMemeCount == 100 ||
-		totalMemeCount == 250 ||
-		totalMemeCount == 500
-	) {
-		const found = await Milestone.findOne({
-			created_by: created_by,
-			milestone: totalMemeCount,
-			type: 'upload-total',
-		})
-		if (found == null) {
-			const milestone = new Milestone({
-				milestone: totalRewards,
-				reward: totalRewards[totalMemeCount],
-				is_claimed: false,
-				created_by: created_by,
-				type: 'upload-total',
-			})
-			await milestone.save()
+	await processActivityMilestones(
+		created_by,
+		'upload',
+		Meme,
+		{ created_by }, // Total uploads query
+		{ // Majority uploads query
+			is_onchain: true,
+			created_by,
+			in_percentile: { $gte: MAJORITY_PERCENTILE_THRESHOLD }
 		}
-	}
-
-	const majorityMemeCount = await Meme.find({
-		is_onchain: true,
-		vote_by: created_by,
-		in_percentile: { $gte: 51 },
-	}).countDocuments()
-
-	if (
-		majorityMemeCount == 10 ||
-		majorityMemeCount == 50 ||
-		majorityMemeCount == 100 ||
-		majorityMemeCount == 250
-	) {
-		const found = await Milestone.findOne({
-			created_by: created_by,
-			milestone: majorityMemeCount,
-			type: 'upload',
-		})
-		if (found == null) {
-			const milestone = new Milestone({
-				milestone: majorityRewards,
-				reward: majorityRewards[majorityMemeCount],
-				is_claimed: false,
-				created_by: created_by,
-				type: 'upload',
-			})
-			await milestone.save()
-		}
-	}
+	);
 }
 
 async function isLimitReached(created_by: string) {
@@ -829,7 +760,7 @@ async function isLimitReached(created_by: string) {
 		createdAt: { $gte: startOfDay, $lt: endOfDay },
 	})
 
-	if (memes.length >= 20) {
+	if (memes.length >= DAILY_LIMITS.UPLOADS) {
 		throw 'Daily upload limit reached'
 	}
 }

@@ -25,19 +25,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
     
-    // Check if a day has passed since last reset
+    // Check if the UTC day has changed since last reset
     let resetNeeded = false;
     if (user.lastGenerationReset && hasDayPassed(user.lastGenerationReset)) {
       // Reset generations counter
       user.generations = 0;
-      user.lastGenerationReset = new Date();
+      // Set lastGenerationReset to current UTC date
+      const now = new Date();
+      user.lastGenerationReset = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
       resetNeeded = true;
     }
     
     // Check if user has reached generation limit
     if (user.generations >= 5) {
       return NextResponse.json(
-        { error: "Daily generation limit reached (5 per day)" },
+        { error: "Daily generation limit reached (5 per day). Resets at 00:00 UTC." },
         { status: 403 }
       );
     }

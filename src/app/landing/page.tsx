@@ -225,6 +225,24 @@ export default function Page() {
 		}
 	}
 
+	// Background polling function that doesn't show loader
+	const pollMemes = async () => {
+		try {
+			const offsetI = offset * page
+			const response = await axiosInstance.get(
+				`/api/meme?offset=${offsetI}&userId=${userDetails?._id}`
+			)
+			if (response.data.memes) {
+				setTotalMemeCount(response.data.memesCount)
+				setMemes([...response.data.memes])
+				setFilterMemes([...response.data.memes])
+			}
+		} catch (error) {
+			console.log(error)
+		}
+		// Note: No loading state changes here
+	}
+
 	const getMemesByName = async () => {
 		try {
 			setLoading(true)
@@ -312,6 +330,35 @@ export default function Page() {
 		getMemes()
 		getMyMemes()
 	}, [user, page, isRefreshMeme])
+
+	useEffect(() => {
+		let pollInterval: NodeJS.Timeout | null = null
+
+		const handleVisibilityChange = () => {
+			if (document.hidden && pollInterval) {
+				clearInterval(pollInterval)
+				pollInterval = null
+			} else if (!document.hidden && activeTab === 'live') {
+				pollInterval = setInterval(() => {
+					pollMemes()
+				}, 1000)
+			}
+		}
+
+		if (activeTab === 'live') {
+			pollInterval = setInterval(() => {
+				pollMemes()
+			}, 1000)
+			document.addEventListener('visibilitychange', handleVisibilityChange)
+		}
+
+		return () => {
+			if (pollInterval) {
+				clearInterval(pollInterval)
+			}
+			document.removeEventListener('visibilitychange', handleVisibilityChange)
+		}
+	}, [activeTab, page, userDetails?._id])
 
 	useEffect(() => {
 		const time = setTimeout(() => {
@@ -556,9 +603,9 @@ export default function Page() {
 							className="bg-[#141e29] w-fit border-none shadow-xl z-50"
 						>
 							<PopoverBody className="bg-[#141e29] border-2 border-[#1783fb] rounded-md p-0">
-								<div className="flex gap-3 items-center hover:bg-[#224063] px-4 py-1">
+								<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
 									<p className="text-xl text-nowrap mr-2">By Time</p>
-									<div className="flex items-center gap-3">
+									<div className="flex items-end gap-3">
 										<LiaSortAmountUpAltSolid
 											onClick={() => filterByTime('ASC')}
 											className="cursor-pointer"
@@ -571,9 +618,9 @@ export default function Page() {
 										/>
 									</div>
 								</div>
-								<div className="flex gap-3 items-center hover:bg-[#224063] px-4 py-1">
+								<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
 									<p className="text-xl text-nowrap mr-2">By Votes</p>
-									<div className="flex items-center gap-3">
+									<div className="flex items-end gap-3">
 										<LiaSortAmountUpAltSolid
 											onClick={() => filterByVotes('ASC')}
 											className="cursor-pointer"
@@ -758,6 +805,8 @@ export default function Page() {
 					searchRelatedMemes={setQuery}
 					onNext={handleNext}
 					onPrev={handlePrev}
+					onVoteMeme={activeTab === 'live' ? voteToMeme : handleUpvoteDownvote}
+					bmk={bookMarks.some(get_meme => get_meme._id == selectedMeme._id)}
 				/>
 			)}
 			{isShareOpen && shareData && (

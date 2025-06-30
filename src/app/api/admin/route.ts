@@ -9,6 +9,7 @@ import Milestone from "@/models/Milestone";
 import Notification from "@/models/Notification";
 import Referrals from "@/models/Referrals";
 import ApiLog from "@/models/ApiLog";
+import MintLog from "@/models/MintLog";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getContractUtils } from "@/ethers/contractUtils";
@@ -107,6 +108,9 @@ export async function GET(request: NextRequest) {
         case "apilogs":
           data = await ApiLog.find().populate("user_id");
           break;
+        case "mintlogs":
+          data = await MintLog.find().sort({ createdAt: -1 }).limit(100);
+          break;
         default:
           return NextResponse.json(
             { error: "Invalid model specified" },
@@ -125,7 +129,8 @@ export async function GET(request: NextRequest) {
         milestones: await Milestone.countDocuments(),
         notifications: await Notification.countDocuments(),
         referrals: await Referrals.countDocuments(),
-        apiLogs: await ApiLog.countDocuments()
+        apiLogs: await ApiLog.countDocuments(),
+        mintLogs: await MintLog.countDocuments()
       };
     }
 

@@ -1,6 +1,5 @@
 import connectToDatabase from "@/lib/db";
 import Meme from "@/models/Meme";
-import Milestone from "@/models/Milestone";
 import Vote from "@/models/Vote";
 import { checkIsAuthenticated } from "@/utils/authFunctions";
 import axiosInstance from "@/utils/axiosInstance";
@@ -9,9 +8,13 @@ import { NextRequest, NextResponse } from "next/server";
 import Tags from "@/models/Tags";
 import { updateTagsRelevance } from "@/utils/tagUtils";
 import { generateReferralCodeIfEligible } from "@/utils/referralUtils";
-import { getContractUtils } from "@/ethers/contractUtils";
-import { ethers } from "ethers";
 import User from "@/models/User";
+import { 
+  MAJORITY_PERCENTILE_THRESHOLD,
+  DAILY_LIMITS
+} from "@/config/rewardsConfig";
+import { processActivityMilestones } from "@/utils/milestoneUtils";
+import { mintTokensAndLog } from "@/ethers/mintUtils";
 
 async function handlePostRequest(request: NextRequest) {
   try {
@@ -87,31 +90,37 @@ async function handlePostRequest(request: NextRequest) {
     const voter = await User.findById(vote_by);
     const creator = meme.created_by;
 
-    // Process token rewards asynchronously
+    // Process token rewards using our new utility function
     setTimeout(async () => {
       try {
-        const { contract } = getContractUtils();
-        
-        // Mint 0.25 tokens to the meme creator
+        // Mint tokens to the meme creator
         if (creator && creator.user_wallet_address) {
           const creatorAmount = 0.25;
-          const creatorTx = await contract.mintCoins(
-            creator.user_wallet_address, 
-            ethers.parseUnits(creatorAmount.toString(), 18)
+          await mintTokensAndLog(
+            creator.user_wallet_address,
+            creatorAmount,
+            "vote_received",
+            {
+              memeId: meme._id,
+              memeName: meme.name,
+              voterId: vote_by
+            }
           );
-          await creatorTx.wait();
-          console.log(`Minted ${creatorAmount} tokens to creator ${creator.user_wallet_address} for receiving a vote`);
         }
         
-        // Mint 0.1 tokens to the voter
+        // Mint tokens to the voter
         if (voter && voter.user_wallet_address) {
           const voterAmount = 0.1;
-          const voterTx = await contract.mintCoins(
-            voter.user_wallet_address, 
-            ethers.parseUnits(voterAmount.toString(), 18)
+          await mintTokensAndLog(
+            voter.user_wallet_address,
+            voterAmount,
+            "vote_reward",
+            {
+              memeId: meme._id,
+              memeName: meme.name,
+              creatorId: meme.created_by._id
+            }
           );
-          await voterTx.wait();
-          console.log(`Minted ${voterAmount} tokens to voter ${voter.user_wallet_address} for voting`);
         }
       } catch (mintError) {
         console.error("Error minting tokens for vote rewards:", mintError);
@@ -137,96 +146,19 @@ async function handlePostRequest(request: NextRequest) {
   }
 }
 
-const majorityRewards = {
-  10: 25,
-  50: 100,
-  100: 250,
-  250: 500,
-};
-
-const totalRewards = {
-  50: 10,
-  100: 25,
-  250: 75,
-  500: 100,
-};
-
 async function milestoneReward(vote_by: string) {
-  const voteCount = await Vote.find({
-    vote_by: vote_by,
-  }).countDocuments();
-
-  if (voteCount == 1) {
-    const milestone = new Milestone({
-      milestone: 1,
-      reward: 5,
-      is_claimed: false,
-      created_by: vote_by,
-      type: "vote-total",
-    });
-    await milestone.save();
-  }
-
-  const totalVotesCount = await Vote.find({
-    vote_by: vote_by,
-  }).countDocuments();
-
-  if (
-    totalVotesCount == 50 ||
-    totalVotesCount == 100 ||
-    totalVotesCount == 250 ||
-    totalVotesCount == 500
-  ) {
-    const found = await Milestone.findOne({
-      created_by: vote_by,
-      milestone: totalVotesCount,
-      type: "vote-total",
-    });
-    if (found == null) {
-      const milestone = new Milestone({
-        milestone: totalRewards,
-        reward: totalRewards[totalVotesCount],
-        is_claimed: false,
-        created_by: vote_by,
-        type: "vote-total",
-      });
-      await milestone.save();
+  await processActivityMilestones(
+    vote_by,
+    'vote',
+    Vote,
+    { vote_by }, // Total votes query
+    { // Majority votes query 
+      is_onchain: true,
+      vote_by,
+      "vote_to.is_onchain": true,
+      "vote_to.in_percentile": { $gte: MAJORITY_PERCENTILE_THRESHOLD }
     }
-  }
-
-  const majorityVotesCount = await Vote.find({
-    is_onchain: true,
-    vote_by: vote_by,
-  })
-    .populate("vote_by")
-    .populate({
-      path: "vote_to",
-      match: { is_onchain: true, in_percentile: { $gte: 51 } },
-    })
-    .countDocuments();
-
-  if (
-    majorityVotesCount == 10 ||
-    majorityVotesCount == 50 ||
-    majorityVotesCount == 100 ||
-    majorityVotesCount == 250
-  ) {
-    const found = await Milestone.findOne({
-      created_by: vote_by,
-      milestone: majorityVotesCount,
-      type: "vote",
-    });
-    if (found == null) {
-      const milestone = new Milestone({
-        milestone: majorityRewards,
-        reward: majorityRewards[majorityVotesCount],
-        is_claimed: false,
-        created_by: vote_by,
-        type: "vote",
-      });
-      await milestone.save();
-    }
-  }
+  );
 }
 
 async function isLimitReached(vote_by: string) {
@@ -241,7 +173,7 @@ async function isLimitReached(vote_by: string) {
     createdAt: { $gte: startOfDay, $lt: endOfDay },
   });
 
-  if (votes.length >= 20) {
+  if (votes.length >= DAILY_LIMITS.VOTES) {
     throw "Daily vote limit reached";
   }
 }
