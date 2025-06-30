@@ -341,14 +341,14 @@ export default function Page() {
 			} else if (!document.hidden && activeTab === 'live') {
 				pollInterval = setInterval(() => {
 					pollMemes()
-				}, 1000)
+				}, 30000)
 			}
 		}
 
 		if (activeTab === 'live') {
 			pollInterval = setInterval(() => {
 				pollMemes()
-			}, 1000)
+			}, 30000)
 			document.addEventListener('visibilitychange', handleVisibilityChange)
 		}
 

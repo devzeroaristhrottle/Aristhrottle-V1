@@ -3,7 +3,7 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
-import { FaRegBookmark } from 'react-icons/fa'
+import { FaRegBookmark, FaUsers } from 'react-icons/fa'
 import { GrCloudUpload } from 'react-icons/gr'
 import { IoPodiumOutline } from 'react-icons/io5'
 import { LuTrophy } from 'react-icons/lu'
@@ -111,6 +111,17 @@ const sidebarItems = [
 		),
 		action: (route: AppRouterInstance) => route.push('/home/bookmark'),
 	},
+	{
+		title: 'Followers',
+		icon: (isActive: boolean) => (
+			<FaUsers
+				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+					isActive ? 'text-[#1783FB]' : 'text-slate-100'
+				}`}
+			/>
+		),
+		action: (route: AppRouterInstance) => route.push('/home/followers'),
+	},
 ]
 
 const Sidebar = () => {
@@ -125,6 +136,7 @@ const Sidebar = () => {
 		if (pathname?.includes('rewards')) return 'Rewards'
 		if (pathname?.includes('myVotes')) return 'My Votes'
 		if (pathname?.includes('bookmark')) return 'Bookmarks'
+		if (pathname?.includes('followers')) return 'Followers'
 		if (pathname?.includes('profile')) return 'Profile'
 		return 'Home'
 	}
@@ -215,6 +227,8 @@ const Sidebar = () => {
 												src="/assets/vote-logo.svg"
 												width={24}
 											/>
+										) : item.title === 'Followers' ? (
+											<FaUsers className="h-6 w-6" />
 										) : (
 											<FaRegBookmark className="h-6 w-6" />
 										)}
