@@ -101,7 +101,7 @@ const sidebarItems = [
 		action: (route: AppRouterInstance) => route.push('/home/myVotes'),
 	},
 	{
-		title: 'Bookmarks',
+		title: 'Saved',
 		icon: (isActive: boolean) => (
 			<FaRegBookmark
 				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
@@ -112,7 +112,7 @@ const sidebarItems = [
 		action: (route: AppRouterInstance) => route.push('/home/bookmark'),
 	},
 	{
-		title: 'Followers',
+		title: 'Community',
 		icon: (isActive: boolean) => (
 			<FaUsers
 				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
@@ -120,7 +120,7 @@ const sidebarItems = [
 				}`}
 			/>
 		),
-		action: (route: AppRouterInstance) => route.push('/home/followers'),
+		action: (route: AppRouterInstance) => route.push('/home/community'),
 	},
 ]
 
@@ -135,8 +135,8 @@ const Sidebar = () => {
 		if (pathname?.includes('leaderboard')) return 'Leaderboard'
 		if (pathname?.includes('rewards')) return 'Rewards'
 		if (pathname?.includes('myVotes')) return 'My Votes'
-		if (pathname?.includes('bookmark')) return 'Bookmarks'
-		if (pathname?.includes('followers')) return 'Followers'
+		if (pathname?.includes('bookmark')) return 'Saved'
+		if (pathname?.includes('community')) return 'Community'
 		if (pathname?.includes('profile')) return 'Profile'
 		return 'Home'
 	}
@@ -227,7 +227,7 @@ const Sidebar = () => {
 												src="/assets/vote-logo.svg"
 												width={24}
 											/>
-										) : item.title === 'Followers' ? (
+										) : item.title === 'Community' ? (
 											<FaUsers className="h-6 w-6" />
 										) : (
 											<FaRegBookmark className="h-6 w-6" />

@@ -28,7 +28,9 @@ export default function FollowersPage() {
 	const [page, setPage] = useState(1)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [users, setUsers] = useState<FollowUser[]>([])
-	const [activeTab, setActiveTab] = useState<'followers' | 'following'>('followers')
+	const [activeTab, setActiveTab] = useState<'followers' | 'following'>(
+		'followers'
+	)
 	const [followingUsers, setFollowingUsers] = useState<Set<string>>(new Set())
 	const [actionLoading, setActionLoading] = useState<Set<string>>(new Set())
 	const [targetUser, setTargetUser] = useState<FollowUser | null>(null)
@@ -44,8 +46,8 @@ export default function FollowersPage() {
 	const getUsers = async () => {
 		try {
 			setLoading(true)
-			let response;
-			
+			let response
+
 			if (viewingUserId) {
 				// If viewing another user's followers by userId
 				response = await axiosInstance.get(
@@ -89,9 +91,11 @@ export default function FollowersPage() {
 			const response = await axiosInstance.get(
 				`/api/user/follow?userId=${userDetails._id}&type=following`
 			)
-			
+
 			if (response.data.users) {
-				const followingIds = new Set<string>(response.data.users.map((user: FollowUser) => user._id))
+				const followingIds = new Set<string>(
+					response.data.users.map((user: FollowUser) => user._id)
+				)
 				setFollowingUsers(followingIds)
 			}
 		} catch (error) {
@@ -102,7 +106,7 @@ export default function FollowersPage() {
 	const handleFollow = async (userId: string) => {
 		try {
 			setActionLoading(prev => new Set([...prev, userId]))
-			
+
 			if (followingUsers.has(userId)) {
 				// Unfollow
 				await axiosInstance.delete(`/api/user/follow?userId=${userId}`)
@@ -152,20 +156,6 @@ export default function FollowersPage() {
 
 	return (
 		<div className="md:max-w-7xl md:mx-auto mx-4">
-			{/* Header Section */}
-			<div className="flex items-center justify-between pb-4 md:pb-6">
-				<div>
-					<h1 className="text-[#29e0ca] text-2xl md:text-6xl font-bold">
-						{activeTab === 'followers' ? 'Followers' : 'Following'}
-					</h1>
-					<p className="text-white text-lg md:text-2xl">
-						{activeTab === 'followers' 
-							? `People who follow ${viewingUserId ? targetUser?.username || 'User' : userDetails?.username}` 
-							: `People ${viewingUserId ? targetUser?.username || 'User' : userDetails?.username} follows`}
-					</p>
-				</div>
-			</div>
-
 			{/* Tab Section */}
 			<div className="flex items-center justify-center mb-8">
 				<div className="flex items-center text-center gap-x-10 border-2 border-[#1783fb] rounded-10px px-3 py-2 w-fit text-nowrap">
@@ -193,16 +183,16 @@ export default function FollowersPage() {
 				) : paginatedUsers.length === 0 ? (
 					<div className="flex justify-center items-center h-64">
 						<p className="text-center text-lg md:text-2xl text-gray-400">
-							{activeTab === 'followers' 
-								? 'No followers yet' 
+							{activeTab === 'followers'
+								? 'No followers yet'
 								: 'Not following anyone yet'}
 						</p>
 					</div>
 				) : (
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-						{paginatedUsers.map((user) => (
-							<div 
-								key={user._id} 
+						{paginatedUsers.map(user => (
+							<div
+								key={user._id}
 								className="border-2 border-[#1783fb] rounded-xl p-4 md:p-6 hover:bg-[#1783fb]/10 transition-colors cursor-pointer"
 								onClick={() => router.push(`/home/profiles/${user._id}`)}
 							>
@@ -218,16 +208,17 @@ export default function FollowersPage() {
 											{user.username}
 										</h3>
 										<p className="text-gray-400 text-sm truncate">
-											{user.user_wallet_address.slice(0, 8)}...{user.user_wallet_address.slice(-6)}
+											{user.user_wallet_address.slice(0, 8)}...
+											{user.user_wallet_address.slice(-6)}
 										</p>
 									</div>
 								</div>
-								
+
 								{/* Follow/Unfollow Button - Only show if not viewing own followers and not the current user */}
 								{user._id !== userDetails?._id && (
 									<div className="mt-4">
 										<button
-											onClick={(e) => {
+											onClick={e => {
 												e.stopPropagation() // Prevent card click
 												handleFollow(user._id)
 											}}
@@ -236,7 +227,11 @@ export default function FollowersPage() {
 												followingUsers.has(user._id)
 													? 'border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
 													: 'border-2 border-[#1783fb] text-[#1783fb] hover:bg-[#1783fb] hover:text-white'
-											} ${actionLoading.has(user._id) ? 'opacity-50 cursor-not-allowed' : ''}`}
+											} ${
+												actionLoading.has(user._id)
+													? 'opacity-50 cursor-not-allowed'
+													: ''
+											}`}
 										>
 											{actionLoading.has(user._id) ? (
 												<AiOutlineLoading3Quarters className="animate-spin mx-auto" />
@@ -278,4 +273,4 @@ export default function FollowersPage() {
 			)}
 		</div>
 	)
-} 
+}
