@@ -26,7 +26,7 @@ import { PaginationRoot } from '@/components/ui/pagination'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { Context } from '@/context/contextProvider'
 import { toast } from 'react-toastify'
-import { useUser } from '@account-kit/react'
+import { useAuthModal, useUser } from '@account-kit/react'
 import { useInView } from 'motion/react'
 import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { LeaderboardMemeCard } from '../home/leaderboard/MemeCard'
@@ -34,27 +34,7 @@ import { LeaderboardMeme } from '../home/leaderboard/page'
 import Share from '@/components/Share'
 import UploadComponent from './UploadComponent'
 import WelcomeCard from '@/components/WelcomeCard'
-
-export interface Meme {
-	_id: string
-	vote_count: number
-	name: string
-	image_url: string
-	tags: TagI[]
-	categories: Category[]
-	created_by: User
-	createdAt: string
-	updatedAt: string
-	shares: string[]
-	bookmarks: string[]
-	is_onchain?: boolean
-	__v: number
-	voted?: boolean
-}
-
-interface Category {
-	name: string
-}
+import { type Meme } from '../home/page'
 
 export interface TagI {
 	_id: string
@@ -67,15 +47,6 @@ export interface TagI {
 	__v: number
 	createdAt: string
 	updatedAt: string
-}
-
-interface User {
-	_id: string
-	username: string
-	user_wallet_address: string
-	createdAt: string // ISO 8601 format date
-	updatedAt: string // ISO 8601 format date
-	__v: number
 }
 
 export interface Bookmark {
@@ -96,7 +67,13 @@ export default function Page() {
 	const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
 	const [allMemeCount, setAllMemeCount] = useState<number>(0)
 	const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([])
+	const [allMemeDataFilter, setAllMemeDataFilter] = useState<LeaderboardMeme[]>(
+		[]
+	)
+	const { openAuthModal } = useAuthModal()
+
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
+	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [filteredTags, setFilteredTags] = useState<TagI[]>([])
@@ -166,6 +143,7 @@ export default function Page() {
 		axiosInstance.get('/api/new-ip').then(response => {
 			if (response.data.message) setWelcOpen(true)
 		})
+		fetchLeaderBoard()
 	}, [])
 
 	const handleNext = () => {
@@ -194,6 +172,7 @@ export default function Page() {
 	}
 
 	const voteToMeme = async (vote_to: string) => {
+		if (!userDetails && openAuthModal) openAuthModal()
 		try {
 			if (user && user.address && activeTab === 'live') {
 				if (userDetails) {
@@ -246,6 +225,24 @@ export default function Page() {
 		}
 	}
 
+	// Background polling function that doesn't show loader
+	const pollMemes = async () => {
+		try {
+			const offsetI = offset * page
+			const response = await axiosInstance.get(
+				`/api/meme?offset=${offsetI}&userId=${userDetails?._id}`
+			)
+			if (response.data.memes) {
+				setTotalMemeCount(response.data.memesCount)
+				setMemes([...response.data.memes])
+				setFilterMemes([...response.data.memes])
+			}
+		} catch (error) {
+			console.log(error)
+		}
+		// Note: No loading state changes here
+	}
+
 	const getMemesByName = async () => {
 		try {
 			setLoading(true)
@@ -258,7 +255,10 @@ export default function Page() {
 				const response = await axiosInstance.get(`/api/meme?name=${q}`)
 				if (response.data.memes) {
 					setFilterMemes([...response.data.memes])
+					setAllMemeDataFilter([...response.data.memes])
 				}
+			} else {
+				setAllMemeDataFilter([...allMemeData])
 			}
 			if (query.length === 0 && memes.length > 0) {
 				setFilterMemes([...memes])
@@ -276,11 +276,8 @@ export default function Page() {
 			filter.sort((a, b) => {
 				const dateA = Date.parse(a.createdAt)
 				const dateB = Date.parse(b.createdAt)
-				if (mode === 'ASC') {
-					return dateA - dateB
-				} else {
-					return dateB - dateA
-				}
+				if (mode === 'ASC') return dateA - dateB
+				else return dateB - dateA
 			})
 			setFilterMemes(filter)
 		} else {
@@ -288,13 +285,28 @@ export default function Page() {
 			amd.sort((a: LeaderboardMeme, b: LeaderboardMeme) => {
 				const dateA = Date.parse(a.createdAt)
 				const dateB = Date.parse(b.createdAt)
-				if (mode == 'ASC') {
-					return dateA - dateB
-				} else {
-					return dateB - dateA
-				}
+				if (mode === 'ASC') return dateA - dateB
+				else return dateB - dateA
 			})
-			setAllMemeData(amd)
+			setAllMemeDataFilter(amd)
+		}
+	}
+
+	const filterByVotes = (mode: string) => {
+		if (activeTab == 'live') {
+			const filter = [...filterMemes]
+			filter.sort((a, b) => {
+				if (mode === 'ASC') return a.vote_count - b.vote_count
+				else return b.vote_count - a.vote_count
+			})
+			setFilterMemes(filter)
+		} else {
+			const amd = [...allMemeData]
+			amd.sort((a: LeaderboardMeme, b: LeaderboardMeme) => {
+				if (mode === 'ASC') return a.vote_count - b.vote_count
+				else return b.vote_count - a.vote_count
+			})
+			setAllMemeDataFilter(amd)
 		}
 	}
 
@@ -318,6 +330,35 @@ export default function Page() {
 		getMemes()
 		getMyMemes()
 	}, [user, page, isRefreshMeme])
+
+	useEffect(() => {
+		let pollInterval: NodeJS.Timeout | null = null
+
+		const handleVisibilityChange = () => {
+			if (document.hidden && pollInterval) {
+				clearInterval(pollInterval)
+				pollInterval = null
+			} else if (!document.hidden && activeTab === 'live') {
+				pollInterval = setInterval(() => {
+					pollMemes()
+				}, 30000)
+			}
+		}
+
+		if (activeTab === 'live') {
+			pollInterval = setInterval(() => {
+				pollMemes()
+			}, 30000)
+			document.addEventListener('visibilitychange', handleVisibilityChange)
+		}
+
+		return () => {
+			if (pollInterval) {
+				clearInterval(pollInterval)
+			}
+			document.removeEventListener('visibilitychange', handleVisibilityChange)
+		}
+	}, [activeTab, page, userDetails?._id])
 
 	useEffect(() => {
 		const time = setTimeout(() => {
@@ -389,25 +430,40 @@ export default function Page() {
 
 			if (response?.data?.memes) {
 				setAllMemeData(response.data.memes)
+				setAllMemeDataFilter(response.data.memes)
 				setAllMemeCount(response.data.memesCount)
 			}
 		} catch (error) {
 			console.log(error)
 			setAllMemeData([])
+			setAllMemeDataFilter([])
 			setAllMemeCount(0)
 		} finally {
 			setLoading(false)
 		}
 	}
 
-	const handleUpvoteDownvote = async (meme_id: string, rating: string) => {
-		setAllMemeData(prev =>
+	const fetchLeaderBoard = async () => {
+		try {
+			const resp = await axiosInstance.get('/api/bookmark')
+			if (resp.status == 200) {
+				setBookMarks(resp.data.memes)
+			}
+		} catch (err) {
+			toast.error('Error fetching bookmarks')
+		}
+	}
+
+	const handleUpvoteDownvote = async (meme_id: string) => {
+		if (!userDetails && openAuthModal) openAuthModal()
+		setAllMemeDataFilter(prev =>
 			prev
 				.map(meme =>
 					meme._id === meme_id
 						? {
 								...meme,
-								vote_count: meme.vote_count + (rating === 'upvote' ? 1 : -1),
+								vote_count: meme.vote_count + 1,
+								has_user_voted: true,
 						  }
 						: meme
 				)
@@ -415,35 +471,22 @@ export default function Page() {
 		)
 		try {
 			if (user && user.address && activeTab === 'all') {
-				const response = await axiosInstance.post('/api/meme/rate', {
-					meme_id: meme_id,
-					rating: rating,
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: meme_id,
+					vote_by: userDetails?._id,
 				})
-				if (response?.data?.message === 'Rating saved successfully') {
-					if (rating === 'upvote') {
-						toast.success('Upvoted successfully!')
-					} else if (rating === 'downvote') {
-						toast.success('Downvoted successfully!')
-					}
-					setAllMemeData(prev =>
-						prev
-							.map(meme =>
-								meme._id === meme_id
-									? { ...meme, vote_count: response.data.total }
-									: meme
-							)
-							.sort((a, b) => a.rank - b.rank)
-					)
+				if (response.status == 201) {
+					toast.success('Voted successfully!')
 				}
 			}
 		} catch (error: any) {
-			setAllMemeData(prev =>
+			setAllMemeDataFilter(prev =>
 				prev
 					.map(meme =>
 						meme._id === meme_id
 							? {
 									...meme,
-									vote_count: meme.vote_count + (rating === 'upvote' ? -1 : 1),
+									vote_count: meme.vote_count - 1,
 							  }
 							: meme
 					)
@@ -455,7 +498,7 @@ export default function Page() {
 	}
 
 	const addMeme = (meme: Meme) => {
-		setMemes(prevMemes => [...prevMemes, meme])
+		setDisplayedMeme(prevMemes => [...prevMemes, meme])
 
 		if (userDetails) {
 			setUserDetails({
@@ -560,9 +603,9 @@ export default function Page() {
 							className="bg-[#141e29] w-fit border-none shadow-xl z-50"
 						>
 							<PopoverBody className="bg-[#141e29] border-2 border-[#1783fb] rounded-md p-0">
-								<div className="flex gap-3 items-center hover:bg-[#224063] px-4 py-1">
-									<p className="text-xl text-nowrap mr-2">By Creation Time</p>
-									<div className="flex items-center gap-3">
+								<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
+									<p className="text-xl text-nowrap mr-2">By Time</p>
+									<div className="flex items-end gap-3">
 										<LiaSortAmountUpAltSolid
 											onClick={() => filterByTime('ASC')}
 											className="cursor-pointer"
@@ -570,6 +613,21 @@ export default function Page() {
 										/>
 										<LiaSortAmountDownSolid
 											onClick={() => filterByTime('DESC')}
+											className="cursor-pointer"
+											size={20}
+										/>
+									</div>
+								</div>
+								<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
+									<p className="text-xl text-nowrap mr-2">By Votes</p>
+									<div className="flex items-end gap-3">
+										<LiaSortAmountUpAltSolid
+											onClick={() => filterByVotes('ASC')}
+											className="cursor-pointer"
+											size={20}
+										/>
+										<LiaSortAmountDownSolid
+											onClick={() => filterByVotes('DESC')}
 											className="cursor-pointer"
 											size={20}
 										/>
@@ -684,14 +742,15 @@ export default function Page() {
 								setSelectedMemeIndex(index)
 								setIsMemeDetailOpen(true)
 							}}
+							bmk={bookMarks.some(get_meme => get_meme._id == meme._id)}
 							onVoteMeme={() => voteToMeme(meme._id)}
 						/>
 					))}
 
 				{!loading &&
 					activeTab === 'all' &&
-					allMemeData?.length > 0 &&
-					allMemeData.map((item, index) => (
+					allMemeDataFilter?.length > 0 &&
+					allMemeDataFilter.map((item, index) => (
 						<div key={index}>
 							<LeaderboardMemeCard
 								meme={item}
@@ -700,9 +759,8 @@ export default function Page() {
 									setSelectedMemeIndex(index)
 									setIsMemeDetailOpen(true)
 								}}
-								onUpvoteDownvote={(memeId, rating) =>
-									handleUpvoteDownvote(memeId, rating)
-								}
+								voteMeme={memeId => handleUpvoteDownvote(memeId)}
+								bmk={bookMarks.some(get_meme => get_meme._id == item._id)}
 								activeTab={activeTab}
 							/>
 						</div>
@@ -747,6 +805,8 @@ export default function Page() {
 					searchRelatedMemes={setQuery}
 					onNext={handleNext}
 					onPrev={handlePrev}
+					onVoteMeme={activeTab === 'live' ? voteToMeme : handleUpvoteDownvote}
+					bmk={bookMarks.some(get_meme => get_meme._id == selectedMeme._id)}
 				/>
 			)}
 			{isShareOpen && shareData && (

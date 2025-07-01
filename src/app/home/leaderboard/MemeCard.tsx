@@ -2,7 +2,7 @@ import { CgProfile } from 'react-icons/cg'
 import { LeaderboardMeme } from './page'
 import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { FaBookmark } from 'react-icons/fa'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Share from '@/components/Share'
 import { useMemeActions } from '../bookmark/bookmarkHelper'
 import { CiBookmark } from 'react-icons/ci'
@@ -12,31 +12,21 @@ import { LazyImage } from '@/components/LazyImage'
 export const LeaderboardMemeCard: React.FC<{
 	meme: LeaderboardMeme
 	onOpenMeme: () => void
-	onUpvoteDownvote?: (memeId: string, rating: string) => void
+	voteMeme?: (memeId: string) => void
 	activeTab?: string
-}> = ({ meme, onOpenMeme }) => {
+	bmk?: boolean
+}> = ({ meme, onOpenMeme, voteMeme, bmk }) => {
 	const [isShareOpen, setIsShareOpen] = useState(false)
-	const [isBookmarked, setIsBookmarked] = useState(false)
+	const [isBookmarked, setIsBookmarked] = useState(bmk)
 	const user = useUser()
 
 	const handleShareClose = () => {
 		setIsShareOpen(false)
 	}
 	const { handleBookmark } = useMemeActions()
-	useEffect(() => {
-		getBookmarks()
-	}, [])
 
-	const getBookmarks = () => {
-		const bookmarks = localStorage.getItem('bookmarks')
-		if (bookmarks) {
-			const bookmarksObj = JSON.parse(bookmarks)
-			if (bookmarksObj[meme._id]) {
-				setIsBookmarked(true)
-			} else {
-				setIsBookmarked(false)
-			}
-		}
+	const localVoteMeme = (memeid: string) => {
+		if (voteMeme) voteMeme(memeid)
 	}
 
 	return (
@@ -64,9 +54,12 @@ export const LeaderboardMemeCard: React.FC<{
 							className="w-full h-full cursor-pointer"
 						/>
 					</div>
-					<div className="title_wrapper flex justify-between text-lg leading-tight md:text-xl">
-						<p>{meme.name}</p>
-						{/* <p>{meme.createdAt.split("T")[0]}</p> */}
+					<div className="title_wrapper flex justify-between text-lg leading-tight md:text-xl max-w-full">
+						<p>
+							{meme.name.length > 30
+								? meme.name.slice(0, 30) + '...'
+								: meme.name}
+						</p>
 					</div>
 				</div>
 				<div className="flex flex-row md:flex-col justify-between ml-1 md:pt-8 md:pb-4">
@@ -89,11 +82,23 @@ export const LeaderboardMemeCard: React.FC<{
 							)} */}
 
 							<div className="flex flex-col items-center justify-center gap-x-2">
-								<img
-									src={'/assets/vote-logo.svg'}
-									alt="vote"
-									className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7"
-								/>
+								{meme.has_user_voted ? (
+									<img
+										src={'/assets/vote/icon1.png'}
+										alt="vote"
+										className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7"
+									/>
+								) : (
+									<img
+										src={'/assets/vote/icon2.png'}
+										alt="vote"
+										className={
+											'w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 ' +
+											(voteMeme ? 'cursor-pointer' : 'cursor-not-allowed')
+										}
+										onClick={() => localVoteMeme(meme._id)}
+									/>
+								)}
 								<span className="text-base md:text-2xl text-[#1783fb]">
 									{meme.vote_count}
 								</span>
@@ -131,8 +136,8 @@ export const LeaderboardMemeCard: React.FC<{
 										<FaBookmark
 											className="w-4 h-4 md:w-6 md:h-6 lg:w-8 lg:h-8"
 											onClick={() => {
-												handleBookmark(meme._id, meme.name, meme.image_url)
-												getBookmarks()
+												handleBookmark(meme._id)
+												setIsBookmarked(!isBookmarked)
 											}}
 										/>
 										<span className="text-lg md:text-2xl text-[#1783fb]">
@@ -144,8 +149,8 @@ export const LeaderboardMemeCard: React.FC<{
 										<CiBookmark
 											className="w-4 h-4 md:w-6 md:h-6 lg:w-8 lg:h-8"
 											onClick={() => {
-												handleBookmark(meme._id, meme.name, meme.image_url)
-												getBookmarks()
+												handleBookmark(meme._id)
+												setIsBookmarked(!isBookmarked)
 											}}
 										/>
 										<span className="text-lg md:text-2xl text-[#1783fb]">

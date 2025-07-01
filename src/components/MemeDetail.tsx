@@ -23,6 +23,8 @@ interface MemeDetailProps {
 	meme: Meme | LeaderboardMeme | undefined
 	searchRelatedMemes?: Dispatch<SetStateAction<string>>
 	tab: string
+	onVoteMeme: (memeId: string) => void
+	bmk: boolean
 }
 
 interface Category {
@@ -37,12 +39,14 @@ export default function MemeDetail({
 	meme,
 	searchRelatedMemes,
 	tab,
+	onVoteMeme,
+	bmk,
 }: MemeDetailProps) {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [relatedMemes, setRelatedMemes] = useState<Meme[]>([])
 	const user = useUser()
 	const { handleBookmark } = useMemeActions()
-	const [isBookmarked, setIsBookmarked] = useState(false)
+	const [isBookmarked, setIsBookmarked] = useState(bmk)
 
 	// Touch/swipe state
 	const [touchStart, setTouchStart] = useState<number | null>(null)
@@ -70,15 +74,20 @@ export default function MemeDetail({
 		}
 	}
 
-	const getBookmarks = () => {
-		const bookmarks = localStorage.getItem('bookmarks')
-		if (bookmarks) {
-			const bookmarksObj = JSON.parse(bookmarks)
-			if (meme && bookmarksObj[meme._id]) {
-				setIsBookmarked(true)
-			} else {
-				setIsBookmarked(false)
-			}
+	const handleVote = (memeId: string) => {
+		try {
+			onVoteMeme(memeId)
+		} catch (err) {
+			console.log(err)
+		}
+	}
+
+	const handleBookmarkClick = async (memeId: string) => {
+		try {
+			await handleBookmark(memeId)
+			setIsBookmarked(!isBookmarked)
+		} catch (err) {
+			console.log(err)
 		}
 	}
 
@@ -109,8 +118,12 @@ export default function MemeDetail({
 
 	useEffect(() => {
 		getRelatedMemes()
-		getBookmarks()
 	}, [meme])
+
+	// Sync bookmark state when bmk prop changes
+	useEffect(() => {
+		setIsBookmarked(bmk)
+	}, [bmk])
 
 	// Close dialog on Escape key press and handle arrow keys
 	useEffect(() => {
@@ -146,7 +159,7 @@ export default function MemeDetail({
 			/>
 
 			{/* Main Container */}
-			<div className="fixed inset-0 z-50 pl-16">
+			<div className="fixed inset-0 z-50 sm:pt-16 pt-0">
 				<div className="relative w-full h-full bg-transparent">
 					{/* Close Button */}
 					<button
@@ -220,13 +233,24 @@ export default function MemeDetail({
 						<div className="flex flex-wrap gap-3 mb-6">
 							{/* Vote Count */}
 							<div className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm">
-								<Image
-									src={'/assets/vote/icon2.png'}
-									width={20}
-									height={20}
-									alt="vote"
-									className="transition-all duration-300"
-								/>
+								{meme.has_user_voted ? (
+									<Image
+										src={'/assets/vote/icon1.png'}
+										width={20}
+										height={20}
+										alt="vote"
+										className="transition-all duration-300 cursor-not-allowed"
+									/>
+								) : (
+									<Image
+										src={'/assets/vote/icon2.png'}
+										width={20}
+										height={20}
+										alt="vote"
+										className="transition-all duration-300 cursor-pointer"
+										onClick={() => handleVote(meme._id)}
+									/>
+								)}
 								<span className="text-[#1783fb] font-bold text-lg">
 									{meme.vote_count}
 								</span>
@@ -247,8 +271,7 @@ export default function MemeDetail({
 							{user && user.address && (
 								<button
 									onClick={() => {
-										handleBookmark(meme._id, meme.name, meme.image_url)
-										getBookmarks()
+										handleBookmarkClick(meme._id)
 									}}
 									className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
 								>
