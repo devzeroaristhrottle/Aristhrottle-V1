@@ -175,9 +175,7 @@ export const LeaderboardMemeCard: React.FC<{
 												setIsBookmarked(!isBookmarked)
 											}}
 										/>
-										<span className="text-lg md:text-2xl text-[#1783fb]">
-											0
-										</span>
+										<span className="text-lg md:text-2xl text-[#1783fb]"></span>
 									</div>
 								) : (
 									<div className="flex flex-col items-center cursor-pointer">
@@ -188,9 +186,7 @@ export const LeaderboardMemeCard: React.FC<{
 												setIsBookmarked(!isBookmarked)
 											}}
 										/>
-										<span className="text-lg md:text-2xl text-[#1783fb]">
-											0
-										</span>
+										<span className="text-lg md:text-2xl text-[#1783fb]"></span>
 									</div>
 								)}
 							</div>
