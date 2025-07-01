@@ -11,7 +11,7 @@ export interface User {
 	majorityVotes: number
 	majorityUploads: number
 	totalVotesReceived: number
-	mintedCoins: number
+	mintedCoins: bigint
 	bio?: string
 	profile_pic?: string
 	generations: number

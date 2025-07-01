@@ -13,6 +13,7 @@ import Image from 'next/image'
 import { LazyImage } from './LazyImage'
 import { useRouter } from 'next/navigation'
 import { Context } from '@/context/contextProvider'
+import { ethers } from 'ethers'
 
 export interface MemeCardI {
 	index: number
@@ -72,11 +73,12 @@ export function MemeCard({
 			}, 2000)
 			setEyeOpen(true)
 
-			if (userDetails)
+			if (userDetails) {
 				setUserDetails({
 					...userDetails,
-					mintedCoins: userDetails.mintedCoins + 100000000000000000,
+					mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(1e17),
 				})
+			}
 		} catch (error) {
 			console.log(error)
 			setVoteCount(voteCount - 1)

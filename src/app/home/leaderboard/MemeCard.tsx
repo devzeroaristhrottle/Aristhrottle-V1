@@ -10,6 +10,7 @@ import { useUser } from '@account-kit/react'
 import { LazyImage } from '@/components/LazyImage'
 import { useRouter } from 'next/navigation'
 import { Context } from '@/context/contextProvider'
+import { ethers } from 'ethers'
 
 export const LeaderboardMemeCard: React.FC<{
 	meme: LeaderboardMeme
@@ -38,11 +39,12 @@ export const LeaderboardMemeCard: React.FC<{
 			setTimeout(() => {
 				setShowPointsAnimation(false)
 			}, 2000)
-			if (userDetails)
+			if (userDetails) {
 				setUserDetails({
 					...userDetails,
-					mintedCoins: userDetails.mintedCoins + 100000000000000000,
+					mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(1e17),
 				})
+			}
 		} catch (err) {
 			console.log(err)
 		}
