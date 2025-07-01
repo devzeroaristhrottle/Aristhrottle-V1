@@ -63,9 +63,7 @@ export const LeaderboardMemeCard: React.FC<{
 					</div>
 				</div>
 				<div className="flex flex-row md:flex-col justify-between ml-1 md:pt-8 md:pb-4">
-					<p className="text-[#1783fb] text-lg md:text-xl font-bold">
-						{meme.in_percentile.toLocaleString()}%
-					</p>
+					<p className="text-[#1783fb] text-lg md:text-xl font-bold"></p>
 					<div className="flex flex-row justify-center md:justify-normal md:flex-col items-center md:items-start gap-y-0 md:gap-y-5 gap-x-4 md:gap-x-0">
 						<div className="flex flex-row md:flex-col items-start gap-x-0.5 md:gap-y-0 lg:gap-y-2">
 							{/* {activeTab === 'all' && (

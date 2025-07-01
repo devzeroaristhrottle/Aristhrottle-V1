@@ -410,7 +410,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 							value={newTagInput}
 							onChange={e => setNewTagInput(e.target.value)}
 							onKeyDown={handleNewTag}
-							placeholder="Max 5 tags"
+							placeholder="Max 5 tags (Press enter to create new tag)"
 							className="w-full rounded-md outline-none px-3 py-2 lg:py-3 text-white text-lg border-2 border-[#1583fb] bg-transparent"
 							disabled={selectedTags.length >= 5}
 						/>
