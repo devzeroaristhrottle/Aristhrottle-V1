@@ -239,6 +239,10 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 		}
 		console.log(selectedTags)
 		if (generatedImage) {
+			if(selectedTags.length < 1){
+				toast.error("Please enter atleast one tag")
+				return;
+			}
 			// Show meme immediately (optimistic update)
 			const optimisticMeme = handleUploadMeme(generatedImage)
 
