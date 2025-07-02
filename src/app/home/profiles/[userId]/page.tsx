@@ -20,6 +20,10 @@ import { ethers } from 'ethers'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { FaUsers } from 'react-icons/fa'
+import { LeaderboardMemeCard } from '../../leaderboard/MemeCard'
+import { useAuthModal, useUser } from '@account-kit/react'
+import MemeDetail from '@/components/MemeDetail'
+import Share from '@/components/Share'
 
 interface UserProfileData {
 	_id: string
@@ -52,8 +56,15 @@ export default function UserProfilePage() {
 	const [userProfile, setUserProfile] = useState<UserProfileData | null>(null)
 	const [isFollowing, setIsFollowing] = useState<boolean>(false)
 	const [followLoading, setFollowLoading] = useState<boolean>(false)
+	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | null>(null)
+	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(-1)
+	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
+	const [isShareOpen, setIsShareOpen] = useState(false)
+	const [shareData, setShareData] = useState<{ id: string; imageUrl: string } | null>(null)
 
-	const { userDetails } = useContext(Context)
+	const { userDetails, setUserDetails } = useContext(Context)
+	const { openAuthModal } = useAuthModal()
+	const user = useUser()
 
 	// Tab-based filtering (primary)
 	const tabFilteredMemes = useMemo(() => {
@@ -126,10 +137,8 @@ export default function UserProfilePage() {
 
 	const getUserMemes = async () => {
 		try {
-			setLoading(true)
-			const offsetI = offset * (page - 1)
 			const response = await axiosInstance.get(
-				`/api/meme?created_by=${userId}&offset=${offsetI}`
+				`/api/meme?created_by=${userId}&offset=${offset}`
 			)
 
 			if (response.data.memes) {
@@ -191,6 +200,45 @@ export default function UserProfilePage() {
 		}
 	}
 
+	const handleCloseShare = () => {
+		setIsShareOpen(false)
+		setShareData(null)
+	}
+
+	const voteToMeme = async (vote_to: string) => {
+		if (!userDetails && openAuthModal) openAuthModal()
+		try {
+			if (user && user.address) {
+				if (userDetails) {
+					setUserDetails({
+						...userDetails,
+						votes: userDetails.votes + 1,
+					})
+				}
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: vote_to,
+					vote_by: userDetails?._id,
+				})
+				if (response.status === 201) {
+					toast.success('Vote casted successfully!')
+					getUserMemes()
+				}
+			}
+		} catch (error: any) {
+			if (userDetails) {
+				setUserDetails({
+					...userDetails,
+					votes: userDetails.votes,
+				})
+			}
+			if (error.response?.data?.message === "You cannot vote on your own meme") {
+				toast.error(error.response.data.message);
+			} else {
+				toast.error("Already voted to this meme");
+			}
+		}
+	}
+
 	useEffect(() => {
 		if (userId) {
 			getUserProfile()
@@ -199,7 +247,7 @@ export default function UserProfilePage() {
 			getUserMemes()
 			checkFollowStatus()
 		}
-	}, [userId, userDetails])
+	}, [userId])
 
 	useEffect(() => {
 		setMemes([])
@@ -444,26 +492,18 @@ export default function UserProfilePage() {
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6">
 					{filteredMemes.map((item, index) => (
-						<div key={index} className="px-2 md:px-3 lg:px-4">
-							<div className="flex justify-between items-center mb-1">
-								{item.rank && (
-									<p className="text-[#29e0ca] font-medium">#{item.rank}</p>
-								)}
-							</div>
-							<div className="flex gap-4">
-								<div className="relative flex-grow">
-									<img
-										src={item.image_url}
-										alt="Content"
-										className="w-full aspect-square object-cover border-2 border-white"
-									/>
-									<div className="flex justify-between text-base lg:text-2xl mt-1">
-										<p>{item.name}</p>
-										<p>{item.createdAt.split('T')[0]}</p>
-									</div>
-								</div>
-							</div>
-						</div>
+						<LeaderboardMemeCard 
+							key={item._id}
+							meme={item}
+							onOpenMeme={() => {
+								setSelectedMeme(item)
+								setSelectedMemeIndex(index)
+								setIsMemeDetailOpen(true)
+							}}
+							voteMeme={voteToMeme}
+							activeTab={activeTab}
+							bmk={false}
+						/>
 					))}
 
 					<div className="col-span-full">
@@ -477,33 +517,44 @@ export default function UserProfilePage() {
 						)}
 					</div>
 
-					{filteredMemes.length > 0 && (
-						<div className="col-span-full">
-							<PaginationRoot
-								count={Math.max(
-									1,
-									Math.ceil(tabFilteredMemes.length / pageSize)
-								)}
-								pageSize={pageSize}
-								defaultPage={1}
-								variant="solid"
-								className="mx-auto mb-10"
-								page={page}
-								onPageChange={e => {
-									setMemes([])
-									setPage(e.page)
-								}}
-							>
-								<HStack className="justify-center mb-5">
-									<PaginationPrevTrigger />
-									<PaginationItems />
-									<PaginationNextTrigger />
-								</HStack>
-							</PaginationRoot>
-						</div>
-					)}
 				</div>
 			</div>
+
+			{isMemeDetailOpen && selectedMeme && (
+				<MemeDetail
+					onClose={() => {
+						setIsMemeDetailOpen(false)
+						setSelectedMeme(null)
+						setSelectedMemeIndex(-1)
+					}}
+					onNext={() => {
+						if (selectedMemeIndex < filteredMemes.length - 1) {
+							const nextIndex = selectedMemeIndex + 1
+							setSelectedMemeIndex(nextIndex)
+							setSelectedMeme(filteredMemes[nextIndex])
+						}
+					}}
+					onPrev={() => {
+						if (selectedMemeIndex > 0) {
+							const prevIndex = selectedMemeIndex - 1
+							setSelectedMemeIndex(prevIndex)
+							setSelectedMeme(filteredMemes[prevIndex])
+						}
+					}}
+					meme={selectedMeme}
+					tab={activeTab}
+					onVoteMeme={voteToMeme}
+					bmk={false}
+				/>
+			)}
+
+			{isShareOpen && shareData && (
+				<Share
+					id={shareData.id}
+					imageUrl={shareData.imageUrl}
+					onClose={handleCloseShare}
+				/>
+			)}
 		</div>
 	)
 } 
