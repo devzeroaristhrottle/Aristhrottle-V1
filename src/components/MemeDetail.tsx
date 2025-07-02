@@ -360,7 +360,9 @@ export default function MemeDetail({
 											>
 												{tab === 'live'
 													? tag.name
-													: JSON.parse(JSON.stringify(tag))}
+													: typeof tag === 'string' 
+														? tag 
+														: tag.name}
 											</span>
 										))}
 									</div>
