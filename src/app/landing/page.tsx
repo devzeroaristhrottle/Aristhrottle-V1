@@ -828,6 +828,7 @@ export default function Page() {
 					onPrev={handlePrev}
 					onVoteMeme={activeTab === 'live' ? voteToMeme : handleUpvoteDownvote}
 					bmk={bookMarks.some(get_meme => get_meme._id == selectedMeme._id)}
+					onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
 				/>
 			)}
 			{isShareOpen && shareData && (
