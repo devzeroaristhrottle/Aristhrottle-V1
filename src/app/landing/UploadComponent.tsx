@@ -89,15 +89,24 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 		if (
 			(e.key === 'Enter' || e.key === 'Tab') &&
 			newTagInput.trim() &&
-			selectedTags.length < 5 &&
-			filteredTags.length == 0
+			selectedTags.length < 5
 		) {
+			// Check if the exact tag already exists in selected tags
 			if (!selectedTags.some(tag => tag.name === newTagInput.trim())) {
-				setSelectedTags(prev => [
-					...prev,
-					{ name: newTagInput.trim(), isNew: true, _id: undefined },
-				])
-				setNewTagInput('')
+				// Check if the exact tag exists in filtered tags
+				const existingTag = filteredTags.find(tag => tag.name === newTagInput.trim());
+				if (existingTag) {
+					// If it exists in filtered tags, use that
+					handleTagSelect(existingTag.name, false, existingTag._id || '');
+				} else {
+					// If it doesn't exist, create new tag
+					setSelectedTags(prev => [
+						...prev,
+						{ name: newTagInput.trim(), isNew: true, _id: undefined },
+					]);
+				}
+				setNewTagInput('');
+				setFilteredTags([]);
 			}
 		}
 	}
