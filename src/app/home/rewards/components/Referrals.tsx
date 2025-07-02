@@ -51,7 +51,7 @@ const Referrals = () => {
 				if (userDetails && referrals)
 					setUserDetails({
 						...userDetails,
-						mintedCoins: userDetails?.mintedCoins + referrals.points,
+						mintedCoins: BigInt(userDetails?.mintedCoins) + BigInt(referrals.points * 1e18),
 					})
 			}
 		} catch (error) {
