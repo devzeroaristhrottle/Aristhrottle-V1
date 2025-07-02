@@ -1,17 +1,10 @@
 'use client'
 
 import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { HStack } from '@chakra-ui/react'
 import { FilterPopover } from '@/components/FilterPopover'
 import { SortPopover } from '@/components/SortPopover'
 import { Context } from '@/context/contextProvider'
 import { useFilterAndSort } from '@/hooks/useFilterAndSort'
-import {
-	PaginationItems,
-	PaginationNextTrigger,
-	PaginationPrevTrigger,
-	PaginationRoot,
-} from '@/components/ui/pagination'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import axiosInstance from '@/utils/axiosInstance'
 import { TabButton } from '@/components/TabButton'
@@ -104,7 +97,6 @@ export default function UserProfilePage() {
 	} = useFilterAndSort(tabFilteredMemes, activeTab)
 
 	const offset = 30
-	const pageSize = 30
 
 	const getUserProfile = async () => {
 		try {

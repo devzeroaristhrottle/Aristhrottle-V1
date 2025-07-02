@@ -10,7 +10,6 @@ import { LazyImage } from '@/components/LazyImage'
 import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { CgProfile } from 'react-icons/cg'
 import Share from '@/components/Share'
-import MemeDetail from '@/components/MemeDetail'
 import { useRouter } from 'next/navigation'
 
 export default function Page() {

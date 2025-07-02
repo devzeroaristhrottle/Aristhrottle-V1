@@ -95,7 +95,6 @@ export default function Page() {
 	} = useFilterAndSort(tabFilteredMemes, activeTab)
 
 	const offset = 30
-	const pageSize = 30
 
 	const getMyMemes = async () => {
 		try {
