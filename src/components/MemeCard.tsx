@@ -13,7 +13,6 @@ import Image from 'next/image'
 import { LazyImage } from './LazyImage'
 import { useRouter } from 'next/navigation'
 import { Context } from '@/context/contextProvider'
-import { ethers } from 'ethers'
 
 export interface MemeCardI {
 	index: number

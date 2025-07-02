@@ -117,6 +117,45 @@ const Votes = () => {
 				</div>
 			</div>
 			<div className="points_rules_wrapper flex flex-col gap-y-8 md:gap-y-12 md:mt-8 md:order-2 order-1">
+				<div className="points flex flex-col gap-2 md:gap-5 items-center mx-20 md:mx-0 border-2 border-[#1783FB] rounded-lg p-2 md:p-5 mt-8 md:mt-10">
+					<span className="text-2xl md:text-4xl">Points</span>
+					<p className="text-[#29e0ca] text-3xl md:text-4xl">
+						{votesData?.points == 0 ? 0 : votesData?.points.toFixed(1) ?? 0}{' '}
+						$eART
+					</p>
+					{votesData?.points && (
+						<button
+							className="bg-[#040f2b] border-2 border-[#1783FB] rounded-lg text-xl md:text-3xl px-4 md:px-8 md:py-1 hover:bg-blue-500/20 bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"
+							onClick={() => {
+								try {
+									const uoCallData = encodeFunctionData({
+										abi: EArtTokenABI,
+										functionName: 'claimAllMemeVoteRewards',
+										args: [votesData?.unClaimedMemeIds],
+									})
+
+									if (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS) {
+										sendUserOperation({
+											uo: {
+												target: `0x${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS.slice(
+													2,
+													process.env.NEXT_PUBLIC_CONTRACT_ADDRESS.length
+												)}`,
+												data: uoCallData,
+											},
+										})
+									}
+								} catch (e) {
+									console.error('Error claiming rewards', e)
+									toast.error('Failed to claim rewards. Please try again.')
+								}
+							}}
+							disabled={isSendingUserOperation}
+						>
+							{isSendingUserOperation ? 'Sending...' : 'Claim'}
+						</button>
+					)}
+				</div>
 				<div className="rules flex flex-col md:gap-3 items-center justify-center border-2 border-[#1783FB] rounded-lg p-3 md:p-5 mx-8 md:mx-0">
 					<h4 className="text-2xl md:text-4xl">Rules</h4>
 					<p className="text-2xl md:text-3xl">1 Vote Cast</p>

@@ -33,7 +33,6 @@ export default function FollowersPage() {
 	)
 	const [followingUsers, setFollowingUsers] = useState<Set<string>>(new Set())
 	const [actionLoading, setActionLoading] = useState<Set<string>>(new Set())
-	const [targetUser, setTargetUser] = useState<FollowUser | null>(null)
 
 	const { userDetails } = useContext(Context)
 	const searchParams = useSearchParams()
@@ -73,17 +72,6 @@ export default function FollowersPage() {
 		}
 	}
 
-	const getTargetUserInfo = async () => {
-		try {
-			if (!viewingUserId) return
-			const response = await axiosInstance.get(`/api/user/${viewingUserId}`)
-			if (response.data.user) {
-				setTargetUser(response.data.user)
-			}
-		} catch (error) {
-			console.log('Error fetching target user info:', error)
-		}
-	}
 
 	const checkFollowingStatus = async () => {
 		try {
@@ -138,9 +126,6 @@ export default function FollowersPage() {
 		setUsers([])
 		setPage(1)
 		getUsers()
-		if (viewingUserId) {
-			getTargetUserInfo()
-		}
 	}, [userDetails, activeTab, viewingUserId])
 
 	useEffect(() => {
