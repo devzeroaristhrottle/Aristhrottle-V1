@@ -256,7 +256,7 @@ export default function Page() {
 				</div>
 			</div>
 
-			<div className="flex items-center text-center gap-x-10 border-2 border-[#1783fb] rounded-10px px-3 py-2 mt-5 md:mt-0 mb-8 w-fit text-nowrap mx-auto">
+			<div className="flex items-center text-center gap-x-10 border-2 border-white rounded-10px px-3 py-2 mt-5 md:mt-0 mb-8 w-fit text-nowrap mx-auto">
 				<TabButton
 					classname="!px-8 md:!px-14"
 					isActive={activeTab === 'daily'}

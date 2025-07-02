@@ -1,5 +1,5 @@
 import { Meme } from '@/app/home/page'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { CgProfile } from 'react-icons/cg'
 import { Logo } from './Logo'
 import { FaRegShareFromSquare } from 'react-icons/fa6'
@@ -11,6 +11,8 @@ import { FaBookmark } from 'react-icons/fa'
 import { useUser, useAuthModal } from '@account-kit/react'
 import Image from 'next/image'
 import { LazyImage } from './LazyImage'
+import { useRouter } from 'next/navigation'
+import { Context } from '@/context/contextProvider'
 
 export interface MemeCardI {
 	index: number
@@ -41,6 +43,8 @@ export function MemeCard({
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const [eyeOpen, setEyeOpen] = useState<boolean>(meme.has_user_voted)
 	const user = useUser()
+	const router = useRouter()
+	const { userDetails, setUserDetails } = useContext(Context)
 
 	useEffect(() => {
 		setBookmarkCount(meme.bookmarks.length)
@@ -67,6 +71,13 @@ export function MemeCard({
 				setShowPointsAnimation(false)
 			}, 2000)
 			setEyeOpen(true)
+
+			if (userDetails) {
+				setUserDetails({
+					...userDetails,
+					mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(1e17),
+				})
+			}
 		} catch (error) {
 			console.log(error)
 			setVoteCount(voteCount - 1)
@@ -79,7 +90,10 @@ export function MemeCard({
 
 	return (
 		<div key={index} className="flex flex-col  lg:mx-auto cursor-s">
-			<div className="flex items-start gap-x-1 md:gap-x-2 mb-1 md:mb-2">
+			<div
+				className="flex items-start gap-x-1 md:gap-x-2 mb-1 md:mb-2 cursor-pointer"
+				onClick={() => router.push(`/home/profiles/${meme.created_by._id}`)}
+			>
 				<CgProfile className="md:w-7 md:h-7" />
 				<span className="text-[#29e0ca] text-base md:text-2xl">
 					{meme.created_by?.username}
@@ -169,7 +183,7 @@ export function MemeCard({
 									}}
 								/>
 								{meme.bookmarks && !activeTab?.includes('live') && (
-									<p className="text-[#1783fb]">{bookmarkCount}</p>
+									<p className="text-[#1783fb]"></p>
 								)}
 							</div>
 						</Tooltip>

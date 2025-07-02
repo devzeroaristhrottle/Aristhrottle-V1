@@ -25,6 +25,7 @@ interface MemeDetailProps {
 	tab: string
 	onVoteMeme: (memeId: string) => void
 	bmk: boolean
+	onRelatedMemeClick: (meme: Meme) => void
 }
 
 interface Category {
@@ -41,6 +42,7 @@ export default function MemeDetail({
 	tab,
 	onVoteMeme,
 	bmk,
+	onRelatedMemeClick
 }: MemeDetailProps) {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [relatedMemes, setRelatedMemes] = useState<Meme[]>([])
@@ -360,6 +362,7 @@ export default function MemeDetail({
 																	searchRelatedMemes(item.categories[0].name)
 																	onClose()
 																}
+																onRelatedMemeClick(item)
 															}}
 															className="group relative aspect-square border-2 border-white/20 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-white/40 hover:scale-105"
 														>

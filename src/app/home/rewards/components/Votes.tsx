@@ -53,7 +53,7 @@ const Votes = () => {
 			if (userDetails && votesData && votesData.unClaimedReward)
 				setUserDetails({
 					...userDetails,
-					mintedCoins: userDetails?.mintedCoins + votesData.unClaimedReward,
+					mintedCoins: BigInt(userDetails?.mintedCoins) + BigInt(votesData.unClaimedReward),
 				})
 		},
 		onError: () => {
