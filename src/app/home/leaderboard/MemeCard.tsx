@@ -10,7 +10,6 @@ import { useUser } from '@account-kit/react'
 import { LazyImage } from '@/components/LazyImage'
 import { useRouter } from 'next/navigation'
 import { Context } from '@/context/contextProvider'
-import { ethers } from 'ethers'
 
 export const LeaderboardMemeCard: React.FC<{
 	meme: LeaderboardMeme

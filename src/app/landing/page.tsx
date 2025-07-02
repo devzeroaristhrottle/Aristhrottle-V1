@@ -243,6 +243,14 @@ export default function Page() {
 		// Note: No loading state changes here
 	}
 
+	const filterLiveMemes = (memes: any[]) => {
+		const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+		return memes.filter(meme => {
+			const createdAt = new Date(meme.createdAt);
+			return createdAt >= twentyFourHoursAgo;
+		});
+	};
+
 	const getMemesByName = async () => {
 		try {
 			setLoading(true)
@@ -254,17 +262,30 @@ export default function Page() {
 
 				const response = await axiosInstance.get(`/api/meme?name=${q}`)
 				if (response.data.memes) {
-					setFilterMemes([...response.data.memes])
-					setAllMemeDataFilter([...response.data.memes])
+					if (activeTab === 'live') {
+						const filteredMemes = filterLiveMemes(response.data.memes);
+						setFilterMemes(filteredMemes);
+					} else {
+						setAllMemeDataFilter([...response.data.memes])
+					}
 				}
 			} else {
-				setAllMemeDataFilter([...allMemeData])
-			}
-			if (query.length === 0 && memes.length > 0) {
-				setFilterMemes([...memes])
+				if (activeTab === 'live') {
+					const filteredMemes = filterLiveMemes(memes);
+					setFilterMemes(filteredMemes);
+				} else {
+					setAllMemeDataFilter([...allMemeData])
+				}
 			}
 		} catch (error) {
 			console.log(error)
+			// Reset to original data on error
+			if (activeTab === 'live') {
+				const filteredMemes = filterLiveMemes(memes);
+				setFilterMemes(filteredMemes);
+			} else {
+				setAllMemeDataFilter([...allMemeData])
+			}
 		} finally {
 			setLoading(false)
 		}
