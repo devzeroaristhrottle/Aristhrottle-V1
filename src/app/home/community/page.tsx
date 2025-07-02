@@ -158,7 +158,7 @@ export default function FollowersPage() {
 		<div className="md:max-w-7xl md:mx-auto mx-4">
 			{/* Tab Section */}
 			<div className="flex items-center justify-center mb-8">
-				<div className="flex items-center text-center gap-x-10 border-2 border-[#1783fb] rounded-10px px-3 py-2 w-fit text-nowrap">
+				<div className="flex items-center text-center gap-x-10 border-2 border-white rounded-10px px-3 py-2 w-fit text-nowrap">
 					<TabButton
 						classname="!px-8 md:!px-14"
 						isActive={activeTab === 'followers'}
