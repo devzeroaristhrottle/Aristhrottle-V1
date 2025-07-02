@@ -10,6 +10,7 @@ import { useUser } from '@account-kit/react'
 import { LazyImage } from '@/components/LazyImage'
 import { useRouter } from 'next/navigation'
 import { Context } from '@/context/contextProvider'
+import { Logo } from '@/components/Logo'
 
 export const LeaderboardMemeCard: React.FC<{
 	meme: LeaderboardMeme
@@ -109,21 +110,19 @@ export const LeaderboardMemeCard: React.FC<{
 									<img
 										src={'/assets/vote/icon1.png'}
 										alt="vote"
-										className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7"
+										className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 "
 									/>
 								) : (
-									<img
-										src={'/assets/vote/icon2.png'}
-										alt="vote"
-										className={
+									<Logo
+										classNames={
 											'w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 ' +
 											(voteMeme
 												? meme.created_by._id === userDetails?._id
-													? 'cursor-not-allowed'
-													: 'cursor-pointer'
-												: 'cursor-not-allowed')
+													? '!cursor-not-allowed'
+													: '!cursor-pointer'
+												: '!cursor-not-allowed')
 										}
-										onClick={() => localVoteMeme(meme._id)}
+										onClick={() => (meme.created_by._id != userDetails?._id) && localVoteMeme(meme._id)}
 									/>
 								)}
 								<span className="text-base md:text-2xl text-[#1783fb]">
