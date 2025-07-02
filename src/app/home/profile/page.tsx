@@ -1,19 +1,12 @@
 'use client'
 
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { HStack } from '@chakra-ui/react'
 import { MdEdit } from 'react-icons/md'
 import { FilterPopover } from '@/components/FilterPopover'
 import { SortPopover } from '@/components/SortPopover'
 import EditProfile from '@/components/EditProfile'
 import { Context } from '@/context/contextProvider'
 import { useFilterAndSort } from '@/hooks/useFilterAndSort'
-import {
-	PaginationItems,
-	PaginationNextTrigger,
-	PaginationPrevTrigger,
-	PaginationRoot,
-} from '@/components/ui/pagination'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import axiosInstance from '@/utils/axiosInstance'
 import { TabButton } from '@/components/TabButton'
@@ -359,32 +352,6 @@ export default function Page() {
 							</p>
 						)}
 					</div>
-
-					{filteredMemes.length > 0 && (
-						<div className="col-span-full">
-							<PaginationRoot
-								count={Math.max(
-									1,
-									Math.ceil(tabFilteredMemes.length / pageSize)
-								)}
-								pageSize={pageSize}
-								defaultPage={1}
-								variant="solid"
-								className="mx-auto mb-10"
-								page={page}
-								onPageChange={e => {
-									setMemes([])
-									setPage(e.page)
-								}}
-							>
-								<HStack className="justify-center mb-5">
-									<PaginationPrevTrigger />
-									<PaginationItems />
-									<PaginationNextTrigger />
-								</HStack>
-							</PaginationRoot>
-						</div>
-					)}
 				</div>
 			</div>
 

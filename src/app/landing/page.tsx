@@ -85,6 +85,7 @@ export default function Page() {
 		imageUrl: string
 	} | null>(null)
 	const [welcOpen, setWelcOpen] = useState<boolean>(false)
+	const [shownCount, setShownCount] = useState<number>(0);
 	/* eslint-disable @typescript-eslint/no-unused-vars */
 	const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
 		useContext(Context)
@@ -261,6 +262,8 @@ export default function Page() {
 						: query
 
 				const response = await axiosInstance.get(`/api/meme?name=${q}`)
+				
+				setShownCount(response.data.memesCount)
 				if (response.data.memes) {
 					if (activeTab === 'live') {
 						const filteredMemes = filterLiveMemes(response.data.memes);
@@ -276,6 +279,7 @@ export default function Page() {
 				} else {
 					setAllMemeDataFilter([...allMemeData])
 				}
+				setShownCount(allMemeCount)
 			}
 		} catch (error) {
 			console.log(error)
@@ -453,12 +457,14 @@ export default function Page() {
 				setAllMemeData(response.data.memes)
 				setAllMemeDataFilter(response.data.memes)
 				setAllMemeCount(response.data.memesCount)
+				setShownCount(response.data.memesCount)
 			}
 		} catch (error) {
 			console.log(error)
 			setAllMemeData([])
 			setAllMemeDataFilter([])
 			setAllMemeCount(0)
+			setShownCount(0);
 		} finally {
 			setLoading(false)
 		}
@@ -668,7 +674,7 @@ export default function Page() {
 						onClick={() => handleTabChange('live')}
 					/>
 					<TabButton
-						label={`All${activeTab.includes('all') ? ` ${allMemeCount}` : ''}`}
+						label={`All${activeTab.includes('all') ? ` ${shownCount}` : ''}`}
 						classname="!px-2 md:!px-5 rounded-full"
 						isActive={activeTab === 'all'}
 						onClick={() => handleTabChange('all')}
