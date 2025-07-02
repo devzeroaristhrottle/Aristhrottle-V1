@@ -55,7 +55,7 @@ const Uploads = () => {
 			if (userDetails && uploadData && uploadData.unClaimedReward)
 				setUserDetails({
 					...userDetails,
-					mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(uploadData.unClaimedReward),
+					mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(uploadData.unClaimedReward * 1e18),
 				})
 		},
 		onError: () => {

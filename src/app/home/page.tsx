@@ -662,6 +662,7 @@ export default function Page() {
           tab={activeTab}
           onVoteMeme={voteToMeme}
 		  bmk={false}
+      onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
         />
       )}
       {isShareOpen && shareData && (
