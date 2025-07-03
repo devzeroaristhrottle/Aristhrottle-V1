@@ -51,7 +51,7 @@ const Referrals = () => {
 				if (userDetails && referrals)
 					setUserDetails({
 						...userDetails,
-						mintedCoins: userDetails?.mintedCoins + referrals.points,
+						mintedCoins: BigInt(userDetails?.mintedCoins) + BigInt(referrals.points * 1e18),
 					})
 			}
 		} catch (error) {
@@ -112,7 +112,7 @@ const Referrals = () => {
 			</div>
 			<div className="points_rules_wrapper flex flex-col gap-y-8 md:gap-y-6 md:mt-8 md:order-2 order-1">
 				<div className="flex gap-x-4 justify-between md:block mt-8">
-					<div className="points w-1/2 md:w-full flex flex-col gap-2 md:gap-5 items-center border-2 border-[#1783FB] rounded-lg p-2 md:p-5 md:mt-10">
+					<div className="points w-1/2 md:w-full hidden flex-col gap-2 md:gap-5 items-center border-2 border-[#1783FB] rounded-lg p-2 md:p-5 md:mt-10">
 						<span className="text-2xl md:text-4xl">Points</span>
 						<h2 className="text-[#29e0ca] text-3xl md:text-4xl">
 							{referrals?.points === 0 ? 0 : referrals?.points.toFixed(1) ?? 0}{' '}

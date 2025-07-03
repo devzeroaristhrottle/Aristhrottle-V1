@@ -85,6 +85,7 @@ export default function Page() {
 		imageUrl: string
 	} | null>(null)
 	const [welcOpen, setWelcOpen] = useState<boolean>(false)
+	const [shownCount, setShownCount] = useState<number>(0);
 	/* eslint-disable @typescript-eslint/no-unused-vars */
 	const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
 		useContext(Context)
@@ -139,11 +140,31 @@ export default function Page() {
 		setSelectedMemeIndex(-1)
 	}
 
+	const readSearch = () => {
+		// Check localStorage for search tags and active tab
+		const storedTags = localStorage.getItem('landingSearchTags')
+		const storedTab = localStorage.getItem('landingActiveTab')
+		
+		if (storedTags) {
+			setQuery(storedTags)
+			// Clear the localStorage after using it
+			localStorage.removeItem('landingSearchTags')
+		}
+		
+		if (storedTab === 'all') {
+			setActiveTab('all')
+			// Clear the localStorage after using it
+			localStorage.removeItem('landingActiveTab')
+		}
+	}
+
 	useEffect(() => {
 		axiosInstance.get('/api/new-ip').then(response => {
 			if (response.data.message) setWelcOpen(true)
 		})
 		fetchLeaderBoard()
+
+		setTimeout(() => readSearch(), 1000)
 	}, [])
 
 	const handleNext = () => {
@@ -243,6 +264,17 @@ export default function Page() {
 		// Note: No loading state changes here
 	}
 
+
+	const filterLiveMemes = (memes: any[]) => {
+		const now = new Date()
+		now.setUTCHours(0, 0, 0, 0)
+		const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+		return memes.filter(meme => {
+			const createdAt = new Date(meme.createdAt);
+			return createdAt >= twentyFourHoursAgo;
+		});
+	};
+
 	const getMemesByName = async () => {
 		try {
 			setLoading(true)
@@ -253,18 +285,34 @@ export default function Page() {
 						: query
 
 				const response = await axiosInstance.get(`/api/meme?name=${q}`)
+				
+				setShownCount(response.data.memesCount)
 				if (response.data.memes) {
-					setFilterMemes([...response.data.memes])
-					setAllMemeDataFilter([...response.data.memes])
+					if (activeTab === 'live') {
+						const filteredMemes = filterLiveMemes(response.data.memes);
+						setFilterMemes(filteredMemes);
+					} else {
+						setAllMemeDataFilter([...response.data.memes])
+					}
 				}
 			} else {
-				setAllMemeDataFilter([...allMemeData])
-			}
-			if (query.length === 0 && memes.length > 0) {
-				setFilterMemes([...memes])
+				if (activeTab === 'live') {
+					const filteredMemes = filterLiveMemes(memes);
+					setFilterMemes(filteredMemes);
+				} else {
+					setAllMemeDataFilter([...allMemeData])
+				}
+				setShownCount(allMemeCount)
 			}
 		} catch (error) {
 			console.log(error)
+			// Reset to original data on error
+			if (activeTab === 'live') {
+				const filteredMemes = filterLiveMemes(memes);
+				setFilterMemes(filteredMemes);
+			} else {
+				setAllMemeDataFilter([...allMemeData])
+			}
 		} finally {
 			setLoading(false)
 		}
@@ -432,12 +480,14 @@ export default function Page() {
 				setAllMemeData(response.data.memes)
 				setAllMemeDataFilter(response.data.memes)
 				setAllMemeCount(response.data.memesCount)
+				setShownCount(response.data.memesCount)
 			}
 		} catch (error) {
 			console.log(error)
 			setAllMemeData([])
 			setAllMemeDataFilter([])
 			setAllMemeCount(0)
+			setShownCount(0);
 		} finally {
 			setLoading(false)
 		}
@@ -543,7 +593,7 @@ export default function Page() {
 		>
 			<div className="w-full overflow-hidden" style={{ width: 'calc(80vw)' }}>
 				<div className="animate-marquee whitespace-nowrap">
-					<span className="text-xs sm:text-xl md:text-2xl font-semibold text-white inline-flex gap-1 sm:gap-2">
+					<span className="text-lg sm:text-xl md:text-2xl font-semibold text-white inline-flex gap-1 sm:gap-2">
 						<span>🚀 Welcome to </span>
 						<span className="text-[#28e0ca]">Aristhrottle!</span>
 						<span>🚀 Mint $eART today for </span>
@@ -647,7 +697,7 @@ export default function Page() {
 						onClick={() => handleTabChange('live')}
 					/>
 					<TabButton
-						label={`All${activeTab.includes('all') ? ` ${allMemeCount}` : ''}`}
+						label={`All${activeTab.includes('all') ? ` ${shownCount}` : ''}`}
 						classname="!px-2 md:!px-5 rounded-full"
 						isActive={activeTab === 'all'}
 						onClick={() => handleTabChange('all')}
@@ -807,6 +857,7 @@ export default function Page() {
 					onPrev={handlePrev}
 					onVoteMeme={activeTab === 'live' ? voteToMeme : handleUpvoteDownvote}
 					bmk={bookMarks.some(get_meme => get_meme._id == selectedMeme._id)}
+					onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
 				/>
 			)}
 			{isShareOpen && shareData && (

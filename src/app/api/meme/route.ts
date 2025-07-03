@@ -101,9 +101,19 @@ async function handleGetRequest(req: NextRequest) {
 
 			const memes = await Vote.find()
 				.where({ vote_by: vote_by })
-				.skip(start)
-				.limit(defaultOffset)
-				.populate('vote_to')
+				.populate({
+					path: 'vote_to',
+					populate: [
+						{
+							path: 'tags',
+							model: 'Tags'
+						},
+						{
+							path: 'created_by',
+							model: 'User'
+						}
+					]
+				})
 				.populate('vote_by')
 
 			return NextResponse.json(
@@ -120,8 +130,6 @@ async function handleGetRequest(req: NextRequest) {
 			// Create base pipeline for user's memes
 			const userMemesPipeline: any[] = [
 				{ $match: { created_by: new mongoose.Types.ObjectId(created_by) } },
-				{ $skip: start },
-				{ $limit: defaultOffset },
 				{
 					$lookup: {
 						from: 'users',
@@ -130,7 +138,15 @@ async function handleGetRequest(req: NextRequest) {
 						as: 'created_by',
 					},
 				},
-				{ $unwind: '$created_by' }
+				{ $unwind: '$created_by' },
+				{
+					$lookup: {
+						from: 'tags',
+						localField: 'tags',
+						foreignField: '_id',
+						as: 'tags',
+					},
+				}
 			]
 			
 			// Add user vote check if authenticated

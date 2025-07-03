@@ -1,24 +1,21 @@
 'use client'
 
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { HStack } from '@chakra-ui/react'
 import { MdEdit } from 'react-icons/md'
 import { FilterPopover } from '@/components/FilterPopover'
 import { SortPopover } from '@/components/SortPopover'
 import EditProfile from '@/components/EditProfile'
 import { Context } from '@/context/contextProvider'
 import { useFilterAndSort } from '@/hooks/useFilterAndSort'
-import {
-	PaginationItems,
-	PaginationNextTrigger,
-	PaginationPrevTrigger,
-	PaginationRoot,
-} from '@/components/ui/pagination'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import axiosInstance from '@/utils/axiosInstance'
 import { TabButton } from '@/components/TabButton'
 import { LeaderboardMeme } from '../leaderboard/page'
 import { ethers } from 'ethers'
+import { LeaderboardMemeCard } from '../leaderboard/MemeCard'
+import MemeDetail from '@/components/MemeDetail'
+import { toast } from 'react-toastify'
+import { Meme } from '../page'
 
 interface Data {
 	title: string
@@ -42,6 +39,9 @@ export default function Page() {
 	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')
 	const [filterOpen, setFilterOpen] = useState(false)
 	const [sortOpen, setSortOpen] = useState(false)
+	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
+	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | undefined | Meme>()
+	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
 
 	const { userDetails } = useContext(Context)
 	const fileInputRef = useRef<HTMLInputElement>(null)
@@ -96,7 +96,6 @@ export default function Page() {
 	} = useFilterAndSort(tabFilteredMemes, activeTab)
 
 	const offset = 30
-	const pageSize = 30
 
 	const getMyMemes = async () => {
 		try {
@@ -149,6 +148,57 @@ export default function Page() {
 	const handleTabChange = (tab: string) => {
 		setMemes([])
 		setActiveTab(tab.toLowerCase() as 'live' | 'all')
+	}
+
+	const onClose = () => {
+		setIsMemeDetailOpen(false)
+		setSelectedMeme(undefined)
+	}
+
+	const handleVote = async (meme_id: string) => {
+		try {
+			if (userDetails) {
+				setMemes(prev =>
+					prev.map(meme =>
+						meme._id === meme_id
+							? {
+									...meme,
+									vote_count: meme.vote_count + 1,
+									has_user_voted: true,
+							  }
+							: meme
+					)
+				)
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: meme_id,
+					vote_by: userDetails._id,
+				})
+				if (response.status === 201) {
+					toast.success('Voted successfully!')
+				}
+			}
+		} catch (err) {
+			console.log('error: ', err)
+			toast.error('Error voting meme')
+		}
+	}
+
+	const handleNext = () => {
+		const currentData = filteredMemes
+		if (selectedMemeIndex < currentData.length - 1) {
+			const nextIndex = selectedMemeIndex + 1
+			setSelectedMemeIndex(nextIndex)
+			setSelectedMeme(currentData[nextIndex])
+		}
+	}
+
+	const handlePrev = () => {
+		const currentData = filteredMemes
+		if (selectedMemeIndex > 0) {
+			const prevIndex = selectedMemeIndex - 1
+			setSelectedMemeIndex(prevIndex)
+			setSelectedMeme(currentData[prevIndex])
+		}
 	}
 
 	return (
@@ -326,26 +376,36 @@ export default function Page() {
 					</h2>
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6">
+					{/* For mobile */}
+					<div className="md:hidden w-full flex flex-col items-center justify-center">
+						{filteredMemes.map((item, index) => (
+							<div key={index} className="w-full max-w-sm">
+								<LeaderboardMemeCard
+									meme={item}
+									onOpenMeme={() => {
+										setSelectedMeme(item)
+										setIsMemeDetailOpen(true)
+										setSelectedMemeIndex(index)
+									}}
+									activeTab={activeTab}
+									voteMeme={meme_id => handleVote(meme_id)}
+								/>
+							</div>
+						))}
+					</div>
+
+					{/* For desktop */}
 					{filteredMemes.map((item, index) => (
-						<div key={index} className="px-2 md:px-3 lg:px-4">
-							<div className="flex justify-between items-center mb-1">
-								{item.rank && (
-									<p className="text-[#29e0ca] font-medium">#{item.rank}</p>
-								)}
-							</div>
-							<div className="flex gap-4">
-								<div className="relative flex-grow">
-									<img
-										src={item.image_url}
-										alt="Content"
-										className="w-full aspect-square object-cover border-2 border-white"
-									/>
-									<div className="flex justify-between text-base lg:text-2xl mt-1">
-										<p>{item.name}</p>
-										<p>{item.createdAt.split('T')[0]}</p>
-									</div>
-								</div>
-							</div>
+						<div key={index} className="hidden md:block">
+							<LeaderboardMemeCard
+								meme={item}
+								onOpenMeme={() => {
+									setSelectedMeme(item)
+									setIsMemeDetailOpen(true)
+									setSelectedMemeIndex(index)
+								}}
+								voteMeme={meme_id => handleVote(meme_id)}
+							/>
 						</div>
 					))}
 
@@ -359,34 +419,23 @@ export default function Page() {
 							</p>
 						)}
 					</div>
-
-					{filteredMemes.length > 0 && (
-						<div className="col-span-full">
-							<PaginationRoot
-								count={Math.max(
-									1,
-									Math.ceil(tabFilteredMemes.length / pageSize)
-								)}
-								pageSize={pageSize}
-								defaultPage={1}
-								variant="solid"
-								className="mx-auto mb-10"
-								page={page}
-								onPageChange={e => {
-									setMemes([])
-									setPage(e.page)
-								}}
-							>
-								<HStack className="justify-center mb-5">
-									<PaginationPrevTrigger />
-									<PaginationItems />
-									<PaginationNextTrigger />
-								</HStack>
-							</PaginationRoot>
-						</div>
-					)}
 				</div>
 			</div>
+
+			{/* Meme Detail Modal */}
+			{isMemeDetailOpen && selectedMeme && (
+				<MemeDetail
+					onClose={onClose}
+					meme={selectedMeme}
+					tab={activeTab}
+					onNext={handleNext}
+					onPrev={handlePrev}
+					onVoteMeme={meme_id => handleVote(meme_id)}
+					bmk={false}
+					onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
+					searchRelatedMemes={() => {}}
+				/>
+			)}
 
 			{editProfileOpen && (
 				<EditProfile

@@ -1,17 +1,10 @@
 'use client'
 
 import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { HStack } from '@chakra-ui/react'
 import { FilterPopover } from '@/components/FilterPopover'
 import { SortPopover } from '@/components/SortPopover'
 import { Context } from '@/context/contextProvider'
 import { useFilterAndSort } from '@/hooks/useFilterAndSort'
-import {
-	PaginationItems,
-	PaginationNextTrigger,
-	PaginationPrevTrigger,
-	PaginationRoot,
-} from '@/components/ui/pagination'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import axiosInstance from '@/utils/axiosInstance'
 import { TabButton } from '@/components/TabButton'
@@ -19,7 +12,12 @@ import { LeaderboardMeme } from '../../leaderboard/page'
 import { ethers } from 'ethers'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
-import { FaUsers } from 'react-icons/fa'
+import { LeaderboardMemeCard } from '../../leaderboard/MemeCard'
+import { useAuthModal, useUser } from '@account-kit/react'
+import MemeDetail from '@/components/MemeDetail'
+import Share from '@/components/Share'
+import { BiPlus } from 'react-icons/bi'
+import { Meme } from '../../page'
 
 interface UserProfileData {
 	_id: string
@@ -52,8 +50,15 @@ export default function UserProfilePage() {
 	const [userProfile, setUserProfile] = useState<UserProfileData | null>(null)
 	const [isFollowing, setIsFollowing] = useState<boolean>(false)
 	const [followLoading, setFollowLoading] = useState<boolean>(false)
+	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | null | Meme>(null)
+	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(-1)
+	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
+	const [isShareOpen, setIsShareOpen] = useState(false)
+	const [shareData, setShareData] = useState<{ id: string; imageUrl: string } | null>(null)
 
-	const { userDetails } = useContext(Context)
+	const { userDetails, setUserDetails } = useContext(Context)
+	const { openAuthModal } = useAuthModal()
+	const user = useUser()
 
 	// Tab-based filtering (primary)
 	const tabFilteredMemes = useMemo(() => {
@@ -93,7 +98,6 @@ export default function UserProfilePage() {
 	} = useFilterAndSort(tabFilteredMemes, activeTab)
 
 	const offset = 30
-	const pageSize = 30
 
 	const getUserProfile = async () => {
 		try {
@@ -115,7 +119,7 @@ export default function UserProfilePage() {
 			console.log(error)
 			if (error.response?.status === 404) {
 				toast.error('User not found')
-				router.push('/home')
+				router.push('/landing')
 			} else {
 				toast.error('Failed to load user profile')
 			}
@@ -126,10 +130,8 @@ export default function UserProfilePage() {
 
 	const getUserMemes = async () => {
 		try {
-			setLoading(true)
-			const offsetI = offset * (page - 1)
 			const response = await axiosInstance.get(
-				`/api/meme?created_by=${userId}&offset=${offsetI}`
+				`/api/meme?created_by=${userId}&offset=${offset}`
 			)
 
 			if (response.data.memes) {
@@ -191,6 +193,45 @@ export default function UserProfilePage() {
 		}
 	}
 
+	const handleCloseShare = () => {
+		setIsShareOpen(false)
+		setShareData(null)
+	}
+
+	const voteToMeme = async (vote_to: string) => {
+		if (!userDetails && openAuthModal) openAuthModal()
+		try {
+			if (user && user.address) {
+				if (userDetails) {
+					setUserDetails({
+						...userDetails,
+						votes: userDetails.votes + 1,
+					})
+				}
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: vote_to,
+					vote_by: userDetails?._id,
+				})
+				if (response.status === 201) {
+					toast.success('Vote casted successfully!')
+					getUserMemes()
+				}
+			}
+		} catch (error: any) {
+			if (userDetails) {
+				setUserDetails({
+					...userDetails,
+					votes: userDetails.votes,
+				})
+			}
+			if (error.response?.data?.message === "You cannot vote on your own meme") {
+				toast.error(error.response.data.message);
+			} else {
+				toast.error("Already voted to this meme");
+			}
+		}
+	}
+
 	useEffect(() => {
 		if (userId) {
 			getUserProfile()
@@ -199,7 +240,7 @@ export default function UserProfilePage() {
 			getUserMemes()
 			checkFollowStatus()
 		}
-	}, [userId, userDetails])
+	}, [userId])
 
 	useEffect(() => {
 		setMemes([])
@@ -254,46 +295,46 @@ export default function UserProfilePage() {
 							className="w-full h-full object-cover"
 						/>
 					</div>
-					<div>
+					<div className='flex flex-col gap-2'>
 						<p className="text-white text-lg md:text-4xl font-bold">
 							{isOwnProfile ? 'Welcome' : 'Profile'}
 						</p>
 						<h1 className="text-[#29e0ca] text-2xl md:text-6xl font-bold">
 							{userProfile?.username}
 						</h1>
+						<div className='flex flex-row items-center justify-start gap-2 text-lg'>
+							{!isOwnProfile && userDetails && (
+								<div>
+									<button
+										onClick={handleFollow}
+										disabled={followLoading}
+										className={`flex justify-between items-center gap-2 px-2 rounded-full font-medium transition-colors ${
+											isFollowing
+												? 'border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+												: 'border-2 border-[#1783fb] text-[#1783fb] hover:bg-[#1783fb] hover:text-white'
+										} ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+									>
+										{followLoading ? (
+											<AiOutlineLoading3Quarters className="animate-spin" />
+										) : isFollowing ? (
+											'Unfollow'
+										) : (
+											<>
+												<BiPlus />
+												Follow
+											</>
+										)}
+									</button>
+								</div>
+							)}
+							<div>{userProfile.followersCount} Followers</div>
+						</div>
 					</div>
+					
 				</div>
+				
 				<div className="flex flex-col items-end space-y-2">
-					{!isOwnProfile && userDetails && (
-						<>
-							<button
-								onClick={handleFollow}
-								disabled={followLoading}
-								className={`flex justify-between items-center gap-2 px-2 md:px-4 py-1 md:py-2 rounded-lg font-medium transition-colors ${
-									isFollowing
-										? 'border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-										: 'border-2 border-[#1783fb] text-[#1783fb] hover:bg-[#1783fb] hover:text-white'
-								} ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-							>
-								{followLoading ? (
-									<AiOutlineLoading3Quarters className="animate-spin" />
-								) : isFollowing ? (
-									'Unfollow'
-								) : (
-									'Follow'
-								)}
-							</button>
-							<button
-								onClick={() => router.push(`/home/followers?user=${userId}`)}
-								className="flex justify-between items-center gap-2 px-2 md:px-4 py-1 md:py-2 border border-[#29e0ca] rounded-lg hover:opacity-40"
-							>
-								<FaUsers className="w-4 h-4 md:w-6 md:h-6" fill="#29e0ca" />
-								<p className="text-[#29e0ca] text-sm md:text-lg font-bold">
-									View Followers
-								</p>
-							</button>
-						</>
-					)}
+					
 					{isOwnProfile && (
 						<button
 							onClick={() => router.push('/home/profile')}
@@ -444,26 +485,18 @@ export default function UserProfilePage() {
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6">
 					{filteredMemes.map((item, index) => (
-						<div key={index} className="px-2 md:px-3 lg:px-4">
-							<div className="flex justify-between items-center mb-1">
-								{item.rank && (
-									<p className="text-[#29e0ca] font-medium">#{item.rank}</p>
-								)}
-							</div>
-							<div className="flex gap-4">
-								<div className="relative flex-grow">
-									<img
-										src={item.image_url}
-										alt="Content"
-										className="w-full aspect-square object-cover border-2 border-white"
-									/>
-									<div className="flex justify-between text-base lg:text-2xl mt-1">
-										<p>{item.name}</p>
-										<p>{item.createdAt.split('T')[0]}</p>
-									</div>
-								</div>
-							</div>
-						</div>
+						<LeaderboardMemeCard 
+							key={item._id}
+							meme={item}
+							onOpenMeme={() => {
+								setSelectedMeme(item)
+								setSelectedMemeIndex(index)
+								setIsMemeDetailOpen(true)
+							}}
+							voteMeme={voteToMeme}
+							activeTab={activeTab}
+							bmk={false}
+						/>
 					))}
 
 					<div className="col-span-full">
@@ -477,33 +510,46 @@ export default function UserProfilePage() {
 						)}
 					</div>
 
-					{filteredMemes.length > 0 && (
-						<div className="col-span-full">
-							<PaginationRoot
-								count={Math.max(
-									1,
-									Math.ceil(tabFilteredMemes.length / pageSize)
-								)}
-								pageSize={pageSize}
-								defaultPage={1}
-								variant="solid"
-								className="mx-auto mb-10"
-								page={page}
-								onPageChange={e => {
-									setMemes([])
-									setPage(e.page)
-								}}
-							>
-								<HStack className="justify-center mb-5">
-									<PaginationPrevTrigger />
-									<PaginationItems />
-									<PaginationNextTrigger />
-								</HStack>
-							</PaginationRoot>
-						</div>
-					)}
 				</div>
 			</div>
+
+			{isMemeDetailOpen && selectedMeme && (
+				<MemeDetail
+					onClose={() => {
+						setIsMemeDetailOpen(false)
+						setSelectedMeme(null)
+						setSelectedMemeIndex(-1)
+					}}
+					onNext={() => {
+						if (selectedMemeIndex < filteredMemes.length - 1) {
+							const nextIndex = selectedMemeIndex + 1
+							setSelectedMemeIndex(nextIndex)
+							setSelectedMeme(filteredMemes[nextIndex])
+						}
+					}}
+					onPrev={() => {
+						if (selectedMemeIndex > 0) {
+							const prevIndex = selectedMemeIndex - 1
+							setSelectedMemeIndex(prevIndex)
+							setSelectedMeme(filteredMemes[prevIndex])
+						}
+					}}
+					meme={selectedMeme}
+					tab={activeTab}
+					onVoteMeme={voteToMeme}
+					bmk={false}
+					searchRelatedMemes={() => {}}
+					onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
+				/>
+			)}
+
+			{isShareOpen && shareData && (
+				<Share
+					id={shareData.id}
+					imageUrl={shareData.imageUrl}
+					onClose={handleCloseShare}
+				/>
+			)}
 		</div>
 	)
 } 
