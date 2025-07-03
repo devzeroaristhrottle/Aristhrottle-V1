@@ -756,7 +756,7 @@ async function handlePostRequest(req: NextRequest) {
 			in_percentile: 0,
 			is_voting_close: false,
 			voting_days: 1,
-			is_claimed: false,
+			is_claimed: true,
 			is_onchain: false,
 			shares: [],
 			bookmarks: [],

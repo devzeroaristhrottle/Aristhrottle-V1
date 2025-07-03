@@ -64,7 +64,7 @@ async function handlePostRequest(request: NextRequest) {
     const newVote = new Vote({
       vote_to,
       vote_by,
-      is_claimed: false,
+      is_claimed: true,
       is_onchain: false,
     });
 
