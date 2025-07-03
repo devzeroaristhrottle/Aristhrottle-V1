@@ -95,7 +95,15 @@ async function handlePostRequest(request: NextRequest) {
       try {
         // Mint tokens to the meme creator
         if (creator && creator.user_wallet_address) {
-          const creatorAmount = 0.25;
+          // Calculate time difference between meme creation and vote
+          const memeCreationTime = new Date(meme.createdAt).getTime();
+          const currentTime = new Date().getTime();
+          const timeDifference = currentTime - memeCreationTime;
+          const oneDayInMillis = 24 * 60 * 60 * 1000;
+          
+          // If vote is within 1 day of upload, give 1 token instead of 0.25
+          const creatorAmount = timeDifference < oneDayInMillis ? 1 : 0.25;
+          
           await mintTokensAndLog(
             creator.user_wallet_address,
             creatorAmount,
@@ -103,7 +111,8 @@ async function handlePostRequest(request: NextRequest) {
             {
               memeId: meme._id,
               memeName: meme.name,
-              voterId: vote_by
+              voterId: vote_by,
+              isLiveVote: timeDifference < oneDayInMillis
             }
           );
         }
