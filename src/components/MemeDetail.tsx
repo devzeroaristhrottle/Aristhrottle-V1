@@ -71,7 +71,7 @@ export default function MemeDetail({
 	const getRelatedMemes = async () => {
 		try {
 			if (meme && isMeme(meme) && meme.tags.length > 0) {
-				const tags = meme.tags.map(t => t.name).join(',')
+				const tags = meme.tags.map(t => t.name ? t.name : t).join(',')
 				const response = await axiosInstance.get(`/api/meme?name=${tags}`)
 				if (response.data.memes) {
 					setRelatedMemes([...response.data.memes])
@@ -307,7 +307,7 @@ export default function MemeDetail({
 										<CiBookmark className="text-white w-4 h-4" />
 									)}
 									<span className="text-[#1783fb] font-bold text-lg">
-										{tab === 'live' ? meme.bookmarks.length : meme.bookmarks}
+										{Array.isArray(meme.bookmarks) ? meme.bookmarks.length : meme.bookmarks}
 									</span>
 								</button>
 							)}

@@ -103,7 +103,19 @@ async function handleGetRequest(req: NextRequest) {
 				.where({ vote_by: vote_by })
 				.skip(start)
 				.limit(defaultOffset)
-				.populate('vote_to')
+				.populate({
+					path: 'vote_to',
+					populate: [
+						{
+							path: 'tags',
+							model: 'Tags'
+						},
+						{
+							path: 'created_by',
+							model: 'User'
+						}
+					]
+				})
 				.populate('vote_by')
 
 			return NextResponse.json(

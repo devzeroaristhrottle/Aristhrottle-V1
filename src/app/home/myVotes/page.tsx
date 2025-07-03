@@ -13,6 +13,7 @@ import { FaRegShareFromSquare, FaRegBookmark, FaBookmark } from 'react-icons/fa6
 import { Tooltip } from '@/components/ui/tooltip'
 import Share from '@/components/Share'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
+import { LeaderboardMeme } from '../leaderboard/page'
 
 type Props = {}
 
@@ -69,7 +70,7 @@ export default function Page({}: Props) {
 	
 	// Modal state
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
-	const [selectedMeme, setSelectedMeme] = useState<TransformedMeme | null>(null)
+	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | null>(null)
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState(-1)
 
 	// Share modal state
@@ -123,13 +124,14 @@ export default function Page({}: Props) {
 	const filteredMemes = getFilteredMemes()
 
 	// Transform meme data for compatibility with MemeDetail
-	const transformMeme = (votedMeme: MyVotedMeme): TransformedMeme => {
+	const transformMeme = (votedMeme: MyVotedMeme): LeaderboardMeme => {
+		console.log(votedMeme.vote_to.bookmarks)
 		return {
 			_id: votedMeme.vote_to._id,
 			vote_count: parseInt(votedMeme.vote_to.vote_count),
 			name: votedMeme.vote_to.name,
 			image_url: votedMeme.vote_to.image_url,
-			tags: votedMeme.vote_to.tags?.map(tag => ({ name: tag })) || [],
+			tags: votedMeme.vote_to.tags || [],
 			created_by: votedMeme.vote_to.created_by,
 			createdAt: votedMeme.vote_to.createdAt,
 			shares: votedMeme.vote_to.shares || [],
