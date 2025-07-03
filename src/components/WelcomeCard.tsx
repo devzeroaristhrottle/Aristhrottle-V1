@@ -80,12 +80,6 @@ function WelcomeCard({
 					</div>
 					<div className="w-full flex justify-evenly items-center sm:text-[2.5rem] text-[1.5rem] sm:flex-row flex-col-reverse gap-2 py-4">
 						<button
-							className="sm:border border-[#28e0ca] bg-transparent text-[#28e0ca] rounded-xl px-5"
-							onClick={onClose}
-						>
-							Skip
-						</button>
-						<button
 							className="text-black bg-[#28e0ca] rounded-xl px-5"
 							onClick={onClose}
 						>
