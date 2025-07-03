@@ -17,6 +17,7 @@ import { LeaderboardMemeCard } from '../../leaderboard/MemeCard'
 import { useAuthModal, useUser } from '@account-kit/react'
 import MemeDetail from '@/components/MemeDetail'
 import Share from '@/components/Share'
+import { BiPlus } from 'react-icons/bi'
 
 interface UserProfileData {
 	_id: string
@@ -118,7 +119,7 @@ export default function UserProfilePage() {
 			console.log(error)
 			if (error.response?.status === 404) {
 				toast.error('User not found')
-				router.push('/home')
+				router.push('/landing')
 			} else {
 				toast.error('Failed to load user profile')
 			}
@@ -294,46 +295,46 @@ export default function UserProfilePage() {
 							className="w-full h-full object-cover"
 						/>
 					</div>
-					<div>
+					<div className='flex flex-col gap-2'>
 						<p className="text-white text-lg md:text-4xl font-bold">
 							{isOwnProfile ? 'Welcome' : 'Profile'}
 						</p>
 						<h1 className="text-[#29e0ca] text-2xl md:text-6xl font-bold">
 							{userProfile?.username}
 						</h1>
+						<div className='flex flex-row items-center justify-center gap-2 text-lg'>
+							{!isOwnProfile && userDetails && (
+								<div>
+									<button
+										onClick={handleFollow}
+										disabled={followLoading}
+										className={`flex justify-between items-center gap-2 px-2 rounded-full font-medium transition-colors ${
+											isFollowing
+												? 'border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+												: 'border-2 border-[#1783fb] text-[#1783fb] hover:bg-[#1783fb] hover:text-white'
+										} ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+									>
+										{followLoading ? (
+											<AiOutlineLoading3Quarters className="animate-spin" />
+										) : isFollowing ? (
+											'Unfollow'
+										) : (
+											<>
+												<BiPlus />
+												Follow
+											</>
+										)}
+									</button>
+								</div>
+							)}
+							<div>{userProfile.followersCount} Followers</div>
+						</div>
 					</div>
+					
 				</div>
+				
 				<div className="flex flex-col items-end space-y-2">
-					{!isOwnProfile && userDetails && (
-						<>
-							<button
-								onClick={handleFollow}
-								disabled={followLoading}
-								className={`flex justify-between items-center gap-2 px-2 md:px-4 py-1 md:py-2 rounded-lg font-medium transition-colors ${
-									isFollowing
-										? 'border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-										: 'border-2 border-[#1783fb] text-[#1783fb] hover:bg-[#1783fb] hover:text-white'
-								} ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-							>
-								{followLoading ? (
-									<AiOutlineLoading3Quarters className="animate-spin" />
-								) : isFollowing ? (
-									'Unfollow'
-								) : (
-									'Follow'
-								)}
-							</button>
-							<button
-								onClick={() => router.push(`/home/followers?user=${userId}`)}
-								className="flex justify-between items-center gap-2 px-2 md:px-4 py-1 md:py-2 border border-[#29e0ca] rounded-lg hover:opacity-40"
-							>
-								<FaUsers className="w-4 h-4 md:w-6 md:h-6" fill="#29e0ca" />
-								<p className="text-[#29e0ca] text-sm md:text-lg font-bold">
-									View Followers
-								</p>
-							</button>
-						</>
-					)}
+					
 					{isOwnProfile && (
 						<button
 							onClick={() => router.push('/home/profile')}
