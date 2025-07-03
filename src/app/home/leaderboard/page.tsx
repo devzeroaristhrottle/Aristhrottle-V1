@@ -337,6 +337,7 @@ export default function Page() {
 					onPrev={handlePrev}
 					onVoteMeme={meme_id => handleVote(meme_id)}
 					bmk={false}
+					searchRelatedMemes={() => {}}
 				/>
 			)}
 		</div>
