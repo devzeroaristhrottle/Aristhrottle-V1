@@ -140,11 +140,31 @@ export default function Page() {
 		setSelectedMemeIndex(-1)
 	}
 
+	const readSearch = () => {
+		// Check localStorage for search tags and active tab
+		const storedTags = localStorage.getItem('landingSearchTags')
+		const storedTab = localStorage.getItem('landingActiveTab')
+		
+		if (storedTags) {
+			setQuery(storedTags)
+			// Clear the localStorage after using it
+			localStorage.removeItem('landingSearchTags')
+		}
+		
+		if (storedTab === 'all') {
+			setActiveTab('all')
+			// Clear the localStorage after using it
+			localStorage.removeItem('landingActiveTab')
+		}
+	}
+
 	useEffect(() => {
 		axiosInstance.get('/api/new-ip').then(response => {
 			if (response.data.message) setWelcOpen(true)
 		})
 		fetchLeaderBoard()
+
+		setTimeout(() => readSearch(), 1000)
 	}, [])
 
 	const handleNext = () => {
@@ -243,6 +263,7 @@ export default function Page() {
 		}
 		// Note: No loading state changes here
 	}
+
 
 	const filterLiveMemes = (memes: any[]) => {
 		const now = new Date()

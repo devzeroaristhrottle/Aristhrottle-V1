@@ -16,6 +16,7 @@ import { useUser } from '@account-kit/react'
 import Image from 'next/image'
 import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
+import { useRouter } from 'next/navigation'
 
 
 interface MemeDetailProps {
@@ -51,6 +52,7 @@ export default function MemeDetail({
 	const [relatedMemes, setRelatedMemes] = useState<Meme[]>([])
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const user = useUser()
+	const router = useRouter()
 	const { handleBookmark } = useMemeActions()
 	const [isBookmarked, setIsBookmarked] = useState(bmk)
 	const { userDetails, setUserDetails } = useContext(Context);
@@ -107,6 +109,23 @@ export default function MemeDetail({
 			setIsBookmarked(!isBookmarked)
 		} catch (err) {
 			console.log(err)
+		}
+	}
+
+	const handleMoreClick = () => {
+		if (meme && isMeme(meme) && meme.tags.length > 0) {
+			// Extract tag names and join them with commas
+			const tagNames = meme.tags.map(tag => 
+				typeof tag === 'string' ? tag : tag.name
+			).join(',')
+			
+			// Store in localStorage
+			localStorage.setItem('landingSearchTags', tagNames)
+			localStorage.setItem('landingActiveTab', 'all')
+			
+			// Navigate to landing page
+			router.push('/landing')
+			onClose();
 		}
 	}
 
@@ -404,7 +423,10 @@ export default function MemeDetail({
 										</div>
 
 										<div className="flex justify-center mt-6">
-											<button className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 border border-white/20 rounded-lg px-4 py-2 hover:bg-white/20 transition-all duration-300">
+											<button 
+												onClick={handleMoreClick}
+												className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 border border-white/20 rounded-lg px-4 py-2 hover:bg-white/20 transition-all duration-300"
+											>
 												<span className="text-white text-base sm:text-lg font-medium">
 													More
 												</span>
