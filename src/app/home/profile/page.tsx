@@ -15,6 +15,7 @@ import { ethers } from 'ethers'
 import { LeaderboardMemeCard } from '../leaderboard/MemeCard'
 import MemeDetail from '@/components/MemeDetail'
 import { toast } from 'react-toastify'
+import { Meme } from '../page'
 
 interface Data {
 	title: string
@@ -39,7 +40,7 @@ export default function Page() {
 	const [filterOpen, setFilterOpen] = useState(false)
 	const [sortOpen, setSortOpen] = useState(false)
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
-	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | undefined>()
+	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | undefined | Meme>()
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
 
 	const { userDetails } = useContext(Context)
@@ -431,6 +432,8 @@ export default function Page() {
 					onPrev={handlePrev}
 					onVoteMeme={meme_id => handleVote(meme_id)}
 					bmk={false}
+					onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
+					searchRelatedMemes={() => {}}
 				/>
 			)}
 

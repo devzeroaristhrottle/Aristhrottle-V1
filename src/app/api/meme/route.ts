@@ -138,7 +138,15 @@ async function handleGetRequest(req: NextRequest) {
 						as: 'created_by',
 					},
 				},
-				{ $unwind: '$created_by' }
+				{ $unwind: '$created_by' },
+				{
+					$lookup: {
+						from: 'tags',
+						localField: 'tags',
+						foreignField: '_id',
+						as: 'tags',
+					},
+				}
 			]
 			
 			// Add user vote check if authenticated

@@ -18,6 +18,7 @@ import { useAuthModal, useUser } from '@account-kit/react'
 import MemeDetail from '@/components/MemeDetail'
 import Share from '@/components/Share'
 import { BiPlus } from 'react-icons/bi'
+import { Meme } from '../../page'
 
 interface UserProfileData {
 	_id: string
@@ -50,7 +51,7 @@ export default function UserProfilePage() {
 	const [userProfile, setUserProfile] = useState<UserProfileData | null>(null)
 	const [isFollowing, setIsFollowing] = useState<boolean>(false)
 	const [followLoading, setFollowLoading] = useState<boolean>(false)
-	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | null>(null)
+	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | null | Meme>(null)
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(-1)
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
 	const [isShareOpen, setIsShareOpen] = useState(false)
@@ -538,6 +539,8 @@ export default function UserProfilePage() {
 					tab={activeTab}
 					onVoteMeme={voteToMeme}
 					bmk={false}
+					searchRelatedMemes={() => {}}
+					onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
 				/>
 			)}
 
