@@ -206,6 +206,11 @@ async function handleGetRequest(req: NextRequest) {
 				name: { $in: searchPatterns }
 			}).distinct('_id')
 			
+			// Find users whose username matches the search terms
+			const matchingUserIds = await User.find({
+				username: { $in: searchPatterns }
+			}).distinct('_id')
+			
 			// For direct name search, use simple string comparison instead of regex
 			// This is more reliable for certain types of content
 			const nameSearchConditions = searchTerms.map(term => ({
@@ -221,6 +226,8 @@ async function handleGetRequest(req: NextRequest) {
 							...nameSearchConditions,
 							// Tag search
 							{ tags: { $in: tagIds } },
+							// Creator username search
+							{ created_by: { $in: matchingUserIds } },
 						],
 						// Don't filter by is_voting_close for search - show all memes
 						// is_voting_close: false
@@ -296,6 +303,14 @@ async function handleGetRequest(req: NextRequest) {
 									$cond: {
 										if: { $gt: [{ $size: { $setIntersection: ["$tags", tagIds] } }, 0] },
 										then: 10,
+										else: 0
+									}
+								},
+								// Creator username match gets medium score
+								{
+									$cond: {
+										if: { $in: ["$created_by", matchingUserIds] },
+										then: 15,
 										else: 0
 									}
 								},
@@ -387,6 +402,7 @@ async function handleGetRequest(req: NextRequest) {
 						$or: [
 							...nameSearchConditions,
 							{ tags: { $in: tagIds } },
+							{ created_by: { $in: matchingUserIds } },
 						],
 						// Don't filter by is_voting_close for search
 						// is_voting_close: false
