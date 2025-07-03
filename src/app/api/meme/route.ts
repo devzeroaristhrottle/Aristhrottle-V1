@@ -101,8 +101,6 @@ async function handleGetRequest(req: NextRequest) {
 
 			const memes = await Vote.find()
 				.where({ vote_by: vote_by })
-				.skip(start)
-				.limit(defaultOffset)
 				.populate({
 					path: 'vote_to',
 					populate: [
@@ -132,8 +130,6 @@ async function handleGetRequest(req: NextRequest) {
 			// Create base pipeline for user's memes
 			const userMemesPipeline: any[] = [
 				{ $match: { created_by: new mongoose.Types.ObjectId(created_by) } },
-				{ $skip: start },
-				{ $limit: defaultOffset },
 				{
 					$lookup: {
 						from: 'users',

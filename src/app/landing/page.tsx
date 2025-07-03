@@ -245,7 +245,9 @@ export default function Page() {
 	}
 
 	const filterLiveMemes = (memes: any[]) => {
-		const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+		const now = new Date()
+		now.setUTCHours(0, 0, 0, 0)
+		const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 		return memes.filter(meme => {
 			const createdAt = new Date(meme.createdAt);
 			return createdAt >= twentyFourHoursAgo;

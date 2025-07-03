@@ -14,6 +14,7 @@ import { Tooltip } from '@/components/ui/tooltip'
 import Share from '@/components/Share'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
 import { LeaderboardMeme } from '../leaderboard/page'
+import { useRouter } from 'next/navigation'
 
 type Props = {}
 
@@ -79,6 +80,7 @@ export default function Page({}: Props) {
 
 	const { userDetails } = useContext(Context)
 	const { handleBookmark } = useMemeActions()
+	const router = useRouter();
 
 	const offset = 6
 
@@ -111,11 +113,12 @@ export default function Page({}: Props) {
 	const getFilteredMemes = () => {
 		if (activeTab === 'live') {
 			const now = new Date()
+			now.setUTCHours(0, 0, 0, 0)
 			const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 			
 			return allMemes.filter(meme => {
-				const memeCreatedAt = new Date(meme.vote_to.createdAt)
-				return memeCreatedAt >= twentyFourHoursAgo
+				const createdAt = new Date(meme.vote_to.createdAt)
+				return createdAt >= twentyFourHoursAgo;
 			})
 		}
 		return allMemes
@@ -249,7 +252,7 @@ export default function Page({}: Props) {
 					<div key={index} className="flex flex-col">
 						{/* Header with username and rank */}
 						<div className="flex justify-between items-center mb-2">
-							<div className="flex items-center gap-2">
+							<div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(`/home/profiles/${item.vote_to.created_by._id}`)}>
 								<CgProfile size={28} />
 								<span className="text-[#29e0ca] text-xl md:text-2xl">
 									{item.vote_to.created_by.username}

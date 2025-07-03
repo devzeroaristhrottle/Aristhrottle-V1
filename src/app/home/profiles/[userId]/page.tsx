@@ -302,7 +302,7 @@ export default function UserProfilePage() {
 						<h1 className="text-[#29e0ca] text-2xl md:text-6xl font-bold">
 							{userProfile?.username}
 						</h1>
-						<div className='flex flex-row items-center justify-center gap-2 text-lg'>
+						<div className='flex flex-row items-center justify-start gap-2 text-lg'>
 							{!isOwnProfile && userDetails && (
 								<div>
 									<button
