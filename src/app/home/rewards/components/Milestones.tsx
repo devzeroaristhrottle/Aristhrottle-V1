@@ -12,7 +12,7 @@ export const Milestones = ({
   tasks: MilestoneTitles[];
   hasBorder?: boolean;
 }) => {
-  const { userDetails } = useContext(Context);
+  const { userDetails, setUserDetails } = useContext(Context);
   const userId = userDetails?._id;
   const [isClaimLoading, setIsClaimLoading] = useState(false);
   const [milestonesList, setMilestonesList] = useState(milestones);
@@ -56,7 +56,7 @@ export const Milestones = ({
           : "w-full"
       }`}
     >
-      {milestonesList.map((milestone, index) => (
+      {milestonesList.sort((a, b) => a.reward - b.reward).map((milestone, index) => (
         <div
           key={index}
           className="flex items-center gap-2 md:gap-3 justify-between"
@@ -85,9 +85,10 @@ export const Milestones = ({
             {milestone.canClaim ? (
               <button
                 className="relative px-3 md:px-4 md:py-1 bg-[#040f2b] border-2 border-[#0d4387] rounded-lg text-lg md:text-3xl bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"
-                onClick={() =>
+                onClick={() =>{
                   handleClaim(milestone.type, milestone.number, index)
-                }
+                  if(userDetails && !isClaimLoading) setUserDetails({...userDetails, mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(milestone.reward * 1e18) })
+                }}
                 disabled={isClaimLoading}
               >
                 {isClaimLoading ? (
