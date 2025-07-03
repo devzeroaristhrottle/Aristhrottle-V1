@@ -32,6 +32,7 @@ export type LeaderboardMeme = {
 	bookmark?: (id: string, name: string, image_url: string) => void
 	activeTab?: 'all' | 'live'
 	has_user_voted: boolean
+	tags: (string | { name: string })[]
 }
 
 export interface TagI {
@@ -119,7 +120,7 @@ export default function Page() {
 		setMemes([])
 		resetFilters() // Reset filters when page, tab, or user changes
 		getMyMemes()
-	}, [userDetails, page, activeTab])
+	}, [ page, activeTab])
 
 	const applyFilters = () => {
 		setPage(1)
@@ -282,7 +283,12 @@ export default function Page() {
 							<LeaderboardMemeCard
 								meme={item}
 								onOpenMeme={() => {
-									setSelectedMeme(item)
+									setSelectedMeme({
+										...item,
+										tags: item.tags.map((tag) => 
+											typeof tag === 'string' ? { name: tag } : tag
+										)
+									})
 									setIsMemeDetailOpen(true)
 								}}
 								activeTab={activeTab}
@@ -297,7 +303,12 @@ export default function Page() {
 						<LeaderboardMemeCard
 							meme={item}
 							onOpenMeme={() => {
-								setSelectedMeme(item)
+								setSelectedMeme({
+									...item,
+									tags: item.tags.map((tag) => 
+										typeof tag === 'string' ? { name: tag } : tag
+									)
+								})
 								setIsMemeDetailOpen(true)
 								setSelectedMemeIndex(index)
 							}}
@@ -326,6 +337,7 @@ export default function Page() {
 					onPrev={handlePrev}
 					onVoteMeme={meme_id => handleVote(meme_id)}
 					bmk={false}
+					searchRelatedMemes={() => {}}
 				/>
 			)}
 		</div>

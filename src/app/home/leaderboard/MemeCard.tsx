@@ -10,6 +10,7 @@ import { useUser } from '@account-kit/react'
 import { LazyImage } from '@/components/LazyImage'
 import { useRouter } from 'next/navigation'
 import { Context } from '@/context/contextProvider'
+import { Logo } from '@/components/Logo'
 
 export const LeaderboardMemeCard: React.FC<{
 	meme: LeaderboardMeme
@@ -22,6 +23,7 @@ export const LeaderboardMemeCard: React.FC<{
 	const [isBookmarked, setIsBookmarked] = useState(bmk)
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const { userDetails, setUserDetails } = useContext(Context)
+	const [bmkCount, setBmkCount] = useState<number>(meme.bookmarks?.length | 0);
 
 	const user = useUser()
 	const router = useRouter()
@@ -65,9 +67,9 @@ export const LeaderboardMemeCard: React.FC<{
 								{meme.created_by.username}
 							</span>
 						</div>
-						<p className="text-[#29e0ca] text-base md:text-2xl font-medium">
+						{meme.rank && <p className="text-[#29e0ca] text-base md:text-2xl font-medium">
 							#{meme.rank}
-						</p>
+						</p>}
 					</div>
 					<div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[23rem] xl:h-[23rem] object-cover border-2 border-white">
 						<LazyImage
@@ -109,21 +111,19 @@ export const LeaderboardMemeCard: React.FC<{
 									<img
 										src={'/assets/vote/icon1.png'}
 										alt="vote"
-										className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7"
+										className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 "
 									/>
 								) : (
-									<img
-										src={'/assets/vote/icon2.png'}
-										alt="vote"
-										className={
+									<Logo
+										classNames={
 											'w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 ' +
 											(voteMeme
 												? meme.created_by._id === userDetails?._id
-													? 'cursor-not-allowed'
-													: 'cursor-pointer'
-												: 'cursor-not-allowed')
+													? '!cursor-not-allowed'
+													: '!cursor-pointer'
+												: '!cursor-not-allowed')
 										}
-										onClick={() => localVoteMeme(meme._id)}
+										onClick={() => (meme.created_by._id != userDetails?._id) && localVoteMeme(meme._id)}
 									/>
 								)}
 								<span className="text-base md:text-2xl text-[#1783fb]">
@@ -154,15 +154,7 @@ export const LeaderboardMemeCard: React.FC<{
 								</div>
 							)} */}
 						</div>
-						<div className="flex flex-col items-center">
-							<FaRegShareFromSquare
-								className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 cursor-pointer"
-								onClick={() => {
-									setIsShareOpen(true)
-								}}
-							/>
-							<span className="text-lg md:text-2xl text-[#1783fb]">0</span>
-						</div>
+						
 						{user && user.address ? (
 							<div className="-ml-1">
 								{isBookmarked ? (
@@ -172,9 +164,10 @@ export const LeaderboardMemeCard: React.FC<{
 											onClick={() => {
 												handleBookmark(meme._id)
 												setIsBookmarked(!isBookmarked)
+												setBmkCount(bmkCount + (isBookmarked ? -1 : 1));
 											}}
 										/>
-										<span className="text-lg md:text-2xl text-[#1783fb]"></span>
+										<span className="text-lg md:text-2xl text-[#1783fb]">{bmkCount}</span>
 									</div>
 								) : (
 									<div className="flex flex-col items-center cursor-pointer">
@@ -183,13 +176,23 @@ export const LeaderboardMemeCard: React.FC<{
 											onClick={() => {
 												handleBookmark(meme._id)
 												setIsBookmarked(!isBookmarked)
+												setBmkCount(bmkCount + (isBookmarked ? -1 : 1));
 											}}
 										/>
-										<span className="text-lg md:text-2xl text-[#1783fb]"></span>
+										<span className="text-lg md:text-2xl text-[#1783fb]">{bmkCount}</span>
 									</div>
 								)}
 							</div>
 						) : null}
+						<div className="flex flex-col items-center">
+							<FaRegShareFromSquare
+								className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 cursor-pointer"
+								onClick={() => {
+									setIsShareOpen(true)
+								}}
+							/>
+							<span className="text-lg md:text-2xl text-[#1783fb]"></span>
+						</div>
 					</div>
 				</div>
 			</div>

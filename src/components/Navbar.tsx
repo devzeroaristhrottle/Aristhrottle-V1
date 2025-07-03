@@ -284,9 +284,9 @@ export default function Navbar() {
 						{user?.address ? (
 							<div className="flex items-center justify-center gap-2">
 								<Image
-									className="!w-6 !h-6"
+									className="!w-10 !h-10"
 									alt="icon"
-									src="/assets/coins/7.png"
+									src="/assets/token_e.png"
 									height={24}
 									width={24}
 								/>

@@ -381,6 +381,9 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 								<div className="text-blue-400 text-lg lg:text-3xl hover:text-white transition-colors duration-200">
 									Create with Aris-Intelligence
 								</div>
+								<div className="text-xs lg:text-2xl">
+									Enter title and tags(atleast one)
+								</div>
 							</div>
 						</div>
 					</div>

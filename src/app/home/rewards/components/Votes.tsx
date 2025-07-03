@@ -117,7 +117,7 @@ const Votes = () => {
 				</div>
 			</div>
 			<div className="points_rules_wrapper flex flex-col gap-y-8 md:gap-y-12 md:mt-8 md:order-2 order-1">
-				<div className="points flex flex-col gap-2 md:gap-5 items-center mx-20 md:mx-0 border-2 border-[#1783FB] rounded-lg p-2 md:p-5 mt-8 md:mt-10">
+				<div className="points hidden flex-col gap-2 md:gap-5 items-center mx-20 md:mx-0 border-2 border-[#1783FB] rounded-lg p-2 md:p-5 mt-8 md:mt-10">
 					<span className="text-2xl md:text-4xl">Points</span>
 					<p className="text-[#29e0ca] text-3xl md:text-4xl">
 						{votesData?.points == 0 ? 0 : votesData?.points.toFixed(1) ?? 0}{' '}

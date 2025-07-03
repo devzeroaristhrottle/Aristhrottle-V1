@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 
 import { CgCloseO, CgProfile } from 'react-icons/cg'
 import Share from './Share'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { Meme, TagI } from '@/app/home/page'
 import { LeaderboardMeme } from '@/app/home/leaderboard/page'
 import { MdOutlineExpandMore } from 'react-icons/md'
@@ -14,6 +14,10 @@ import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
 import { CiBookmark } from 'react-icons/ci'
 import { useUser } from '@account-kit/react'
 import Image from 'next/image'
+import { Context } from '@/context/contextProvider'
+import { Logo } from '@/components/Logo'
+import { useRouter } from 'next/navigation'
+
 
 interface MemeDetailProps {
 	isOpen?: boolean
@@ -46,9 +50,13 @@ export default function MemeDetail({
 }: MemeDetailProps) {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [relatedMemes, setRelatedMemes] = useState<Meme[]>([])
+	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const user = useUser()
+	const router = useRouter()
 	const { handleBookmark } = useMemeActions()
 	const [isBookmarked, setIsBookmarked] = useState(bmk)
+	const { userDetails, setUserDetails } = useContext(Context);
+	const [eyeOpen, setEyeOpen] = useState<boolean>(meme!.has_user_voted);
 
 	// Touch/swipe state
 	const [touchStart, setTouchStart] = useState<number | null>(null)
@@ -65,7 +73,7 @@ export default function MemeDetail({
 	const getRelatedMemes = async () => {
 		try {
 			if (meme && isMeme(meme) && meme.tags.length > 0) {
-				const tags = meme.tags.map(t => t.name).join(',')
+				const tags = meme.tags.map(t => t.name ? t.name : t).join(',')
 				const response = await axiosInstance.get(`/api/meme?name=${tags}`)
 				if (response.data.memes) {
 					setRelatedMemes([...response.data.memes])
@@ -79,6 +87,17 @@ export default function MemeDetail({
 	const handleVote = (memeId: string) => {
 		try {
 			onVoteMeme(memeId)
+			setShowPointsAnimation(true)
+			setTimeout(() => {
+				setShowPointsAnimation(false)
+			}, 2000)
+			if (userDetails) {
+				setUserDetails({
+					...userDetails,
+					mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(1e17),
+				})
+			}
+			setEyeOpen(true);
 		} catch (err) {
 			console.log(err)
 		}
@@ -90,6 +109,23 @@ export default function MemeDetail({
 			setIsBookmarked(!isBookmarked)
 		} catch (err) {
 			console.log(err)
+		}
+	}
+
+	const handleMoreClick = () => {
+		if (meme && isMeme(meme) && meme.tags.length > 0) {
+			// Extract tag names and join them with commas
+			const tagNames = meme.tags.map(tag => 
+				typeof tag === 'string' ? tag : tag.name
+			).join(',')
+			
+			// Store in localStorage
+			localStorage.setItem('landingSearchTags', tagNames)
+			localStorage.setItem('landingActiveTab', 'all')
+			
+			// Navigate to landing page
+			router.push('/landing')
+			onClose();
 		}
 	}
 
@@ -235,7 +271,7 @@ export default function MemeDetail({
 						<div className="flex flex-wrap gap-3 mb-6">
 							{/* Vote Count */}
 							<div className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm">
-								{meme.has_user_voted ? (
+								{eyeOpen ? (
 									<Image
 										src={'/assets/vote/icon1.png'}
 										width={20}
@@ -244,18 +280,25 @@ export default function MemeDetail({
 										className="transition-all duration-300 cursor-not-allowed"
 									/>
 								) : (
-									<Image
-										src={'/assets/vote/icon2.png'}
-										width={20}
-										height={20}
-										alt="vote"
-										className="transition-all duration-300 cursor-pointer"
-										onClick={() => handleVote(meme._id)}
+									<Logo
+										classNames={
+											'w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 ' +
+											( meme.created_by._id === userDetails?._id
+													? '!cursor-not-allowed'
+													: '!cursor-pointer')
+										}
+										onClick={() => (meme.created_by._id != userDetails?._id) && handleVote(meme._id)}
 									/>
 								)}
 								<span className="text-[#1783fb] font-bold text-lg">
 									{meme.vote_count}
 								</span>
+								{/* +0.1 Points Animation */}
+								{showPointsAnimation && (
+									<div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-[#28e0ca] font-bold text-lg opacity-0 animate-[flyUp_2s_ease-out_forwards]">
+										+0.1 $eART
+									</div>
+								)}
 							</div>
 
 							{/* Share */}
@@ -278,12 +321,12 @@ export default function MemeDetail({
 									className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
 								>
 									{isBookmarked ? (
-										<FaBookmark className="text-yellow-400 w-4 h-4" />
+										<FaBookmark className="text-white w-4 h-4" />
 									) : (
 										<CiBookmark className="text-white w-4 h-4" />
 									)}
 									<span className="text-[#1783fb] font-bold text-lg">
-										{tab === 'live' ? meme.bookmarks.length : meme.bookmarks}
+										{Array.isArray(meme.bookmarks) ? meme.bookmarks.length : meme.bookmarks}
 									</span>
 								</button>
 							)}
@@ -336,7 +379,9 @@ export default function MemeDetail({
 											>
 												{tab === 'live'
 													? tag.name
-													: JSON.parse(JSON.stringify(tag))}
+													: typeof tag === 'string' 
+														? tag 
+														: tag.name}
 											</span>
 										))}
 									</div>
@@ -378,7 +423,10 @@ export default function MemeDetail({
 										</div>
 
 										<div className="flex justify-center mt-6">
-											<button className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 border border-white/20 rounded-lg px-4 py-2 hover:bg-white/20 transition-all duration-300">
+											<button 
+												onClick={handleMoreClick}
+												className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 border border-white/20 rounded-lg px-4 py-2 hover:bg-white/20 transition-all duration-300"
+											>
 												<span className="text-white text-base sm:text-lg font-medium">
 													More
 												</span>
