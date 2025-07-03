@@ -252,7 +252,7 @@ export default function Page({}: Props) {
 							<div className="flex items-center gap-2">
 								<CgProfile size={28} />
 								<span className="text-[#29e0ca] text-xl md:text-2xl">
-									{item.vote_by.username}
+									{item.vote_to.created_by.username}
 								</span>
 							</div>
 							{item.vote_to.winning_number ? (
