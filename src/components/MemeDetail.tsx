@@ -302,7 +302,7 @@ export default function MemeDetail({
 									className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
 								>
 									{isBookmarked ? (
-										<FaBookmark className="text-yellow-400 w-4 h-4" />
+										<FaBookmark className="text-white w-4 h-4" />
 									) : (
 										<CiBookmark className="text-white w-4 h-4" />
 									)}
