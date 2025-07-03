@@ -113,9 +113,6 @@ export default function Page() {
 
 	return (
 		<div className="flex flex-col items-center justify-center mx-4 md:mx-0 md:ml-20 lg:ml-0">
-			<h2 className="text-[#29e0ca] text-2xl md:text-4xl font-medium text-center mb-5 md:mb-10">
-				My Bookmarks
-			</h2>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full md:max-w-7xl mb-4">
 				{memes.map((item) => (

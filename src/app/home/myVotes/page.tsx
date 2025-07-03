@@ -9,10 +9,7 @@ import { CgProfile } from 'react-icons/cg'
 
 type Props = {}
 
-// interface TabButtonProps {
-//   label: string;
-//   isActive: boolean;
-// }
+type TabType = 'live' | 'all'
 
 interface MyVotedMeme {
 	id: string
@@ -30,7 +27,8 @@ interface MyVotedMeme {
 
 export default function Page({}: Props) {
 	const [loading, setLoading] = useState<boolean>(false)
-	const [memes, setMemes] = useState<MyVotedMeme[]>([])
+	const [allMemes, setAllMemes] = useState<MyVotedMeme[]>([])
+	const [activeTab, setActiveTab] = useState<TabType>('live')
 
 	const { userDetails } = useContext(Context)
 
@@ -52,7 +50,7 @@ export default function Page({}: Props) {
 			)
 
 			if (response.data.memes) {
-				setMemes([...response.data.memes])
+				setAllMemes([...response.data.memes])
 			}
 		} catch (error) {
 			console.log(error)
@@ -61,13 +59,34 @@ export default function Page({}: Props) {
 		}
 	}
 
+	// Filter memes based on active tab
+	const getFilteredMemes = () => {
+		if (activeTab === 'live') {
+			const now = new Date()
+			const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+			
+			return allMemes.filter(meme => {
+				const memeCreatedAt = new Date(meme.vote_to.createdAt)
+				return memeCreatedAt >= twentyFourHoursAgo
+			})
+		}
+		return allMemes
+	}
+
+	const filteredMemes = getFilteredMemes()
+
 	return (
 		<div className="flex flex-col max-w-7xl mx-auto px-8">
 			<div className="space-x-5 col-start-2 flex justify-center mb-6">
 				<Button
 					size="sm"
-					variant="solid"
-					className="border border-black px-7 rounded-full text-black bg-[#29e0ca] hover:scale-105"
+					variant={activeTab === 'live' ? 'solid' : 'outline'}
+					className={`border px-7 rounded-full hover:scale-105 ${
+						activeTab === 'live'
+							? 'border-black text-black bg-[#29e0ca]'
+							: 'border-[#29e0ca] text-[#29e0ca]'
+					}`}
+					onClick={() => setActiveTab('live')}
 				>
 					Live{' '}
 					<span className="relative flex h-3 w-3 items-center justify-center ml-1">
@@ -77,15 +96,20 @@ export default function Page({}: Props) {
 				</Button>
 				<Button
 					size="sm"
-					variant="outline"
-					className="border border-[#29e0ca] px-8 rounded-full text-[#29e0ca]  hover:scale-105"
+					variant={activeTab === 'all' ? 'solid' : 'outline'}
+					className={`border px-8 rounded-full hover:scale-105 ${
+						activeTab === 'all'
+							? 'border-black text-black bg-[#29e0ca]'
+							: 'border-[#29e0ca] text-[#29e0ca]'
+					}`}
+					onClick={() => setActiveTab('all')}
 				>
 					All
 				</Button>
 			</div>
 
 			<div className="grid grid-cols-3 gap-8">
-				{memes.map((item, index) => (
+				{filteredMemes.map((item, index) => (
 					<div key={index} className="p-4">
 						<div className="flex justify-between items-center mb-1 mr-12">
 							<div className="flex items-center gap-2">
@@ -148,9 +172,12 @@ export default function Page({}: Props) {
 					{loading && (
 						<AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto col-span-12" />
 					)}
-					{!loading && memes.length == 0 && (
+					{!loading && filteredMemes.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto col-span-12">
-							Meme not found
+							{activeTab === 'live' 
+								? 'No live memes found' 
+								: 'Meme not found'
+							}
 						</p>
 					)}
 				</div>
