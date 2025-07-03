@@ -9,7 +9,7 @@ import { CgProfile } from 'react-icons/cg'
 import MemeDetail from '@/components/MemeDetail'
 import { toast } from 'react-toastify'
 import Image from 'next/image'
-import { FaRegShareFromSquare, FaRegBookmark, FaBookmark } from 'react-icons/fa6'
+import { FaRegShareFromSquare, FaRegBookmark } from 'react-icons/fa6'
 import { Tooltip } from '@/components/ui/tooltip'
 import Share from '@/components/Share'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
@@ -42,26 +42,6 @@ interface MyVotedMeme {
 		bookmarks: string[]
 		has_user_voted: boolean
 	}
-}
-
-// Transform MyVotedMeme to be compatible with MemeDetail component
-interface TransformedMeme {
-	_id: string
-	vote_count: number
-	name: string
-	image_url: string
-	tags: { name: string }[]
-	created_by: {
-		_id: string
-		username: string
-	}
-	createdAt: string
-	shares: string[]
-	bookmarks: string[]
-	has_user_voted: boolean
-	rank: number
-	in_percentile: number
-	onVoteMeme: () => void
 }
 
 export default function Page({}: Props) {
@@ -164,6 +144,7 @@ export default function Page({}: Props) {
 	// Handle voting (user already voted, so this shouldn't allow voting again)
 	const handleVote = async (memeId: string) => {
 		toast.info('You have already voted on this meme!')
+		console.log(memeId)
 	}
 
 	// Handle share
@@ -178,11 +159,12 @@ export default function Page({}: Props) {
 	}
 
 	// Handle bookmark
-	const handleBookmarkClick = async (memeId: string, memeName: string, imageUrl: string) => {
+	const handleBookmarkClick = async (memeId: string) => {
 		try {
 			await handleBookmark(memeId)
 			toast.success('Bookmark updated!')
 		} catch (error) {
+			console.error(error)
 			toast.error('Failed to update bookmark')
 		}
 	}
@@ -298,7 +280,7 @@ export default function Page({}: Props) {
 									<div className="text-center font-bold">
 										<FaRegBookmark
 											className="text-2xl cursor-pointer hover:text-[#29e0ca] transition-colors"
-											onClick={() => handleBookmarkClick(item.vote_to._id, item.vote_to.name, item.vote_to.image_url)}
+											onClick={() => handleBookmarkClick(item.vote_to._id)}
 										/>
 										<p className="text-[#1783fb] text-sm mt-1">
 											{item.vote_to.bookmarks?.length || 0}
@@ -352,7 +334,7 @@ export default function Page({}: Props) {
 								<div className="flex flex-col items-center">
 									<FaRegBookmark
 										className="text-lg cursor-pointer hover:text-[#29e0ca] transition-colors"
-										onClick={() => handleBookmarkClick(item.vote_to._id, item.vote_to.name, item.vote_to.image_url)}
+										onClick={() => handleBookmarkClick(item.vote_to._id)}
 									/>
 									<p className="text-[#1783fb] text-xs">
 										{item.vote_to.bookmarks?.length || 0}
