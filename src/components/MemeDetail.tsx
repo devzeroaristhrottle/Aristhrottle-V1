@@ -206,7 +206,7 @@ export default function MemeDetail({
 					{onPrev && (
 						<button
 							onClick={onPrev}
-							className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center h-4 w-8"
+							className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center"
 						>
 							<FaChevronLeft className="text-white w-6 h-6" />
 						</button>
@@ -215,7 +215,7 @@ export default function MemeDetail({
 					{onNext && (
 						<button
 							onClick={onNext}
-							className="absolute right-4 sm:right-80 lg:right-96 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center h-4 w-8"
+							className="absolute right-4 sm:right-80 lg:right-96 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center"
 						>
 							<FaChevronRight className="text-white w-6 h-6" />
 						</button>
