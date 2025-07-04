@@ -19,14 +19,14 @@ async function retryFailedMint(mintLog: any) {
     if (wallet.provider) {
       const feeData = await wallet.provider.getFeeData();
       if (feeData.gasPrice) {
-        // Use 1.5x gas price for retries to increase chance of confirmation
-        gasPrice = BigInt(Math.floor(Number(feeData.gasPrice) * 1.5));
+        // Just use the current network gas price without increase
+        gasPrice = feeData.gasPrice;
       }
     }
     
     // Retry with higher gas and fresh nonce
     const tx = await contract.mintCoins(mintLog.recipient, tokenAmount, {
-      gasLimit: 350000,
+      gasLimit: 300000,
       gasPrice,
       nonce
     });
