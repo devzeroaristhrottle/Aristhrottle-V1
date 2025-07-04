@@ -211,7 +211,7 @@ export default function MemeDetail({
 					{onPrev && (
 						<button
 							onClick={onPrev}
-							className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 hidden sm:flex items-center justify-center"
+							className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center h-4 w-8"
 						>
 							<FaChevronLeft className="text-white w-6 h-6" />
 						</button>
@@ -220,7 +220,7 @@ export default function MemeDetail({
 					{onNext && (
 						<button
 							onClick={onNext}
-							className="absolute right-4 sm:right-80 lg:right-96 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 hidden sm:flex items-center justify-center"
+							className="absolute right-4 sm:right-80 lg:right-96 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center h-4 w-8"
 						>
 							<FaChevronRight className="text-white w-6 h-6" />
 						</button>
@@ -268,7 +268,7 @@ export default function MemeDetail({
 						</div>
 
 						{/* Action Buttons */}
-						<div className="flex flex-wrap gap-3 mb-6">
+						<div className="flex flex-wrap gap-3 my-6">
 							{/* Vote Count */}
 							<div className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm">
 								{eyeOpen ? (
@@ -435,6 +435,7 @@ export default function MemeDetail({
 										</div>
 									</div>
 								)}
+							<div className='pb-7'/>
 						</div>
 					</div>
 				</div>
