@@ -422,7 +422,7 @@ export default function MemeDetail({
 											})}
 										</div>
 
-										<div className="flex justify-center mt-6">
+										<div className="justify-center mt-6 hidden">
 											<button 
 												onClick={handleMoreClick}
 												className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 border border-white/20 rounded-lg px-4 py-2 hover:bg-white/20 transition-all duration-300"
