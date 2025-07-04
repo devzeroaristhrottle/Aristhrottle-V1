@@ -202,7 +202,7 @@ export default function MemeDetail({
 					{/* Close Button */}
 					<button
 						onClick={onClose}
-						className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20"
+						className="absolute top-7 right-4 z-50 p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20"
 					>
 						<CgCloseO className="text-white w-6 h-6" />
 					</button>
@@ -242,6 +242,8 @@ export default function MemeDetail({
 
 					{/* Right Side Details Overlay */}
 					<div className="absolute top-0 right-0 w-full sm:w-80 lg:w-96 h-full bg-black/90 backdrop-blur-md overflow-y-auto scrollbar-hide p-4 sm:p-6">
+					
+						<div className='pt-7 lg:pt-0'/>
 						{/* Header */}
 						<div className="flex items-center gap-3 mb-6">
 							<div className="p-2 rounded-full bg-[#29e0ca]/20">
@@ -302,15 +304,7 @@ export default function MemeDetail({
 							</div>
 
 							{/* Share */}
-							<button
-								onClick={() => setIsShareOpen(true)}
-								className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
-							>
-								<FaRegShareFromSquare className="text-white w-4 h-4" />
-								<span className="text-[#1783fb] font-bold text-lg">
-									{tab === 'live' ? meme.shares.length : meme.shares}
-								</span>
-							</button>
+							
 
 							{/* Bookmark */}
 							{user && user.address && (
@@ -330,6 +324,13 @@ export default function MemeDetail({
 									</span>
 								</button>
 							)}
+
+							<button
+								onClick={() => setIsShareOpen(true)}
+								className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
+							>
+								<FaRegShareFromSquare className="text-white w-4 h-4" />
+							</button>
 						</div>
 
 						{/* Details Section */}
@@ -435,7 +436,7 @@ export default function MemeDetail({
 										</div>
 									</div>
 								)}
-							<div className='pb-7'/>
+							<div className='pb-7 lg:pb-0'/>
 						</div>
 					</div>
 				</div>
