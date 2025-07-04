@@ -383,6 +383,7 @@ export default function Page({}: Props) {
 					tab={activeTab}
 					onVoteMeme={handleVote}
 					bmk={false} // We could check if user bookmarked this later
+					searchRelatedMemes={() => {}}
 				/>
 			)}
 

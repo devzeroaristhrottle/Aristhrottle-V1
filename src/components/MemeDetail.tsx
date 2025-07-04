@@ -200,12 +200,7 @@ export default function MemeDetail({
 			<div className="fixed inset-0 z-50 sm:pt-16 pt-0">
 				<div className="relative w-full h-full bg-transparent">
 					{/* Close Button */}
-					<button
-						onClick={onClose}
-						className="absolute top-7 right-4 z-50 p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20"
-					>
-						<CgCloseO className="text-white w-6 h-6" />
-					</button>
+					
 
 					{/* Navigation Arrows for Large Screens */}
 					{onPrev && (
@@ -243,15 +238,24 @@ export default function MemeDetail({
 					{/* Right Side Details Overlay */}
 					<div className="absolute top-0 right-0 w-full sm:w-80 lg:w-96 h-full bg-black/90 backdrop-blur-md overflow-y-auto scrollbar-hide p-4 sm:p-6">
 					
-						<div className='pt-7 lg:pt-0'/>
+						<div className='pt-16 lg:pt-0'/>
 						{/* Header */}
-						<div className="flex items-center gap-3 mb-6">
-							<div className="p-2 rounded-full bg-[#29e0ca]/20">
-								<CgProfile className="w-6 h-6 text-[#29e0ca]" />
+						<div className='flex flex-row justify-between items-center mb-6'>
+							<div className="flex items-center gap-3">
+								<div className="p-2 rounded-full bg-[#29e0ca]/20">
+									<CgProfile className="w-6 h-6 text-[#29e0ca]" />
+								</div>
+								<span className="text-[#29e0ca] text-xl font-semibold">
+									{meme.created_by.username}
+								</span>
 							</div>
-							<span className="text-[#29e0ca] text-xl font-semibold">
-								{meme.created_by.username}
-							</span>
+
+							<button
+								onClick={onClose}
+								className="z-50 p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20"
+							>
+								<CgCloseO className="text-white w-6 h-6" />
+							</button>
 						</div>
 
 						{/* Mobile Image with Touch Events */}
