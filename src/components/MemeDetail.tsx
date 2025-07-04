@@ -200,18 +200,13 @@ export default function MemeDetail({
 			<div className="fixed inset-0 z-50 sm:pt-16 pt-0">
 				<div className="relative w-full h-full bg-transparent">
 					{/* Close Button */}
-					<button
-						onClick={onClose}
-						className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20"
-					>
-						<CgCloseO className="text-white w-6 h-6" />
-					</button>
+					
 
 					{/* Navigation Arrows for Large Screens */}
 					{onPrev && (
 						<button
 							onClick={onPrev}
-							className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 hidden sm:flex items-center justify-center"
+							className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center"
 						>
 							<FaChevronLeft className="text-white w-6 h-6" />
 						</button>
@@ -220,7 +215,7 @@ export default function MemeDetail({
 					{onNext && (
 						<button
 							onClick={onNext}
-							className="absolute right-4 sm:right-80 lg:right-96 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 hidden sm:flex items-center justify-center"
+							className="absolute right-4 sm:right-80 lg:right-96 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center"
 						>
 							<FaChevronRight className="text-white w-6 h-6" />
 						</button>
@@ -242,14 +237,25 @@ export default function MemeDetail({
 
 					{/* Right Side Details Overlay */}
 					<div className="absolute top-0 right-0 w-full sm:w-80 lg:w-96 h-full bg-black/90 backdrop-blur-md overflow-y-auto scrollbar-hide p-4 sm:p-6">
+					
+						<div className='pt-16 lg:pt-0'/>
 						{/* Header */}
-						<div className="flex items-center gap-3 mb-6">
-							<div className="p-2 rounded-full bg-[#29e0ca]/20">
-								<CgProfile className="w-6 h-6 text-[#29e0ca]" />
+						<div className='flex flex-row justify-between items-center mb-6'>
+							<div className="flex items-center gap-3">
+								<div className="p-2 rounded-full bg-[#29e0ca]/20">
+									<CgProfile className="w-6 h-6 text-[#29e0ca]" />
+								</div>
+								<span className="text-[#29e0ca] text-xl font-semibold">
+									{meme.created_by.username}
+								</span>
 							</div>
-							<span className="text-[#29e0ca] text-xl font-semibold">
-								{meme.created_by.username}
-							</span>
+
+							<button
+								onClick={onClose}
+								className="z-50 p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20"
+							>
+								<CgCloseO className="text-white w-6 h-6" />
+							</button>
 						</div>
 
 						{/* Mobile Image with Touch Events */}
@@ -268,7 +274,7 @@ export default function MemeDetail({
 						</div>
 
 						{/* Action Buttons */}
-						<div className="flex flex-wrap gap-3 mb-6">
+						<div className="flex flex-wrap gap-3 my-6">
 							{/* Vote Count */}
 							<div className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm">
 								{eyeOpen ? (
@@ -302,15 +308,7 @@ export default function MemeDetail({
 							</div>
 
 							{/* Share */}
-							<button
-								onClick={() => setIsShareOpen(true)}
-								className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
-							>
-								<FaRegShareFromSquare className="text-white w-4 h-4" />
-								<span className="text-[#1783fb] font-bold text-lg">
-									{tab === 'live' ? meme.shares.length : meme.shares}
-								</span>
-							</button>
+							
 
 							{/* Bookmark */}
 							{user && user.address && (
@@ -330,6 +328,13 @@ export default function MemeDetail({
 									</span>
 								</button>
 							)}
+
+							<button
+								onClick={() => setIsShareOpen(true)}
+								className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
+							>
+								<FaRegShareFromSquare className="text-white w-4 h-4" />
+							</button>
 						</div>
 
 						{/* Details Section */}
@@ -422,7 +427,7 @@ export default function MemeDetail({
 											})}
 										</div>
 
-										<div className="flex justify-center mt-6">
+										<div className="justify-center mt-6 hidden">
 											<button 
 												onClick={handleMoreClick}
 												className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 border border-white/20 rounded-lg px-4 py-2 hover:bg-white/20 transition-all duration-300"
@@ -435,6 +440,7 @@ export default function MemeDetail({
 										</div>
 									</div>
 								)}
+							<div className='pb-7 lg:pb-0'/>
 						</div>
 					</div>
 				</div>

@@ -10,6 +10,13 @@
   /* background-image: url("/assets/bg.jpg"); */
 }
 
+html {
+  color-scheme: dark;
+  background-color: #010101;
+  color: #ededed;
+}
+
+
 .no-scrollbar {
   overflow: scroll; /* Allows scrolling */
   scrollbar-width: none; /* For Firefox to hide scrollbar */
@@ -123,7 +130,6 @@ body {
 .css-aphhdw {
   padding: 0 !important;
 }
-
 /* Custom animation for flying up points */
 @keyframes flyUp {
   0% {
