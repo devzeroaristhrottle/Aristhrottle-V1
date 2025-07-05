@@ -89,6 +89,9 @@ async function handleGetRequest(req: NextRequest) {
 				// Convert to plain object if it's a Mongoose document
 				meme = meme.toObject ? meme.toObject() : meme
 				meme.has_user_voted = !!voteExists
+				
+				// Add bookmark count
+				meme.bookmark_count = meme.bookmarks ? meme.bookmarks.length : 0
 			}
 			
 			return NextResponse.json({ meme: meme }, { status: 200 })
@@ -176,6 +179,7 @@ async function handleGetRequest(req: NextRequest) {
 					{
 						$addFields: {
 							has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
+							bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } }
 						},
 					},
 					{
@@ -222,6 +226,11 @@ async function handleGetRequest(req: NextRequest) {
 				name: { $in: searchPatterns }
 			}).distinct('_id')
 			
+			// Find users whose username matches the search terms
+			const matchingUserIds = await User.find({
+				username: { $in: searchPatterns }
+			}).distinct('_id')
+			
 			// For direct name search, use simple string comparison instead of regex
 			// This is more reliable for certain types of content
 			const nameSearchConditions = searchTerms.map(term => ({
@@ -237,6 +246,8 @@ async function handleGetRequest(req: NextRequest) {
 							...nameSearchConditions,
 							// Tag search
 							{ tags: { $in: tagIds } },
+							// Creator username search
+							{ created_by: { $in: matchingUserIds } },
 						],
 						// Don't filter by is_voting_close for search - show all memes
 						// is_voting_close: false
@@ -315,6 +326,14 @@ async function handleGetRequest(req: NextRequest) {
 										else: 0
 									}
 								},
+								// Creator username match gets medium score
+								{
+									$cond: {
+										if: { $in: ["$created_by", matchingUserIds] },
+										then: 15,
+										else: 0
+									}
+								},
 								// Newer memes get a slight boost
 								{
 									$divide: [
@@ -378,6 +397,7 @@ async function handleGetRequest(req: NextRequest) {
 					{
 						$addFields: {
 							has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
+							bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } }
 						},
 					},
 					{
@@ -389,11 +409,14 @@ async function handleGetRequest(req: NextRequest) {
 				)
 			} else {
 				// Remove the scoring field if no user
-				searchPipeline.push({
-					$project: {
-						relevanceScore: 0
-					}
-				})
+				searchPipeline.push(			{
+				$addFields: {
+					bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } }
+				},
+				$project: {
+					relevanceScore: 0
+				}
+			})
 			}
 			
 			// Get total count for pagination
@@ -403,6 +426,7 @@ async function handleGetRequest(req: NextRequest) {
 						$or: [
 							...nameSearchConditions,
 							{ tags: { $in: tagIds } },
+							{ created_by: { $in: matchingUserIds } },
 						],
 						// Don't filter by is_voting_close for search
 						// is_voting_close: false
@@ -480,12 +504,23 @@ async function handleGetRequest(req: NextRequest) {
 					{
 						$addFields: {
 							has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
+							bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } }
 						},
 					},
 					{
 						$project: {
 							userVote: 0,
 						},
+					}
+				)
+			}
+			// Add bookmark count even if no user
+			else {
+				carouselPipeline.push(
+					{
+						$addFields: {
+							bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } }
+						}
 					}
 				)
 			}
@@ -570,6 +605,7 @@ async function handleGetRequest(req: NextRequest) {
 				{
 					$addFields: {
 						has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
+						bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } }
 					},
 				},
 				{
@@ -720,7 +756,7 @@ async function handlePostRequest(req: NextRequest) {
 			in_percentile: 0,
 			is_voting_close: false,
 			voting_days: 1,
-			is_claimed: false,
+			is_claimed: true,
 			is_onchain: false,
 			shares: [],
 			bookmarks: [],
