@@ -13,6 +13,7 @@ import { TabButton } from '@/components/TabButton'
 import MemeDetail from '@/components/MemeDetail'
 import { LeaderboardMemeCard } from './MemeCard'
 import { toast } from 'react-toastify'
+import { Meme } from '../page'
 
 export type LeaderboardMeme = {
 	_id: string
@@ -54,7 +55,7 @@ export default function Page() {
 	const [activeTab, setActiveTab] = useState<'all' | 'daily' | 'live'>('daily')
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
 	const [selectedMeme, setSelectedMeme] = useState<
-		LeaderboardMeme | undefined
+		LeaderboardMeme | undefined | Meme
 	>()
 
 	const [page, setPage] = useState(1)
@@ -338,6 +339,7 @@ export default function Page() {
 					onVoteMeme={meme_id => handleVote(meme_id)}
 					bmk={false}
 					searchRelatedMemes={() => {}}
+					onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
 				/>
 			)}
 		</div>

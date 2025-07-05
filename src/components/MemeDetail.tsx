@@ -17,6 +17,7 @@ import Image from 'next/image'
 import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
 import { useRouter } from 'next/navigation'
+import { FaSpinner } from 'react-icons/fa'
 
 
 interface MemeDetailProps {
@@ -56,7 +57,8 @@ export default function MemeDetail({
 	const { handleBookmark } = useMemeActions()
 	const [isBookmarked, setIsBookmarked] = useState(bmk)
 	const { userDetails, setUserDetails } = useContext(Context);
-	const [eyeOpen, setEyeOpen] = useState<boolean>(meme!.has_user_voted);
+	const [eyeOpen, setEyeOpen] = useState<boolean>(meme?.has_user_voted || false);
+	const [isLoad, setIsLoad] = useState<boolean>(false);
 
 	// Touch/swipe state
 	const [touchStart, setTouchStart] = useState<number | null>(null)
@@ -73,11 +75,13 @@ export default function MemeDetail({
 	const getRelatedMemes = async () => {
 		try {
 			if (meme && isMeme(meme) && meme.tags.length > 0) {
+				setIsLoad(true);
 				const tags = meme.tags.map(t => t.name ? t.name : t).join(',')
 				const response = await axiosInstance.get(`/api/meme?name=${tags}`)
 				if (response.data.memes) {
 					setRelatedMemes([...response.data.memes])
 				}
+				setIsLoad(false);
 			}
 		} catch (error) {
 			console.log(error)
@@ -401,7 +405,7 @@ export default function MemeDetail({
 											Related Contents
 										</h3>
 
-										<div className="grid grid-cols-2 gap-3 sm:gap-4">
+										{!isLoad ? <div className="grid grid-cols-2 gap-3 sm:gap-4">
 											{relatedMemes.map((item, index) => {
 												if (index < 6 && meme.name !== item.name) {
 													return (
@@ -425,7 +429,10 @@ export default function MemeDetail({
 													)
 												}
 											})}
-										</div>
+										</div> : 
+											<div className="flex justify-center items-center">
+												<FaSpinner className='animate-spin h-10 w-10'/>
+											</div>}
 
 										<div className="justify-center mt-6 hidden">
 											<button 

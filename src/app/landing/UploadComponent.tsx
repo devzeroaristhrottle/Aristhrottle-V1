@@ -190,6 +190,10 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	}
 
 	const handleFileSelect = () => {
+		if(!userDetails){
+			openAuthModal()
+			return
+		}
 		fileInputRef.current?.click()
 	}
 
