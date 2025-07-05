@@ -139,6 +139,7 @@ export default function Page() {
 		if (selectedMemeIndex < currentData.length - 1) {
 			const nextIndex = selectedMemeIndex + 1
 			setSelectedMemeIndex(nextIndex)
+			console.log(currentData[nextIndex])
 			setSelectedMeme(currentData[nextIndex])
 		}
 	}
@@ -148,6 +149,7 @@ export default function Page() {
 		if (selectedMemeIndex > 0) {
 			const prevIndex = selectedMemeIndex - 1
 			setSelectedMemeIndex(prevIndex)
+			console.log(currentData[prevIndex])
 			setSelectedMeme(currentData[prevIndex])
 		}
 	}

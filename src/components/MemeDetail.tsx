@@ -159,6 +159,7 @@ export default function MemeDetail({
 	}
 
 	useEffect(() => {
+		setEyeOpen(meme?.has_user_voted || false)
 		getRelatedMemes()
 	}, [meme])
 
