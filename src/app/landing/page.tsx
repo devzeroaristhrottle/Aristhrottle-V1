@@ -228,7 +228,7 @@ export default function Page() {
 
 	const getMemes = async () => {
 		try {
-			//setLoading(true)
+			if(totalMemeCount == 0) setLoading(true)
 			const offsetI = offset * page
 			const response = await axiosInstance.get(
 				`/api/meme?offset=${offsetI}&userId=${userDetails?._id}`
