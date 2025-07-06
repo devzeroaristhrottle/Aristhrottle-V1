@@ -21,6 +21,8 @@ export function getContractUtils(): { contract: ethers.Contract; wallet: ethers.
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
   const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL;
   const privateKey = process.env.PRIVATE_KEY;
+  console.log("contractAddress", contractAddress);
+  console.log("rpcUrl", rpcUrl);
 
   // Set up provider and signer
   const provider = new ethers.JsonRpcProvider(rpcUrl);
