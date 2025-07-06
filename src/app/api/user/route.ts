@@ -9,7 +9,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/utils/apiLogger";
 import Followers from "@/models/Followers";
-import { ethers } from "ethers";
+import { mintTokensAndLog } from "@/ethers/mintUtils";
 
 // Function to generate a random alphanumeric referral code (length: 8)
 // const generateReferralCode = () => {
@@ -265,12 +265,24 @@ async function handlePostRequest(request: NextRequest) {
       // Process blockchain transaction asynchronously after response
       setTimeout(async () => {
         try {
-          // Mint 5 tokens (adjust amount as needed)
-          const {contract} = getContractUtils();
+          // Use mintTokensAndLog utility instead of direct contract call
           const amountToMint = 5;
-          const tx = await contract.mintCoins(savedUser.user_wallet_address, ethers.parseUnits(amountToMint.toString(), 18));
-          await tx.wait(); // Wait for the transaction to be mined
-          console.log(`Minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for referral.`);
+          const mintResult = await mintTokensAndLog(
+            savedUser.user_wallet_address,
+            amountToMint,
+            "referral_reward",
+            {
+              userId: savedUser._id,
+              referralCode: savedUser.referred_by,
+              newUser: true
+            }
+          );
+          
+          if (mintResult.success) {
+            console.log(`Successfully minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for referral. TX: ${mintResult.transactionHash}`);
+          } else {
+            console.error(`Failed to mint tokens: ${mintResult.error}`);
+          }
         } catch (mintError) {
           console.error("Error minting tokens for referred user:", mintError);
           // Optionally handle the error, e.g., log to a specific table or notify admin

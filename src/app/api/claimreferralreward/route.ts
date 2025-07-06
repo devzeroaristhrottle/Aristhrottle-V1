@@ -1,12 +1,11 @@
-import { getContractUtils } from '@/ethers/contractUtils'
 import connectToDatabase from '@/lib/db'
 import Referrals from '@/models/Referrals'
 import User from '@/models/User'
 import { checkIsAuthenticated } from '@/utils/authFunctions'
 import { withApiLogging } from '@/utils/apiLogger'
-import { ethers } from 'ethers'
 import { NextRequest, NextResponse } from 'next/server'
 import mongoose from 'mongoose'
+import { mintTokensAndLog } from '@/ethers/mintUtils'
 
 async function handlePostRequest(req: NextRequest) {
   try {
@@ -50,16 +49,30 @@ async function handlePostRequest(req: NextRequest) {
         
         // Calculate reward
         points_mint = points * 5;
-        const {contract} = getContractUtils();
-        const amount = ethers.parseUnits(points_mint.toString(), 18);
         
-        // Process blockchain transaction
-        const tx = await contract.mintCoins(user.user_wallet_address, amount);
-        await tx.wait();
+        // Process blockchain transaction using mintTokensAndLog
+        const mintResult = await mintTokensAndLog(
+          user.user_wallet_address,
+          points_mint,
+          "referral_reward",
+          {
+            referralCount: points,
+            referralCode: user.refer_code,
+            userId: userId
+          }
+        );
+        
+        // If minting failed, throw an error to trigger transaction rollback
+        if (!mintResult.success) {
+          throw new Error(mintResult.error || "Transaction failed")
+        }
         
         // If everything went well, commit the transaction
         await session.commitTransaction();
-        return NextResponse.json({ points_mint }, { status: 200 });
+        return NextResponse.json({ 
+          points_mint, 
+          transactionHash: mintResult.transactionHash 
+        }, { status: 200 });
       } else {
         await session.abortTransaction();
         return NextResponse.json({ points_mint: 0 }, { status: 200 });
