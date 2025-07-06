@@ -58,7 +58,7 @@ export async function mintTokensAndLog(
     };
     
     // Execute the transaction with options
-    const tx = await contract.mintCoins(recipient, tokenAmount, txOptions);
+    const tx = await contract.mint(recipient, tokenAmount, txOptions);
     
     // Update log with transaction hash
     mintLog.transactionHash = tx.hash;
@@ -106,7 +106,7 @@ export async function mintTokensAndLog(
         }
         
         // Retry with higher gas and fresh nonce
-        const tx = await contract.mintCoins(recipient, tokenAmount, {
+        const tx = await contract.mint(recipient, tokenAmount, {
           gasLimit: 350000,
           gasPrice,
           nonce: newNonce
