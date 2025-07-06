@@ -2,7 +2,7 @@ import connectToDatabase from "@/lib/db";
 import Meme from "@/models/Meme";
 import { NextResponse } from "next/server";
 import { ethers } from "ethers";
-import { getContractUtils } from "@/ethers/contractUtils";
+
 import User from "@/models/User"; // Explicitly import User model
 import mongoose from "mongoose";
 
@@ -71,7 +71,7 @@ export async function POST() {
       }
     });
 
-    // Bulk DB update
+    // Bulk DB update - directly set is_onchain to true
     const bulkOps = memeData.map(({ meme, percentage }) => ({
       updateOne: {
         filter: { _id: meme._id },
@@ -80,59 +80,20 @@ export async function POST() {
             in_percentile: percentage,
             winning_number: rankMap.get(percentage),
             is_voting_close: true,
-            // only set is_onchain true after tx succeeds!
+            is_onchain: true  // Directly mark as on-chain
           },
         },
       },
     }));
 
-    // Smart contract interaction with retry
-    let tx;
-    let retries = 3;
-
-    while (retries > 0) {
-      try {
-        const {contract} = getContractUtils();
-        
-        tx = await contract.addUploadMemeBulk(
-          memeIds,
-          userAddresses,
-          voteCounts
-        );
-        await tx.wait();
-
-        // Only mark memes as on-chain after successful tx
-        const setOnchainOps = memeData.map(({ meme }) => ({
-          updateOne: {
-            filter: { _id: meme._id },
-            update: { $set: { is_onchain: true } },
-          },
-        }));
-
-        await Meme.bulkWrite([...bulkOps, ...setOnchainOps]);
-        break; // exit retry loop
-      } catch (txError) {
-        console.error(
-          `❌ Transaction failed. Retries left: ${retries - 1}`,
-          txError
-        );
-        retries--;
-        if (retries === 0) {
-          return NextResponse.json(
-            { error: "Failed to upload memes to blockchain after 3 retries." },
-            { status: 500 }
-          );
-        }
-        await new Promise((r) => setTimeout(r, 3000)); // Wait before retry
-      }
-    }
+    // Execute all updates in one operation
+    await Meme.bulkWrite(bulkOps);
 
     return NextResponse.json(
       {
         memeIds,
         userAddresses,
         totalMemesProcessed: memeIds.length,
-        txHash: tx?.hash,
       },
       { status: 200 }
     );

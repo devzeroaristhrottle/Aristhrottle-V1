@@ -1,4 +1,3 @@
-import { getContractUtils } from "@/ethers/contractUtils";
 import connectToDatabase from "@/lib/db";
 import Vote from "@/models/Vote";
 import { NextResponse } from "next/server";
@@ -21,16 +20,7 @@ export async function POST() {
       userAddresses.push(vote.vote_by.user_wallet_address);
     }
 
-    if (
-      memeIds.length > 0 &&
-      userAddresses.length > 0 &&
-      memeIds.length === userAddresses.length
-    ) {
-      const {contract} = getContractUtils();
-      
-      const tx = await contract.addMemeVotesBulk(memeIds, userAddresses);
-      await tx.wait();
-    }
+    // We no longer need to send votes to blockchain, just updating the database
 
     if (votes.length > 0) {
       await Vote.updateMany({ is_onchain: false }, { is_onchain: true });
