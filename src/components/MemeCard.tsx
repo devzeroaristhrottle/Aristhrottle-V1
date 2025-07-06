@@ -128,16 +128,15 @@ export function MemeCard({
 								<Logo
 									onClick={() => {
 										if (user && user.address) {
+											if(meme.created_by._id === userDetails?._id) return
 											voteMeme()
 										} else if (openAuthModal) {
 											openAuthModal()
 										}
 									}}
-									classNames={`${
-										activeTab === 'all'
-											? 'opacity-70 !cursor-not-allowed pointer-events-none'
-											: ''
-									}`}
+									classNames={
+										meme.created_by._id === userDetails?._id ? "!cursor-not-allowed" : "!cursor-pointer"
+									}
 								/>
 							)}
 

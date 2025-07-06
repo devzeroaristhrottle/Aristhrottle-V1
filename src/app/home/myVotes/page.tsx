@@ -15,6 +15,7 @@ import Share from '@/components/Share'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
 import { LeaderboardMeme } from '../leaderboard/page'
 import { useRouter } from 'next/navigation'
+import { LazyImage } from '@/components/LazyImage'
 
 type Props = {}
 
@@ -251,9 +252,9 @@ export default function Page({}: Props) {
 						<div className="flex">
 							{/* Image */}
 							<div className="relative flex-grow">
-								<img
-									src={item.vote_to.image_url}
-									alt="Content"
+								<LazyImage 
+									src={item.vote_to.image_url} 
+									alt="Content" 
 									className="w-full aspect-square object-cover border-2 border-white cursor-pointer hover:opacity-80 transition-opacity"
 									onClick={() => handleOpenMeme(item, index)}
 								/>
@@ -379,10 +380,11 @@ export default function Page({}: Props) {
 					onClose={handleCloseMeme}
 					onNext={selectedMemeIndex < filteredMemes.length - 1 ? handleNext : undefined}
 					onPrev={selectedMemeIndex > 0 ? handlePrev : undefined}
-					meme={selectedMeme}
+					meme={{...selectedMeme, has_user_voted: true}}
 					tab={activeTab}
 					onVoteMeme={handleVote}
 					bmk={false} // We could check if user bookmarked this later
+					searchRelatedMemes={() => {}}
 				/>
 			)}
 

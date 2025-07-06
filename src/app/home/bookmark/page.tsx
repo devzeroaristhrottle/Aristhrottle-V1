@@ -7,16 +7,25 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { Meme } from '../page'
 import axiosInstance from '@/utils/axiosInstance'
 import { LazyImage } from '@/components/LazyImage'
-import { FaRegShareFromSquare } from 'react-icons/fa6'
+import { FaRegShareFromSquare, FaBookmark } from 'react-icons/fa6'
 import { CgProfile } from 'react-icons/cg'
 import Share from '@/components/Share'
 import { useRouter } from 'next/navigation'
+import MemeDetail from '@/components/MemeDetail'
+import { CiBookmark } from 'react-icons/ci'
+import { useMemeActions } from './bookmarkHelper'
+import { Logo } from '@/components/Logo'
+import { toast } from 'react-toastify'
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(false)
 	const [memes, setMemes] = useState<Meme[]>([])
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [shareData, setShareData] = useState<{ id: string; imageUrl: string } | null>(null)
+	const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null)
+	const [currentMemeIndex, setCurrentMemeIndex] = useState<number>(0)
+	const [savedMemes, setSavedMemes] = useState<Set<string>>(new Set())
+	const { handleBookmark } = useMemeActions()
 	
 	const user = useUser()
 	const router = useRouter()
@@ -55,7 +64,7 @@ export default function Page() {
 					bookmarks: meme.bookmarks || [],
 					is_onchain: meme.is_onchain || false,
 					__v: meme.__v || 0,
-					has_user_voted: false
+					has_user_voted: meme.has_user_voted
 				}))
 				setMemes(formattedMemes)
 			}
@@ -74,6 +83,73 @@ export default function Page() {
 	const handleCloseShare = () => {
 		setIsShareOpen(false)
 		setShareData(null)
+	}
+
+	const handleMemeClick = (meme: Meme, index: number) => {
+		setSelectedMeme(meme)
+		setCurrentMemeIndex(index)
+	}
+
+	const handleCloseMemeDetail = () => {
+		setSelectedMeme(null)
+	}
+
+	const handleNextMeme = () => {
+		if (currentMemeIndex < memes.length - 1) {
+			const nextIndex = currentMemeIndex + 1
+			setSelectedMeme(memes[nextIndex])
+			setCurrentMemeIndex(nextIndex)
+		}
+	}
+
+	const handlePrevMeme = () => {
+		if (currentMemeIndex > 0) {
+			const prevIndex = currentMemeIndex - 1
+			setSelectedMeme(memes[prevIndex])
+			setCurrentMemeIndex(prevIndex)
+		}
+	}
+
+	const handleVoteMeme = async (memeId: string) => {
+		try {
+			// Update the meme in the list
+			setMemes(prevMemes => 
+				prevMemes.map(meme => 
+					meme._id === memeId 
+						? { ...meme, vote_count: meme.vote_count + 1, has_user_voted: true }
+						: meme
+				)
+			)
+			
+			// Update selected meme if it's the same one
+			if (selectedMeme && selectedMeme._id === memeId) {
+				setSelectedMeme(prev => prev ? { ...prev, vote_count: prev.vote_count + 1, has_user_voted: true } : null)
+			}
+			if(!userDetails) openAuthModal()
+			else await axiosInstance.post('/api/vote', { vote_to: memeId, vote_by: userDetails._id })
+		} catch (error) {
+			console.error('Error voting for meme:', error)
+			toast.error("Error voting meme")
+		}
+	}
+
+	const handleSaveMeme = async (memeId: string) => {
+		try {
+			setSavedMemes(prev => {
+				const newSet = new Set(prev)
+				if (newSet.has(memeId)) {
+					newSet.delete(memeId)
+				} else {
+					newSet.add(memeId)
+				}
+				return newSet
+			})
+
+			// Use the existing bookmark handler
+			handleBookmark(memeId)
+		} catch (error) {
+			console.error('Error saving meme:', error)
+		}
 	}
 
 	if (!user || !user.address) {
@@ -115,7 +191,7 @@ export default function Page() {
 		<div className="flex flex-col items-center justify-center mx-4 md:mx-0 md:ml-20 lg:ml-0">
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full md:max-w-7xl mb-4">
-				{memes.map((item) => (
+				{memes.map((item, index) => (
 					<div key={item._id} className="flex justify-center">
 						<div className="w-full max-w-sm rounded-lg overflow-hidden bg-gradient-to-r from-[#1783fb]/10 to-[#1783fb]/5 border border-[#1783fb]/20 p-4">
 							<div 
@@ -128,11 +204,14 @@ export default function Page() {
 								</span>
 							</div>
 							
-							<div className="image_wrapper w-full aspect-square border-2 border-white rounded-lg overflow-hidden">
+							<div 
+								className="image_wrapper w-full aspect-square border-2 border-white rounded-lg overflow-hidden cursor-pointer"
+								onClick={() => handleMemeClick(item, index)}
+							>
 								<LazyImage
 									src={item.image_url}
 									alt={item.name}
-									className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+									className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
 								/>
 							</div>
 							
@@ -140,10 +219,56 @@ export default function Page() {
 								<p className="font-medium text-lg md:text-xl text-white">
 									{item.name.length > 30 ? item.name.slice(0, 30) + '...' : item.name}
 								</p>
-								<FaRegShareFromSquare
-									className="w-5 h-5 md:w-6 md:h-6 cursor-pointer text-[#1783fb] hover:text-[#29e0ca] transition-colors duration-300"
-									onClick={() => handleShare(item._id, item.image_url)}
-								/>
+								<div className="flex items-center gap-3">
+									{/* Vote Button */}
+									{user && user.address && (
+										<div className="flex flex-row items-center">
+											{item.has_user_voted ? (
+												<img
+													src={'/assets/vote/icon1.png'}
+													alt="vote"
+													className="w-5 h-5 md:w-6 md:h-6"
+												/>
+											) : (
+												<Logo
+													classNames={
+														'w-5 h-5 md:w-6 md:h-6 ' +
+														(item.created_by._id === userDetails?._id
+															? '!cursor-not-allowed'
+															: '!cursor-pointer')
+													}
+													onClick={() => (item.created_by._id != userDetails?._id) && handleVoteMeme(item._id)}
+												/>
+											)}
+											<span className="text-base md:text-lg text-[#1783fb]">
+												{item.vote_count}
+											</span>
+										</div>
+									)}
+									
+									{/* Save/Bookmark Button */}
+									{user && user.address && (
+										<div className="flex flex-col items-center">
+											{savedMemes.has(item._id) ? (
+												<FaBookmark
+													className="w-5 h-5 md:w-6 md:h-6 cursor-pointer text-[#29e0ca] hover:text-[#1783fb] transition-colors duration-300"
+													onClick={() => handleSaveMeme(item._id)}
+												/>
+											) : (
+												<CiBookmark
+													className="w-5 h-5 md:w-6 md:h-6 cursor-pointer text-[#1783fb] hover:text-[#29e0ca] transition-colors duration-300"
+													onClick={() => handleSaveMeme(item._id)}
+												/>
+											)}
+										</div>
+									)}
+									
+									{/* Share Button */}
+									<FaRegShareFromSquare
+										className="w-5 h-5 md:w-6 md:h-6 cursor-pointer text-[#1783fb] hover:text-[#29e0ca] transition-colors duration-300"
+										onClick={() => handleShare(item._id, item.image_url)}
+									/>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -156,6 +281,21 @@ export default function Page() {
 					id={shareData.id}
 					imageUrl={shareData.imageUrl}
 					onClose={handleCloseShare}
+				/>
+			)}
+
+			{/* MemeDetail Component */}
+			{selectedMeme && (
+				<MemeDetail
+					isOpen={!!selectedMeme}
+					onClose={handleCloseMemeDetail}
+					onNext={currentMemeIndex < memes.length - 1 ? handleNextMeme : undefined}
+					onPrev={currentMemeIndex > 0 ? handlePrevMeme : undefined}
+					meme={selectedMeme}
+					tab="bookmark"
+					onVoteMeme={handleVoteMeme}
+					searchRelatedMemes={() => {}}
+					bmk={true}
 				/>
 			)}
 		</div>

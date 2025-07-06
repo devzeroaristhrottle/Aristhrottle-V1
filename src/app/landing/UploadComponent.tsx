@@ -167,7 +167,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				// Revert the optimistic update
 				setUserDetails({
 					...userDetails,
-					generations: Math.max(0, userDetails.generations - 1),
+					generations: Math.max(0, userDetails.generations),
 				})
 			}
 
@@ -190,6 +190,10 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	}
 
 	const handleFileSelect = () => {
+		if(!userDetails){
+			openAuthModal()
+			return
+		}
 		fileInputRef.current?.click()
 	}
 
