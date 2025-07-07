@@ -121,12 +121,12 @@ export default function BookmarkMemeCard({
 					<div className="flex flex-col items-center">
 						{savedMemes.has(meme._id) ? (
 							<FaBookmark
-								className="w-6 h-6 md:w-7 md:h-7 cursor-pointer text-[#29e0ca] hover:text-[#1783fb] transition-colors duration-300"
+								className="w-4 h-6 cursor-pointer text-[#29e0ca] hover:text-[#1783fb] transition-colors duration-300"
 								onClick={() => handleSaveMeme(meme._id)}
 							/>
 						) : (
 							<CiBookmark
-								className="w-6 h-6 md:w-7 md:h-7 cursor-pointer text-[#1783fb] hover:text-[#29e0ca] transition-colors duration-300"
+								className="w-4 h-6 cursor-pointer text-[#1783fb] hover:text-[#29e0ca] transition-colors duration-300"
 								onClick={() => handleSaveMeme(meme._id)}
 							/>
 						)}
@@ -138,7 +138,7 @@ export default function BookmarkMemeCard({
 					{/* Share Button */}
 					<div className="flex flex-col items-center">
 						<FaRegShareFromSquare
-							className="w-6 h-6 md:w-7 md:h-7 cursor-pointer text-[#1783fb] hover:text-[#29e0ca] transition-colors duration-300"
+							className="w-4 h-6 cursor-pointer text-[#1783fb] hover:text-[#29e0ca] transition-colors duration-300"
 							onClick={() => onShare(meme._id, meme.image_url)}
 						/>
 					</div>

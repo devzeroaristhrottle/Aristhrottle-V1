@@ -64,6 +64,8 @@ export default function Page() {
 					has_user_voted: meme.has_user_voted
 				}))
 				setMemes(formattedMemes)
+				setSavedMemes(new Set(formattedMemes.map((meme: Meme) => meme._id)));
+
 			}
 		} catch (error) {
 			console.log(error)
