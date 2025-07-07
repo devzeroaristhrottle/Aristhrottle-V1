@@ -86,6 +86,7 @@ export default function Page() {
 	} | null>(null)
 	const [welcOpen, setWelcOpen] = useState<boolean>(false)
 	const [shownCount, setShownCount] = useState<number>(0);
+	const [showUninteractedOnly, setShowUninteractedOnly] = useState<boolean>(false);
 	/* eslint-disable @typescript-eslint/no-unused-vars */
 	const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
 		useContext(Context)
@@ -329,13 +330,30 @@ export default function Page() {
 			})
 			setFilterMemes(filter)
 		} else {
-			const amd = [...allMemeData]
+			let amd = [...allMemeData]
 			amd.sort((a: LeaderboardMeme, b: LeaderboardMeme) => {
 				const dateA = Date.parse(a.createdAt)
 				const dateB = Date.parse(b.createdAt)
 				if (mode === 'ASC') return dateA - dateB
 				else return dateB - dateA
 			})
+			
+			// Apply uninteracted filter if checkbox is checked
+			if (showUninteractedOnly && userDetails) {
+				amd = amd.filter(meme => {
+					// Exclude if user has voted on this meme
+					if (meme.has_user_voted) return false
+					
+					// Exclude if user created this meme
+					if (meme.created_by._id === userDetails._id) return false
+					
+					// Exclude if user has bookmarked this meme
+					if (bookMarks.some(bookmark => bookmark._id === meme._id)) return false
+					
+					return true
+				})
+			}
+			
 			setAllMemeDataFilter(amd)
 		}
 	}
@@ -349,11 +367,28 @@ export default function Page() {
 			})
 			setFilterMemes(filter)
 		} else {
-			const amd = [...allMemeData]
+			let amd = [...allMemeData]
 			amd.sort((a: LeaderboardMeme, b: LeaderboardMeme) => {
 				if (mode === 'ASC') return a.vote_count - b.vote_count
 				else return b.vote_count - a.vote_count
 			})
+			
+			// Apply uninteracted filter if checkbox is checked
+			if (showUninteractedOnly && userDetails) {
+				amd = amd.filter(meme => {
+					// Exclude if user has voted on this meme
+					if (meme.has_user_voted) return false
+					
+					// Exclude if user created this meme
+					if (meme.created_by._id === userDetails._id) return false
+					
+					// Exclude if user has bookmarked this meme
+					if (bookMarks.some(bookmark => bookmark._id === meme._id)) return false
+					
+					return true
+				})
+			}
+			
 			setAllMemeDataFilter(amd)
 		}
 	}
@@ -430,7 +465,22 @@ export default function Page() {
 				)
 			})
 		}
-		// 'all' tab: no additional filtering
+
+		// Filter out interacted content if checkbox is checked
+		if (showUninteractedOnly && userDetails) {
+			filtered = filtered.filter(meme => {
+				// Exclude if user has voted on this meme
+				if (meme.has_user_voted) return false
+				
+				// Exclude if user created this meme
+				if (meme.created_by._id === userDetails._id) return false
+				
+				// Exclude if user has bookmarked this meme
+				if (bookMarks.some(bookmark => bookmark._id === meme._id)) return false
+				
+				return true
+			})
+		}
 
 		return filtered
 	}
@@ -445,10 +495,38 @@ export default function Page() {
 		setPage(1)
 	}
 
+	// Apply uninteracted filter to all memes data
+	const applyUninteractedFilterToAll = () => {
+		if (showUninteractedOnly && userDetails) {
+			const filtered = allMemeData.filter(meme => {
+				// Exclude if user has voted on this meme
+				if (meme.has_user_voted) return false
+				
+				// Exclude if user created this meme
+				if (meme.created_by._id === userDetails._id) return false
+				
+				// Exclude if user has bookmarked this meme
+				if (bookMarks.some(bookmark => bookmark._id === meme._id)) return false
+				
+				return true
+			})
+			setAllMemeDataFilter(filtered)
+		} else {
+			setAllMemeDataFilter([...allMemeData])
+		}
+	}
+
 	useEffect(() => {
 		const displayedMemes = getFilteredMemes()
 		setDisplayedMeme(displayedMemes)
-	}, [filterMemes])
+	}, [filterMemes, showUninteractedOnly, bookMarks])
+
+	// Apply uninteracted filter when checkbox state changes or data changes
+	useEffect(() => {
+		if (activeTab === 'all') {
+			applyUninteractedFilterToAll()
+		}
+	}, [showUninteractedOnly, allMemeData, bookMarks, userDetails])
 
 	const isInView = useInView(memeContainerRef, {
 		amount: 0.1, // Trigger when 10% visible
@@ -635,8 +713,27 @@ export default function Page() {
 			{/* Tabs and Sort (Normal Layout) */}
 			{/* Sort and Tabs Row */}
 			<div className="flex items-center justify-between flex-wrap gap-y-4">
-				{/* Sort Button */}
-				<div className="lg:flex-1">
+				{/* Sort Button and Filter Checkbox */}
+				<div className="lg:flex-1 flex items-center gap-4">
+					{/* Uninteracted Content Filter */}
+					{userDetails && (
+						<div className="flex items-center gap-2">
+							<input
+								type="checkbox"
+								id="uninteracted-filter"
+								checked={showUninteractedOnly}
+								onChange={(e) => setShowUninteractedOnly(e.target.checked)}
+								className="w-4 h-4 text-[#1783fb] bg-transparent border-2 border-[#1783fb] rounded focus:ring-[#1783fb] focus:ring-2"
+							/>
+							<label 
+								htmlFor="uninteracted-filter" 
+								className="text-sm md:text-base text-white cursor-pointer whitespace-nowrap"
+							>
+								New content only
+							</label>
+						</div>
+					)}
+					
 					<PopoverRoot>
 						<PopoverTrigger asChild>
 							<Button
