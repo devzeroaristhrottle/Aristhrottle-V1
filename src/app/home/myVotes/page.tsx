@@ -365,8 +365,8 @@ export default function Page({}: Props) {
 					{!loading && filteredMemes.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto">
 							{activeTab === 'live' 
-								? 'No live memes found' 
-								: 'Meme not found'
+								? 'No live content found' 
+								: 'Content not found'
 							}
 						</p>
 					)}

@@ -917,7 +917,7 @@ export default function Page() {
 					displayedMemes?.length === 0 &&
 					allMemeData?.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
-							Meme not found
+							Content not found
 						</p>
 					)}
 				{loading && (
