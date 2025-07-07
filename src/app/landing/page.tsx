@@ -168,7 +168,7 @@ export default function Page() {
 	}, [])
 
 	const handleNext = () => {
-		const currentData = activeTab === 'live' ? displayedMemes : allMemeData
+		const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
 		if (selectedMemeIndex < currentData.length - 1) {
 			const nextIndex = selectedMemeIndex + 1
 			setSelectedMemeIndex(nextIndex)
@@ -177,7 +177,7 @@ export default function Page() {
 	}
 
 	const handlePrev = () => {
-		const currentData = activeTab === 'live' ? displayedMemes : allMemeData
+		const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
 		if (selectedMemeIndex > 0) {
 			const prevIndex = selectedMemeIndex - 1
 			setSelectedMemeIndex(prevIndex)
