@@ -4,6 +4,7 @@ import { checkIsAuthenticated } from "@/utils/authFunctions";
 import { withApiLogging } from "@/utils/apiLogger";
 import { NextRequest, NextResponse } from "next/server";
 import { mintTokensAndLog } from "@/ethers/mintUtils";
+import mongoose from "mongoose";
 
 async function handlePostRequest(req: NextRequest) {
   try {
@@ -42,35 +43,52 @@ async function handlePostRequest(req: NextRequest) {
       );
     }
 
-    const milestoneData = await Milestone.findOne({
-      created_by: userId,
-      type: type,
-      milestone: milestone,
-      is_claimed: false,
-    }).populate("created_by");
-
-    if (!milestoneData) {
-      return NextResponse.json(
-        { message: "Milestone not found or already claimed" },
-        { status: 404 }
-      );
-    }
-
-    if (!milestoneData.created_by.user_wallet_address) {
-      return NextResponse.json(
-        { message: "User wallet address not found" },
-        { status: 400 }
-      );
-    }
-
-    if (!milestoneData.reward) {
-      return NextResponse.json(
-        { message: "No reward associated with this milestone" },
-        { status: 400 }
-      );
-    }
+    // Use findOneAndUpdate with the original query to atomically find and mark as claimed
+    // This prevents race conditions by ensuring only one process can claim the milestone
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
+      // First attempt to mark the milestone as "claiming" to lock it
+      const milestoneData = await Milestone.findOneAndUpdate(
+        {
+          created_by: userId,
+          type: type,
+          milestone: milestone,
+          is_claimed: false,
+        },
+        { $set: { claiming_in_progress: true } },
+        { new: true, session }
+      ).populate("created_by");
+
+      if (!milestoneData) {
+        await session.abortTransaction();
+        session.endSession();
+        return NextResponse.json(
+          { message: "Milestone not found or already being claimed" },
+          { status: 404 }
+        );
+      }
+
+      if (!milestoneData.created_by.user_wallet_address) {
+        await session.abortTransaction();
+        session.endSession();
+        return NextResponse.json(
+          { message: "User wallet address not found" },
+          { status: 400 }
+        );
+      }
+
+      if (!milestoneData.reward) {
+        await session.abortTransaction();
+        session.endSession();
+        return NextResponse.json(
+          { message: "No reward associated with this milestone" },
+          { status: 400 }
+        );
+      }
+
+      // Process the transaction
       const mintResult = await mintTokensAndLog(
         milestoneData.created_by.user_wallet_address,
         milestoneData.reward,
@@ -84,17 +102,34 @@ async function handlePostRequest(req: NextRequest) {
       );
       
       if (!mintResult.success) {
+        // Release the lock if minting fails
+        await Milestone.findByIdAndUpdate(
+          milestoneData._id,
+          { $unset: { claiming_in_progress: 1 } },
+          { session }
+        );
+        await session.abortTransaction();
+        session.endSession();
         throw new Error(mintResult.error || "Transaction failed");
       }
 
+      // Mark as fully claimed only if the mint was successful
       const update = await Milestone.findOneAndUpdate(
         {
           _id: milestoneData._id,
+          claiming_in_progress: true,
           is_claimed: false,
         },
-        { is_claimed: true },
-        { new: true }
+        { 
+          is_claimed: true,
+          $unset: { claiming_in_progress: 1 },
+          transaction_hash: mintResult.transactionHash
+        },
+        { new: true, session }
       );
+      
+      await session.commitTransaction();
+      session.endSession();
       
       if (!update) {
         return NextResponse.json(
@@ -108,6 +143,15 @@ async function handlePostRequest(req: NextRequest) {
         transactionHash: mintResult.transactionHash
       }, { status: 200 });
     } catch (txError) {
+      // Make sure to abort the transaction if there's an error
+      try {
+        await session.abortTransaction();
+      } catch (abortError) {
+        console.error("Error aborting transaction:", abortError);
+      } finally {
+        session.endSession();
+      }
+      
       console.error("Transaction error:", txError);
       return NextResponse.json(
         { message: "Failed to process reward transaction", error: txError instanceof Error ? txError.message : String(txError) },

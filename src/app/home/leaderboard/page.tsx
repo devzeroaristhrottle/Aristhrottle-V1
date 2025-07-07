@@ -325,7 +325,7 @@ export default function Page() {
 					)}
 					{!loading && finalFilterMeme.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto">
-							Meme not found
+							Content not found
 						</p>
 					)}
 				</div>

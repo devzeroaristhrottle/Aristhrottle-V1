@@ -163,7 +163,7 @@ export default function Page({}: Props) {
 	const handleBookmarkClick = async (memeId: string) => {
 		try {
 			await handleBookmark(memeId)
-			toast.success('Bookmark updated!')
+			toast.success('Content Saved!')
 		} catch (error) {
 			console.error(error)
 			toast.error('Failed to update bookmark')
@@ -210,7 +210,7 @@ export default function Page({}: Props) {
 					}`}
 					onClick={() => setActiveTab('live')}
 				>
-					Live{' '}
+					Today{' '}
 					<span className="relative flex h-3 w-3 items-center justify-center ml-1">
 						<span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
 						<span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
@@ -365,8 +365,8 @@ export default function Page({}: Props) {
 					{!loading && filteredMemes.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto">
 							{activeTab === 'live' 
-								? 'No live memes found' 
-								: 'Meme not found'
+								? 'No live content found' 
+								: 'Content not found'
 							}
 						</p>
 					)}

@@ -328,6 +328,7 @@ export default function UserProfilePage() {
 								</div>
 							)}
 							<div>{userProfile.followersCount} Followers</div>
+							<div>{userProfile.followingCount} Following</div>
 						</div>
 					</div>
 					

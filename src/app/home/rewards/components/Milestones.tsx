@@ -29,6 +29,8 @@ export const Milestones = ({
         userId,
         type,
         milestone,
+      }, {
+        timeout: 5000
       });
       if (response.status == 200) {
         const updatedMilestones = [...milestones];
