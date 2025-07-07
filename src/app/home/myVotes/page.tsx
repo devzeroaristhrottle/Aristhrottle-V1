@@ -163,7 +163,7 @@ export default function Page({}: Props) {
 	const handleBookmarkClick = async (memeId: string) => {
 		try {
 			await handleBookmark(memeId)
-			toast.success('Bookmark updated!')
+			toast.success('Content Saved!')
 		} catch (error) {
 			console.error(error)
 			toast.error('Failed to update bookmark')
