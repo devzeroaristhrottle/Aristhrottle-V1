@@ -10,7 +10,6 @@ import axiosInstance from '@/utils/axiosInstance'
 import Share from '@/components/Share'
 import { useRouter } from 'next/navigation'
 import MemeDetail from '@/components/MemeDetail'
-import { useMemeActions } from './bookmarkHelper'
 import { toast } from 'react-toastify'
 import BookmarkMemeCard from '@/components/BookmarkMemeCard'
 
@@ -22,7 +21,6 @@ export default function Page() {
 	const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null)
 	const [currentMemeIndex, setCurrentMemeIndex] = useState<number>(0)
 	const [savedMemes, setSavedMemes] = useState<Set<string>>(new Set())
-	const { handleBookmark } = useMemeActions()
 	
 	const user = useUser()
 	const router = useRouter()

@@ -34,7 +34,6 @@ interface DraftMeme {
 		_id: string
 		username: string
 	}
-	last_edited: string
 	is_published: boolean
 	draft_data: any
 	createdAt: string
@@ -54,7 +53,7 @@ export default function Page() {
 	const [loading, setLoading] = useState<boolean>(false)
 	const [memes, setMemes] = useState<LeaderboardMeme[]>([])
 	const [draftMemes, setDraftMemes] = useState<DraftMeme[]>([])
-	const [activeTab, setActiveTab] = useState<'live' | 'all' | 'generations'>('live')
+	const [activeTab, setActiveTab] = useState<'all' | 'generations'>('all')
 	const [filterOpen, setFilterOpen] = useState(false)
 	const [sortOpen, setSortOpen] = useState(false)
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
@@ -70,17 +69,6 @@ export default function Page() {
 		today.setUTCHours(0, 0, 0, 0) // Start of today in UTC
 		const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000) // Start of yesterday
 		yesterday.setUTCHours(0, 0, 0, 0)
-
-		if (activeTab === 'live') {
-			// Memes from today (00:00 to 23:59 UTC)
-			return memes.filter(meme => {
-				const createdAt = new Date(meme.createdAt)
-				return (
-					createdAt >= today &&
-					createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)
-				)
-			})
-		}
 		// else if (activeTab === "daily") {
 		//   // Memes from yesterday (00:00 to 23:59 UTC)
 		//   return memes.filter((meme) => {
@@ -189,13 +177,14 @@ export default function Page() {
 		setMemes([])
 		setDraftMemes([])
 		resetFilters() // Reset filters on tab/page/user change
-		
+
 		if (activeTab === 'generations') {
 			getDraftMemes()
 		} else {
 			getMyMemes()
 		}
-	}, [userDetails, page, activeTab])
+		
+	}, [userDetails, page])
 
 	const onCancel = () => {
 		setEditProfileOpen(false)
@@ -223,7 +212,13 @@ export default function Page() {
 	const handleTabChange = (tab: string) => {
 		setMemes([])
 		setDraftMemes([])
-		setActiveTab(tab.toLowerCase() as 'live' | 'all' | 'generations')
+		const newTab = tab.toLowerCase() as 'all' | 'generations'
+		setActiveTab(newTab)
+		if (newTab === 'generations') {
+			getDraftMemes()
+		} else {
+			getMyMemes()
+		}
 	}
 
 	const onClose = () => {
@@ -469,12 +464,6 @@ export default function Page() {
 							onClick={() => handleTabChange('generations')}
 						/>
 						<TabButton
-							classname="!text-base md:!text-xl !px-2  md:!px-8 !rounded-md md:!rounded-10px"
-							isActive={activeTab === 'live'}
-							label="Live"
-							onClick={() => handleTabChange('live')}
-						/>
-						<TabButton
 							classname="!text-base md:!text-xl !px-2 md:!px-5 !rounded-md md:!rounded-10px"
 							isActive={activeTab === 'all'}
 							label="All-Time"
@@ -494,7 +483,7 @@ export default function Page() {
 							<div key={index} className="w-full max-w-sm">
 								{activeTab === 'generations' ? (
 									<DraftMemeCard
-										draft={draftMemes.find(d => d._id === item._id)!}
+										draft={draftMemes.find(d => d._id === item._id)}
 										onDeleteDraft={handleDeleteDraft}
 										onPublishDraft={handlePublishDraft}
 										onOpenMeme={() => {
@@ -524,7 +513,7 @@ export default function Page() {
 						<div key={index} className="hidden md:block">
 							{activeTab === 'generations' ? (
 								<DraftMemeCard
-									draft={draftMemes.find(d => d._id === item._id)!}
+									draft={draftMemes.find(d => d._id === item._id)}
 									onDeleteDraft={handleDeleteDraft}
 									onPublishDraft={handlePublishDraft}
 									onOpenMeme={() => {
@@ -588,7 +577,7 @@ export default function Page() {
 
 // Draft Meme Card Component
 interface DraftMemeCardProps {
-	draft: DraftMeme
+	draft: DraftMeme | undefined
 	onDeleteDraft: (draftId: string) => void
 	onPublishDraft: (draftId: string) => void
 	onOpenMeme: () => void
@@ -601,6 +590,23 @@ const DraftMemeCard: React.FC<DraftMemeCardProps> = ({
 	onOpenMeme 
 }) => {
 	const [showActions, setShowActions] = useState(false)
+	
+	// If draft is undefined, show a loading placeholder
+	if (!draft) {
+		return (
+			<div className="p-4 md:p-4 w-full lg:mx-auto">
+				<div className="flex flex-col md:flex-row gap-x-1">
+					<div className="flex flex-col">
+						<div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[23rem] xl:h-[23rem] object-cover border-2 border-white relative">
+							<div className="w-full h-full bg-gray-800 flex items-center justify-center">
+								<span className="text-gray-400 text-center">Loading...</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		)
+	}
 
 	return (
 		<div className="p-4 md:p-4 w-full lg:mx-auto">
@@ -613,9 +619,6 @@ const DraftMemeCard: React.FC<DraftMemeCardProps> = ({
 							</span>
 						</div>
 						<div className="flex items-center gap-x-2">
-							<span className="text-[#666] text-sm">
-								{new Date(draft.last_edited).toLocaleDateString()}
-							</span>
 						</div>
 					</div>
 					<div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[23rem] xl:h-[23rem] object-cover border-2 border-white relative">

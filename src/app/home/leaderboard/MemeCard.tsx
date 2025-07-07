@@ -24,6 +24,8 @@ export const LeaderboardMemeCard: React.FC<{
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const { userDetails, setUserDetails } = useContext(Context)
 	const [bmkCount, setBmkCount] = useState<number>(meme.bookmarks?.length | 0);
+	const [eyeOpen, setEyeOpen] = useState<boolean>(meme.has_user_voted);
+	const [count, setCount] = useState<number>(meme.vote_count);
 
 	const user = useUser()
 	const router = useRouter()
@@ -35,8 +37,11 @@ export const LeaderboardMemeCard: React.FC<{
 	const localVoteMeme = (memeid: string) => {
 		try {
 			if (voteMeme) voteMeme(memeid)
+			else return
 
 			setShowPointsAnimation(true)
+			setEyeOpen(true);
+			setCount(count + 1);
 			setTimeout(() => {
 				setShowPointsAnimation(false)
 			}, 2000)
@@ -47,6 +52,8 @@ export const LeaderboardMemeCard: React.FC<{
 				})
 			}
 		} catch (err) {
+			setEyeOpen(false);
+			setCount(count);
 			console.log(err)
 		}
 	}
@@ -107,7 +114,7 @@ export const LeaderboardMemeCard: React.FC<{
 							)} */}
 
 							<div className="flex flex-col items-center justify-center gap-x-2 relative">
-								{meme.has_user_voted ? (
+								{eyeOpen ? (
 									<img
 										src={'/assets/vote/icon1.png'}
 										alt="vote"
@@ -127,7 +134,7 @@ export const LeaderboardMemeCard: React.FC<{
 									/>
 								)}
 								<span className="text-base md:text-2xl text-[#1783fb]">
-									{meme.vote_count}
+									{count}
 								</span>
 
 								{/* +0.1 Points Animation */}
