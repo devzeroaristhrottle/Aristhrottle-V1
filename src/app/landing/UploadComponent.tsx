@@ -278,6 +278,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
+					timeout: 5000
 				})
 
 				if (uploadResponse.status === 201) {
