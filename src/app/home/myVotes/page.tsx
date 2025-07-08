@@ -75,9 +75,10 @@ export default function Page({}: Props) {
 				throw new Error('User not found')
 			}
 			setLoading(true)
-			const offsetI = offset
+			// Fetch a larger number of memes to ensure we get all of them
+			const largeOffset = 100 // Increased from default offset
 			const response = await axiosInstance.get(
-				`/api/meme?vote_by=${userDetails._id}&offset=${offsetI}`
+				`/api/meme?vote_by=${userDetails._id}&offset=${largeOffset}`
 			)
 
 			if (response.data.memes) {
@@ -105,7 +106,16 @@ export default function Page({}: Props) {
 		return allMemes
 	}
 
-	const filteredMemes = getFilteredMemes()
+	// Sort memes by createdAt date (latest to oldest)
+	const sortByDate = (memes: MyVotedMeme[]) => {
+		return [...memes].sort((a, b) => {
+			const dateA = new Date(a.vote_to.createdAt).getTime()
+			const dateB = new Date(b.vote_to.createdAt).getTime()
+			return dateB - dateA // Sort in descending order (newest first)
+		})
+	}
+
+	const filteredMemes = sortByDate(getFilteredMemes())
 
 	// Transform meme data for compatibility with MemeDetail
 	const transformMeme = (votedMeme: MyVotedMeme): LeaderboardMeme => {
