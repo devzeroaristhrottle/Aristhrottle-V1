@@ -71,6 +71,7 @@ export default function Page() {
 		[]
 	)
 	const { openAuthModal } = useAuthModal()
+	const [isUploading, setIsUploading] = useState(false)
 
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
@@ -407,17 +408,17 @@ export default function Page() {
 		let pollInterval: NodeJS.Timeout | null = null
 
 		const handleVisibilityChange = () => {
-			if (document.hidden && pollInterval) {
+			if ((document.hidden || isUploading) && pollInterval) {
 				clearInterval(pollInterval)
 				pollInterval = null
-			} else if (!document.hidden && activeTab === 'live') {
+			} else if (!document.hidden && !isUploading && activeTab === 'live') {
 				pollInterval = setInterval(() => {
 					pollMemes()
 				}, 30000)
 			}
 		}
 
-		if (activeTab === 'live') {
+		if (activeTab === 'live' && !isUploading) {
 			pollInterval = setInterval(() => {
 				pollMemes()
 			}, 30000)
@@ -430,7 +431,7 @@ export default function Page() {
 			}
 			document.removeEventListener('visibilitychange', handleVisibilityChange)
 		}
-	}, [activeTab, page, userDetails?._id])
+	}, [activeTab, page, userDetails?._id, isUploading])
 
 	useEffect(() => {
 		const time = setTimeout(() => {
@@ -673,7 +674,11 @@ export default function Page() {
 			</div>
 
 			{/* Upload Component */}
-			<UploadComponent onUpload={addMeme} onRevert={revertMeme} />
+			<UploadComponent 
+				onUpload={addMeme} 
+				onRevert={revertMeme} 
+				setIsUploading={setIsUploading} 
+			/>
 			<WelcomeCard isOpen={welcOpen} onClose={() => setWelcOpen(false)} />
 			<div className="h-8" />
 			{/* Popular Tags */}

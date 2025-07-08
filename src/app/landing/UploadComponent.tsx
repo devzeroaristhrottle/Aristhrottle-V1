@@ -17,9 +17,10 @@ interface Tags {
 interface UploadCompProps {
 	onUpload(meme: Meme): void
 	onRevert(meme: Meme): void
+	setIsUploading: (isUploading: boolean) => void
 }
 
-const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
+const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsUploading }) => {
 	const { setUserDetails, userDetails } = useContext(Context)
 	const [title, setTitle] = useState('')
 	const [selectedTags, setSelectedTags] = useState<Tags[]>([])
@@ -27,7 +28,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [newTagInput, setNewTagInput] = useState('')
 	const [generatedImage, setGeneratedImage] = useState<string | null>(null)
 	const [isGenerating, setIsGenerating] = useState<boolean>(false)
-	const [isUploading, setIsUploading] = useState<boolean>(false)
+	const [isLocalUploading, setIsLocalUploading] = useState<boolean>(false)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const { openAuthModal } = useAuthModal()
@@ -261,6 +262,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			const optimisticMeme = handleUploadMeme(generatedImage)
 
 			try {
+				setIsLocalUploading(true)
 				setIsUploading(true)
 
 				const response = await fetch(generatedImage)
@@ -317,6 +319,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 
 				onRevert(optimisticMeme)
 			} finally {
+				setIsLocalUploading(false)
 				setIsUploading(false)
 			}
 		}
@@ -500,10 +503,10 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				<div className="flex flex-col sm:flex-row justify-center lg:justify-evenly gap-3 lg:gap-4 w-full text-[24px]">
 					<button
 						onClick={handleUpload}
-						disabled={isUploading}
+						disabled={isLocalUploading}
 						className="rounded-full bg-[#28e0ca] px-4 py-1 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isUploading ? 'Posting...' : 'Post'}
+						{isLocalUploading ? 'Posting...' : 'Post'}
 					</button>
 					<button
 						onClick={getImage}
