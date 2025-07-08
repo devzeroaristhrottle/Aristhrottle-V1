@@ -14,6 +14,7 @@ import axiosInstance from '@/utils/axiosInstance'
 import ProgressBar from './ProgressBar'
 import { BiDownArrowAlt } from 'react-icons/bi'
 import Loader from '@/components/Loader'
+import { useUser } from '@account-kit/react'
 
 export type ReferralResponse = {
 	totalReferralCount: number
@@ -29,6 +30,7 @@ const Referrals = () => {
 	>(getMilestoneTitles([], 'referrals'))
 	const [isLoading, setIsLoading] = useState(true)
 	const [isClaimLoading, setIsClaimLoading] = useState(false)
+	const user = useUser()
 
 	const userId = userDetails?._id
 
@@ -148,6 +150,24 @@ const Referrals = () => {
 						</div>
 					)}
 				</div>
+				
+				{user && user.address && (
+					<div className="history flex flex-col gap-2 md:gap-5 items-center border-2 border-[#1783FB] rounded-lg p-2 md:p-5 mx-8 md:mx-0">
+						<h4 className="text-2xl md:text-4xl">History</h4>
+						<p className="text-[#1783FB] text-lg md:text-xl text-center">
+							View on blockchain explorer
+						</p>
+						<a 
+							href={`${process.env.NEXT_PUBLIC_RPC_URL}/token/${user.address}?a=${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="bg-[#040f2b] border-2 border-[#1783FB] rounded-lg text-xl md:text-2xl px-4 md:px-8 py-1 md:py-2 hover:bg-blue-500/20 transition-all duration-200 text-center bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"
+						>
+							View History
+						</a>
+					</div>
+				)}
+				
 				<div className="rules flex flex-col md:gap-3 items-center justify-center border-2 border-[#1783FB] rounded-lg p-3 md:p-5 mx-8 md:mx-0">
 					<h4 className="text-2xl md:text-4xl">Rules</h4>
 					<p className="text-2xl md:text-3xl">1 Referral</p>

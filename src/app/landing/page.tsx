@@ -71,6 +71,7 @@ export default function Page() {
 		[]
 	)
 	const { openAuthModal } = useAuthModal()
+	const [isUploading, setIsUploading] = useState(false)
 
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
@@ -338,23 +339,17 @@ export default function Page() {
 				else return dateB - dateA
 			})
 			
-			// Apply uninteracted filter if checkbox is checked
 			if (showUninteractedOnly && userDetails) {
 				amd = amd.filter(meme => {
-					// Exclude if user has voted on this meme
 					if (meme.has_user_voted) return false
-					
-					// Exclude if user created this meme
 					if (meme.created_by._id === userDetails._id) return false
-					
-					// Exclude if user has bookmarked this meme
 					if (bookMarks.some(bookmark => bookmark._id === meme._id)) return false
 					
 					return true
 				})
 			}
 			
-			setAllMemeDataFilter([...amd].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+			setAllMemeDataFilter([...amd])
 		}
 	}
 
@@ -376,20 +371,15 @@ export default function Page() {
 			// Apply uninteracted filter if checkbox is checked
 			if (showUninteractedOnly && userDetails) {
 				amd = amd.filter(meme => {
-					// Exclude if user has voted on this meme
 					if (meme.has_user_voted) return false
-					
-					// Exclude if user created this meme
 					if (meme.created_by._id === userDetails._id) return false
-					
-					// Exclude if user has bookmarked this meme
 					if (bookMarks.some(bookmark => bookmark._id === meme._id)) return false
 					
 					return true
 				})
 			}
 			
-			setAllMemeDataFilter([...amd].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+			setAllMemeDataFilter([...amd])
 		}
 	}
 
@@ -418,17 +408,17 @@ export default function Page() {
 		let pollInterval: NodeJS.Timeout | null = null
 
 		const handleVisibilityChange = () => {
-			if (document.hidden && pollInterval) {
+			if ((document.hidden || isUploading) && pollInterval) {
 				clearInterval(pollInterval)
 				pollInterval = null
-			} else if (!document.hidden && activeTab === 'live') {
+			} else if (!document.hidden && !isUploading && activeTab === 'live') {
 				pollInterval = setInterval(() => {
 					pollMemes()
 				}, 30000)
 			}
 		}
 
-		if (activeTab === 'live') {
+		if (activeTab === 'live' && !isUploading) {
 			pollInterval = setInterval(() => {
 				pollMemes()
 			}, 30000)
@@ -441,7 +431,7 @@ export default function Page() {
 			}
 			document.removeEventListener('visibilitychange', handleVisibilityChange)
 		}
-	}, [activeTab, page, userDetails?._id])
+	}, [activeTab, page, userDetails?._id, isUploading])
 
 	useEffect(() => {
 		const time = setTimeout(() => {
@@ -684,7 +674,11 @@ export default function Page() {
 			</div>
 
 			{/* Upload Component */}
-			<UploadComponent onUpload={addMeme} onRevert={revertMeme} />
+			<UploadComponent 
+				onUpload={addMeme} 
+				onRevert={revertMeme} 
+				setIsUploading={setIsUploading} 
+			/>
 			<WelcomeCard isOpen={welcOpen} onClose={() => setWelcOpen(false)} />
 			<div className="h-8" />
 			{/* Popular Tags */}
@@ -765,7 +759,7 @@ export default function Page() {
 										/>
 									</div>
 								</div>
-								<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
+								{activeTab != "live" && (<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
 									<p className="text-xl text-nowrap mr-2">By Votes</p>
 									<div className="flex items-end gap-3">
 										<LiaSortAmountUpAltSolid
@@ -779,7 +773,7 @@ export default function Page() {
 											size={20}
 										/>
 									</div>
-								</div>
+								</div>)}
 							</PopoverBody>
 						</PopoverContent>
 					</PopoverRoot>

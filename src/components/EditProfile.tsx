@@ -280,7 +280,7 @@ export default function EditProfile({
                 type="submit"
                 className="px-3 py-1 text-black font-semibold rounded-full bg-[#29e0ca] hover:text-white hover:bg-transparent hover:border hover:border-white transition-colors"
               >
-                Upload
+                Save
               </button>
             </div>
           </form>

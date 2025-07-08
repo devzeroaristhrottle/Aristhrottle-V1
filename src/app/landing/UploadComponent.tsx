@@ -1,12 +1,13 @@
 import React, { useState, useRef, useContext, useEffect } from 'react'
 import { HiSparkles } from 'react-icons/hi2'
-import { IoCloudUploadOutline } from 'react-icons/io5'
+import { IoCloudUploadOutline, IoSaveOutline } from 'react-icons/io5'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { type Meme } from '../home/page'
 import { toast } from 'react-toastify'
 import { getTimeUntilReset } from '@/utils/dateUtils'
+import axios from 'axios'
 
 interface Tags {
 	name: string
@@ -16,9 +17,10 @@ interface Tags {
 interface UploadCompProps {
 	onUpload(meme: Meme): void
 	onRevert(meme: Meme): void
+	setIsUploading: (isUploading: boolean) => void
 }
 
-const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
+const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsUploading }) => {
 	const { setUserDetails, userDetails } = useContext(Context)
 	const [title, setTitle] = useState('')
 	const [selectedTags, setSelectedTags] = useState<Tags[]>([])
@@ -26,7 +28,8 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 	const [newTagInput, setNewTagInput] = useState('')
 	const [generatedImage, setGeneratedImage] = useState<string | null>(null)
 	const [isGenerating, setIsGenerating] = useState<boolean>(false)
-	const [isUploading, setIsUploading] = useState<boolean>(false)
+	const [isLocalUploading, setIsLocalUploading] = useState<boolean>(false)
+	const [isSavingDraft, setIsSavingDraft] = useState<boolean>(false)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
 	const { openAuthModal } = useAuthModal()
@@ -260,6 +263,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 			const optimisticMeme = handleUploadMeme(generatedImage)
 
 			try {
+				setIsLocalUploading(true)
 				setIsUploading(true)
 
 				const response = await fetch(generatedImage)
@@ -278,7 +282,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
-					timeout: 5000
+					timeout: 180000
 				})
 
 				if (uploadResponse.status === 201) {
@@ -295,12 +299,107 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				}
 			} catch (error) {
 				console.error('Error uploading meme:', error)
-				toast.error('Failed to upload meme. Please try again.')
+				
+				// Provide more specific error messages based on error type
+				if (axios.isAxiosError(error)) {
+					if (error.code === 'ECONNABORTED') {
+						toast.error('Upload timed out. Please try with a smaller image or check your connection.')
+					} else if (error.response) {
+						// Server responded with an error status
+						const errorMessage = error.response.data?.message || 'Failed to upload meme'
+						toast.error(`Upload failed: ${errorMessage}`)
+					} else if (error.request) {
+						// Request was made but no response received
+						toast.error('No response from server. Please check your connection and try again.')
+					} else {
+						toast.error('Failed to upload meme. Please try again.')
+					}
+				} else {
+					toast.error('Failed to upload meme. Please try again.')
+				}
 
 				onRevert(optimisticMeme)
 			} finally {
+				setIsLocalUploading(false)
 				setIsUploading(false)
 			}
+		}
+	}
+
+	// Add function to save to drafts
+	const handleSaveToDrafts = async () => {
+		if (!user || !user.address) {
+			if (openAuthModal) {
+				openAuthModal()
+			}
+			return
+		}
+
+		if (!generatedImage) {
+			toast.error('No image to save')
+			return
+		}
+
+		if (!title) {
+			toast.error('Please add a title')
+			titleRef.current?.focus()
+			return
+		}
+
+		if (selectedTags.length < 1) {
+			toast.error('Please enter at least one tag')
+			return
+		}
+
+		try {
+			setIsSavingDraft(true)
+
+			const response = await fetch(generatedImage)
+			const blob = await response.blob()
+
+			// Create FormData for draft meme
+			const formData = new FormData()
+			const reqTag = selectedTags.map(tag => tag.name)
+			formData.append('name', title)
+			formData.append('file', blob, 'image.png')
+			formData.append('tags', JSON.stringify(reqTag))
+
+			const draftResponse = await axiosInstance.post('/api/draft-meme', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+				timeout: 180000
+			})
+
+			if (draftResponse.status === 201 || draftResponse.status === 200) {
+				toast.success('Saved to drafts successfully!')
+				
+				// Optional: Reset form after saving to drafts
+				// setTitle('')
+				// setSelectedTags([])
+				// setGeneratedImage(null)
+			} else {
+				throw new Error('Failed to save draft')
+			}
+		} catch (error) {
+			console.error('Error saving draft:', error)
+			
+			if (axios.isAxiosError(error)) {
+				if (error.code === 'ECONNABORTED') {
+					toast.error('Save timed out. Please try with a smaller image or check your connection.')
+				} else if (error.response) {
+					const errorMessage = error.response.data?.message || 'Failed to save draft'
+					toast.error(`Save failed: ${errorMessage}`)
+				} else if (error.request) {
+					toast.error('No response from server. Please check your connection and try again.')
+				} else {
+					toast.error('Failed to save draft. Please try again.')
+				}
+			} else {
+				toast.error('Failed to save draft. Please try again.')
+			}
+		} finally {
+			setIsSavingDraft(false)
 		}
 	}
 
@@ -482,15 +581,28 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				<div className="flex flex-col sm:flex-row justify-center lg:justify-evenly gap-3 lg:gap-4 w-full text-[24px]">
 					<button
 						onClick={handleUpload}
-						disabled={isUploading}
-						className="rounded-full bg-[#28e0ca] px-4 py-1 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+						disabled={isLocalUploading || isSavingDraft}
+						className={`rounded-full bg-[#28e0ca] px-4 py-1 w-full ${generatedImage ? 'sm:w-1/3' : 'sm:w-1/2'} lg:flex-1 lg:max-w-96 text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
 					>
-						{isUploading ? 'Posting...' : 'Post'}
+						{isLocalUploading ? 'Posting...' : 'Post'}
 					</button>
+					
+					{/* Save to Drafts button - only visible when there's a generated image */}
+					{generatedImage && (
+						<button
+							onClick={handleSaveToDrafts}
+							disabled={isLocalUploading || isSavingDraft}
+							className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-1 w-full sm:w-1/3 lg:flex-1 lg:max-w-96 flex items-center justify-center gap-2 font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							{isSavingDraft ? 'Saving...' : 'Save Draft'}
+							<IoSaveOutline className="group-hover:scale-110 transition-transform duration-200" />
+						</button>
+					)}
+					
 					<button
 						onClick={getImage}
-						disabled={isGenerating}
-						className="rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-1 w-full sm:w-1/2 lg:flex-1 lg:max-w-96 flex items-center justify-center gap-2 font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
+						disabled={isGenerating || isLocalUploading || isSavingDraft}
+						className={`rounded-full border border-[#28e0ca] text-[#28e0ca] px-4 py-1 w-full ${generatedImage ? 'sm:w-1/3' : 'sm:w-1/2'} lg:flex-1 lg:max-w-96 flex items-center justify-center gap-2 font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed`}
 					>
 						{isGenerating ? 'Generating...' : 'Generate'}
 						<HiSparkles className="group-hover:rotate-12 transition-transform duration-200" />

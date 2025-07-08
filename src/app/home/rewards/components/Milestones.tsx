@@ -19,18 +19,18 @@ export const Milestones = ({
 
   const handleClaim = async (
     type: string,
-    milestone: number,
+    milestone: MilestoneTitles,
     index: number
   ) => {
     try {
       setIsClaimLoading(true);
-
+      if(userDetails && !isClaimLoading) setUserDetails({...userDetails, mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(milestone.reward * 1e18) })
       const response = await axiosInstance.post(`/api/claimreward`, {
         userId,
         type,
-        milestone,
+        milestone: milestone.number,
       }, {
-        timeout: 5000
+        timeout: 30000
       });
       if (response.status == 200) {
         const updatedMilestones = [...milestones];
@@ -45,6 +45,7 @@ export const Milestones = ({
     } catch (error) {
       console.error("Error claiming the reward", error);
       toast.error("Error claiming the reward");
+      if(userDetails && !isClaimLoading) setUserDetails({...userDetails, mintedCoins: BigInt(userDetails.mintedCoins) })
     } finally {
       setIsClaimLoading(false);
     }
@@ -88,8 +89,7 @@ export const Milestones = ({
               <button
                 className="relative px-3 md:px-4 md:py-1 bg-[#040f2b] border-2 border-[#0d4387] rounded-lg text-lg md:text-3xl bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"
                 onClick={() =>{
-                  handleClaim(milestone.type, milestone.number, index)
-                  if(userDetails && !isClaimLoading) setUserDetails({...userDetails, mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(milestone.reward * 1e18) })
+                  handleClaim(milestone.type, milestone, index)
                 }}
                 disabled={isClaimLoading}
               >
