@@ -211,7 +211,7 @@ export default function MemeDetail({
 					{onPrev && (
 						<button
 							onClick={onPrev}
-							className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center"
+							className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 sm:flex items-center justify-center hidden"
 						>
 							<FaChevronLeft className="text-white w-6 h-6" />
 						</button>
@@ -220,7 +220,7 @@ export default function MemeDetail({
 					{onNext && (
 						<button
 							onClick={onNext}
-							className="absolute right-4 sm:right-80 lg:right-96 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center"
+							className="absolute right-4 sm:right-80 lg:right-96 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 sm:flex items-center justify-center hidden"
 						>
 							<FaChevronRight className="text-white w-6 h-6" />
 						</button>
@@ -271,11 +271,27 @@ export default function MemeDetail({
 							onTouchMove={onTouchMove}
 							onTouchEnd={onTouchEnd}
 						>
+							{onPrev && (
+								<button
+									onClick={onPrev}
+									className="absolute left-1 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center sm:hidden"
+								>
+									<FaChevronLeft className="text-white w-6 h-6" />
+								</button>
+							)}
 							<img
 								src={meme.image_url}
 								alt={meme.name}
 								className="max-w-full max-h-full object-contain block sm:hidden"
 							/>
+							{onNext && (
+								<button
+									onClick={onNext}
+									className="absolute right-1 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20 flex items-center justify-center sm:hidden"
+								>
+									<FaChevronRight className="text-white w-6 h-6" />
+								</button>
+							)}
 						</div>
 
 						{/* Action Buttons */}
