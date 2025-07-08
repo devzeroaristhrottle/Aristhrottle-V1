@@ -28,7 +28,7 @@ export default function Layout({ children }: Props) {
 			</div>
 
 			{/* Bottom sidebar for small devices */}
-			<div className="lg:hidden block">
+			<div className="lg:hidden block h-16">
 				<Sidebar />
 			</div>
 

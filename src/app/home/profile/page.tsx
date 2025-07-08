@@ -59,6 +59,7 @@ export default function Page() {
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
 	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | undefined | Meme>()
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
+	const [userData, setUserData] = useState<any>();
 
 	const { userDetails } = useContext(Context)
 	const fileInputRef = useRef<HTMLInputElement>(null)
@@ -80,7 +81,8 @@ export default function Page() {
 		//   });
 		// }
 		// All-time tab: no date filtering
-		return memes
+		// Always sort by createdAt descending
+		return [...memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 	}, [memes, activeTab])
 
 	// Convert DraftMeme to LeaderboardMeme format for compatibility with existing components
@@ -105,7 +107,8 @@ export default function Page() {
 	// Get the appropriate data based on active tab
 	const displayMemes = useMemo(() => {
 		if (activeTab === 'generations') {
-			return draftMemes.map(convertDraftToLeaderboard)
+			// Sort drafts by createdAt descending
+			return [...draftMemes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(convertDraftToLeaderboard)
 		}
 		return tabFilteredMemes
 	}, [activeTab, draftMemes, tabFilteredMemes])
@@ -172,6 +175,32 @@ export default function Page() {
 		}
 	}
 
+	const getUserProfile = async () => {
+		try {
+			const response = await axiosInstance.get(`/api/user/${userDetails?._id}`)
+			
+			if (response.data.user) {
+				const userData = {
+					...response.data.user,
+					followersCount: response.data.followersCount,
+					followingCount: response.data.followingCount,
+					totalUploadsCount: response.data.totalUploadsCount,
+					totalVotesReceived: response.data.totalVotesReceived,
+					majorityUploads: response.data.majorityUploads,
+				}
+
+				setUserData(userData);
+			}
+		} catch (error: any) {
+			console.log(error)
+			if (error.response?.status === 404) {
+				toast.error('User not found')
+			} else {
+				toast.error('Failed to load user profile')
+			}
+		}
+	}
+
 	useEffect(() => {
 		// setTotalMemeCount(0)
 		setMemes([])
@@ -183,7 +212,7 @@ export default function Page() {
 		} else {
 			getMyMemes()
 		}
-		
+		getUserProfile()
 	}, [userDetails, page])
 
 	const onCancel = () => {
@@ -326,6 +355,10 @@ export default function Page() {
 						<h1 className="text-[#29e0ca] text-2xl md:text-6xl font-bold">
 							{userDetails?.username}
 						</h1>
+						<div className='flex flex-row items-center justify-start gap-2 text-lg'>
+							<div>{userData?.followersCount || 0} followers</div>
+							<div>{userData?.followingCount || 0} following</div>
+						</div>
 					</div>
 				</div>
 				<div className="flex flex-col items-end md:flex-row space-y-2 md:space-x-16">
