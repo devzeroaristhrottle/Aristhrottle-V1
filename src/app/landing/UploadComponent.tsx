@@ -7,6 +7,7 @@ import { useAuthModal, useUser } from '@account-kit/react'
 import { type Meme } from '../home/page'
 import { toast } from 'react-toastify'
 import { getTimeUntilReset } from '@/utils/dateUtils'
+import axios from 'axios'
 
 interface Tags {
 	name: string
@@ -278,7 +279,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
-					timeout: 5000
+					timeout: 30000
 				})
 
 				if (uploadResponse.status === 201) {
@@ -295,7 +296,24 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert }) => {
 				}
 			} catch (error) {
 				console.error('Error uploading meme:', error)
-				toast.error('Failed to upload meme. Please try again.')
+				
+				// Provide more specific error messages based on error type
+				if (axios.isAxiosError(error)) {
+					if (error.code === 'ECONNABORTED') {
+						toast.error('Upload timed out. Please try with a smaller image or check your connection.')
+					} else if (error.response) {
+						// Server responded with an error status
+						const errorMessage = error.response.data?.message || 'Failed to upload meme'
+						toast.error(`Upload failed: ${errorMessage}`)
+					} else if (error.request) {
+						// Request was made but no response received
+						toast.error('No response from server. Please check your connection and try again.')
+					} else {
+						toast.error('Failed to upload meme. Please try again.')
+					}
+				} else {
+					toast.error('Failed to upload meme. Please try again.')
+				}
 
 				onRevert(optimisticMeme)
 			} finally {
