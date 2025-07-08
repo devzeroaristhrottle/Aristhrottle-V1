@@ -1,4 +1,4 @@
-import cloudinary from "@/config/cloudinary";
+import { uploadToGCS } from "@/config/googleStorage";
 import { getContractUtils } from "@/ethers/contractUtils";
 import connectToDatabase from "@/lib/db";
 import Meme from "@/models/Meme";
@@ -203,14 +203,15 @@ async function handlePostRequest(request: NextRequest) {
         // Convert file to Buffer for upload
         const buffer = Buffer.from(await file.arrayBuffer());
 
-        // Upload to Cloudinary
-        const base64Image = `data:${file.type};base64,${buffer.toString("base64")}`;
+        // Upload to Google Cloud Storage
+        const profile_pic_url = await uploadToGCS(
+          buffer,
+          file.name,
+          file.type,
+          'profile'
+        );
 
-        const uploadResult = await cloudinary.uploader.upload(base64Image, {
-          folder: "profile",
-        });
-
-        profile_pic = uploadResult.secure_url;
+        profile_pic = profile_pic_url;
       } catch (uploadError) {
         console.error("Error uploading profile picture:", uploadError);
         return NextResponse.json(
@@ -382,14 +383,15 @@ async function handlePutRequest(request: NextRequest) {
         // Convert file to Buffer for upload
         const buffer = Buffer.from(await file.arrayBuffer());
 
-        // Upload to Cloudinary
-        const base64Image = `data:${file.type};base64,${buffer.toString("base64")}`;
+        // Upload to Google Cloud Storage
+        const profile_pic_url = await uploadToGCS(
+          buffer,
+          file.name,
+          file.type,
+          'profile'
+        );
 
-        const uploadResult = await cloudinary.uploader.upload(base64Image, {
-          folder: "profile",
-        });
-
-        user.profile_pic = uploadResult.secure_url;
+        user.profile_pic = profile_pic_url;
       } catch (uploadError) {
         console.error("Error uploading profile picture:", uploadError);
         return NextResponse.json(
