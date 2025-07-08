@@ -237,8 +237,8 @@ export default function Page() {
 			if (response.data.memes) {
 				setTotalMemeCount(response.data.memesCount)
 				// setTotalMemeCountConst(response.data.memesCount);
-				setMemes([...response.data.memes])
-				setFilterMemes([...response.data.memes])
+				setMemes([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+				setFilterMemes([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 			}
 		} catch (error) {
 			console.log(error)
@@ -256,8 +256,8 @@ export default function Page() {
 			)
 			if (response.data.memes) {
 				setTotalMemeCount(response.data.memesCount)
-				setMemes([...response.data.memes])
-				setFilterMemes([...response.data.memes])
+				setMemes([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+				setFilterMemes([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 			}
 		} catch (error) {
 			console.log(error)
@@ -291,17 +291,17 @@ export default function Page() {
 				if (response.data.memes) {
 					if (activeTab === 'live') {
 						const filteredMemes = filterLiveMemes(response.data.memes);
-						setFilterMemes(filteredMemes);
+						setFilterMemes([...filteredMemes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 					} else {
-						setAllMemeDataFilter([...response.data.memes])
+						setAllMemeData([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 					}
 				}
 			} else {
 				if (activeTab === 'live') {
 					const filteredMemes = filterLiveMemes(memes);
-					setFilterMemes(filteredMemes);
+					setFilterMemes([...filteredMemes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 				} else {
-					setAllMemeDataFilter([...allMemeData])
+					setAllMemeData([...allMemeData].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 				}
 				setShownCount(allMemeCount)
 			}
@@ -310,9 +310,9 @@ export default function Page() {
 			// Reset to original data on error
 			if (activeTab === 'live') {
 				const filteredMemes = filterLiveMemes(memes);
-				setFilterMemes(filteredMemes);
+				setFilterMemes([...filteredMemes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 			} else {
-				setAllMemeDataFilter([...allMemeData])
+				setAllMemeData([...allMemeData].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 			}
 		} finally {
 			setLoading(false)
@@ -354,7 +354,7 @@ export default function Page() {
 				})
 			}
 			
-			setAllMemeDataFilter(amd)
+			setAllMemeDataFilter([...amd].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 		}
 	}
 
@@ -389,7 +389,7 @@ export default function Page() {
 				})
 			}
 			
-			setAllMemeDataFilter(amd)
+			setAllMemeDataFilter([...amd].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 		}
 	}
 
@@ -510,15 +510,15 @@ export default function Page() {
 				
 				return true
 			})
-			setAllMemeDataFilter(filtered)
+			setAllMemeDataFilter([...filtered].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 		} else {
-			setAllMemeDataFilter([...allMemeData])
+			setAllMemeDataFilter([...allMemeData].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 		}
 	}
 
 	useEffect(() => {
 		const displayedMemes = getFilteredMemes()
-		setDisplayedMeme(displayedMemes)
+		setDisplayedMeme([...displayedMemes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 	}, [filterMemes, showUninteractedOnly, bookMarks])
 
 	// Apply uninteracted filter when checkbox state changes or data changes
@@ -555,8 +555,8 @@ export default function Page() {
 			)
 
 			if (response?.data?.memes) {
-				setAllMemeData(response.data.memes)
-				setAllMemeDataFilter(response.data.memes)
+				setAllMemeData([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+				setAllMemeDataFilter([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 				setAllMemeCount(response.data.memesCount)
 				setShownCount(response.data.memesCount)
 			}
@@ -626,7 +626,7 @@ export default function Page() {
 	}
 
 	const addMeme = (meme: Meme) => {
-		setDisplayedMeme(prevMemes => [...prevMemes, meme])
+		setDisplayedMeme(prevMemes => [...prevMemes, meme].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 
 		if (userDetails) {
 			setUserDetails({
@@ -637,13 +637,13 @@ export default function Page() {
 
 		if (activeTab === 'live') {
 			setFilterMemes(prevFilterMemes => {
-				return [meme, ...prevFilterMemes]
+				return [meme, ...prevFilterMemes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 			})
 		}
 	}
 
 	const revertMeme = (meme: Meme) => {
-		setMemes(memes.filter(m => m._id !== meme._id))
+		setMemes(memes.filter(m => m._id !== meme._id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 		if (userDetails) {
 			setUserDetails({
 				...userDetails,
@@ -651,7 +651,7 @@ export default function Page() {
 			})
 		}
 		if (activeTab === 'live') {
-			setFilterMemes(filterMemes.filter(m => m._id !== meme._id))
+			setFilterMemes(filterMemes.filter(m => m._id !== meme._id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 		}
 	}
 
