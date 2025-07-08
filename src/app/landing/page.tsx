@@ -765,7 +765,7 @@ export default function Page() {
 										/>
 									</div>
 								</div>
-								<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
+								{activeTab != "live" && (<div className="flex items-center hover:bg-[#224063] px-4 py-1 justify-between">
 									<p className="text-xl text-nowrap mr-2">By Votes</p>
 									<div className="flex items-end gap-3">
 										<LiaSortAmountUpAltSolid
@@ -779,7 +779,7 @@ export default function Page() {
 											size={20}
 										/>
 									</div>
-								</div>
+								</div>)}
 							</PopoverBody>
 						</PopoverContent>
 					</PopoverRoot>
