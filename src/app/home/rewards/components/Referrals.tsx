@@ -14,6 +14,7 @@ import axiosInstance from '@/utils/axiosInstance'
 import ProgressBar from './ProgressBar'
 import { BiDownArrowAlt } from 'react-icons/bi'
 import Loader from '@/components/Loader'
+import { useUser } from '@account-kit/react'
 
 export type ReferralResponse = {
 	totalReferralCount: number
@@ -29,6 +30,7 @@ const Referrals = () => {
 	>(getMilestoneTitles([], 'referrals'))
 	const [isLoading, setIsLoading] = useState(true)
 	const [isClaimLoading, setIsClaimLoading] = useState(false)
+	const user = useUser()
 
 	const userId = userDetails?._id
 
@@ -158,6 +160,17 @@ const Referrals = () => {
 						*$eART Points are rewarded only after both users have voted or
 						uploaded at least once.
 					</span>
+					
+					{user && user.address && (
+						<a 
+							href={`${process.env.NEXT_PUBLIC_RPC_URL}/token/${user.address}?a=${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="mt-4 bg-[#040f2b] border-2 border-[#1783FB] rounded-lg text-xl md:text-2xl px-4 md:px-8 py-1 md:py-2 hover:bg-blue-500/20 transition-all duration-200 text-center bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"
+						>
+							View on Blockchain
+						</a>
+					)}
 				</div>
 			</div>
 		</div>
