@@ -338,23 +338,17 @@ export default function Page() {
 				else return dateB - dateA
 			})
 			
-			// Apply uninteracted filter if checkbox is checked
 			if (showUninteractedOnly && userDetails) {
 				amd = amd.filter(meme => {
-					// Exclude if user has voted on this meme
 					if (meme.has_user_voted) return false
-					
-					// Exclude if user created this meme
 					if (meme.created_by._id === userDetails._id) return false
-					
-					// Exclude if user has bookmarked this meme
 					if (bookMarks.some(bookmark => bookmark._id === meme._id)) return false
 					
 					return true
 				})
 			}
 			
-			setAllMemeDataFilter([...amd].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+			setAllMemeDataFilter([...amd])
 		}
 	}
 
@@ -376,20 +370,15 @@ export default function Page() {
 			// Apply uninteracted filter if checkbox is checked
 			if (showUninteractedOnly && userDetails) {
 				amd = amd.filter(meme => {
-					// Exclude if user has voted on this meme
 					if (meme.has_user_voted) return false
-					
-					// Exclude if user created this meme
 					if (meme.created_by._id === userDetails._id) return false
-					
-					// Exclude if user has bookmarked this meme
 					if (bookMarks.some(bookmark => bookmark._id === meme._id)) return false
 					
 					return true
 				})
 			}
 			
-			setAllMemeDataFilter([...amd].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+			setAllMemeDataFilter([...amd])
 		}
 	}
 
