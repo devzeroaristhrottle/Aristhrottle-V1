@@ -63,8 +63,6 @@ export default function Page({}: Props) {
 	const { handleBookmark } = useMemeActions()
 	const router = useRouter();
 
-	const offset = 6
-
 	useEffect(() => {
 		getMyMemes()
 	}, [userDetails])
