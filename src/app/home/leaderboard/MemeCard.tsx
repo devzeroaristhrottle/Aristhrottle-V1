@@ -1,4 +1,3 @@
-import { CgProfile } from 'react-icons/cg'
 import { LeaderboardMeme } from './page'
 import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { FaBookmark } from 'react-icons/fa'

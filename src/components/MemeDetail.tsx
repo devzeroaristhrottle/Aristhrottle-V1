@@ -3,7 +3,7 @@
 import { FaBookmark, FaRegShareFromSquare } from 'react-icons/fa6'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 
-import { CgCloseO, CgProfile } from 'react-icons/cg'
+import { CgCloseO } from 'react-icons/cg'
 import Share from './Share'
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { Meme, TagI } from '@/app/home/page'

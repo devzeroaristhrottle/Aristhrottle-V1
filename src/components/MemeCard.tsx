@@ -1,6 +1,5 @@
 import { Meme } from '@/app/home/page'
 import { useContext, useEffect, useState } from 'react'
-import { CgProfile } from 'react-icons/cg'
 import { Logo } from './Logo'
 import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { FaRegBookmark } from 'react-icons/fa'
