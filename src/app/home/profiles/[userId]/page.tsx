@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { FilterPopover } from '@/components/FilterPopover'
 import { SortPopover } from '@/components/SortPopover'
 import { Context } from '@/context/contextProvider'
@@ -40,6 +40,7 @@ export default function UserProfilePage() {
 	const router = useRouter()
 	const userId = params.userId as string
 	
+	const scrollComp = useRef<HTMLDivElement>(null);
 	const [page, setPage] = useState(1)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [profileLoading, setProfileLoading] = useState<boolean>(true)
@@ -59,7 +60,6 @@ export default function UserProfilePage() {
 	const { userDetails, setUserDetails } = useContext(Context)
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
-
 	// Tab-based filtering (primary)
 	const tabFilteredMemes = useMemo(() => {
 		const today = new Date()
@@ -247,6 +247,12 @@ export default function UserProfilePage() {
 		resetFilters()
 		getUserMemes()
 	}, [page, activeTab])
+
+	
+	useEffect(() => {
+		document.body.style.overflow = isMemeDetailOpen ? "hidden" : "auto"
+		if(scrollComp.current) scrollComp.current.style = isMemeDetailOpen ? "hidden" : "auto"
+	}, [isMemeDetailOpen])
 
 	const applyFilters = () => {
 		setPage(1)
@@ -484,7 +490,7 @@ export default function UserProfilePage() {
 						{isOwnProfile ? 'Your Uploads' : `${userProfile?.username}'s Uploads`}
 					</h2>
 				</div>
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6" ref={scrollComp}>
 					{filteredMemes.map((item, index) => (
 						<LeaderboardMemeCard 
 							key={item._id}

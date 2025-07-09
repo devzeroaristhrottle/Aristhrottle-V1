@@ -63,7 +63,7 @@ export default function Page() {
 	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | undefined | Meme>()
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
 	const [userData, setUserData] = useState<any>();
-
+	const scrollComp = useRef<HTMLDivElement>(null);
 	const { userDetails } = useContext(Context)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -335,6 +335,11 @@ export default function Page() {
 		}
 	}
 
+	useEffect(() => {
+			document.body.style.overflow = isMemeDetailOpen ? "hidden" : "auto"
+			if(scrollComp.current) scrollComp.current.style = isMemeDetailOpen ? "hidden" : "auto"
+	}, [isMemeDetailOpen])
+
 	return (
 		<div className="md:max-w-7xl md:mx-auto mx-4">
 			{/* Top Section */}
@@ -515,7 +520,7 @@ export default function Page() {
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6">
 					{/* For mobile */}
-					<div className="md:hidden w-full flex flex-col items-center justify-center">
+					<div className="md:hidden w-full flex flex-col items-center justify-center" ref={scrollComp}>
 						{filteredMemes.map((item, index) => (
 							<div key={index} className="w-full max-w-sm">
 								{activeTab === 'generations' ? (
