@@ -94,7 +94,7 @@ export function MemeCard({
 				className="flex items-start gap-x-1 md:gap-x-2 mb-1 md:mb-2 cursor-pointer"
 				onClick={() => router.push(`/home/profiles/${meme.created_by._id}`)}
 			>
-				<CgProfile className="md:w-7 md:h-7" />
+				<img src={meme.created_by.profile_pic} className="md:w-7 md:h-7 rounded-full" />
 				<span className="text-[#29e0ca] text-base md:text-2xl">
 					{meme.created_by?.username}
 				</span>

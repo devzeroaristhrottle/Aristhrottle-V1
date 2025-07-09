@@ -38,6 +38,7 @@ interface MyVotedMeme {
 		created_by: {
 			_id: string
 			username: string
+			profile_pic: string
 		}
 		shares: string[]
 		bookmarks: string[]
@@ -244,7 +245,7 @@ export default function Page({}: Props) {
 						{/* Header with username and rank */}
 						<div className="flex justify-between items-center mb-2">
 							<div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(`/home/profiles/${item.vote_to.created_by._id}`)}>
-								<CgProfile size={28} />
+								<img src={item.vote_to.created_by.profile_pic} className="md:w-7 md:h-7 rounded-full" />
 								<span className="text-[#29e0ca] text-xl md:text-2xl">
 									{item.vote_to.created_by.username}
 								</span>
