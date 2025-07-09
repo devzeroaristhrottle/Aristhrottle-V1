@@ -5,7 +5,7 @@ import { useState, useContext } from 'react'
 import Share from '@/components/Share'
 import { useMemeActions } from '../bookmark/bookmarkHelper'
 import { CiBookmark } from 'react-icons/ci'
-import { useUser } from '@account-kit/react'
+import { useAuthModal, useUser } from '@account-kit/react'
 import { LazyImage } from '@/components/LazyImage'
 import { useRouter } from 'next/navigation'
 import { Context } from '@/context/contextProvider'
@@ -25,7 +25,7 @@ export const LeaderboardMemeCard: React.FC<{
 	const [bmkCount, setBmkCount] = useState<number>(meme.bookmarks?.length | 0);
 	const [eyeOpen, setEyeOpen] = useState<boolean>(meme.has_user_voted);
 	const [count, setCount] = useState<number>(meme.vote_count);
-
+	const { openAuthModal } = useAuthModal()
 	const user = useUser()
 	const router = useRouter()
 	const handleShareClose = () => {
@@ -35,6 +35,10 @@ export const LeaderboardMemeCard: React.FC<{
 
 	const localVoteMeme = (memeid: string) => {
 		try {
+			if(!userDetails){
+				if(openAuthModal) openAuthModal()
+					return;
+			}
 			if (voteMeme) voteMeme(memeid)
 			else return
 
