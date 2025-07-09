@@ -39,14 +39,14 @@ async function handlePostRequest(request: NextRequest) {
     const meme = await Meme.findOne({ _id: vote_to }).populate("created_by");
 
     if (!meme) {
-      return NextResponse.json({ message: "Meme not found" }, { status: 404 });
+      return NextResponse.json({ message: "Content not found" }, { status: 404 });
     }
 
     // Prevent user from voting on their own meme
     if (meme.created_by._id.toString() === vote_by) {
-      console.log("You cannot vote on your own meme");
+      console.log("You cannot vote on your own content");
       return NextResponse.json(
-        { message: "You cannot vote on your own meme" },
+        { message: "You cannot vote on your own content" },
         { status: 403 }
       );
     }
@@ -55,7 +55,7 @@ async function handlePostRequest(request: NextRequest) {
     const existingVote = await Vote.findOne({ vote_to, vote_by });
     if (existingVote) {
       return NextResponse.json(
-        { message: "User has already voted for this meme" },
+        { message: "User has already voted for this content" },
         { status: 400 }
       );
     }
@@ -137,7 +137,7 @@ async function handlePostRequest(request: NextRequest) {
     }, 0);
 
     await axiosInstance.post("/api/notification", {
-      title: "🔥 Your Meme Got a Vote!",
+      title: "🔥 Your Content Got a Vote!",
       message: `${meme.name} just received a new vote! People are loving it! 🎉`,
       type: "vote",
       notification_for: meme.created_by._id.toString(),

@@ -167,7 +167,7 @@ export default function Navbar() {
 								<Avatar
 									name="Random"
 									colorPalette="blue"
-									src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRidBoAmoAGJ8Yl2-8T0EdwgJNWtWLHJoZ55w&s"
+									src={userDetails.profile_pic}
 									css={ringCss}
 									className="ml-5 cursor-pointer"
 									size={'xs'}

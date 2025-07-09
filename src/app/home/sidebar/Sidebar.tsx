@@ -201,7 +201,7 @@ const Sidebar = () => {
 							>
 								<div
 									className={`transition-transform duration-150 ${
-										isActive ? 'scale-110' : 'scale-100'
+										isActive ? 'scale-110 text-[#1783FB]' : 'scale-100'
 									}`}
 								>
 									<div className="h-6 w-6 flex items-center justify-center">

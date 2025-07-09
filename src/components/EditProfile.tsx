@@ -10,11 +10,22 @@ import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 import Loader from "./Loader";
 
+// Add interests support to formData and UI
+// 2. Use 'username' instead of 'new_username' in form submission
+// 3. Improve image handling: allow preview, removal, and upload
+
+// Add interests to UserProfile and EditProfileProps
+interface InterestCategory {
+  name: string;
+  tags: string[];
+}
+
 interface UserProfile {
   username: string;
   bio: string;
   tags: string[];
   profile_pic: string;
+  interests?: InterestCategory[];
 }
 
 interface EditProfileProps {
@@ -24,6 +35,7 @@ interface EditProfileProps {
     bio: string;
     tags: string[];
     file: File | null;
+    interests: InterestCategory[];
   };
   setFormData: React.Dispatch<
     React.SetStateAction<{
@@ -31,6 +43,7 @@ interface EditProfileProps {
       tags: string[];
       file: File | null;
       bio: string;
+      interests: InterestCategory[];
     }>
   >;
 }
@@ -68,7 +81,11 @@ export default function EditProfile({
   const [preview, setPreview] = useState<string | null>(null);
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [categoryInput, setCategoryInput] = useState("");
+  const [categoryTagInput, setCategoryTagInput] = useState("");
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>(null);
 
+  // Improved image handling
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (
@@ -81,6 +98,59 @@ export default function EditProfile({
     } else {
       toast.error("Please select a JPG or PNG file under 10MB");
     }
+  };
+
+  const handleRemoveImage = () => {
+    setPreview(null);
+    setFormData((prev) => ({ ...prev, file: null }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // Interests logic
+  const handleAddCategory = () => {
+    if (
+      categoryInput.trim() &&
+      formData.interests.length < 5 &&
+      !formData.interests.some((cat) => cat.name === categoryInput.trim())
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        interests: [...prev.interests, { name: categoryInput.trim(), tags: [] }],
+      }));
+      setCategoryInput("");
+    }
+  };
+
+  const handleRemoveCategory = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      interests: prev.interests.filter((_, i) => i !== index),
+    }));
+    setSelectedCategoryIndex(null);
+  };
+
+  const handleAddCategoryTag = () => {
+    if (
+      selectedCategoryIndex !== null &&
+      categoryTagInput.trim() &&
+      formData.interests[selectedCategoryIndex].tags.length < 10 &&
+      !formData.interests[selectedCategoryIndex].tags.includes(categoryTagInput.trim())
+    ) {
+      setFormData((prev) => {
+        const newInterests = [...prev.interests];
+        newInterests[selectedCategoryIndex].tags.push(categoryTagInput.trim());
+        return { ...prev, interests: newInterests };
+      });
+      setCategoryTagInput("");
+    }
+  };
+
+  const handleRemoveCategoryTag = (catIdx: number, tagIdx: number) => {
+    setFormData((prev) => {
+      const newInterests = [...prev.interests];
+      newInterests[catIdx].tags = newInterests[catIdx].tags.filter((_, i) => i !== tagIdx);
+      return { ...prev, interests: newInterests };
+    });
   };
 
   const handleAddTag = () => {
@@ -107,7 +177,6 @@ export default function EditProfile({
     if (formData?.file) {
       submitData.append("file", formData?.file);
     }
-
     if (formData?.bio) {
       submitData.append("bio", formData?.bio);
     }
@@ -115,9 +184,11 @@ export default function EditProfile({
       submitData.append("tags", JSON.stringify(formData.tags));
     }
     if (formData?.title) {
-      submitData.append("new_username", formData?.title);
+      submitData.append("username", formData?.title);
     }
-
+    if (formData?.interests && formData.interests.length) {
+      submitData.append("interests", JSON.stringify(formData.interests));
+    }
     submitData.append("user_wallet_address", user?.address || "");
 
     try {
@@ -147,8 +218,8 @@ export default function EditProfile({
         title: userData?.username || "",
         bio: userData?.bio || "",
         tags: userData?.tags || [],
+        interests: userData?.interests || [],
       }));
-
       if (userData?.profile_pic && !formData.file) {
         setPreview(userData?.profile_pic);
       }
@@ -177,11 +248,20 @@ export default function EditProfile({
             <div className="relative mx-10 md:mx-48">
               <div className="relative rounded border border-white flex justify-center items-center py-2 md:py-4">
                 {preview ? (
-                  <img
-                    src={preview}
-                    alt="Profile preview"
-                    className="w-36 h-36 md:w-44 md:h-44 object-cover rounded-full"
-                  />
+                  <>
+                    <img
+                      src={preview}
+                      alt="Profile preview"
+                      className="w-36 h-36 md:w-44 md:h-44 object-cover rounded-full"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-black bg-opacity-50 rounded-full p-1"
+                    >
+                      Remove
+                    </button>
+                  </>
                 ) : (
                   <CgProfile className="w-36 h-36 md:w-44 md:h-44 text-white text-6xl" />
                 )}
@@ -262,6 +342,67 @@ export default function EditProfile({
                     >
                       <p className="text-sm md:text-lg">{tag}</p>
                       <HiPlus className="w-3 h-3 md:w-5 md:h-5 rotate-45" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2 text-2xl mt-4 px-6 md:px-12">
+              <span className="text-[#1783fb] text-lg md:text-3xl">Interests:</span>
+              <div className="flex flex-col w-full">
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="Add category (max 5)"
+                    className="w-full rounded px-2 py-1 text-white text-base border-2 border-[#1783fb] bg-gray-800 outline-none"
+                    maxLength={100}
+                    value={categoryInput}
+                    onChange={(e) => setCategoryInput(e.target.value)}
+                  />
+                  <button type="button" onClick={handleAddCategory} className="text-white">
+                    <HiPlus size={20} />
+                  </button>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {formData.interests.map((cat, catIdx) => (
+                    <div key={catIdx} className="bg-gray-800 border-2 border-[#1783fb] rounded-lg p-2 mb-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white">{cat.name}</span>
+                        <button type="button" onClick={() => handleRemoveCategory(catIdx)}>
+                          <HiPlus className="w-3 h-3 md:w-5 md:h-5 rotate-45" />
+                        </button>
+                        <button type="button" onClick={() => setSelectedCategoryIndex(catIdx)} className="text-xs text-blue-400 underline ml-2">
+                          Edit Tags
+                        </button>
+                      </div>
+                      {selectedCategoryIndex === catIdx && (
+                        <div className="mt-2">
+                          <div className="flex gap-2 mb-2">
+                            <input
+                              type="text"
+                              placeholder="Add tag (max 10)"
+                              className="w-full rounded px-2 py-1 text-white text-base border-2 border-[#1783fb] bg-gray-800 outline-none"
+                              maxLength={100}
+                              value={categoryTagInput}
+                              onChange={(e) => setCategoryTagInput(e.target.value)}
+                            />
+                            <button type="button" onClick={handleAddCategoryTag} className="text-white">
+                              <HiPlus size={20} />
+                            </button>
+                          </div>
+                          <div className="flex gap-2 flex-wrap">
+                            {cat.tags.map((tag, tagIdx) => (
+                              <div key={tagIdx} className="bg-gray-700 border border-[#1783fb] rounded px-2 py-1 flex items-center gap-1">
+                                <span className="text-white text-sm">{tag}</span>
+                                <button type="button" onClick={() => handleRemoveCategoryTag(catIdx, tagIdx)}>
+                                  <HiPlus className="w-3 h-3 rotate-45" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

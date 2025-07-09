@@ -80,6 +80,7 @@ interface User {
   _id: string;
   username: string;
   user_wallet_address: string;
+  profile_pic?: string;
   createdAt: string; // ISO 8601 format date
   updatedAt: string; // ISO 8601 format date
   __v: number;

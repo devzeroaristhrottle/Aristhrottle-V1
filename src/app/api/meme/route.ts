@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Vote from '@/models/Vote'
 import axiosInstance from '@/utils/axiosInstance'
 import { checkIsAuthenticated } from '@/utils/authFunctions'
-import cloudinary from '@/config/cloudinary'
+import { uploadToGCS } from '@/config/googleStorage'
 import { withApiLogging } from '@/utils/apiLogger'
 import { updateTagsRelevance, updateTagCooccurrences } from '@/utils/tagUtils'
 import { generateReferralCodeIfEligible } from '@/utils/referralUtils'
@@ -668,17 +668,16 @@ async function handlePostRequest(req: NextRequest) {
 
 		await isLimitReached(created_by)
 
-		// Convert file to Buffer for IPFS upload
+		// Convert file to Buffer for upload
 		const buffer = Buffer.from(await file.arrayBuffer())
 
-		// Upload to Cloudinary
-		const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`
-
-		const uploadResult = await cloudinary.uploader.upload(base64Image, {
-			folder: 'memes', // Optional folder name
-		})
-
-		const image_url = uploadResult.secure_url
+		// Upload to Google Cloud Storage
+		const image_url = await uploadToGCS(
+			buffer,
+			file.name,
+			file.type,
+			'meme'
+		)
 
 		let tags: mongoose.Types.ObjectId[] = []
 
@@ -768,8 +767,8 @@ async function handlePostRequest(req: NextRequest) {
 		await generateReferralCodeIfEligible(created_by)
 
 		await axiosInstance.post('/api/notification', {
-			title: 'New meme alert! 🔥',
-			message: `🚀 BOOM! New meme dropped: ${name} 😂🔥 Watch now!`,
+			title: 'New content alert! 🔥',
+			message: `🚀 BOOM! New content dropped: ${name} 😂🔥 Watch now!`,
 			type: 'upload',
 			notification_for: created_by,
 		})

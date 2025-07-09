@@ -22,6 +22,7 @@ interface Data {
 	tags: string[]
 	file: File | null
 	bio: string
+	interests: { name: string; tags: string[] }[]
 }
 
 // Draft Meme interface based on the API documentation
@@ -33,6 +34,7 @@ interface DraftMeme {
 	created_by: {
 		_id: string
 		username: string
+		profile_pic: string
 	}
 	is_published: boolean
 	draft_data: any
@@ -47,6 +49,7 @@ export default function Page() {
 		tags: [],
 		file: null,
 		bio: '',
+		interests: [],
 	})
 	const [page, setPage] = useState(1)
 	// const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
@@ -60,7 +63,7 @@ export default function Page() {
 	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | undefined | Meme>()
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
 	const [userData, setUserData] = useState<any>();
-
+	const scrollComp = useRef<HTMLDivElement>(null);
 	const { userDetails } = useContext(Context)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -167,9 +170,9 @@ export default function Page() {
 				setDraftMemes(response.data.drafts)
 			}
 		} catch (error) {
-			console.log('Error fetching draft memes:', error)
+			console.log('Error fetching draft content:', error)
 			setDraftMemes([])
-			toast.error('Failed to fetch draft memes')
+			toast.error('Failed to fetch draft contents')
 		} finally {
 			setLoading(false)
 		}
@@ -222,6 +225,7 @@ export default function Page() {
 			tags: [],
 			file: null,
 			bio: '',
+			interests: [],
 		})
 		if (fileInputRef.current) {
 			fileInputRef.current.value = ''
@@ -330,6 +334,11 @@ export default function Page() {
 			toast.error('Failed to publish draft')
 		}
 	}
+
+	useEffect(() => {
+			document.body.style.overflow = isMemeDetailOpen ? "hidden" : "auto"
+			if(scrollComp.current) scrollComp.current.style = isMemeDetailOpen ? "hidden" : "auto"
+	}, [isMemeDetailOpen])
 
 	return (
 		<div className="md:max-w-7xl md:mx-auto mx-4">
@@ -511,7 +520,7 @@ export default function Page() {
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6">
 					{/* For mobile */}
-					<div className="md:hidden w-full flex flex-col items-center justify-center">
+					<div className="md:hidden w-full flex flex-col items-center justify-center" ref={scrollComp}>
 						{filteredMemes.map((item, index) => (
 							<div key={index} className="w-full max-w-sm">
 								{activeTab === 'generations' ? (

@@ -234,7 +234,7 @@ export async function GET(req: NextRequest) {
 						in_percentile: 1,
 						'created_by._id': 1,
 						'created_by.username': 1,
-						'created_by.profile_image': 1,
+						'created_by.profile_pic': '$created_by.profile_pic',
 						tags: {
 							$map: {
 								input: '$tags',
@@ -441,7 +441,7 @@ export async function GET(req: NextRequest) {
 						in_percentile: 1,
 						'created_by._id': 1,
 						'created_by.username': 1,
-						'created_by.profile_image': 1,
+						'created_by.profile_pic': '$created_by.profile_pic',
 						tags: {
 							$map: {
 								input: '$tags',

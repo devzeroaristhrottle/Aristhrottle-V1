@@ -5,7 +5,6 @@ import { Button } from '@chakra-ui/react'
 import axiosInstance from '@/utils/axiosInstance'
 import React, { useContext, useEffect, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
-import { CgProfile } from 'react-icons/cg'
 import MemeDetail from '@/components/MemeDetail'
 import { toast } from 'react-toastify'
 import Image from 'next/image'
@@ -38,6 +37,7 @@ interface MyVotedMeme {
 		created_by: {
 			_id: string
 			username: string
+			profile_pic: string
 		}
 		shares: string[]
 		bookmarks: string[]
@@ -152,7 +152,7 @@ export default function Page({}: Props) {
 
 	// Handle voting (user already voted, so this shouldn't allow voting again)
 	const handleVote = async (memeId: string) => {
-		toast.info('You have already voted on this meme!')
+		toast.info('You have already voted on this content!')
 		console.log(memeId)
 	}
 
@@ -244,7 +244,7 @@ export default function Page({}: Props) {
 						{/* Header with username and rank */}
 						<div className="flex justify-between items-center mb-2">
 							<div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(`/home/profiles/${item.vote_to.created_by._id}`)}>
-								<CgProfile size={28} />
+								<img src={item.vote_to.created_by.profile_pic} className="md:w-7 md:h-7 rounded-full" />
 								<span className="text-[#29e0ca] text-xl md:text-2xl">
 									{item.vote_to.created_by.username}
 								</span>

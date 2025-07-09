@@ -3,7 +3,7 @@
 import { FaBookmark, FaRegShareFromSquare } from 'react-icons/fa6'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 
-import { CgCloseO, CgProfile } from 'react-icons/cg'
+import { CgCloseO } from 'react-icons/cg'
 import Share from './Share'
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { Meme, TagI } from '@/app/home/page'
@@ -25,7 +25,7 @@ interface MemeDetailProps {
 	onClose?: () => void
 	onNext?: () => void
 	onPrev?: () => void
-	meme: Meme | LeaderboardMeme | undefined
+	meme:  LeaderboardMeme | Meme |undefined
 	searchRelatedMemes?: Dispatch<SetStateAction<string>>
 	tab: string
 	onVoteMeme: (memeId: string) => void
@@ -248,7 +248,7 @@ export default function MemeDetail({
 						<div className='flex flex-row justify-between items-center mb-6'>
 							<div className="flex items-center gap-3">
 								<div className="p-2 rounded-full bg-[#29e0ca]/20">
-									<CgProfile className="w-6 h-6 text-[#29e0ca]" />
+									<img src={meme.created_by.profile_pic} alt='Profile Pic' className='h-8 w-8 rounded-full'/>
 								</div>
 								<span className="text-[#29e0ca] text-xl font-semibold">
 									{meme.created_by.username}

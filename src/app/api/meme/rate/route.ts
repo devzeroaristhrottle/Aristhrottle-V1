@@ -18,7 +18,7 @@ async function handlePostRequest(req: NextRequest) {
     // Validate required fields
     if (!meme_id || !rating) {
       return NextResponse.json(
-        { error: "Meme ID and rating are required" },
+        { error: "Content ID and rating are required" },
         { status: 400 }
       );
     }
@@ -53,7 +53,7 @@ async function handlePostRequest(req: NextRequest) {
     const meme = await Meme.findById(meme_id);
     if (!meme) {
       return NextResponse.json(
-        { error: "Meme not found" },
+        { error: "Content not found" },
         { status: 404 }
       );
     }

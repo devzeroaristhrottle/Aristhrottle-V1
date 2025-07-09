@@ -1,4 +1,4 @@
-import cloudinary from "@/config/cloudinary";
+import { uploadToGCS } from "@/config/googleStorage";
 import { getContractUtils } from "@/ethers/contractUtils";
 import connectToDatabase from "@/lib/db";
 import Meme from "@/models/Meme";
@@ -10,31 +10,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/utils/apiLogger";
 import Followers from "@/models/Followers";
 import { ethers } from "ethers";
-
-// Function to generate a random alphanumeric referral code (length: 8)
-// const generateReferralCode = () => {
-//   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-//   let code = "";
-//   for (let i = 0; i < 6; i++) {
-//     code += chars.charAt(Math.floor(Math.random() * chars.length));
-//   }
-//   return code;
-// };
-
-// Function to generate a unique referral code and store it in DB
-// const generateUniqueReferralCode = async () => {
-//   let code;
-//   let isUnique = false;
-
-//   while (!isUnique) {
-//     code = generateReferralCode();
-//     const existingUser = await User.findOne({ refer_code: code });
-//     if (!existingUser) {
-//       isUnique = true;
-//     }
-//   }
-//   return code;
-// };
 
 async function handleGetRequest(request: NextRequest) {
   try {
@@ -216,76 +191,103 @@ async function handlePostRequest(request: NextRequest) {
       );
     }
 
+    // Check if user already exists
+    const existingUser = await User.findOne({ user_wallet_address: user_wallet_address });
+    const isNewUser = !existingUser;
+
     let profile_pic = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4_WP3VdprlZKs2I6Flr83IcWk5QeZhXGO-g&s";
 
-    if (file) {
-      // Convert file to Buffer for IPFS upload
-      const buffer = Buffer.from(await file.arrayBuffer());
+    // Handle file upload if provided
+    if (file && file.size > 0) {
+      try {
+        // Convert file to Buffer for upload
+        const buffer = Buffer.from(await file.arrayBuffer());
 
-      // Upload to Cloudinary
-      const base64Image = `data:${file.type};base64,${buffer.toString(
-        "base64"
-      )}`;
+        // Upload to Google Cloud Storage
+        const profile_pic_url = await uploadToGCS(
+          buffer,
+          file.name,
+          file.type,
+          'profile'
+        );
 
-      const uploadResult = await cloudinary.uploader.upload(base64Image, {
-        folder: "profile", // Optional folder name
+        profile_pic = profile_pic_url;
+      } catch (uploadError) {
+        console.error("Error uploading profile picture:", uploadError);
+        return NextResponse.json(
+          { error: "Failed to upload profile picture" },
+          { status: 500 }
+        );
+      }
+    }
+
+    let savedUser: mongoose.Document & {
+      username: string;
+      user_wallet_address: string;
+      bio: string;
+      tags: any[];
+      profile_pic: string;
+      interests: any[];
+      referred_by?: string;
+    };
+    let statusCode = 201;
+
+    if (isNewUser) {
+      // Create a new user
+      const newUser = new User({
+        username: username,
+        user_wallet_address: user_wallet_address,
+        bio: bio || "",
+        tags: tags || [],
+        profile_pic: profile_pic,
+        interests: interests || []
       });
 
-      profile_pic = uploadResult.secure_url;
-    }
-
-    // Create a new user - without referral code initially
-    const newUser = new User({
-      username: username,
-      user_wallet_address: user_wallet_address,
-      bio: bio,
-      tags: tags,
-      profile_pic: profile_pic,
-      interests: interests
-    });
-
-    // Process referral code if provided
-    if (
-      referral_code &&
-      referral_code.length > 0 &&
-      referral_code.length == 6
-    ) {
-      const existingUser = await User.findOne({ refer_code: referral_code });
-      if (existingUser) {
-        // We'll store this information for later when this user becomes eligible
-        // to have their own referral code
-        newUser.referred_by = referral_code;
-      }
-    }
-
-    const savedUser = await newUser.save();
-
-    // Mint 5 tokens if the user was referred
-    if (savedUser.referred_by && savedUser.user_wallet_address) {
-      // Process blockchain transaction asynchronously after response
-      setTimeout(async () => {
-        try {
-          // Mint 5 tokens (adjust amount as needed)
-          const {contract} = getContractUtils();
-          const amountToMint = 5;
-          const tx = await contract.mintCoins(savedUser.user_wallet_address, ethers.parseUnits(amountToMint.toString(), 18));
-          await tx.wait(); // Wait for the transaction to be mined
-          console.log(`Minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for referral.`);
-        } catch (mintError) {
-          console.error("Error minting tokens for referred user:", mintError);
-          // Optionally handle the error, e.g., log to a specific table or notify admin
+      // Process referral code if provided
+      if (referral_code && referral_code.length > 0 && referral_code.length == 6) {
+        const referringUser = await User.findOne({ refer_code: referral_code });
+        if (referringUser) {
+          // Store the referral code for later when this user becomes eligible
+          newUser.referred_by = referral_code;
         }
-      }, 0);
+      }
+
+      savedUser = await newUser.save();
+
+      // Mint tokens if the user was referred
+      if (savedUser.referred_by && savedUser.user_wallet_address) {
+        // Process blockchain transaction asynchronously after response
+        setTimeout(async () => {
+          try {
+            // Mint tokens
+            const {contract} = getContractUtils();
+            const amountToMint = 5;
+            const tx = await contract.mintCoins(savedUser.user_wallet_address, ethers.parseUnits(amountToMint.toString(), 18));
+            await tx.wait();
+            console.log(`Minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for referral.`);
+          } catch (mintError) {
+            console.error("Error minting tokens for referred user:", mintError);
+          }
+        }, 0);
+      }
+    } else {
+      // Update existing user
+      existingUser.username = username;
+      if (bio !== undefined) existingUser.bio = bio;
+      if (tags && tags.length > 0) existingUser.tags = tags;
+      if (interests && interests.length > 0) existingUser.interests = interests;
+      if (file && file.size > 0) existingUser.profile_pic = profile_pic;
+      
+      savedUser = await existingUser.save();
+      statusCode = 200; // OK for update instead of 201 Created
     }
 
-    return NextResponse.json({ user: savedUser }, { status: 201 });
+    return NextResponse.json({ user: savedUser }, { status: statusCode });
   } catch (error) {
-    console.log(error);
+    console.error("Error processing user data:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
@@ -297,7 +299,7 @@ async function handlePutRequest(request: NextRequest) {
     const formData = await request.formData();
 
     const user_wallet_address = formData.get("user_wallet_address") as string;
-    const new_username = formData.get("new_username") as string;
+    const new_username = formData.get("username") as string; // Changed from new_username to username for consistency
     const bio = formData.get("bio") as string;
     const file = formData.get("file") as File;
     const tags = JSON.parse((formData.get("tags") as string) || "[]");
@@ -357,48 +359,56 @@ async function handlePutRequest(request: NextRequest) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
+    // Update fields only if they are provided
     if (new_username) {
       user.username = new_username;
     }
-    if (bio) {
+    
+    if (bio !== undefined) {
       user.bio = bio;
     }
 
-    if (tags.length > 0) {
+    if (tags && tags.length > 0) {
       user.tags = tags;
     }
 
     // Update interests if provided
-    if (interests.length > 0) {
+    if (interests && interests.length > 0) {
       user.interests = interests;
     }
 
-    if (file) {
-      // Convert file to Buffer for IPFS upload
-      const buffer = Buffer.from(await file.arrayBuffer());
+    // Handle file upload if provided
+    if (file && file.size > 0) {
+      try {
+        // Convert file to Buffer for upload
+        const buffer = Buffer.from(await file.arrayBuffer());
 
-      // Upload to Cloudinary
-      const base64Image = `data:${file.type};base64,${buffer.toString(
-        "base64"
-      )}`;
+        // Upload to Google Cloud Storage
+        const profile_pic_url = await uploadToGCS(
+          buffer,
+          file.name,
+          file.type,
+          'profile'
+        );
 
-      const uploadResult = await cloudinary.uploader.upload(base64Image, {
-        folder: "profile", // Optional folder name
-      });
-
-      user.profile_pic = uploadResult.secure_url;
+        user.profile_pic = profile_pic_url;
+      } catch (uploadError) {
+        console.error("Error uploading profile picture:", uploadError);
+        return NextResponse.json(
+          { error: "Failed to upload profile picture" },
+          { status: 500 }
+        );
+      }
     }
 
     const updatedUser = await user.save();
 
     return NextResponse.json({ user: updatedUser }, { status: 200 });
   } catch (error) {
-    console.log(error);
+    console.error("Error updating user profile:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }

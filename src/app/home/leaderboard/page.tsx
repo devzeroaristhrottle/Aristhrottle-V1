@@ -23,6 +23,7 @@ export type LeaderboardMeme = {
 	created_by: {
 		_id: string
 		username: string
+		profile_pic: string
 	}
 	shares: any[] // If you know the structure of shares, replace `any` with the appropriate type
 	bookmarks: any[] // Same as above

@@ -184,7 +184,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsU
 				toast.error('Daily generation limit reached.')
 			} else {
 				toast.error(
-					'Error generating meme: Please change title and tags and try again!'
+					'Error generating Content: Please change title and tags and try again!'
 				)
 			}
 		} finally {
@@ -286,14 +286,14 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsU
 				})
 
 				if (uploadResponse.status === 201) {
-					console.log('Meme uploaded successfully:', uploadResponse.data)
+					console.log('Content uploaded successfully:', uploadResponse.data)
 
 					// Reset form after successful upload
 					setTitle('')
 					setSelectedTags([])
 					setGeneratedImage(null)
 
-					toast.success('Meme uploaded successfully!')
+					toast.success('Content uploaded successfully!')
 				} else {
 					throw new Error('Upload failed')
 				}
@@ -306,16 +306,16 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsU
 						toast.error('Upload timed out. Please try with a smaller image or check your connection.')
 					} else if (error.response) {
 						// Server responded with an error status
-						const errorMessage = error.response.data?.message || 'Failed to upload meme'
+						const errorMessage = error.response.data?.message || 'Failed to upload Content'
 						toast.error(`Upload failed: ${errorMessage}`)
 					} else if (error.request) {
 						// Request was made but no response received
 						toast.error('No response from server. Please check your connection and try again.')
 					} else {
-						toast.error('Failed to upload meme. Please try again.')
+						toast.error('Failed to upload Content. Please try again.')
 					}
 				} else {
-					toast.error('Failed to upload meme. Please try again.')
+					toast.error('Failed to upload Content. Please try again.')
 				}
 
 				onRevert(optimisticMeme)

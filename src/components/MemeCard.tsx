@@ -1,6 +1,5 @@
 import { Meme } from '@/app/home/page'
 import { useContext, useEffect, useState } from 'react'
-import { CgProfile } from 'react-icons/cg'
 import { Logo } from './Logo'
 import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { FaRegBookmark } from 'react-icons/fa'
@@ -91,10 +90,10 @@ export function MemeCard({
 	return (
 		<div key={index} className="flex flex-col  lg:mx-auto cursor-s">
 			<div
-				className="flex items-start gap-x-1 md:gap-x-2 mb-1 md:mb-2 cursor-pointer"
+				className="flex items-center gap-x-1 md:gap-x-2 mb-1 md:mb-2 cursor-pointer"
 				onClick={() => router.push(`/home/profiles/${meme.created_by._id}`)}
 			>
-				<CgProfile className="md:w-7 md:h-7" />
+				<img src={meme.created_by.profile_pic} className="w-8 h-8 rounded-full" />
 				<span className="text-[#29e0ca] text-base md:text-2xl">
 					{meme.created_by?.username}
 				</span>
