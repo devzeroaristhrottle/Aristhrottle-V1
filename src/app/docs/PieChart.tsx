@@ -20,7 +20,6 @@ export const PieChart: React.FC = () => {
 	const size: number = 400
 	const strokeWidth: number = 80
 	const radius: number = (size - strokeWidth) / 2
-	const circumference: number = 2 * Math.PI * radius
 
 	// Calculate stroke dash array for each segment
 	const createPath = (

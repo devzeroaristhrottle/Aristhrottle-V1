@@ -29,9 +29,6 @@ export const PercentageColumns = () => {
 		},
 	]
 
-	const blue = '#1783FB'
-	const red = '#E02121'
-
 	return (
 		<div className="flex flex-col items-center p-8">
 			<div className="relative">

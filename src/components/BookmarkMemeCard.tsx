@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { useRouter } from 'next/navigation'
-import { CgProfile } from 'react-icons/cg'
 import { FaRegShareFromSquare, FaBookmark } from 'react-icons/fa6'
 import { CiBookmark } from 'react-icons/ci'
 import { LazyImage } from '@/components/LazyImage'
