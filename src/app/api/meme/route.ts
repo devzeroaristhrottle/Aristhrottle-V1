@@ -347,9 +347,6 @@ async function handleGetRequest(req: NextRequest) {
 				},
 				// Sort by relevance score
 				{ $sort: { relevanceScore: -1, createdAt: -1 } },
-				// Limit results
-				{ $skip: start },
-				{ $limit: defaultOffset },
 				// Lookup related data
 				{
 					$lookup: {

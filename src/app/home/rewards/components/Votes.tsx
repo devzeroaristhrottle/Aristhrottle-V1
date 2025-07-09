@@ -166,7 +166,7 @@ const Votes = () => {
 							View on blockchain explorer
 						</p>
 						<a 
-							href={`https://amoy.polygonscan.com/token/${user.address}?a=${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}`}
+							href={`https://amoy.polygonscan.com/token/${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}?a=${user.address}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className="bg-[#040f2b] border-2 border-[#1783FB] rounded-lg text-xl md:text-2xl px-4 md:px-8 py-1 md:py-2 hover:bg-blue-500/20 transition-all duration-200 text-center bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"

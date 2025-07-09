@@ -190,14 +190,14 @@ export default function EditProfile({
       submitData.append("interests", JSON.stringify(formData.interests));
     }
     submitData.append("user_wallet_address", user?.address || "");
-
+    
+    onCancel();
     try {
       const response = await axiosInstance.put("/api/user", submitData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (response.status === 200) {
         toast.success("Your profile has been updated successfully!");
-        onCancel();
       } else {
         toast.error("Failed to update profile. Try again.");
       }

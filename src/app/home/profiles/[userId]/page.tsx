@@ -45,7 +45,7 @@ export default function UserProfilePage() {
 	const [loading, setLoading] = useState<boolean>(false)
 	const [profileLoading, setProfileLoading] = useState<boolean>(true)
 	const [memes, setMemes] = useState<LeaderboardMeme[]>([])
-	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')
+	const [activeTab, setActiveTab] = useState<'live' | 'all'>('all')
 	const [filterOpen, setFilterOpen] = useState(false)
 	const [sortOpen, setSortOpen] = useState(false)
 	const [userProfile, setUserProfile] = useState<UserProfileData | null>(null)
@@ -135,7 +135,7 @@ export default function UserProfilePage() {
 			)
 
 			if (response.data.memes) {
-				setMemes(response.data.memes)
+				setMemes(response.data.memes.sort((a: LeaderboardMeme, b:LeaderboardMeme) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 			}
 		} catch (error) {
 			console.log(error)
@@ -472,7 +472,7 @@ export default function UserProfilePage() {
 					</div>
 					<div className="space-x-2.5 md:space-x-5 flex justify-center">
 						<TabButton
-							classname="!text-base md:!text-xl !px-2  md:!px-8 !rounded-md md:!rounded-10px"
+							classname="!text-base md:!text-xl !px-2  md:!px-8 !rounded-md md:!rounded-10px hidden"
 							isActive={activeTab === 'live'}
 							label="Live"
 							onClick={() => handleTabChange('live')}
