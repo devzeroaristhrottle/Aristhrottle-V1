@@ -152,7 +152,7 @@ export default function Page({}: Props) {
 
 	// Handle voting (user already voted, so this shouldn't allow voting again)
 	const handleVote = async (memeId: string) => {
-		toast.info('You have already voted on this meme!')
+		toast.info('You have already voted on this content!')
 		console.log(memeId)
 	}
 

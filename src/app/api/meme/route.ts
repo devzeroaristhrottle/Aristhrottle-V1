@@ -767,8 +767,8 @@ async function handlePostRequest(req: NextRequest) {
 		await generateReferralCodeIfEligible(created_by)
 
 		await axiosInstance.post('/api/notification', {
-			title: 'New meme alert! 🔥',
-			message: `🚀 BOOM! New meme dropped: ${name} 😂🔥 Watch now!`,
+			title: 'New content alert! 🔥',
+			message: `🚀 BOOM! New content dropped: ${name} 😂🔥 Watch now!`,
 			type: 'upload',
 			notification_for: created_by,
 		})

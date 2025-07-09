@@ -173,7 +173,7 @@ async function handlePostRequest(request: NextRequest) {
     // Check if meme exists
     const meme = await Meme.findById(memeId);
     if (!meme) {
-      return NextResponse.json({ message: "Meme not found" }, { status: 404 });
+      return NextResponse.json({ message: "Content not found" }, { status: 404 });
     }
 
     // Check if the user already bookmarked the meme

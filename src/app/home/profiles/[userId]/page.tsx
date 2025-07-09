@@ -224,10 +224,10 @@ export default function UserProfilePage() {
 					votes: userDetails.votes,
 				})
 			}
-			if (error.response?.data?.message === "You cannot vote on your own meme") {
+			if (error.response?.data?.message === "You cannot vote on your own content") {
 				toast.error(error.response.data.message);
 			} else {
-				toast.error("Already voted to this meme");
+				toast.error("Already voted to this content");
 			}
 		}
 	}

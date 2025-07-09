@@ -167,9 +167,9 @@ export default function Page() {
 				setDraftMemes(response.data.drafts)
 			}
 		} catch (error) {
-			console.log('Error fetching draft memes:', error)
+			console.log('Error fetching draft content:', error)
 			setDraftMemes([])
-			toast.error('Failed to fetch draft memes')
+			toast.error('Failed to fetch draft contents')
 		} finally {
 			setLoading(false)
 		}
