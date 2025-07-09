@@ -177,7 +177,6 @@ export default function UploadModal() {
         selectedTags.length <= 5
       ) {
         
-        setIsUploadMemeOpen(false)
         const formData = new FormData()
         formData.append('created_by', userDetails._id)
         formData.append('name', title)
@@ -206,6 +205,7 @@ export default function UploadModal() {
 
         if (response.status == 201) {
           setIsRefresh(!isRefreshMeme)
+          setIsUploadMemeOpen(false)
           toast.update(loadId, { render: "Meme Upload SuccessFul", type: "success", isLoading: false, autoClose: 5000})
           setSelectedTags([])
           setTitle('')

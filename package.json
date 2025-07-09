@@ -16,6 +16,7 @@
     "@chakra-ui/react": "^3.17.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@google-cloud/storage": "^7.16.0",
     "@next/third-parties": "^15.3.2",
     "@rainbow-me/rainbowkit": "^2.2.1",
     "@rainbow-me/rainbowkit-siwe-next-auth": "^0.5.0",
