@@ -80,7 +80,7 @@ export default function Page() {
 	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')
 	const [displayedMemes, setDisplayedMeme] = useState<Meme[]>([])
 	const [isShareOpen, setIsShareOpen] = useState(false)
-	const [isNewAvail, setIsNewAvail] = useState<boolean>(true);
+	const [isNewAvail, setIsNewAvail] = useState<boolean>(false);
 	const [shareData, setShareData] = useState<{
 		id: string
 		imageUrl: string
