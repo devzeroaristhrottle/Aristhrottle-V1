@@ -72,7 +72,6 @@ export default function Page() {
 	)
 	const { openAuthModal } = useAuthModal()
 	const [isUploading, setIsUploading] = useState(false)
-	const topOfPageComp = useRef<HTMLDivElement>(null);
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
@@ -98,14 +97,8 @@ export default function Page() {
 	const offset = 30
 	const pageSize = 30
 
-	const tabsRef = useRef<HTMLDivElement>(null)
 	const memeContainerRef = useRef<HTMLDivElement>(null)
 	const { handleBookmark } = useMemeActions()
-
-	const handleShare = (id: string, imageUrl: string) => {
-		setShareData({ id, imageUrl })
-		setIsShareOpen(true)
-	}
 
 	const handleCloseShare = () => {
 		setIsShareOpen(false)
@@ -658,7 +651,12 @@ export default function Page() {
 
 	const handleViewNewContents = () => {
 		setIsNewAvail(false)
-		if(topOfPageComp.current) topOfPageComp.current.scrollTo({top: 0, behavior: 'smooth'})
+		if (memeContainerRef.current) {
+			memeContainerRef.current.scrollTo({
+				top: 0,
+				behavior: 'smooth',
+			});
+		}		
 	}
 
 	return (
@@ -743,7 +741,7 @@ export default function Page() {
 							onClick={handleViewNewContents}
 							className="border-2 border-[#29e0ca] px-3 rounded-full text-[#29e0ca] text-lg hover:bg-[#29e0ca] hover:text-black transition-colors animate-pulse"
 						>
-							View New Contents
+							New Contents
 						</Button>
 					)}
 					
@@ -853,7 +851,7 @@ export default function Page() {
 						{showRecommendations && query.length > 0 && (
 							<div className="absolute top-full left-0 right-0 border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto w-full mt-2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C] z-50">
 								{filteredTags.length > 0 ? (
-									<div className="flex flex-wrap items-center justify-start gap-4" ref={topOfPageComp}>
+									<div className="flex flex-wrap items-center justify-start gap-4">
 										{filteredTags.map(tag => (
 											<Tag
 												key={tag._id}
