@@ -660,7 +660,7 @@ export default function Page() {
 			style={{ height: '100vh' }}
 		>
 			<div className="w-full overflow-hidden" style={{ width: 'calc(80vw)' }}>
-				<div className="animate-marquee whitespace-nowrap">
+				<div className="animate-marquee whitespace-nowrap w-fit">
 					<span className="text-lg sm:text-xl md:text-2xl font-semibold text-white inline-flex gap-1 sm:gap-2">
 						<span>🚀 Welcome to </span>
 						<span className="text-[#28e0ca]">Aristhrottle!</span>
