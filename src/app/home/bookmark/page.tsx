@@ -51,7 +51,8 @@ export default function Page() {
 						user_wallet_address: meme.created_by.user_wallet_address || '',
 						createdAt: meme.created_by.createdAt || '',
 						updatedAt: meme.created_by.updatedAt || '',
-						__v: meme.created_by.__v || 0
+						__v: meme.created_by.__v || 0,
+						profile_pic: meme.created_by.profile_pic
 					},
 					createdAt: meme.createdAt,
 					updatedAt: meme.updatedAt,
