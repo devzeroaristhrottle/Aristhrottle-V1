@@ -72,7 +72,7 @@ export default function Page() {
 	)
 	const { openAuthModal } = useAuthModal()
 	const [isUploading, setIsUploading] = useState(false)
-
+	const topOfPageComp = useRef<HTMLDivElement>(null);
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
@@ -81,6 +81,7 @@ export default function Page() {
 	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')
 	const [displayedMemes, setDisplayedMeme] = useState<Meme[]>([])
 	const [isShareOpen, setIsShareOpen] = useState(false)
+	const [isNewAvail, setIsNewAvail] = useState<boolean>(true);
 	const [shareData, setShareData] = useState<{
 		id: string
 		imageUrl: string
@@ -256,6 +257,7 @@ export default function Page() {
 				`/api/meme?offset=${offsetI}&userId=${userDetails?._id}`
 			)
 			if (response.data.memes) {
+				if(response.data.memesCount != totalMemeCount) setIsNewAvail(true);
 				setTotalMemeCount(response.data.memesCount)
 				setMemes([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 				setFilterMemes([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
@@ -654,6 +656,11 @@ export default function Page() {
 			isMemeDetailOpen || welcOpen ? 'hidden' : 'auto'
 	}, [isMemeDetailOpen, welcOpen])
 
+	const handleViewNewContents = () => {
+		setIsNewAvail(false)
+		if(topOfPageComp.current) topOfPageComp.current.scrollTo({top: 0, behavior: 'smooth'})
+	}
+
 	return (
 		<div
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
@@ -726,6 +733,18 @@ export default function Page() {
 								New content only
 							</label>
 						</div>
+					)}
+					
+					{/* View New Contents Button */}
+					{isNewAvail && activeTab === 'live' && (
+						<Button
+							size={{ sm: 'xs', md: 'sm' }}
+							variant="outline"
+							onClick={handleViewNewContents}
+							className="border-2 border-[#29e0ca] px-3 rounded-full text-[#29e0ca] text-lg hover:bg-[#29e0ca] hover:text-black transition-colors animate-pulse"
+						>
+							View New Contents
+						</Button>
 					)}
 					
 					<PopoverRoot>
@@ -834,7 +853,7 @@ export default function Page() {
 						{showRecommendations && query.length > 0 && (
 							<div className="absolute top-full left-0 right-0 border border-[#1783fb] rounded-2xl max-h-52 overflow-y-auto w-full mt-2 p-4 !bg-gradient-to-b from-[#050D28] to-[#0F345C] z-50">
 								{filteredTags.length > 0 ? (
-									<div className="flex flex-wrap items-center justify-start gap-4">
+									<div className="flex flex-wrap items-center justify-start gap-4" ref={topOfPageComp}>
 										{filteredTags.map(tag => (
 											<Tag
 												key={tag._id}
