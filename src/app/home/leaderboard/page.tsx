@@ -14,6 +14,7 @@ import MemeDetail from '@/components/MemeDetail'
 import { LeaderboardMemeCard } from './MemeCard'
 import { toast } from 'react-toastify'
 import { Meme } from '../page'
+import { useAuthModal } from '@account-kit/react'
 
 export type LeaderboardMeme = {
 	_id: string
@@ -73,6 +74,7 @@ export default function Page() {
 		setSelectedMeme(undefined)
 	}
 	const memeContainerRef = useRef<HTMLDivElement>(null)
+	const { openAuthModal } = useAuthModal()
 
 	const {
 		percentage,
@@ -180,6 +182,8 @@ export default function Page() {
 				if (response.status == 201) {
 					toast.success('Voted successfully!')
 				}
+			}else{
+				if(openAuthModal) openAuthModal();
 			}
 		} catch (err) {
 			console.log('error: ', err)
