@@ -22,6 +22,7 @@ interface Data {
 	tags: string[]
 	file: File | null
 	bio: string
+	interests: { name: string; tags: string[] }[]
 }
 
 // Draft Meme interface based on the API documentation
@@ -33,6 +34,7 @@ interface DraftMeme {
 	created_by: {
 		_id: string
 		username: string
+		profile_pic: string
 	}
 	is_published: boolean
 	draft_data: any
@@ -47,6 +49,7 @@ export default function Page() {
 		tags: [],
 		file: null,
 		bio: '',
+		interests: [],
 	})
 	const [page, setPage] = useState(1)
 	// const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
@@ -222,6 +225,7 @@ export default function Page() {
 			tags: [],
 			file: null,
 			bio: '',
+			interests: [],
 		})
 		if (fileInputRef.current) {
 			fileInputRef.current.value = ''

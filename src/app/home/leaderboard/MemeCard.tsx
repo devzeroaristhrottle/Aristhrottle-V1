@@ -69,7 +69,7 @@ export const LeaderboardMemeCard: React.FC<{
 								router.push(`/home/profiles/${meme.created_by._id}`)
 							}
 						>
-							<CgProfile className="md:w-6 md:h-6" />
+							<img src={meme.created_by.profile_pic} className='h-8 w-8 rounded-full'/>
 							<span className="text-[#29e0ca] text-base md:text-2xl">
 								{meme.created_by.username}
 							</span>
