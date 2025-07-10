@@ -46,12 +46,12 @@ export const PercentageColumns = () => {
 							<div className="relative">
 								{/* Background column (blue) */}
 								<div
-									className="w-16 h-[20rem] rounded-t-full bg-[#1783FB]"
+									className="w-16 h-[20rem] rounded-t-full bg-gradient-to-t from-[#0E4E95] to-[#1783FB]"
 								></div>
 
 								{/* Red portion representing percentage */}
 								<div
-									className="absolute bottom-0 w-16 transition-all duration-700 ease-out bg-[#E02121]"
+									className="absolute bottom-0 w-16 transition-all duration-700 ease-out bg-gradient-to-t from-[#7A1212] to-[#E02121]"
 									style={{
 										height: `${(column.percentage / 100) * 256}px`,
 									}}
