@@ -72,7 +72,6 @@ export default function Page() {
 	)
 	const { openAuthModal } = useAuthModal()
 	const [isUploading, setIsUploading] = useState(false)
-
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
@@ -81,6 +80,7 @@ export default function Page() {
 	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')
 	const [displayedMemes, setDisplayedMeme] = useState<Meme[]>([])
 	const [isShareOpen, setIsShareOpen] = useState(false)
+	const [isNewAvail, setIsNewAvail] = useState<boolean>(false);
 	const [shareData, setShareData] = useState<{
 		id: string
 		imageUrl: string
@@ -97,14 +97,8 @@ export default function Page() {
 	const offset = 30
 	const pageSize = 30
 
-	const tabsRef = useRef<HTMLDivElement>(null)
 	const memeContainerRef = useRef<HTMLDivElement>(null)
 	const { handleBookmark } = useMemeActions()
-
-	const handleShare = (id: string, imageUrl: string) => {
-		setShareData({ id, imageUrl })
-		setIsShareOpen(true)
-	}
 
 	const handleCloseShare = () => {
 		setIsShareOpen(false)
@@ -256,6 +250,7 @@ export default function Page() {
 				`/api/meme?offset=${offsetI}&userId=${userDetails?._id}`
 			)
 			if (response.data.memes) {
+				if(response.data.memesCount != totalMemeCount) setIsNewAvail(true);
 				setTotalMemeCount(response.data.memesCount)
 				setMemes([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 				setFilterMemes([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
@@ -654,6 +649,16 @@ export default function Page() {
 			isMemeDetailOpen || welcOpen ? 'hidden' : 'auto'
 	}, [isMemeDetailOpen, welcOpen])
 
+	const handleViewNewContents = () => {
+		setIsNewAvail(false)
+		if (memeContainerRef.current) {
+			memeContainerRef.current.scrollTo({
+				top: 0,
+				behavior: 'smooth',
+			});
+		}		
+	}
+
 	return (
 		<div
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
@@ -726,6 +731,18 @@ export default function Page() {
 								New content only
 							</label>
 						</div>
+					)}
+					
+					{/* View New Contents Button */}
+					{isNewAvail && activeTab === 'live' && (
+						<Button
+							size={{ sm: 'xs', md: 'sm' }}
+							variant="outline"
+							onClick={handleViewNewContents}
+							className="border-2 border-[#29e0ca] px-3 rounded-full text-[#29e0ca] text-lg hover:bg-[#29e0ca] hover:text-black transition-colors animate-pulse"
+						>
+							New Contents
+						</Button>
 					)}
 					
 					<PopoverRoot>

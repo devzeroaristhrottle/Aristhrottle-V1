@@ -358,19 +358,19 @@ export default function UserProfilePage() {
 			{/* Stats Section */}
 			<div className="flex flex-col md:flex-row gap-10 mt-3">
 				<div className="md:flex-1 py-3 border-[.1875rem] border-[#1783fb] rounded-xl">
-					<p className="text-[28px] h-16 md:h-8 leading-none px-4">
+					<p className="text-[28px] h-fit leading-none px-4">
 						{userProfile?.bio || 'No bio available'}
 					</p>
 				</div>
 				<div className="flex justify-between gap-x-6 md:gap-x-0 flex-row md:flex-col">
 					<div className="votescast_majorityvotes_uploads_majorityuploads_mobile_wrapper flex-1 md:hidden space-y-2 md:space-y-0">
 						<div className="flex justify-between items-center gap-x-2 ">
-							<p className="text-lg text-[#1783FB]">Followers</p>
-							<p className="text-lg">{userProfile?.followersCount || 0}</p>
+							<p className="text-lg text-[#1783FB]">Votes Cast</p>
+							<p className="text-lg">{userProfile?.totalCastedVotesCount || 0}</p>
 						</div>
 						<div className="flex justify-between items-center gap-x-2">
-							<p className="text-lg text-[#1783FB]">Following</p>
-							<p className="text-lg">{userProfile?.followingCount || 0}</p>
+							<p className="text-lg text-[#1783FB]">Majority Votes</p>
+							<p className="text-lg">{userProfile?.majorityVotes || 0}</p>
 						</div>
 						<div className="flex justify-between items-center gap-x-2">
 							<p className="text-lg text-[#1783FB]">Uploads</p>
@@ -405,18 +405,18 @@ export default function UserProfilePage() {
 				<div className="w-[200px] px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl hidden md:flex flex-col justify-between">
 					<div className="flex flex-col gap-2">
 						<p className="text-[28px] h-8 text-[#1783FB] text-center">
-							Followers
+							Votes Cast
 						</p>
 						<p className="text-[30px] h-8 text-center">
-							{userProfile?.followersCount || 0}
+							{userProfile?.totalCastedVotesCount || 0}
 						</p>
 					</div>
 					<div className="flex flex-col gap-2">
 						<p className="text-[28px] h-8 text-[#1783FB] text-center">
-							Following
+							Majority Votes
 						</p>
 						<p className="text-[30px] h-8 text-center">
-							{userProfile?.followingCount || 0}
+							{userProfile?.majorityVotes || 0}
 						</p>
 					</div>
 				</div>

@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { useRouter } from 'next/navigation'
-import { CgProfile } from 'react-icons/cg'
 import { FaRegShareFromSquare, FaBookmark } from 'react-icons/fa6'
 import { CiBookmark } from 'react-icons/ci'
 import { LazyImage } from '@/components/LazyImage'
@@ -72,7 +71,7 @@ export default function BookmarkMemeCard({
 					className="username_rank_wrapper flex items-center gap-x-2 mb-3 cursor-pointer"
 					onClick={() => router.push(`/home/profiles/${meme.created_by._id}`)}
 				>
-					<CgProfile className="md:w-6 md:h-6" />
+					<img src={meme.created_by.profile_pic} className="w-6 h-6 rounded-full" />
 					<span className="text-[#29e0ca] text-base md:text-xl">
 						{meme.created_by.username}
 					</span>

@@ -4,6 +4,7 @@ import Meme from "@/models/Meme";
 import Followers from "@/models/Followers";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
+import Vote from "@/models/Vote";
 
 export async function GET(req: NextRequest) {
   try {
@@ -50,6 +51,21 @@ export async function GET(req: NextRequest) {
       in_percentile: { $gte: 50 },
     });
 
+    const majorityVotes = await Vote.find({
+      is_onchain: true,
+      vote_by: userId,
+    })
+      .populate("vote_by")
+      .populate({
+        path: "vote_to",
+        match: { is_onchain: true, in_percentile: { $gte: 50 } },
+      })
+      .countDocuments();
+
+      const totalCastedVotesCount = await Vote.find({
+        vote_by: userId,
+      }).countDocuments();
+
     return NextResponse.json({
       user,
       followersCount,
@@ -57,6 +73,8 @@ export async function GET(req: NextRequest) {
       totalUploadsCount,
       totalVotesReceived: totalVotesReceived[0]?.totalVotes || 0,
       majorityUploads,
+      majorityVotes,
+      totalCastedVotesCount,
     });
   } catch (error) {
     console.error("Error fetching user profile:", error);

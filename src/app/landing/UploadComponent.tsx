@@ -412,7 +412,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsU
 						<div className="w-32 h-32 border-8 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
 						<div className="mt-4 text-center">
 							<p className="text-blue-400 font-medium">
-								Generating your meme...
+								Generating your content...
 							</p>
 							<p className="text-gray-400 text-xs mt-1">
 								Please don&apos;t refresh the page.
