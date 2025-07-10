@@ -7,6 +7,7 @@ import { FaRegBookmark, FaUsers } from 'react-icons/fa'
 import { GrCloudUpload } from 'react-icons/gr'
 import { IoPodiumOutline } from 'react-icons/io5'
 import { LuTrophy } from 'react-icons/lu'
+import { HiOutlineDocumentText } from 'react-icons/hi'
 
 // Define sidebar items configuration
 const sidebarItems = [
@@ -122,6 +123,17 @@ const sidebarItems = [
 		),
 		action: (route: AppRouterInstance) => route.push('/home/community'),
 	},
+	{
+		title: 'Docs',
+		icon: (isActive: boolean) => (
+			<HiOutlineDocumentText
+				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+					isActive ? 'text-[#1783FB]' : 'text-slate-100'
+				}`}
+			/>
+		),
+		action: (route: AppRouterInstance) => route.push('/docs'),
+	},
 ]
 
 const Sidebar = () => {
@@ -138,6 +150,7 @@ const Sidebar = () => {
 		if (pathname?.includes('bookmark')) return 'Saved'
 		if (pathname?.includes('community')) return 'Community'
 		if (pathname?.includes('profile')) return 'Profile'
+		if (pathname?.includes('docs')) return 'Docs'
 		return 'Home'
 	}
 
@@ -229,6 +242,8 @@ const Sidebar = () => {
 											/>
 										) : item.title === 'Community' ? (
 											<FaUsers className="h-6 w-6" />
+										) : item.title === 'Docs' ? (
+											<HiOutlineDocumentText className="h-6 w-6" />
 										) : (
 											<FaRegBookmark className="h-6 w-6" />
 										)}
