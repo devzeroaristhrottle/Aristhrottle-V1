@@ -728,7 +728,7 @@ export default function Page() {
 								htmlFor="uninteracted-filter" 
 								className="text-sm md:text-base text-white cursor-pointer whitespace-nowrap"
 							>
-								New content only
+								New content
 							</label>
 						</div>
 					)}

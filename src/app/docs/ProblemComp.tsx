@@ -13,14 +13,14 @@ export default function ProblemComp() {
             </div>
             <div className='flex items-center gap-8 text-[40px] pt-16'>
                 <img src='/docs/1.png'/>
-                <div className='gap-2 flex flex-row'>
+                <div className='gap-2 flex flex-col md:flex-row'>
                     <div>Average time on content apps is</div>
                     <div className='text-[#29E0CA]'>More than 2 Hours/Day</div>
                 </div>
             </div>
             <div className='flex items-center gap-8 text-[40px] pt-4'>
                 <img src='/docs/2.png'/>
-                <div className='gap-2 flex flex-row'>
+                <div className='gap-2 flex flex-col md:flex-row'>
                     <div>Average Attention Span is</div>
                     <div className='text-[#29E0CA]'>Less than 10 Seconds</div>
                 </div>
@@ -30,14 +30,14 @@ export default function ProblemComp() {
             </div>
             <div className='flex items-center gap-8 text-[40px] pt-4'>
                 <img src='/docs/3.png'/>
-                <div className='gap-2 flex flex-row'>
+                <div className='gap-2 flex flex-col md:flex-row'>
                     <div>Internet Ad Revenue across these is</div>
                     <div className='text-[#29E0CA]'>Nearly $225 Billion</div>
                 </div>
             </div>
             <div className='flex items-center gap-8 text-[40px] pt-4'>
                 <img src='/docs/4.png'/>
-                <div className='gap-2 flex flex-row'>
+                <div className='gap-2 flex flex-col md:flex-row'>
                     <div>Creator Payout remains</div>
                     <div className='text-[#29E0CA]'>Only $23-30Billion (10-13%)</div>
                 </div>
@@ -51,7 +51,7 @@ export default function ProblemComp() {
                     <div className='rounded-full h-20 w-20 bg-[#D9D9D9] flex justify-center items-center'>
                         <img src='/docs/v1.png' className='h-12 w-12'/>
                     </div>
-                    <div className='text-[40px]'>
+                    <div className='md:text-[40px]'>
                         Entertainment
                     </div>
                 </div>
@@ -60,7 +60,7 @@ export default function ProblemComp() {
                     <div className='rounded-full h-20 w-20 bg-[#D9D9D9] flex justify-center items-center'>
                         <img src='/docs/f1.png' className='h-20 w-20'/>
                     </div>
-                    <div className='text-[40px]'>
+                    <div className='md:text-[40px]'>
                         Pleasure
                     </div>
                 </div>
@@ -69,7 +69,7 @@ export default function ProblemComp() {
                     <div className='rounded-full h-20 w-20 bg-[#D9D9D9] flex justify-center items-center'>
                         <img src='/docs/k1.png' className='h-12 w-12'/>
                     </div>
-                    <div className='text-[40px]'>
+                    <div className='md:text-[40px]'>
                         Knowledge
                     </div>
                 </div>

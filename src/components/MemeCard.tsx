@@ -145,10 +145,6 @@ export function MemeCard({
 									+0.1 $eART
 								</div>
 							)}
-
-							{activeTab !== 'live' && (
-								<p className="text-center text-[#1783fb]">{voteCount}</p>
-							)}
 						</div>
 					)}
 
@@ -211,39 +207,41 @@ export function MemeCard({
 				<p className="text-lg md:text-2xl text-wrap pr-8">{meme.name}</p>
 				{/* For mobile */}
 				<div className="md:hidden flex items-center gap-x-6 md:gap-x-0">
-					{loading ? (
-						<AiOutlineLoading3Quarters className="animate-spin text-2xl " />
+				{loading ? (
+						<AiOutlineLoading3Quarters className="animate-spin text-2xl" />
 					) : (
-						<div className="flex flex-col items-center space-y-1 relative">
-							<Logo
-								onClick={() => {
-									if (activeTab === 'all') return // Disable click in 'all' tab
-									if (user && user.address) {
-										voteMeme()
-									} else {
-										if (openAuthModal) {
+						<div className="flex flex-col items-center font-bold text-xl space-y-1 relative">
+							{eyeOpen ? (
+								<>
+									<Image
+										src={'/assets/vote/icon1.png'}
+										width={30}
+										height={30}
+										alt="logo"
+										className="transition-all duration-300 "
+									/>
+								</>
+							) : (
+								<Logo
+									onClick={() => {
+										if (user && user.address) {
+											if(meme.created_by._id === userDetails?._id) return
+											voteMeme()
+										} else if (openAuthModal) {
 											openAuthModal()
 										}
+									}}
+									classNames={
+										meme.created_by._id === userDetails?._id ? "!cursor-not-allowed" : "!cursor-pointer"
 									}
-								}}
-								classNames={`w-5 h-5 md:w-6 md:h-6 ${
-									activeTab === 'all'
-										? 'opacity-70 !cursor-not-allowed pointer-events-none'
-										: ''
-								}`}
-							/>
-
-							{/* +1 Points Animation for mobile */}
-							{showPointsAnimation && (
-								<div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-green-400 font-bold text-sm opacity-0 animate-[flyUp_2s_ease-out_forwards] w-fit">
-									+0.1 $eART
-								</div>
+								/>
 							)}
 
-							{activeTab !== 'live' && (
-								<p className="text-center text-lg md:text-2xl text-[#1783fb]">
-									{voteCount}
-								</p>
+							{/* +1 Points Animation */}
+							{showPointsAnimation && (
+								<div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-[#28e0ca] font-bold text-lg opacity-0 animate-[flyUp_2s_ease-out_forwards]">
+									+0.1 $eART
+								</div>
 							)}
 						</div>
 					)}
