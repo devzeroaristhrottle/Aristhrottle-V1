@@ -7,12 +7,18 @@ import { mintTokensAndLog } from "@/ethers/mintUtils";
 import mongoose from "mongoose";
 
 async function handlePostRequest(req: NextRequest) {
+  console.log("🔍 [ClaimReward] Starting reward claim process");
   try {
+    console.log("🔍 [ClaimReward] Connecting to database");
     await connectToDatabase();
 
-    const { userId, type, milestone } = await req.json();
+    const requestBody = await req.json();
+    console.log("🔍 [ClaimReward] Request body:", JSON.stringify(requestBody));
+    
+    const { userId, type, milestone } = requestBody;
 
     if (!userId || !type || !milestone) {
+      console.log("❌ [ClaimReward] Missing required fields:", { userId, type, milestone });
       return NextResponse.json(
         { message: "All fields required" },
         { status: 400 }
@@ -21,6 +27,7 @@ async function handlePostRequest(req: NextRequest) {
 
     const validTypes = ["vote", "vote-total", "referral", "upload", "upload-total"];
     if (!validTypes.includes(type)) {
+      console.log("❌ [ClaimReward] Invalid milestone type:", type);
       return NextResponse.json(
         { message: "Invalid milestone type" },
         { status: 400 }
@@ -28,6 +35,7 @@ async function handlePostRequest(req: NextRequest) {
     }
 
     if (isNaN(Number(milestone))) {
+      console.log("❌ [ClaimReward] Invalid milestone number:", milestone);
       return NextResponse.json(
         { message: "Milestone must be a number" },
         { status: 400 }
@@ -35,8 +43,10 @@ async function handlePostRequest(req: NextRequest) {
     }
 
     try {
+      console.log("🔍 [ClaimReward] Authenticating user:", userId);
       await checkIsAuthenticated(userId, req);
     } catch (authError) {
+      console.error("❌ [ClaimReward] Authentication failed:", authError);
       return NextResponse.json(
         { message: "Authentication failed", error: authError },
         { status: 401 }
@@ -45,10 +55,12 @@ async function handlePostRequest(req: NextRequest) {
 
     // Use findOneAndUpdate with the original query to atomically find and mark as claimed
     // This prevents race conditions by ensuring only one process can claim the milestone
+    console.log("🔍 [ClaimReward] Starting MongoDB session");
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
+      console.log(`🔍 [ClaimReward] Looking for milestone: userId=${userId}, type=${type}, milestone=${milestone}`);
       // First attempt to mark the milestone as "claiming" to lock it
       const milestoneData = await Milestone.findOneAndUpdate(
         {
@@ -62,6 +74,7 @@ async function handlePostRequest(req: NextRequest) {
       ).populate("created_by");
 
       if (!milestoneData) {
+        console.log("❌ [ClaimReward] Milestone not found or already claimed");
         await session.abortTransaction();
         session.endSession();
         return NextResponse.json(
@@ -70,7 +83,15 @@ async function handlePostRequest(req: NextRequest) {
         );
       }
 
+      console.log("✅ [ClaimReward] Found milestone:", JSON.stringify({
+        id: milestoneData._id,
+        type: milestoneData.type,
+        milestone: milestoneData.milestone,
+        reward: milestoneData.reward
+      }));
+
       if (!milestoneData.created_by.user_wallet_address) {
+        console.error("❌ [ClaimReward] User wallet address not found for user:", userId);
         await session.abortTransaction();
         session.endSession();
         return NextResponse.json(
@@ -79,7 +100,10 @@ async function handlePostRequest(req: NextRequest) {
         );
       }
 
+      console.log("✅ [ClaimReward] User wallet address:", milestoneData.created_by.user_wallet_address);
+
       if (!milestoneData.reward) {
+        console.error("❌ [ClaimReward] No reward associated with this milestone");
         await session.abortTransaction();
         session.endSession();
         return NextResponse.json(
@@ -88,6 +112,8 @@ async function handlePostRequest(req: NextRequest) {
         );
       }
 
+      console.log(`🔍 [ClaimReward] Attempting to mint ${milestoneData.reward} tokens to ${milestoneData.created_by.user_wallet_address}`);
+      
       // Process the transaction
       const mintResult = await mintTokensAndLog(
         milestoneData.created_by.user_wallet_address,
@@ -101,8 +127,11 @@ async function handlePostRequest(req: NextRequest) {
         }
       );
       
+      console.log("🔍 [ClaimReward] Mint result:", JSON.stringify(mintResult));
+      
       if (!mintResult.success) {
         // Release the lock if minting fails
+        console.error("❌ [ClaimReward] Minting failed:", mintResult.error);
         await Milestone.findByIdAndUpdate(
           milestoneData._id,
           { $unset: { claiming_in_progress: 1 } },
@@ -113,53 +142,88 @@ async function handlePostRequest(req: NextRequest) {
         throw new Error(mintResult.error || "Transaction failed");
       }
 
-      // Mark as fully claimed only if the mint was successful
-      const update = await Milestone.findOneAndUpdate(
-        {
-          _id: milestoneData._id,
-          claiming_in_progress: true,
-          is_claimed: false,
-        },
-        { 
-          is_claimed: true,
-          $unset: { claiming_in_progress: 1 },
-          transaction_hash: mintResult.transactionHash
-        },
-        { new: true, session }
-      );
+      console.log("✅ [ClaimReward] Minting successful, updating milestone status");
+      console.log("🔍 [ClaimReward] Milestone ID:", milestoneData._id);
       
-      await session.commitTransaction();
-      session.endSession();
-      
-      if (!update) {
-        return NextResponse.json(
-          { message: "Failed to update milestone status" },
-          { status: 500 }
+      try {
+        // Mark as fully claimed only if the mint was successful
+        const updateResult = await Milestone.findOneAndUpdate(
+          {
+            _id: milestoneData._id,
+            claiming_in_progress: true,
+            is_claimed: false,
+          },
+          { 
+            $set: { 
+              is_claimed: true,
+              transaction_hash: mintResult.transactionHash
+            },
+            $unset: { claiming_in_progress: 1 }
+          },
+          { new: true, session }
         );
+        
+        console.log("🔍 [ClaimReward] Update result:", updateResult ? "Success" : "No document matched update criteria");
+        
+        let existingMilestone = null;
+        
+        if (!updateResult) {
+          console.error("❌ [ClaimReward] Failed to update milestone - no matching document found");
+          // Check if the milestone exists at all
+          existingMilestone = await Milestone.findById(milestoneData._id).session(session);
+          console.log("🔍 [ClaimReward] Existing milestone state:", JSON.stringify({
+            id: existingMilestone?._id,
+            is_claimed: existingMilestone?.is_claimed,
+            claiming_in_progress: existingMilestone?.claiming_in_progress
+          }));
+          
+          // Try a more direct update approach as fallback
+          if (existingMilestone) {
+            console.log("🔍 [ClaimReward] Attempting direct update as fallback");
+            existingMilestone.is_claimed = true;
+            existingMilestone.transaction_hash = mintResult.transactionHash;
+            if (existingMilestone.claiming_in_progress) {
+              delete existingMilestone.claiming_in_progress;
+            }
+            await existingMilestone.save({ session });
+            console.log("✅ [ClaimReward] Fallback update successful");
+          }
+        }
+        
+        console.log("🔍 [ClaimReward] Committing transaction");
+        await session.commitTransaction();
+        session.endSession();
+        
+        console.log("✅ [ClaimReward] Reward claim successful");
+        return NextResponse.json({ 
+          update: updateResult || existingMilestone,
+          transactionHash: mintResult.transactionHash
+        }, { status: 200 });
+      } catch (updateError) {
+        console.error("❌ [ClaimReward] Error updating milestone:", updateError);
+        throw updateError;
       }
-      
-      return NextResponse.json({ 
-        update,
-        transactionHash: mintResult.transactionHash
-      }, { status: 200 });
     } catch (txError) {
       // Make sure to abort the transaction if there's an error
+      console.error("❌ [ClaimReward] Transaction error:", txError);
       try {
+        console.log("🔍 [ClaimReward] Aborting transaction");
         await session.abortTransaction();
       } catch (abortError) {
-        console.error("Error aborting transaction:", abortError);
+        console.error("❌ [ClaimReward] Error aborting transaction:", abortError);
       } finally {
         session.endSession();
       }
       
-      console.error("Transaction error:", txError);
+      console.error("❌ [ClaimReward] Transaction error details:", txError instanceof Error ? txError.stack : String(txError));
       return NextResponse.json(
         { message: "Failed to process reward transaction", error: txError instanceof Error ? txError.message : String(txError) },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error("Claim reward error:", error);
+    console.error("❌ [ClaimReward] Unhandled error:", error);
+    console.error("❌ [ClaimReward] Error stack:", error instanceof Error ? error.stack : "No stack trace");
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
       { message: "Failed to process reward claim", error: errorMessage },
