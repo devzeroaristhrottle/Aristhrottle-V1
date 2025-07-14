@@ -306,8 +306,11 @@ export default function Navbar() {
 					motionPreset="slide-in-bottom"
 					initialFocusEl={() => ref.current}
 				>
-					<div className='w-screen h-screen backdrop-blur-md'>
-					<DialogContent className="mx-4 md:mx-0 bg-black p-6 rounded-lg border border-white text-lg">
+					{/* Improved, conditional backdrop blur */}
+					{isOpenModel && (
+						<div className="fixed inset-0 z-0 backdrop-blur-2xl bg-black/40 pointer-events-none w-screen h-screen" />
+					)}
+					<DialogContent className="relative z-10 mx-4 md:mx-0 bg-black p-6 rounded-lg border border-white text-lg">
 						<DialogHeader>
 							<DialogTitle className='text-3xl'>Create Account</DialogTitle>
 						</DialogHeader>
@@ -368,7 +371,6 @@ export default function Navbar() {
 							</Button>
 						</DialogFooter>
 					</DialogContent>
-					</div>
 				</DialogRoot>
 			</div>
 		</div>
