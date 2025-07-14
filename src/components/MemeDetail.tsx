@@ -12,7 +12,7 @@ import { MdOutlineExpandMore } from 'react-icons/md'
 import axiosInstance from '@/utils/axiosInstance'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
 import { CiBookmark } from 'react-icons/ci'
-import { useUser } from '@account-kit/react'
+import { useAuthModal, useUser } from '@account-kit/react'
 import Image from 'next/image'
 import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
@@ -60,6 +60,7 @@ export default function MemeDetail({
 	const [eyeOpen, setEyeOpen] = useState<boolean>(meme?.has_user_voted || false);
 	const [isLoad, setIsLoad] = useState<boolean>(false);
 
+	const { openAuthModal } = useAuthModal();
 	// Touch/swipe state
 	const [touchStart, setTouchStart] = useState<number | null>(null)
 	const [touchEnd, setTouchEnd] = useState<number | null>(null)
@@ -90,6 +91,10 @@ export default function MemeDetail({
 
 	const handleVote = (memeId: string) => {
 		try {
+			if(!userDetails){
+				openAuthModal();
+				return;
+			}
 			onVoteMeme(memeId)
 			setShowPointsAnimation(true)
 			setTimeout(() => {
