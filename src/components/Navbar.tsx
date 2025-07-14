@@ -307,15 +307,15 @@ export default function Navbar() {
 					motionPreset="slide-in-bottom"
 					initialFocusEl={() => ref.current}
 				>
-					<DialogBackdrop />
-					<DialogContent className="mx-4 md:mx-0">
+					<div className='w-screen h-screen backdrop-blur-md'>
+					<DialogContent className="mx-4 md:mx-0 bg-black p-6 rounded-lg border border-white text-lg">
 						<DialogHeader>
-							<DialogTitle>Create Account</DialogTitle>
+							<DialogTitle className='text-3xl'>Create Account</DialogTitle>
 						</DialogHeader>
 						<DialogBody>
 							<Field label="Account Address">
 								<Input
-									className="px-2"
+									className="px-2 bg-gray-800"
 									variant="subtle"
 									placeholder="Enter Username"
 									value={user?.address}
@@ -325,7 +325,7 @@ export default function Navbar() {
 							<Field label="Username" className="mt-3">
 								<Input
 									ref={ref}
-									className="px-2"
+									className="px-2 bg-gray-800"
 									variant="subtle"
 									placeholder="Enter Username"
 									value={username}
@@ -335,7 +335,7 @@ export default function Navbar() {
 							<Field label="Bio" className="mt-3">
 								<Input
 									ref={ref}
-									className="px-2"
+									className="px-2 bg-gray-800"
 									variant="subtle"
 									placeholder="Enter Bio"
 									value={bio}
@@ -345,7 +345,7 @@ export default function Navbar() {
 							</Field>
 							<Field label="Referral Code" className="mt-3 mb-5">
 								<Input
-									className="px-2 w-full"
+									className="px-2 w-full bg-gray-800"
 									variant="subtle"
 									placeholder="Enter Referral Code"
 									value={referralCode}
@@ -369,6 +369,7 @@ export default function Navbar() {
 							</Button>
 						</DialogFooter>
 					</DialogContent>
+					</div>
 				</DialogRoot>
 			</div>
 		</div>
