@@ -29,6 +29,11 @@ export const PercentageColumns = () => {
 		},
 	]
 
+	const data = [
+		{ label: 'FY 2024 Total Revenue', color: '#E02121' },
+		{ label: 'Payout % to Creators', color: '#1783FB' },
+	]
+
 	return (
 		<div className="flex flex-col items-center p-8">
 			<div className="relative">
@@ -69,6 +74,20 @@ export const PercentageColumns = () => {
 					className="absolute bottom-0 left-0 right-0 h-1 bg-white rounded-full shadow-sm"
 					style={{ top: '366px' }}
 				></div>
+
+				<div className="flex justify-center pt-10 space-x-6">
+					{data.map((segment, index) => (
+						<div key={index} className="flex items-center space-x-2">
+							<div
+								className="w-4 h-4 rounded-md"
+								style={{ backgroundColor: segment.color }}
+							></div>
+							<span className="text-2xl font-medium text-white">
+								{segment.label}
+							</span>
+						</div>
+					))}
+				</div>
 			</div>
 		</div>
 	)

@@ -1,8 +1,28 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { PercentageColumns } from './Columns'
 import PieChart from './PieChart'
 
-export default function ProblemComp() {
+export default function ProblemComp({ onEndReached }: { onEndReached?: () => void }) {
+	const endRef = useRef<HTMLDivElement>(null)
+
+	useEffect(() => {
+		if (!onEndReached) return
+		const observer = new window.IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					onEndReached()
+				}
+			},
+			{ threshold: 1.0 }
+		)
+		if (endRef.current) {
+			observer.observe(endRef.current)
+		}
+		return () => {
+			if (endRef.current) observer.unobserve(endRef.current)
+		}
+	}, [onEndReached])
+
 	return (
 		<div className="">
 			<div className='font-[500] text-[50px] text-[#29E0CA]'>Your attention has no value. Does it?</div>
@@ -65,7 +85,7 @@ export default function ProblemComp() {
                     </div>
                 </div>
 
-                <div className='flex flex-col items-center'>
+                <div className='flex flex-col items-center pb-16'>
                     <div className='rounded-full h-20 w-20 bg-[#D9D9D9] flex justify-center items-center'>
                         <img src='/docs/k1.png' className='h-12 w-12'/>
                     </div>
@@ -74,6 +94,8 @@ export default function ProblemComp() {
                     </div>
                 </div>
             </div>
+			{/* End marker for intersection observer */}
+			<div ref={endRef} style={{ height: 1 }} />
 		</div>
 	)
 }

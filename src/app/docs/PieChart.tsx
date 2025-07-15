@@ -83,7 +83,6 @@ export const PieChart: React.FC = () => {
 									key={index}
 									d={path}
 									fill={segment.color}
-									stroke="white"
 									strokeWidth="2"
 									className="transition-all duration-300 hover:opacity-80"
 								/>
