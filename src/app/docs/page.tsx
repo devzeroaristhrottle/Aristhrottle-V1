@@ -35,16 +35,16 @@ export default function DocsPage() {
 
 			{/* Tab Navigation */}
 			<div className="flex justify-center mb-8">
-				<div className="flex space-x-4">
+				<div className="flex space-x-4 border border-white p-2 md:rounded-10px rounded-md">
 					<TabButton
 						label="Problem"
-						classname="!px-6 md:!px-8 !rounded-md md:!rounded-10px"
+						classname="!px-6 md:!px-8 !rounded-md md:!rounded-10px w-64"
 						isActive={activeTab === 'problem'}
 						onClick={() => handleTabChange('problem')}
 					/>
 					<TabButton
 						label="Solution"
-						classname="!px-6 md:!px-8 !rounded-md md:!rounded-10px"
+						classname="!px-6 md:!px-8 !rounded-md md:!rounded-10px w-64"
 						isActive={activeTab === 'solution'}
 						onClick={() => handleTabChange('solution')}
 					/>
