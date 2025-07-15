@@ -1,6 +1,4 @@
 import React, { useEffect, useRef } from 'react'
-import { PercentageColumns } from './Columns'
-import PieChart from './PieChart'
 
 export default function ProblemComp({ onEndReached }: { onEndReached?: () => void }) {
 	const endRef = useRef<HTMLDivElement>(null)
@@ -45,8 +43,8 @@ export default function ProblemComp({ onEndReached }: { onEndReached?: () => voi
                     <div className='text-[#29E0CA]'>Less than 10 Seconds</div>
                 </div>
             </div>
-            <div className='h-[30rem]'>
-                <PercentageColumns />
+            <div className='h-fit py-16 flex w-full items-center justify-center'>
+                <img src="/docs/columns.svg"/>
             </div>
             <div className='flex items-center gap-8 text-[40px] pt-4'>
                 <img src='/docs/3.png'/>
@@ -62,8 +60,8 @@ export default function ProblemComp({ onEndReached }: { onEndReached?: () => voi
                     <div className='text-[#29E0CA]'>Only $23-30 Billion (10-13%)</div>
                 </div>
             </div>
-            <div className='h-[600px]'>
-                <PieChart />
+            <div className='h-fit py-16 flex w-full items-center justify-center'>
+                <img src="/docs/pie.svg"/>
             </div>
             <div className='text-[50px] font-[400] text-[#29E0CA]'>What do other users get?</div>
             <div className='flex flex-row justify-evenly pt-14'>
