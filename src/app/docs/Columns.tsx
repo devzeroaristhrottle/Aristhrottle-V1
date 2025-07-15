@@ -30,8 +30,8 @@ export const PercentageColumns = () => {
 	]
 
 	const data = [
-		{ label: 'FY 2024 Total Revenue', color: '#E02121' },
-		{ label: 'Payout % to Creators', color: '#1783FB' },
+		{ label: 'FY 2024 Total Revenue', color: '#1783FB' },
+		{ label: 'Payout % to Creators', color: '#E02121' },
 	]
 
 	return (
