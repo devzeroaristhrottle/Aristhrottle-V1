@@ -28,7 +28,7 @@ export default function ProblemComp({ onEndReached }: { onEndReached?: () => voi
 			<div className='font-[500] text-[50px] text-[#29E0CA]'>Your attention has no value. Does it?</div>
             <div className='text-[35px]'>
                 Happiness is proportional to wealth and not the other way round. The value of Attention lies 
-                in the monetary value it creates for a human. So far, attention on the internet has created 
+                in the monetary value it creates for a human. So far, attention on the internet has created 
                 no real value for 99% of the humans using content sharing applications.
             </div>
             <div className='flex items-center gap-8 text-[40px] pt-16'>
@@ -59,7 +59,7 @@ export default function ProblemComp({ onEndReached }: { onEndReached?: () => voi
                 <img src='/docs/4.png'/>
                 <div className='gap-2 flex flex-col md:flex-row'>
                     <div>Creator Payout remains</div>
-                    <div className='text-[#29E0CA]'>Only $23-30Billion (10-13%)</div>
+                    <div className='text-[#29E0CA]'>Only $23-30 Billion (10-13%)</div>
                 </div>
             </div>
             <div className='h-[600px]'>

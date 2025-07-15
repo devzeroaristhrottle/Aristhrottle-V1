@@ -17,9 +17,9 @@ export const PieChart: React.FC = () => {
 		{ label: 'FY 2024 Total Users', value: 99.9, color: '#1783FB' }, // blue
 	]
 
-	const size: number = 400
-	const strokeWidth: number = 80
-	const radius: number = (size - strokeWidth) / 2
+	const size = 400
+	const strokeWidth = 80
+	const radius = (size - strokeWidth) / 2
 
 	const polarToCartesian = (
 		centerX: number,
@@ -40,14 +40,15 @@ export const PieChart: React.FC = () => {
 		radius: number,
 		size: number
 	): string => {
-		const start = polarToCartesian(size / 2, size / 2, radius, endAngle)
-		const end = polarToCartesian(size / 2, size / 2, radius, startAngle)
+		const center = size / 2
+		const start = polarToCartesian(center, center, radius, endAngle)
+		const end = polarToCartesian(center, center, radius, startAngle)
 		const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1'
 
 		return [
 			'M',
-			size / 2,
-			size / 2,
+			center,
+			center,
 			'L',
 			start.x,
 			start.y,
@@ -71,19 +72,21 @@ export const PieChart: React.FC = () => {
 	const blueEnd = blueStart + (data[1].value / 100) * 360
 	const bluePath = createPath(blueStart, blueEnd, radius, size)
 
-	// Midpoint angle of red slice
-	const redMidAngle = redStart + ((redEnd - redStart) / 2)
-	const redEdge = polarToCartesian(size / 2, size / 2, radius, redMidAngle)
-	const redOuter = polarToCartesian(size / 2, size / 2, radius + 30, redMidAngle)
-	const textAnchor = redOuter.x < size / 2 ? 'end' : 'start'
+	const center = size / 2
 
-	const blueLabelPos = polarToCartesian(size / 2, size / 2, radius - 40, 45) // a bit inward
+	// Red annotation
+	const redMidAngle = redStart + (redEnd - redStart) / 2
+	const redEdge = polarToCartesian(center, center, radius, redMidAngle)
+	const redOuter = polarToCartesian(center, center, radius + 30, redMidAngle)
+
+	// Blue label
+	const blueLabelPos = polarToCartesian(center, center, radius - 40, 45)
 
 	return (
-		<div className="flex flex-col items-center p-8">
+		<div className="flex flex-col items-center p-8 text-2xl">
 			<div className="rounded-lg shadow-lg p-6">
 				<div className="relative">
-					<svg width={size + 200} height={size} className="transform">
+					<svg width={size + 130} height={size} className="transform overflow-visible">
 						{/* Red Slice */}
 						<path
 							d={redPath}
@@ -99,7 +102,7 @@ export const PieChart: React.FC = () => {
 							className="transition-all duration-300 hover:opacity-80"
 						/>
 
-						{/* Annotation Line for red */}
+						{/* Annotation Line */}
 						<line
 							x1={redEdge.x}
 							y1={redEdge.y}
@@ -111,23 +114,26 @@ export const PieChart: React.FC = () => {
 						<line
 							x1={redOuter.x}
 							y1={redOuter.y}
-							x2={redOuter.x + (textAnchor === 'start' ? 40 : -40)}
+							x2={redOuter.x + 40}
 							y2={redOuter.y}
 							stroke="#E02121"
 							strokeWidth="2"
 						/>
+
+						{/* Red Label Text (fixed to middle alignment) */}
 						<text
-							x={redOuter.x + (textAnchor === 'start' ? 45 : -45)}
+							x={redOuter.x + 40 + 10}
 							y={redOuter.y + 5}
-							textAnchor={textAnchor}
+							textAnchor="middle"
 							fill="white"
 							fontSize="18"
 							fontWeight="bold"
 						>
-							Only 0.1% Paid Creators
+							<tspan x={redOuter.x + 100} dy="0.0rem">Only 0.1%</tspan>
+							<tspan x={redOuter.x + 100} dy="1.2rem">Paid Creators</tspan>
 						</text>
 
-						{/* Label over blue section */}
+						{/* Blue Label */}
 						<text
 							x={blueLabelPos.x}
 							y={blueLabelPos.y}
@@ -144,7 +150,7 @@ export const PieChart: React.FC = () => {
 
 				{/* Legend */}
 				<div className="flex justify-center space-x-6 mt-6">
-					{data.reverse().map((segment, index) => (
+					{data.slice().reverse().map((segment, index) => (
 						<div key={index} className="flex items-center space-x-2">
 							<div
 								className="w-4 h-4 rounded-md"
