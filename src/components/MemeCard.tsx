@@ -204,7 +204,7 @@ export function MemeCard({
 				</div>
 			</div>
 			<div className="flex justify-between mt-1 min-w-0">
-				<p className="text-lg md:text-2xl truncate min-w-0 pr-2">{meme.name}</p>
+				<p className="text-lg md:text-2xl truncate min-w-0 pr-2 md:max-w-72">{meme.name}</p>
 				{/* For mobile */}
 				<div className="md:hidden flex items-center gap-x-6 flex-shrink-0">
 					{loading ? (
