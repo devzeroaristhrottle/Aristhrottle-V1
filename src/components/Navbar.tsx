@@ -1,7 +1,6 @@
 'use client'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
-	DialogBackdrop,
 	DialogBody,
 	DialogContent,
 	DialogFooter,
@@ -307,15 +306,18 @@ export default function Navbar() {
 					motionPreset="slide-in-bottom"
 					initialFocusEl={() => ref.current}
 				>
-					<DialogBackdrop />
-					<DialogContent className="mx-4 md:mx-0">
+					{/* Improved, conditional backdrop blur */}
+					{isOpenModel && (
+						<div className="fixed inset-0 z-0 backdrop-blur-2xl bg-black/40 pointer-events-none w-screen h-screen" />
+					)}
+					<DialogContent className="relative z-10 mx-4 md:mx-0 bg-black p-6 rounded-lg border border-white text-lg">
 						<DialogHeader>
-							<DialogTitle>Create Account</DialogTitle>
+							<DialogTitle className='text-3xl'>Create Account</DialogTitle>
 						</DialogHeader>
 						<DialogBody>
 							<Field label="Account Address">
 								<Input
-									className="px-2"
+									className="px-2 bg-gray-800"
 									variant="subtle"
 									placeholder="Enter Username"
 									value={user?.address}
@@ -325,7 +327,7 @@ export default function Navbar() {
 							<Field label="Username" className="mt-3">
 								<Input
 									ref={ref}
-									className="px-2"
+									className="px-2 bg-gray-800"
 									variant="subtle"
 									placeholder="Enter Username"
 									value={username}
@@ -335,7 +337,7 @@ export default function Navbar() {
 							<Field label="Bio" className="mt-3">
 								<Input
 									ref={ref}
-									className="px-2"
+									className="px-2 bg-gray-800"
 									variant="subtle"
 									placeholder="Enter Bio"
 									value={bio}
@@ -345,7 +347,7 @@ export default function Navbar() {
 							</Field>
 							<Field label="Referral Code" className="mt-3 mb-5">
 								<Input
-									className="px-2 w-full"
+									className="px-2 w-full bg-gray-800"
 									variant="subtle"
 									placeholder="Enter Referral Code"
 									value={referralCode}

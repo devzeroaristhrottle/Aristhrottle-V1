@@ -156,7 +156,10 @@ export default function Page() {
 
 	useEffect(() => {
 		axiosInstance.get('/api/new-ip').then(response => {
-			if (response.data.message) setWelcOpen(true)
+			if (response.data.message && !localStorage.getItem("isNew")){
+				setWelcOpen(true)
+				localStorage.setItem("isNew", "true")
+			}
 		})
 		fetchLeaderBoard()
 
