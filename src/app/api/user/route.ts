@@ -178,19 +178,6 @@ async function handlePostRequest(request: NextRequest) {
       }
     }
 
-    const token = await getToken({ req: request });
-
-    if (
-      token == null ||
-      !token.address ||
-      token.address != user_wallet_address
-    ) {
-      return NextResponse.json(
-        { error: "Authentication failed" },
-        { status: 401 }
-      );
-    }
-
     // Check if user already exists
     const existingUser = await User.findOne({ user_wallet_address: user_wallet_address });
     const isNewUser = !existingUser;
