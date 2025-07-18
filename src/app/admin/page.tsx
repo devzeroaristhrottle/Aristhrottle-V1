@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import axios from 'axios'
 
 export default function AdminDashboard() {
   const { status } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<any>(null)
@@ -58,6 +59,21 @@ export default function AdminDashboard() {
     setSelectedModel(model)
     setSortConfig(null) // Reset sorting when changing models
     fetchData(model)
+    
+    // Update URL to reflect the current model
+    if (model) {
+      router.push(`/admin?model=${model}`)
+    } else {
+      router.push('/admin')
+    }
+  }
+
+  // Handle direct model selection
+  const selectModel = (model: string) => {
+    setSelectedModel(model)
+    setSortConfig(null) // Reset sorting when changing models
+    fetchData(model)
+    router.push(`/admin?model=${model}`)
   }
 
   // Handle column sort
@@ -89,9 +105,16 @@ export default function AdminDashboard() {
       return
     }
 
-    // Initial data fetch
-    fetchData()
-  }, [status, router])
+    // Check for model in URL query params
+    const modelFromUrl = searchParams.get('model')
+    if (modelFromUrl && models.includes(modelFromUrl)) {
+      setSelectedModel(modelFromUrl)
+      fetchData(modelFromUrl)
+    } else {
+      // Initial data fetch
+      fetchData()
+    }
+  }, [status, router, searchParams, models])
 
   // Render loading state
   if (isLoading && !data) {
@@ -137,6 +160,7 @@ export default function AdminDashboard() {
                 setSelectedModel(key.toLowerCase())
                 setSortConfig(null) // Reset sorting when changing models
                 fetchData(key.toLowerCase())
+                router.push(`/admin?model=${key.toLowerCase()}`)
               }}
               className="mt-2 text-sm text-blue-500 hover:text-blue-700"
             >
@@ -315,6 +339,58 @@ export default function AdminDashboard() {
     return String(value)
   }
 
+  // Render navigation breadcrumbs
+  const renderBreadcrumbs = () => {
+    return (
+      <nav className="flex mb-4" aria-label="Breadcrumb">
+        <ol className="inline-flex items-center space-x-1 md:space-x-3">
+          <li className="inline-flex items-center">
+            <Link href="/admin" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+              <svg className="w-3 h-3 mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+              </svg>
+              Dashboard
+            </Link>
+          </li>
+          {selectedModel && (
+            <li>
+              <div className="flex items-center">
+                <svg className="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
+                </svg>
+                <span className="ml-1 text-sm font-medium text-gray-700 capitalize">{selectedModel}</span>
+              </div>
+            </li>
+          )}
+        </ol>
+      </nav>
+    )
+  }
+
+  // Render quick access navigation
+  const renderQuickNav = () => {
+    return (
+      <div className="mb-6 bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-medium mb-2 text-gray-800">Quick Navigation</h3>
+        <div className="flex flex-wrap gap-2">
+          {models.map(model => (
+            <button
+              key={model}
+              onClick={() => selectModel(model)}
+              className={`px-3 py-1 rounded text-sm ${
+                selectedModel === model 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              <span className="capitalize">{model}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-black p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -343,6 +419,9 @@ export default function AdminDashboard() {
         </header>
 
         <main className="bg-gray-300 shadow rounded-lg p-6 text-green-500">
+          {renderBreadcrumbs()}
+          {renderQuickNav()}
+          
           {selectedModel ? (
             <>
               <h2 className="text-xl font-semibold mb-4 capitalize">
