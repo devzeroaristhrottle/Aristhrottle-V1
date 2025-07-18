@@ -578,10 +578,10 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsU
 					</div>
 				</div>
 
-				<div className="flex flex-col sm:flex-row justify-center lg:justify-evenly gap-3 lg:gap-4 w-full text-[24px]">
+				<div className="flex flex-col sm:flex-row-reverse justify-center lg:justify-evenly gap-3 lg:gap-4 w-full text-[24px]">
 					<button
 						onClick={handleUpload}
-						disabled={isLocalUploading || isSavingDraft}
+						disabled={isLocalUploading || isSavingDraft || !generatedImage}
 						className={`rounded-full bg-[#28e0ca] px-4 py-1 w-full ${generatedImage ? 'sm:w-1/3' : 'sm:w-1/2'} lg:flex-1 lg:max-w-96 text-black font-semibold hover:bg-[#20c4aa] hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
 					>
 						{isLocalUploading ? 'Posting...' : 'Post'}
