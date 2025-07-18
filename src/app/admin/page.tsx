@@ -17,14 +17,24 @@ export default function AdminDashboard() {
     'users', 'memes', 'votes', 'tags', 'categories', 
     'followers', 'milestones', 'notifications', 'referrals', 'apilogs', 'mintlogs'
   ])
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: 'ascending' | 'descending';
+  } | null>(null)
 
   // Fetch data from admin API
-  const fetchData = async (model: string = '') => {
+  const fetchData = async (model: string = '', sortKey: string = '', sortDirection: string = '') => {
     setIsLoading(true)
     setError(null)
     
     try {
-      const url = model ? `/api/admin?model=${model}` : '/api/admin'
+      let url = model ? `/api/admin?model=${model}` : '/api/admin'
+      
+      // Add sorting parameters if provided
+      if (sortKey && sortDirection) {
+        url += `&sortKey=${sortKey}&sortDirection=${sortDirection}`
+      }
+      
       const response = await axios.get(url)
       setData(response.data.data)
     } catch (err: any) {
@@ -46,7 +56,28 @@ export default function AdminDashboard() {
   const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const model = e.target.value
     setSelectedModel(model)
+    setSortConfig(null) // Reset sorting when changing models
     fetchData(model)
+  }
+
+  // Handle column sort
+  const requestSort = (key: string) => {
+    let direction: 'ascending' | 'descending' = 'ascending';
+    
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    
+    setSortConfig({ key, direction });
+    fetchData(selectedModel, key, direction);
+  }
+
+  // Get sort direction icon
+  const getSortDirectionIcon = (header: string) => {
+    if (!sortConfig || sortConfig.key !== header) {
+      return '⇅';
+    }
+    return sortConfig.direction === 'ascending' ? '↑' : '↓';
   }
 
   // Check authentication and admin status on component mount
@@ -104,6 +135,7 @@ export default function AdminDashboard() {
             <button 
               onClick={() => {
                 setSelectedModel(key.toLowerCase())
+                setSortConfig(null) // Reset sorting when changing models
                 fetchData(key.toLowerCase())
               }}
               className="mt-2 text-sm text-blue-500 hover:text-blue-700"
@@ -188,9 +220,13 @@ export default function AdminDashboard() {
                 {sortedHeaders.map(header => (
                   <th 
                     key={header} 
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                    onClick={() => requestSort(header)}
                   >
-                    {header === '_id' ? 'ID' : header.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}
+                    <div className="flex items-center justify-between">
+                      <span>{header === '_id' ? 'ID' : header.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}</span>
+                      <span className="ml-1">{getSortDirectionIcon(header)}</span>
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -230,9 +266,13 @@ export default function AdminDashboard() {
               {headers.map(header => (
                 <th 
                   key={header} 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                  onClick={() => requestSort(header)}
                 >
-                  {header === '_id' ? 'ID' : header.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}
+                  <div className="flex items-center justify-between">
+                    <span>{header === '_id' ? 'ID' : header.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}</span>
+                    <span className="ml-1">{getSortDirectionIcon(header)}</span>
+                  </div>
                 </th>
               ))}
             </tr>
@@ -306,7 +346,7 @@ export default function AdminDashboard() {
           {selectedModel ? (
             <>
               <h2 className="text-xl font-semibold mb-4 capitalize">
-                {selectedModel} Data
+                {selectedModel} Data {sortConfig && <span className="text-sm font-normal">(Sorted by {sortConfig.key} {sortConfig.direction})</span>}
               </h2>
               {renderTable()}
             </>
