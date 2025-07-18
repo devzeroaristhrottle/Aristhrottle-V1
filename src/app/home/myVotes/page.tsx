@@ -279,7 +279,7 @@ export default function Page({}: Props) {
 										alt="voted"
 										className="transition-all duration-300"
 									/>
-									<p className="text-center text-[#1783fb] font-bold text-lg">
+									<p className={"text-center text-[#1783fb] font-bold text-lg" + activeTab == "live" ? "hidden" : "block"}>
 										{item.vote_to.vote_count}
 									</p>
 								</div>
@@ -334,7 +334,7 @@ export default function Page({}: Props) {
 										alt="voted"
 										className="transition-all duration-300"
 									/>
-									<p className="text-center text-[#1783fb] font-bold text-sm">
+									<p className={"text-center text-[#1783fb] font-bold text-sm" + activeTab == "live" ? "hidden" : "block" }>
 										{item.vote_to.vote_count}
 									</p>
 								</div>

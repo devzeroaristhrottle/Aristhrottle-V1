@@ -18,7 +18,7 @@ export default withAccountKitUi(
 					'10px': '10px',
 				},
 				animation: {
-					marquee: 'marquee 10s linear infinite',
+					marquee: 'marquee 15s linear infinite',
 				},
 				keyframes: {
 					marquee: {
