@@ -60,10 +60,12 @@ export default function Page() {
 	const [filterOpen, setFilterOpen] = useState(false)
 	const [sortOpen, setSortOpen] = useState(false)
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
-	const [selectedMeme, setSelectedMeme] = useState<LeaderboardMeme | undefined | Meme>()
+	const [selectedMeme, setSelectedMeme] = useState<
+		LeaderboardMeme | undefined | Meme
+	>()
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
-	const [userData, setUserData] = useState<any>();
-	const scrollComp = useRef<HTMLDivElement>(null);
+	const [userData, setUserData] = useState<any>()
+	const scrollComp = useRef<HTMLDivElement>(null)
 	const { userDetails } = useContext(Context)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -85,7 +87,10 @@ export default function Page() {
 		// }
 		// All-time tab: no date filtering
 		// Always sort by createdAt descending
-		return [...memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+		return [...memes].sort(
+			(a, b) =>
+				new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+		)
 	}, [memes, activeTab])
 
 	// Convert DraftMeme to LeaderboardMeme format for compatibility with existing components
@@ -104,6 +109,7 @@ export default function Page() {
 			onVoteMeme: () => {},
 			has_user_voted: false, // Drafts can't be voted on
 			tags: draft.raw_tags.map(tag => ({ name: tag })), // Convert raw_tags to tag objects
+			bookmark_count: 0,
 		}
 	}
 
@@ -111,7 +117,12 @@ export default function Page() {
 	const displayMemes = useMemo(() => {
 		if (activeTab === 'generations') {
 			// Sort drafts by createdAt descending
-			return [...draftMemes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(convertDraftToLeaderboard)
+			return [...draftMemes]
+				.sort(
+					(a, b) =>
+						new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+				)
+				.map(convertDraftToLeaderboard)
 		}
 		return tabFilteredMemes
 	}, [activeTab, draftMemes, tabFilteredMemes])
@@ -181,7 +192,7 @@ export default function Page() {
 	const getUserProfile = async () => {
 		try {
 			const response = await axiosInstance.get(`/api/user/${userDetails?._id}`)
-			
+
 			if (response.data.user) {
 				const userData = {
 					...response.data.user,
@@ -192,7 +203,7 @@ export default function Page() {
 					majorityUploads: response.data.majorityUploads,
 				}
 
-				setUserData(userData);
+				setUserData(userData)
 			}
 		} catch (error: any) {
 			console.log(error)
@@ -320,7 +331,7 @@ export default function Page() {
 	const handlePublishDraft = async (draftId: string) => {
 		try {
 			const response = await axiosInstance.post('/api/draft-meme/publish', {
-				id: draftId
+				id: draftId,
 			})
 			if (response.status === 200) {
 				// Remove from drafts and refresh the memes list
@@ -336,8 +347,9 @@ export default function Page() {
 	}
 
 	useEffect(() => {
-			document.body.style.overflow = isMemeDetailOpen ? "hidden" : "auto"
-			if(scrollComp.current) scrollComp.current.style = isMemeDetailOpen ? "hidden" : "auto"
+		document.body.style.overflow = isMemeDetailOpen ? 'hidden' : 'auto'
+		if (scrollComp.current)
+			scrollComp.current.style = isMemeDetailOpen ? 'hidden' : 'auto'
 	}, [isMemeDetailOpen])
 
 	return (
@@ -364,7 +376,7 @@ export default function Page() {
 						<h1 className="text-[#29e0ca] text-2xl md:text-6xl font-bold">
 							{userDetails?.username}
 						</h1>
-						<div className='flex flex-row items-center justify-start gap-2 text-lg'>
+						<div className="flex flex-row items-center justify-start gap-2 text-lg">
 							<div>{userData?.followersCount || 0} followers</div>
 							<div>{userData?.followingCount || 0} following</div>
 						</div>
@@ -520,7 +532,10 @@ export default function Page() {
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6">
 					{/* For mobile */}
-					<div className="md:hidden w-full flex flex-col items-center justify-center" ref={scrollComp}>
+					<div
+						className="md:hidden w-full flex flex-col items-center justify-center"
+						ref={scrollComp}
+					>
 						{filteredMemes.map((item, index) => (
 							<div key={index} className="w-full max-w-sm">
 								{activeTab === 'generations' ? (
@@ -584,7 +599,9 @@ export default function Page() {
 						)}
 						{!loading && filteredMemes.length === 0 && (
 							<p className="text-center text-nowrap text-lg md:text-2xl mx-auto">
-								{activeTab === 'generations' ? 'No draft Content found' : 'Contents not found'}
+								{activeTab === 'generations'
+									? 'No draft Content found'
+									: 'Contents not found'}
 							</p>
 						)}
 					</div>
@@ -601,7 +618,7 @@ export default function Page() {
 					onPrev={handlePrev}
 					onVoteMeme={meme_id => handleVote(meme_id)}
 					bmk={false}
-					onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
+					onRelatedMemeClick={meme => setSelectedMeme(meme)}
 					searchRelatedMemes={() => {}}
 				/>
 			)}
@@ -625,14 +642,14 @@ interface DraftMemeCardProps {
 	onOpenMeme: () => void
 }
 
-const DraftMemeCard: React.FC<DraftMemeCardProps> = ({ 
-	draft, 
-	onDeleteDraft, 
-	onPublishDraft, 
-	onOpenMeme 
+const DraftMemeCard: React.FC<DraftMemeCardProps> = ({
+	draft,
+	onDeleteDraft,
+	onPublishDraft,
+	onOpenMeme,
 }) => {
 	const [showActions, setShowActions] = useState(false)
-	
+
 	// If draft is undefined, show a loading placeholder
 	if (!draft) {
 		return (
@@ -660,8 +677,7 @@ const DraftMemeCard: React.FC<DraftMemeCardProps> = ({
 								Draft
 							</span>
 						</div>
-						<div className="flex items-center gap-x-2">
-						</div>
+						<div className="flex items-center gap-x-2"></div>
 					</div>
 					<div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[23rem] xl:h-[23rem] object-cover border-2 border-white relative">
 						{draft.image_url ? (
@@ -672,7 +688,7 @@ const DraftMemeCard: React.FC<DraftMemeCardProps> = ({
 								className="w-full h-full cursor-pointer object-cover"
 							/>
 						) : (
-							<div 
+							<div
 								onClick={onOpenMeme}
 								className="w-full h-full cursor-pointer bg-gray-800 flex items-center justify-center"
 							>
@@ -688,10 +704,10 @@ const DraftMemeCard: React.FC<DraftMemeCardProps> = ({
 						<p>
 							{(draft.name || 'Untitled Draft').length > 30
 								? (draft.name || 'Untitled Draft').slice(0, 30) + '...'
-								: (draft.name || 'Untitled Draft')}
+								: draft.name || 'Untitled Draft'}
 						</p>
 					</div>
-					
+
 					{/* Draft Actions */}
 					<div className="mt-2 flex flex-col gap-2">
 						<button
@@ -700,7 +716,7 @@ const DraftMemeCard: React.FC<DraftMemeCardProps> = ({
 						>
 							{showActions ? 'Hide Actions' : 'Show Actions'}
 						</button>
-						
+
 						{showActions && (
 							<div className="flex gap-2">
 								<button
@@ -717,12 +733,12 @@ const DraftMemeCard: React.FC<DraftMemeCardProps> = ({
 								</button>
 							</div>
 						)}
-						
+
 						{/* Tags display */}
 						{draft.raw_tags && draft.raw_tags.length > 0 && (
 							<div className="flex flex-wrap gap-1 mt-1">
 								{draft.raw_tags.slice(0, 3).map((tag, index) => (
-									<span 
+									<span
 										key={index}
 										className="bg-[#1783fb] text-white px-2 py-1 rounded text-xs"
 									>
