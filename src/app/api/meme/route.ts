@@ -2,7 +2,6 @@ import connectToDatabase from '@/lib/db'
 import Meme from '@/models/Meme'
 import Tags from '@/models/Tags'
 import User from '@/models/User'
-import Bookmark from '@/models/Bookmark'
 import mongoose from 'mongoose'
 import { NextRequest, NextResponse } from 'next/server'
 import Vote from '@/models/Vote'
@@ -662,7 +661,7 @@ async function handleGetRequest(req: NextRequest) {
 				{
 					$addFields: {
 						has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
-						bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } }
+						bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } } // Count from Bookmark collection lookup
 					},
 				},
 				{
