@@ -578,7 +578,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsU
 					</div>
 				</div>
 
-				<div className="flex flex-col sm:flex-row-reverse justify-center lg:justify-evenly gap-3 lg:gap-4 w-full text-[24px]">
+				<div className="flex flex-col-reverse sm:flex-row justify-center lg:justify-evenly gap-3 lg:gap-4 w-full text-[24px]">
 					<button
 						onClick={handleUpload}
 						disabled={isLocalUploading || isSavingDraft || !generatedImage}
