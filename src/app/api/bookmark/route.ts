@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Meme from "@/models/Meme";
 import User from "@/models/User";
+import Bookmark from "@/models/Bookmark";
 import connectToDatabase from "@/lib/db";
 import { checkIsAuthenticated } from "@/utils/authFunctions";
 import { withApiLogging } from "@/utils/apiLogger";
@@ -49,18 +50,42 @@ export async function GET(req: NextRequest) {
 
     try {
       // Count total bookmarked memes for pagination
-      const bookmarkedMemesCount = await Meme.countDocuments({
-        bookmarks: userId
+      const bookmarkedMemesCount = await Bookmark.countDocuments({
+        user: new mongoose.Types.ObjectId(userId)
       });
 
       // Create aggregation pipeline to fetch bookmarked memes
       const pipeline: any[] = [
         {
-          $match: {
-            bookmarks: new mongoose.Types.ObjectId(userId)
+          $lookup: {
+            from: 'bookmarks',
+            let: { memeId: '$_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$meme', '$$memeId'] },
+                      { $eq: ['$user', new mongoose.Types.ObjectId(userId)] }
+                    ]
+                  }
+                }
+              }
+            ],
+            as: 'userBookmark'
           }
         },
-        { $sort: { createdAt: -1 } },
+        {
+          $match: {
+            'userBookmark.0': { $exists: true }
+          }
+        },
+        {
+          $addFields: {
+            userBookmarkTime: { $arrayElemAt: ['$userBookmark.bookmarkedAt', 0] }
+          }
+        },
+        { $sort: { userBookmarkTime: -1 } },
         { $skip: start },
         { $limit: defaultOffset },
         {
@@ -190,14 +215,19 @@ async function handlePostRequest(request: NextRequest) {
     }
 
     // Check if the user already bookmarked the meme
-    const isBookmarked = meme.bookmarks.includes(userId);
+    const existingBookmark = await Bookmark.findOne({
+      user: new mongoose.Types.ObjectId(userId),
+      meme: new mongoose.Types.ObjectId(memeId)
+    });
+
+    const isBookmarked = !!existingBookmark;
 
     if (isBookmarked) {
       // Remove bookmark
-      meme.bookmarks = meme.bookmarks.filter(
-        (id: mongoose.Schema.Types.ObjectId) =>
-          id.toString() !== userId.toString()
-      );
+      await Bookmark.deleteOne({
+        user: new mongoose.Types.ObjectId(userId),
+        meme: new mongoose.Types.ObjectId(memeId)
+      });
       
       // Decrement bookmark_count for all tags associated with this meme
       if (meme.tags && meme.tags.length > 0) {
@@ -211,7 +241,13 @@ async function handlePostRequest(request: NextRequest) {
       }
     } else {
       // Add bookmark
-      meme.bookmarks.push(userId);
+      const newBookmark = new Bookmark({
+        user: new mongoose.Types.ObjectId(userId),
+        meme: new mongoose.Types.ObjectId(memeId),
+        bookmarkedAt: new Date()
+      });
+      
+      await newBookmark.save();
       
       // Increment bookmark_count for all tags associated with this meme
       if (meme.tags && meme.tags.length > 0) {
@@ -225,14 +261,17 @@ async function handlePostRequest(request: NextRequest) {
       }
     }
 
-    await meme.save();
-
     return NextResponse.json(
       {
         message: isBookmarked
           ? "Bookmark removed successfully"
           : "Bookmark added successfully",
         meme,
+        bookmarkInfo: isBookmarked ? null : {
+          user: userId,
+          meme: memeId,
+          bookmarkedAt: new Date()
+        }
       },
       { status: 200 }
     );

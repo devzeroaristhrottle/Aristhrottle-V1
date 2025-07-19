@@ -2,6 +2,7 @@ import connectToDatabase from '@/lib/db'
 import Meme from '@/models/Meme'
 import Tags from '@/models/Tags'
 import User from '@/models/User'
+import Bookmark from '@/models/Bookmark'
 import mongoose from 'mongoose'
 import { NextRequest, NextResponse } from 'next/server'
 import Vote from '@/models/Vote'
@@ -620,6 +621,14 @@ async function handleGetRequest(req: NextRequest) {
 					localField: 'tags',
 					foreignField: '_id',
 					as: 'tags',
+				},
+			},
+			{
+				$lookup: {
+					from: 'bookmarks',
+					localField: '_id',
+					foreignField: 'meme',
+					as: 'bookmarks',
 				},
 			}
 		)
