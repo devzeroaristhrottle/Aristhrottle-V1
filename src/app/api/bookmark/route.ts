@@ -120,6 +120,19 @@ export async function GET(req: NextRequest) {
       // Execute the aggregation
       const bookmarkedMemes = await Meme.aggregate(pipeline);
 
+      // Set vote_count to 0 for memes created today
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      
+      bookmarkedMemes.forEach(meme => {
+        if (meme.createdAt) {
+          const createdAt = new Date(meme.createdAt);
+          if (createdAt >= today && createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)) {
+            meme.vote_count = 0;
+          }
+        }
+      });
+
       return NextResponse.json(
         { 
           memes: bookmarkedMemes, 

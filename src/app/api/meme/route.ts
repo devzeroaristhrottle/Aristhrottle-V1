@@ -119,6 +119,20 @@ async function handleGetRequest(req: NextRequest) {
 				})
 				.populate('vote_by')
 
+			// Set vote_count to 0 for memes created today
+			const today = new Date()
+			today.setUTCHours(0, 0, 0, 0)
+			
+			memes.forEach(vote => {
+				const meme = vote.vote_to;
+				if (meme && meme.createdAt) {
+					const createdAt = new Date(meme.createdAt)
+					if (createdAt >= today && createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)) {
+						meme.vote_count = 0
+					}
+				}
+			})
+
 			return NextResponse.json(
 				{ memes: memes, votedMemesCount: votedMemesCount },
 				{ status: 200 }
@@ -441,10 +455,23 @@ async function handleGetRequest(req: NextRequest) {
 			// Log the number of results found
 			console.log(`Found ${memes.length} memes matching search terms`)
 			
+			// Set vote_count to 0 for memes created today
+			const today = new Date()
+			today.setUTCHours(0, 0, 0, 0)
+			
+			memes.forEach(meme => {
+				if (meme.createdAt) {
+					const createdAt = new Date(meme.createdAt)
+					if (createdAt >= today && createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)) {
+						meme.vote_count = 0
+					}
+				}
+			})
+			
 			const totalCount = countResult.length > 0 ? countResult[0].total : 0
 
 			return NextResponse.json(
-				{ memes, memesCount: totalCount },
+				{ memes: memes, memesCount: totalCount },
 				{ status: 200 }
 			)
 		}
@@ -524,6 +551,19 @@ async function handleGetRequest(req: NextRequest) {
 			
 			const liveMemes = await Meme.aggregate(carouselPipeline)
 
+			// Set vote_count to 0 for memes created today
+			const today = new Date()
+			today.setUTCHours(0, 0, 0, 0)
+			
+			liveMemes.forEach(meme => {
+				if (meme.createdAt) {
+					const createdAt = new Date(meme.createdAt)
+					if (createdAt >= today && createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)) {
+						meme.vote_count = 0
+					}
+				}
+			})
+
 			if (liveMemes.length == 0 || liveMemes.length < 5) {
 				// Fallback to get more memes if needed
 				const fallbackPipeline = [...carouselPipeline]
@@ -531,6 +571,17 @@ async function handleGetRequest(req: NextRequest) {
 				fallbackPipeline.splice(0, 1)
 				
 				const memes = await Meme.aggregate(fallbackPipeline)
+				
+				// Apply filter for fallback memes too
+				memes.forEach(meme => {
+					if (meme.createdAt) {
+						const createdAt = new Date(meme.createdAt)
+						if (createdAt >= today && createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)) {
+							meme.vote_count = 0
+						}
+					}
+				})
+				
 				return NextResponse.json(
 					{ memes: [...liveMemes, ...memes] },
 					{ status: 200 }
@@ -614,6 +665,19 @@ async function handleGetRequest(req: NextRequest) {
 		}
 
 		const memes = await Meme.aggregate(basePipeline)
+
+		// Set vote_count to 0 for memes created today
+		const today = new Date()
+		today.setUTCHours(0, 0, 0, 0)
+		
+		memes.forEach(meme => {
+			if (meme.createdAt) {
+				const createdAt = new Date(meme.createdAt)
+				if (createdAt >= today && createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)) {
+					meme.vote_count = 0
+				}
+			}
+		})
 
 		return NextResponse.json(
 			{ memes: memes, memesCount: memesCount },
