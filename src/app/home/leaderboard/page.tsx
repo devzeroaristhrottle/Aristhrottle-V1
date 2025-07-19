@@ -36,6 +36,7 @@ export type LeaderboardMeme = {
 	activeTab?: 'all' | 'live'
 	has_user_voted: boolean
 	tags: (string | { name: string })[]
+	bookmark_count: number
 }
 
 export interface TagI {

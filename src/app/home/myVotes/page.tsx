@@ -42,6 +42,7 @@ interface MyVotedMeme {
 		shares: string[]
 		bookmarks: string[]
 		has_user_voted: boolean
+		bookmark_count: number
 	}
 }
 
@@ -131,6 +132,7 @@ export default function Page({}: Props) {
 			has_user_voted: votedMeme.vote_to.has_user_voted,
 			rank: votedMeme.vote_to.winning_number || 0,
 			in_percentile: votedMeme.vote_to.in_percentile || 0,
+			bookmark_count: votedMeme.vote_to.bookmark_count || 0,
 			onVoteMeme: () => {}
 		}
 	}
@@ -279,7 +281,7 @@ export default function Page({}: Props) {
 										alt="voted"
 										className="transition-all duration-300"
 									/>
-									<p className={"text-center text-[#1783fb] font-bold text-lg" + activeTab == "live" ? "hidden" : "block"}>
+									<p className={"text-center text-[#1783fb] font-bold text-lg " + (activeTab == "live" ? "hidden" : "block")}>
 										{item.vote_to.vote_count}
 									</p>
 								</div>
@@ -334,7 +336,7 @@ export default function Page({}: Props) {
 										alt="voted"
 										className="transition-all duration-300"
 									/>
-									<p className={"text-center text-[#1783fb] font-bold text-sm" + activeTab == "live" ? "hidden" : "block" }>
+									<p className={"text-center text-[#1783fb] font-bold text-sm " + (activeTab == "live" ? "hidden" : "block") }>
 										{item.vote_to.vote_count}
 									</p>
 								</div>

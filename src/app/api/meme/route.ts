@@ -621,6 +621,14 @@ async function handleGetRequest(req: NextRequest) {
 					foreignField: '_id',
 					as: 'tags',
 				},
+			},
+			{
+				$lookup: {
+					from: 'bookmarks',
+					localField: '_id',
+					foreignField: 'meme',
+					as: 'bookmarks',
+				},
 			}
 		)
 
@@ -653,7 +661,7 @@ async function handleGetRequest(req: NextRequest) {
 				{
 					$addFields: {
 						has_user_voted: { $gt: [{ $size: '$userVote' }, 0] },
-						bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } }
+						bookmark_count: { $size: { $ifNull: ["$bookmarks", []] } } // Count from Bookmark collection lookup
 					},
 				},
 				{
