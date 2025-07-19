@@ -22,7 +22,7 @@ export const LeaderboardMemeCard: React.FC<{
 	const [isBookmarked, setIsBookmarked] = useState(bmk)
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const { userDetails, setUserDetails } = useContext(Context)
-	const [bmkCount, setBmkCount] = useState<number>(meme.bookmarks?.length | 0);
+	const [bmkCount, setBmkCount] = useState<number>(meme.bookmarks?.length | meme.bookmark_count | 0);
 	const [eyeOpen, setEyeOpen] = useState<boolean>(meme.has_user_voted);
 	const [count, setCount] = useState<number>(meme.vote_count);
 	const { openAuthModal } = useAuthModal()

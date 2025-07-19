@@ -103,6 +103,14 @@ export async function GET(req: NextRequest) {
             localField: 'tags',
             foreignField: '_id',
             as: 'tags',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  name: 1
+                }
+              }
+            ]
           },
         }
       ];
@@ -133,6 +141,7 @@ export async function GET(req: NextRequest) {
           $addFields: {
             userVote: { $ifNull: ['$userVote', []] },
             has_user_voted: { $gt: [{ $size: { $ifNull: ['$userVote', []] } }, 0] },
+            bookmark_count: { $size: { $ifNull: ['$bookmarks', []] } }
           },
         },
         {

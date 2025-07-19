@@ -42,6 +42,7 @@ interface MyVotedMeme {
 		shares: string[]
 		bookmarks: string[]
 		has_user_voted: boolean
+		bookmark_count: number
 	}
 }
 
@@ -131,6 +132,7 @@ export default function Page({}: Props) {
 			has_user_voted: votedMeme.vote_to.has_user_voted,
 			rank: votedMeme.vote_to.winning_number || 0,
 			in_percentile: votedMeme.vote_to.in_percentile || 0,
+			bookmark_count: votedMeme.vote_to.bookmark_count || 0,
 			onVoteMeme: () => {}
 		}
 	}
