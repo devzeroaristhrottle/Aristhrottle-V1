@@ -25,7 +25,7 @@ async function retryFailedMint(mintLog: any) {
     }
     
     // Retry with higher gas and fresh nonce
-    const tx = await contract.mintCoins(mintLog.recipient, tokenAmount, {
+    const tx = await contract.mint(mintLog.recipient, tokenAmount, {
       gasLimit: 300000,
       gasPrice,
       nonce
