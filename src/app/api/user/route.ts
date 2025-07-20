@@ -9,7 +9,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/utils/apiLogger";
 import Followers from "@/models/Followers";
-import { ethers } from "ethers";
+import { mintTokensAndLog } from "@/ethers/mintUtils";
 
 async function handleGetRequest(request: NextRequest) {
   try {
@@ -246,12 +246,28 @@ async function handlePostRequest(request: NextRequest) {
         // Process blockchain transaction asynchronously after response
         setTimeout(async () => {
           try {
-            // Mint tokens
-            const {contract} = getContractUtils();
             const amountToMint = 5;
-            const tx = await contract.mintCoins(savedUser.user_wallet_address, ethers.parseUnits(amountToMint.toString(), 18));
-            await tx.wait();
-            console.log(`Minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for referral.`);
+            const referringUser = await User.findOne({ refer_code: savedUser.referred_by });
+            
+            // Mint tokens to the new user
+            await mintTokensAndLog(
+              savedUser.user_wallet_address,
+              amountToMint,
+              "referral_reward",
+              { referredBy: savedUser.referred_by }
+            );
+            console.log(`Minted ${amountToMint} tokens to ${savedUser.user_wallet_address} for being referred.`);
+            
+            // Also mint tokens to the referrer if they exist
+            if (referringUser && referringUser.user_wallet_address) {
+              await mintTokensAndLog(
+                referringUser.user_wallet_address,
+                amountToMint,
+                "referral_reward",
+                { referredUser: savedUser.user_wallet_address }
+              );
+              console.log(`Minted ${amountToMint} tokens to referrer ${referringUser.user_wallet_address}.`);
+            }
           } catch (mintError) {
             console.error("Error minting tokens for referred user:", mintError);
           }
