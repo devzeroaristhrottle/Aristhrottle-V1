@@ -133,9 +133,19 @@ export default function UserProfilePage() {
 			const response = await axiosInstance.get(
 				`/api/meme?created_by=${userId}&offset=${offset}`
 			)
-
+			const now = new Date();
+			now.setUTCHours(0, 0, 0);
+			const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 			if (response.data.memes) {
-				setMemes(response.data.memes.sort((a: LeaderboardMeme, b:LeaderboardMeme) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+				const processMeme = response.data.memes.sort((a: LeaderboardMeme, b:LeaderboardMeme) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((a: LeaderboardMeme) => {
+					const memeCreatedAt = new Date(a.createdAt);
+					if(memeCreatedAt > twentyFourHoursAgo){
+						return {...a, vote_count: null}
+					}
+					return a
+				})
+
+				setMemes(processMeme)
 			}
 		} catch (error) {
 			console.log(error)

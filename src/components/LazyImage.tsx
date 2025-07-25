@@ -8,6 +8,7 @@ interface LazyImageProps {
 	className?: string
 	onClick?: () => void
 	placeholder?: string
+	onError?: () => void
 }
 
 export function LazyImage({
@@ -16,6 +17,7 @@ export function LazyImage({
 	className = '',
 	onClick,
 	placeholder = '/assets/loading.gif', // Using existing loading gif as placeholder
+	onError
 }: LazyImageProps) {
 	const [isLoaded, setIsLoaded] = useState(false)
 	const [isInView, setIsInView] = useState(false)
@@ -55,6 +57,13 @@ export function LazyImage({
 	const handleImageError = () => {
 		setHasError(true)
 		setIsLoaded(true) // Stop showing loading state
+		if (onError) {
+			onError()
+		}
+	}
+
+	if (hasError) {
+		return null
 	}
 
 	return (
@@ -79,11 +88,6 @@ export function LazyImage({
 						onLoad={handleImageLoad}
 						onError={handleImageError}
 					/>
-				</div>
-			) : hasError ? (
-				// Error state
-				<div className={`bg-gray-800 ${className} flex items-center justify-center text-red-400`}>
-					Failed to load image
 				</div>
 			) : (
 				// Loaded image
