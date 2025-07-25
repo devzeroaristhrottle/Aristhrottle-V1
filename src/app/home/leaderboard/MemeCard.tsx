@@ -25,6 +25,8 @@ export const LeaderboardMemeCard: React.FC<{
 	const [bmkCount, setBmkCount] = useState<number>(meme.bookmarks?.length | meme.bookmark_count | 0);
 	const [eyeOpen, setEyeOpen] = useState<boolean>(meme.has_user_voted);
 	const [count, setCount] = useState<number>(meme.vote_count);
+	const [isHidden, setIsHidden] = useState(false)
+
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
 	const router = useRouter()
@@ -61,6 +63,10 @@ export const LeaderboardMemeCard: React.FC<{
 		}
 	}
 
+	if (isHidden) {
+		return null
+	}
+
 	return (
 		<div className="p-4 md:p-4 w-full lg:mx-auto">
 			<div className="flex flex-col md:flex-row gap-x-1">
@@ -89,6 +95,7 @@ export const LeaderboardMemeCard: React.FC<{
 							src={meme.image_url}
 							alt={meme.name}
 							className="w-full h-full cursor-pointer"
+							onError={() => setIsHidden(true)}
 						/>
 					</div>
 					<div className="title_wrapper flex justify-between text-lg leading-tight md:text-xl max-w-full">

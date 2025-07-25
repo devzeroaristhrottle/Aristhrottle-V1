@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { FaRegShareFromSquare, FaBookmark } from 'react-icons/fa6'
 import { CiBookmark } from 'react-icons/ci'
@@ -34,6 +34,7 @@ export default function BookmarkMemeCard({
 }: BookmarkMemeCardProps) {
 	const router = useRouter()
 	const { handleBookmark } = useMemeActions()
+	const [isHidden, setIsHidden] = useState(false)
 
 	const handleVoteMeme = async (memeId: string) => {
 		try {
@@ -64,6 +65,10 @@ export default function BookmarkMemeCard({
 		}
 	}
 
+	if (isHidden) {
+		return null
+	}
+
 	return (
 		<div className="flex justify-center">
 			<div className="w-full max-w-sm rounded-lg overflow-hidden bg-gradient-to-r from-[#1783fb]/10 to-[#1783fb]/5 border border-[#1783fb]/20 p-3">
@@ -87,6 +92,7 @@ export default function BookmarkMemeCard({
 						src={meme.image_url}
 						alt={meme.name}
 						className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+						onError={() => setIsHidden(true)}
 					/>
 				</div>
 				
