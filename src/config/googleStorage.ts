@@ -44,6 +44,7 @@ try {
 // Folder paths
 const PROFILE_PICTURES_FOLDER = 'profile-picture/';
 const MEME_IMAGES_FOLDER = 'content-image/';
+const DRAFT_MEME_IMAGES_FOLDER = 'draft-meme/';
 
 /**
  * Upload a file to Google Cloud Storage
@@ -57,19 +58,19 @@ export async function uploadToGCS(
   buffer: Buffer, 
   fileName: string,
   contentType: string,
-  folder: 'profile' | 'meme'
+  folder: 'profile' | 'meme' | 'draft-meme'
 ): Promise<string> {
   try {
     // If storage client isn't initialized, fall back to Cloudinary or mock
     if (!storage) {
       console.warn('Using fallback URL for GCS upload - storage client not initialized');
       // Return a mock URL for development/build purposes
-      const folderName = folder === 'profile' ? 'profile' : 'memes';
+      const folderName = folder === 'profile' ? 'profile' : folder === 'meme' ? 'memes' : 'draft-memes';
       return `https://storage.googleapis.com/${bucketName}/${folderName}/${Date.now()}-${fileName}`;
     }
     
     // Determine the folder path
-    const folderPath = folder === 'profile' ? PROFILE_PICTURES_FOLDER : MEME_IMAGES_FOLDER;
+    const folderPath = folder === 'profile' ? PROFILE_PICTURES_FOLDER : folder === 'meme' ? MEME_IMAGES_FOLDER : DRAFT_MEME_IMAGES_FOLDER;
     
     // Create a unique filename to avoid collisions
     const uniqueFileName = `${Date.now()}-${fileName}`;
@@ -94,7 +95,7 @@ export async function uploadToGCS(
   } catch (error) {
     console.error('GCS upload error:', error);
     // Return a fallback URL in case of error
-    const folderName = folder === 'profile' ? 'profile' : 'memes';
+    const folderName = folder === 'profile' ? 'profile' : folder === 'meme' ? 'memes' : 'draft-memes';
     return `https://storage.googleapis.com/${bucketName}/${folderName}/${Date.now()}-${fileName}`;
   }
 }

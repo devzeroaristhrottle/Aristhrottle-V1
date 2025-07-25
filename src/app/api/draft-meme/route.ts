@@ -3,8 +3,8 @@ import DraftMeme from '@/models/DraftMeme'
 import User from '@/models/User'
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
-import cloudinary from '@/config/cloudinary'
 import { withApiLogging } from '@/utils/apiLogger'
+import { uploadToGCS } from '@/config/googleStorage'
 
 async function handleGetRequest(req: NextRequest) {
   try {
@@ -108,17 +108,16 @@ async function handlePostRequest(req: NextRequest) {
     
     // Handle image upload if provided
     if (file) {
-      // Convert file to Buffer
+      // Convert file to Buffer for upload
       const buffer = Buffer.from(await file.arrayBuffer())
 
-      // Upload to Cloudinary
-      const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`
-
-      const uploadResult = await cloudinary.uploader.upload(base64Image, {
-        folder: 'drafts', // Use a different folder for drafts
-      })
-
-      image_url = uploadResult.secure_url
+      // Upload to Google Cloud Storage
+      image_url = await uploadToGCS(
+        buffer,
+        file.name,
+        file.type,
+        'draft-meme'
+      )
     }
     
     // If updating an existing draft
