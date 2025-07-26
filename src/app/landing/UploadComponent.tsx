@@ -471,6 +471,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsU
 							<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
 						</div>
 
+
 						{/* manual uplode */}
 						<div
 							id="top-sec"
