@@ -60,6 +60,7 @@ export default function Page() {
 	const [selectedMeme, setSelectedMeme] = useState<
 		LeaderboardMeme | undefined | Meme
 	>()
+	const [hiddenMemes, setHiddenMemes] = useState<Set<string>>(new Set())
 
 	const [page, setPage] = useState(1)
 	const [totalVoteCount, setTotalVoteCount] = useState<number>(0)
@@ -159,8 +160,9 @@ export default function Page() {
 	}
 
 	useEffect(() => {
-		setFinalFilterMeme(filteredMemes)
-	}, [filteredMemes])
+		const filtered = filteredMemes.filter(meme => !hiddenMemes.has(meme._id))
+		setFinalFilterMeme(filtered)
+	}, [filteredMemes, hiddenMemes])
 
 	const handleVote = async (meme_id: string) => {
 		try {
@@ -288,7 +290,7 @@ export default function Page() {
 				{/* For mobile */}
 				<div className="md:hidden w-full flex flex-col items-center justify-center">
 					{finalFilterMeme.map((item, index) => (
-						<div key={index} className="w-full max-w-sm">
+						<div key={item._id} className="w-full max-w-sm">
 							<LeaderboardMemeCard
 								meme={item}
 								onOpenMeme={() => {
@@ -302,13 +304,16 @@ export default function Page() {
 								}}
 								activeTab={activeTab}
 								voteMeme={meme_id => handleVote(meme_id)}
+								onImageError={() => {
+									setHiddenMemes(prev => new Set([...prev, item._id]))
+								}}
 							/>
 						</div>
 					))}
 				</div>
 
 				{finalFilterMeme.map((item, index) => (
-					<div key={index} className="hidden md:block">
+					<div key={item._id} className="hidden md:block">
 						<LeaderboardMemeCard
 							meme={item}
 							onOpenMeme={() => {
@@ -322,6 +327,9 @@ export default function Page() {
 								setSelectedMemeIndex(index)
 							}}
 							voteMeme={meme_id => handleVote(meme_id)}
+							onImageError={() => {
+								setHiddenMemes(prev => new Set([...prev, item._id]))
+							}}
 						/>
 					</div>
 				))}
