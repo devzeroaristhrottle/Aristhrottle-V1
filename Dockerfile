@@ -4,6 +4,13 @@ FROM node:lts-alpine AS base
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
+
+# Install required build tools and Python
+RUN apk add --no-cache \
+  python3 \
+  py3-pip \
+  build-base
+  
 COPY package.json package-lock.json ./
 RUN npm ci --legacy-peer-deps
 
