@@ -122,7 +122,10 @@ async function checkPendingTransaction(mintLog: any) {
   }
 }
 
-export async function POST() {
+/**
+ * Processes minting operations asynchronously
+ */
+async function processMintingAsync() {
   try {
     await connectToDatabase();
     
@@ -166,12 +169,26 @@ export async function POST() {
       }
     }
     
+    console.log(`Mint processing completed:`, results);
+  } catch (error) {
+    console.error("Error in async mint processing:", error);
+  }
+}
+
+export async function POST() {
+  try {
+    // Start the processing asynchronously without waiting
+    processMintingAsync().catch(error => {
+      console.error("Async minting process failed:", error);
+    });
+    
+    // Return immediately with 200 OK
     return NextResponse.json({ 
       success: true,
-      results
+      message: "Mint processing started in background"
     }, { status: 200 });
   } catch (error) {
-    console.error("Error in mint check cronjob:", error);
+    console.error("Error starting mint check cronjob:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : String(error) },
       { status: 500 }
