@@ -17,7 +17,8 @@ export const LeaderboardMemeCard: React.FC<{
 	voteMeme?: (memeId: string) => void
 	activeTab?: string
 	bmk?: boolean
-}> = ({ meme, onOpenMeme, voteMeme, bmk }) => {
+	onImageError?: () => void
+}> = ({ meme, onOpenMeme, voteMeme, bmk, onImageError }) => {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [isBookmarked, setIsBookmarked] = useState(bmk)
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
@@ -95,7 +96,10 @@ export const LeaderboardMemeCard: React.FC<{
 							src={meme.image_url}
 							alt={meme.name}
 							className="w-full h-full cursor-pointer"
-							onError={() => setIsHidden(true)}
+							onError={() => {
+								setIsHidden(true)
+								onImageError?.()
+							}}
 						/>
 					</div>
 					<div className="title_wrapper flex justify-between text-lg leading-tight md:text-xl max-w-full">

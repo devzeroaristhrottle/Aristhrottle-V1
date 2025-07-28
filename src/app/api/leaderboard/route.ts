@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
 			const memesCount = await Meme.countDocuments({
 				is_voting_close: true,
 				is_onchain: true,
-				createdAt: { $gte: yesterday6amIST, $lt: today6amIST },
+				createdAt: { $gte: yesterday6amIST, $lte: today6amIST },
 			})
 
 			// Max vote count
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
 					$match: {
 						is_voting_close: true,
 						is_onchain: true,
-						createdAt: { $gte: yesterday6amIST, $lt: today6amIST },
+						createdAt: { $gte: yesterday6amIST, $lte: today6amIST },
 					},
 				},
 				{
@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
 				{
 					$match: {
 						is_voting_close: true,
-						createdAt: { $gte: yesterday6amIST, $lt: today6amIST },
+						createdAt: { $gte: yesterday6amIST, $lte: today6amIST },
 					},
 				},
 				{
