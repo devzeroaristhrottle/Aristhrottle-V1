@@ -290,7 +290,7 @@ export default function Page() {
 				{/* For mobile */}
 				<div className="md:hidden w-full flex flex-col items-center justify-center">
 					{finalFilterMeme.map((item, index) => (
-						<div key={item._id} className="w-full max-w-sm">
+						<div key={index} className={"w-full max-w-sm" + (hiddenMemes.has(item._id) ? "hidden" : "")} >
 							<LeaderboardMemeCard
 								meme={item}
 								onOpenMeme={() => {

@@ -73,6 +73,7 @@ export default function Page() {
 	const { openAuthModal } = useAuthModal()
 	const [isUploading, setIsUploading] = useState(false)
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
+	const [hiddenMemes, setHiddenMemes] = useState<Set<string>>(new Set())
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
 	const [loading, setLoading] = useState<boolean>(false)
@@ -912,7 +913,7 @@ export default function Page() {
 					activeTab === 'all' &&
 					allMemeDataFilter?.length > 0 &&
 					allMemeDataFilter.map((item, index) => (
-						<div key={index}>
+						<div key={index} className={hiddenMemes.has(item._id) ? "hidden"  : ""}>
 							<LeaderboardMemeCard
 								meme={item}
 								onOpenMeme={() => {
@@ -923,6 +924,9 @@ export default function Page() {
 								voteMeme={memeId => handleUpvoteDownvote(memeId)}
 								bmk={bookMarks.some(get_meme => get_meme._id == item._id)}
 								activeTab={activeTab}
+								onImageError={() => {
+									setHiddenMemes(prev => new Set([...prev, item._id]))
+								}}
 							/>
 						</div>
 					))}
