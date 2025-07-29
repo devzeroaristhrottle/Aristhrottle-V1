@@ -64,6 +64,7 @@ export default function MemeDetail({
 	// Touch/swipe state
 	const [touchStart, setTouchStart] = useState<number | null>(null)
 	const [touchEnd, setTouchEnd] = useState<number | null>(null)
+	const [hidden, setHidden] = useState<Set<string>>(new Set());
 
 	// Minimum swipe distance (in px)
 	const minSwipeDistance = 50
@@ -428,29 +429,37 @@ export default function MemeDetail({
 										</h3>
 
 										{!isLoad ? <div className="grid grid-cols-2 gap-3 sm:gap-4">
-											{relatedMemes.map((item, index) => {
-												if (index < 6 && meme.name !== item.name) {
-													return (
-														<div
-															key={item._id}
-															onClick={() => {
-																if (item.categories.length > 0) {
-																	searchRelatedMemes(item.categories[0].name)
-																	onClose()
-																}
-																if(onRelatedMemeClick) onRelatedMemeClick(item)
-															}}
-															className="group relative aspect-square border-2 border-white/20 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-white/40 hover:scale-105"
-														>
-															<img
-																src={item.image_url}
-																alt={`Related meme ${index + 1}`}
-																className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-															/>
-														</div>
-													)
-												}
-											})}
+											{(() => {
+												let displayedCount = 0;
+												return relatedMemes.map((item, index) => {
+													if (displayedCount < 6 && !hidden.has(item._id) && meme.name !== item.name) {
+														displayedCount++;
+														return (
+															<div
+																key={index}
+																onClick={() => {
+																	if (item.categories.length > 0) {
+																		searchRelatedMemes(item.categories[0].name)
+																		onClose()
+																	}
+																	if(onRelatedMemeClick) onRelatedMemeClick(item)
+																}}
+																className={`group relative aspect-square border-2 border-white/20 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-white/40 hover:scale-105 ${hidden.has(item._id) ? "!hidden" : ""}`}
+																hidden={hidden.has(item._id)}
+															>
+																<img
+																	src={item.image_url}
+																	alt={`Related meme ${displayedCount}`}
+																	className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 ${hidden.has(item._id) ? "!hidden" : ""}`}
+																	hidden={hidden.has(item._id)}
+																	onError={() => setHidden(prev => new Set([...prev, item._id]))}
+																/>
+															</div>
+														)
+													}
+													return null;
+												});
+											})()}
 										</div> : 
 											<div className="flex justify-center items-center">
 												<FaSpinner className='animate-spin h-10 w-10'/>
