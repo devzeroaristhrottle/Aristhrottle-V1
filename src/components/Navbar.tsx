@@ -37,6 +37,7 @@ export default function Navbar() {
 	const [isOpenModel, setIsOpenModel] = useState<boolean>(false)
 	const [username, setUsername] = useState<string>('')
 	const [bio, setBio] = useState<string>('')
+	const [phoneNo, setPhoneNo] = useState<string>('')
 	const ref = useRef<HTMLInputElement>(null)
 	const { setUserDetails, userDetails } = useContext(Context)
 	const [loading, setLoading] = useState<boolean>(false)
@@ -123,18 +124,32 @@ export default function Navbar() {
 		setBio(e.target.value)
 	}
 
+	const handlePhoneNo = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setPhoneNo(e.target.value)
+	}
+
 	const handleReferralCode = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setReferralCode(e.target.value)
 	}
 
 	const handleSave = async () => {
 		try {
+			// Validate phone number if provided
+			if (phoneNo && phoneNo.trim() !== "") {
+				const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+				if (!phoneRegex.test(phoneNo.trim())) {
+					toast.error("Please enter a valid phone number");
+					return;
+				}
+			}
+
 			if (user) {
 				const formData = new FormData()
 				formData.append('username', username)
 				formData.append('user_wallet_address', user.address)
 				formData.append('referral_code', referralCode)
 				formData.append('bio', bio)
+				formData.append('phone_no', phoneNo)
 				formData.append('tags', JSON.stringify([]))
 
 				const response = await axiosInstance.post(`/api/user`, formData, {
@@ -343,6 +358,15 @@ export default function Navbar() {
 									value={bio}
 									height={'150px'}
 									onChange={e => handleBio(e)}
+								/>
+							</Field>
+							<Field label="Phone Number" className="mt-3">
+								<Input
+									className="px-2 bg-gray-800"
+									variant="subtle"
+									placeholder="Enter Phone Number (optional)"
+									value={phoneNo}
+									onChange={e => handlePhoneNo(e)}
 								/>
 							</Field>
 							<Field label="Referral Code" className="mt-3 mb-5">
