@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     
     // Forward the request to the image generation service
     const response = await axios.post(
-      'https://gen-image-84192368251.europe-west1.run.app/api/v1/images/generate',
+      'http://localhost:8000/api/v1/images/generate',
       {
         title,
         tags,
