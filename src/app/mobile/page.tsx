@@ -19,6 +19,7 @@ function Page() {
 	const [isNewAvail, setIsNewAvail] = useState<boolean>(false)
 	const [carouselMemes, setCarouselMemes] = useState<Meme[]>([])
 	const [allMemes, setAllMemes] = useState<Meme[]>([])
+	const [allMemeDataFilter, setAllMemeDataFilter] = useState<Meme[]>([])
 	const [loading, setLoading] = useState(true)
 	const [bookMarks, setBookMarks] = useState<Meme[]>([])
 	const [isShareOpen, setIsShareOpen] = useState(false)
@@ -36,16 +37,35 @@ function Page() {
 		return memes.filter(meme => {
 			const createdAt = new Date(meme.createdAt)
 			return createdAt >= twentyFourHoursAgo
-		})
+		}).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 	}, [])
+
+	// Fetch memes for the "all" tab from leaderboard
+	const getMyMemes = async () => {
+		try {
+			setLoading(true)
+			const response = await axiosInstance.get(
+				`/api/leaderboard?daily=false&offset=0`
+			)
+
+			if (response?.data?.memes) {
+				setAllMemeDataFilter([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+			}
+		} catch (error) {
+			console.log(error)
+			setAllMemeDataFilter([])
+		} finally {
+			setLoading(false)
+		}
+	}
 
 	// Filtered memes based on active tab
 	const displayedMemes = useMemo(() => {
 		if (activeTab === 'live') {
 			return filterLiveMemes(allMemes)
 		}
-		return allMemes
-	}, [activeTab, allMemes, filterLiveMemes])
+		return allMemeDataFilter
+	}, [activeTab])
 
 	const { handleBookmark: bookmarkAction } = useMemeActions()
 
@@ -107,7 +127,10 @@ function Page() {
 	useEffect(() => {
 		fetchCarouselMemes()
 		fetchMemes()
-	}, [])
+		if (activeTab === 'all') {
+			getMyMemes()
+		}
+	}, [activeTab])
 
 	const handleViewNewContents = async () => {
 		await Promise.all([fetchCarouselMemes(), fetchMemes()])
