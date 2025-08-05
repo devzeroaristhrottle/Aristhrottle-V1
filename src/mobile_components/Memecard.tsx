@@ -75,7 +75,7 @@ function Memecard({
           
           {/* Vote button and count in middle */}
           <div className="flex flex-row items-center gap-2 relative">
-            {!meme.is_onchain && onVote && (
+            {onVote && (
               <>
                 {hasVoted ? (
                   <img
