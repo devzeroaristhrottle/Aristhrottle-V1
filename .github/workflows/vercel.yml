@@ -21,7 +21,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
 
       - name: Build the project
         run: npm run build # Ensure your Next.js build works
