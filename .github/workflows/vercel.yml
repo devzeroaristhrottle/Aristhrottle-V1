@@ -19,12 +19,6 @@ jobs:
           node-version: 20
           cache: 'npm' # Change to 'yarn' or 'pnpm' if needed
 
-      - name: Install dependencies
-        run: |
-          rm -rf node_modules package-lock.json
-          npm cache clean --force
-          npm install
-
       - name: Build the project
         run: npm run build # Ensure your Next.js build works
 
