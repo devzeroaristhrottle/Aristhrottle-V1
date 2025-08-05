@@ -81,6 +81,7 @@ function Page() {
 				setBookMarks(resp.data.memes)
 			}
 		} catch (err) {
+			console.error(err)
 			toast.error('Error fetching bookmarks')
 		}
 	}
@@ -243,6 +244,7 @@ function Page() {
 			// Fetch the actual state from server
 			await fetchBookmarks()
 		} catch (error) {
+			console.log(error)
 			toast.error('Error updating bookmark')
 			// Revert on error
 			await fetchBookmarks()

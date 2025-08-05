@@ -110,6 +110,7 @@ function Page() {
                 toast.success('Bookmark updated!')
             }
         } catch (error) {
+            console.error(error);
             toast.error('Error updating bookmark')
         }
     }

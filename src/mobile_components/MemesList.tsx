@@ -1,7 +1,7 @@
 import React from 'react'
 import Memecard from './Memecard'
 
-import { Meme, MemesListProps } from './types'
+import { MemesListProps } from './types'
 
 function MemesList({
   memes,

@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Field } from '@/components/ui/field'
-import { defineStyle, Input, Popover, Portal } from '@chakra-ui/react'
+import { defineStyle, Input } from '@chakra-ui/react'
 import axiosInstance from '@/utils/axiosInstance'
 import { Avatar } from '@/components/ui/avatar'
 import { toast } from 'react-toastify'
@@ -22,7 +22,6 @@ import Notifications from '../components/Notifications'
 import useCountdown from '@/app/hooks/useCountdown'
 import {
 	useAuthModal,
-	useLogout,
 	useUser,
 	useSigner,
 	useSmartAccountClient,
@@ -43,13 +42,11 @@ export default function Navbar() {
 
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
-	const { logout } = useLogout()
 
 	const signer = useSigner()
 
 	const message = 'signUsingAlchemyWallet'
-	const { client, address } = useSmartAccountClient({})
-	const [open, setOpen] = useState(false)
+	const { client } = useSmartAccountClient({})
 
 	const { signMessageAsync, isSigningMessage } = useSignMessage({
 		client,
