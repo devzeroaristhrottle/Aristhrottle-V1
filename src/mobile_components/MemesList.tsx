@@ -14,7 +14,7 @@ function MemesList({
   if (!memes.length) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
-        No memes available
+        No Contents available
       </div>
     )
   }

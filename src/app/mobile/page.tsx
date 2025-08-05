@@ -69,7 +69,7 @@ function Page() {
 			return filterLiveMemes(allMemes)
 		}
 		return allMemeDataFilter
-	}, [activeTab])
+	}, [activeTab, allMemes, allMemeDataFilter, filterLiveMemes])
 
 	const { handleBookmark: bookmarkAction } = useMemeActions()
 
@@ -110,7 +110,6 @@ function Page() {
 
 	const fetchMemes = async () => {
 		try {
-			if (initialLoad) setLoading(true)
 			const response = await axiosInstance.get('/api/meme', {
 				params: {
 					userId: userDetails?._id || "",
@@ -121,12 +120,12 @@ function Page() {
 					(a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
 				)
 				setAllMemes(sortedMemes)
+			} else {
+				setAllMemes([])
 			}
 		} catch (error) {
 			console.error('Error fetching memes:', error)
-		} finally {
-			setLoading(false)
-			setInitialLoad(false)
+			setAllMemes([])
 		}
 	}
 
@@ -140,11 +139,19 @@ function Page() {
 
 	useEffect(() => {
 		const init = async () => {
-			await Promise.all([
-				fetchCarouselMemes(),
-				fetchMemes(),
-				activeTab === 'all' ? getMyMemes() : Promise.resolve()
-			])
+			try {
+				setLoading(true)
+				await Promise.all([
+					fetchCarouselMemes(),
+					fetchMemes(),
+					activeTab === 'all' ? getMyMemes() : Promise.resolve()
+				])
+			} catch (error) {
+				console.error('Error during initialization:', error)
+			} finally {
+				setLoading(false)
+				setInitialLoad(false)
+			}
 		}
 		init()
 	}, [])
