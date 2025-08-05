@@ -1,4 +1,5 @@
 'use client'
+import BottomNav from '@/mobile_components/BottomNav'
 import Carousel from '@/mobile_components/Carousel'
 import Navbar from '@/mobile_components/Navbar'
 import Selector from '@/mobile_components/Selector'
@@ -22,6 +23,7 @@ function page() {
 				isNewAvail={isNewAvail}
 				handleViewNewContents={handleViewNewContents}
 			/>
+            <BottomNav />
 		</>
 	)
 }
