@@ -5,29 +5,7 @@ import { CiBookmark } from 'react-icons/ci'
 import { FaBookmark } from 'react-icons/fa'
 import { LazyImage } from '@/components/LazyImage'
 
-interface Meme {
-  _id: string
-  name: string
-  image_url: string
-  vote_count: number
-  is_onchain: boolean
-  has_user_voted?: boolean
-  bookmarks?: string[]
-  rank?: number
-  created_by?: {
-    username: string
-    profile_pic?: string
-  }
-}
-
-interface MemeCardProps {
-  meme: Meme
-  pageType: 'live' | 'all'
-  onVote?: (memeId: string) => void
-  onShare?: (memeId: string, imageUrl: string) => void
-  onBookmark?: (memeId: string, name: string, imageUrl: string) => void
-  isBookmarked?: boolean
-}
+import { MemeCardProps } from './types'
 
 function Memecard({ 
   meme, 
@@ -40,12 +18,17 @@ function Memecard({
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [localVoteCount, setLocalVoteCount] = useState(meme.vote_count);
   const [hasVoted, setHasVoted] = useState(meme.has_user_voted);
+  const [isHidden, setIsHidden] = useState(false);
 
   // Sync with prop changes
   useEffect(() => {
     setLocalVoteCount(meme.vote_count);
     setHasVoted(meme.has_user_voted);
   }, [meme.vote_count, meme.has_user_voted]);
+
+  if (isHidden) {
+    return null;
+  }
 
   return (
     <div className="w-full bg-black/5 rounded-lg overflow-hidden mb-4">
@@ -82,6 +65,7 @@ function Memecard({
         src={meme.image_url}
         alt={meme.name}
         className="w-full aspect-square object-cover"
+        onError={() => setIsHidden(true)}
       />
       
       {/* Action buttons */}

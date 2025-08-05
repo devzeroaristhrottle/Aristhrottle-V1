@@ -1,29 +1,7 @@
 import React from 'react'
 import Memecard from './Memecard'
 
-interface Meme {
-  _id: string
-  name: string
-  image_url: string
-  vote_count: number
-  is_onchain: boolean
-  has_user_voted?: boolean
-  bookmarks?: string[]
-  rank?: number
-  created_by?: {
-    username: string
-    profile_pic?: string
-  }
-}
-
-interface MemesListProps {
-  memes: Meme[]
-  pageType: 'live' | 'all'
-  onVote?: (memeId: string) => void
-  onShare?: (memeId: string, imageUrl: string) => void
-  onBookmark?: (memeId: string, name: string, imageUrl: string) => void
-  bookmarkedMemes?: Set<string>
-}
+import { Meme, MemesListProps } from './types'
 
 function MemesList({
   memes,

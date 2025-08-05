@@ -12,21 +12,7 @@ import Share from '@/components/Share'
 import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { Context } from '@/context/contextProvider'
 
-interface Meme {
-	_id: string
-	name: string
-	image_url: string
-	vote_count: number
-	is_onchain: boolean
-	has_user_voted?: boolean
-	bookmarks?: string[]
-	rank?: number
-	created_by?: {
-		username: string
-		profile_pic?: string
-	}
-	createdAt: string
-}
+import { Meme } from '@/mobile_components/types'
 
 function Page() {
 	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')

@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 import { FaRegBookmark } from 'react-icons/fa'
 import { GrCloudUpload } from 'react-icons/gr'
@@ -26,9 +27,9 @@ function BottomNav() {
 		<div>
 			<IoPodiumOutline className="h-6 w-6" />
 		</div>
-		<div>
+		<Link href="/mobile/saved">
 			<FaRegBookmark className="h-6 w-6" />
-		</div>
+		</Link>
 	</div>)
 }
 
