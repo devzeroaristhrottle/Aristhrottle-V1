@@ -130,10 +130,17 @@ function Page() {
 	}
 
 	// Handle tab change without showing loading state
+	const [tabLoading, setTabLoading] = useState(false)
+
 	const handleTabChange = async (newTab: 'live' | 'all') => {
 		setActiveTab(newTab)
 		if (newTab === 'all' && allMemeDataFilter.length === 0) {
-			await getMyMemes()
+			setTabLoading(true)
+			try {
+				await getMyMemes()
+			} finally {
+				setTabLoading(false)
+			}
 		}
 	}
 
@@ -279,14 +286,20 @@ function Page() {
 				/>
 			</div>
 			<div className="flex-1 overflow-hidden">
-				<MemesList
-					memes={displayedMemes}
-					pageType={activeTab}
-					onVote={handleVote}
-					onShare={handleShare}
-					onBookmark={handleBookmark}
-					bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
-				/>
+				{tabLoading ? (
+					<div className="h-full flex items-center justify-center">
+						Loading...
+					</div>
+				) : (
+					<MemesList
+						memes={displayedMemes}
+						pageType={activeTab}
+						onVote={handleVote}
+						onShare={handleShare}
+						onBookmark={handleBookmark}
+						bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
+					/>
+				)}
 			</div>
 			<div className="flex-none">
 				<BottomNav />
