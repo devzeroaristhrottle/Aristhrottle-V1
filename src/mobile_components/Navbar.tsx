@@ -156,7 +156,7 @@ export default function Navbar() {
 	}
 
 	return (
-		<div className="sticky top-0 z-50 backdrop-blur-md bg-black/20">
+		<div className="sticky top-0 z-50 backdrop-blur-md bg-black/20 mb-3">
 			<div className="relative w-[100%] pr-4 md:pr-8">
 				<div className="flex justify-between align-middle items-center py-3 md:py-0">
 					<div className="flex align-middle items-center gap-5">

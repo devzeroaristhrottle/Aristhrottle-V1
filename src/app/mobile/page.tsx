@@ -172,24 +172,30 @@ function Page() {
 	}
 
 	return (
-		<>
+		<div className="h-screen flex flex-col overflow-hidden">
 			<Navbar />
-			<Carousel items={carouselMemes} />
-			<Selector
-				activeTab={activeTab}
-				handleTabChange={setActiveTab}
-				isNewAvail={isNewAvail}
-				handleViewNewContents={handleViewNewContents}
-			/>
-			<MemesList
-				memes={memes}
-				pageType={activeTab}
-				onVote={handleVote}
-				onShare={handleShare}
-				onBookmark={handleBookmark}
-				bookmarkedMemes={bookmarkedMemes}
-			/>
-			<BottomNav />
+			<div className="flex-none">
+				<Carousel items={carouselMemes} />
+				<Selector
+					activeTab={activeTab}
+					handleTabChange={setActiveTab}
+					isNewAvail={isNewAvail}
+					handleViewNewContents={handleViewNewContents}
+				/>
+			</div>
+			<div className="flex-1 overflow-hidden">
+				<MemesList
+					memes={memes}
+					pageType={activeTab}
+					onVote={handleVote}
+					onShare={handleShare}
+					onBookmark={handleBookmark}
+					bookmarkedMemes={bookmarkedMemes}
+				/>
+			</div>
+			<div className="flex-none">
+				<BottomNav />
+			</div>
 			{isShareOpen && shareData && (
 				<Share
 					onClose={() => setIsShareOpen(false)}
@@ -197,7 +203,7 @@ function Page() {
 					id={shareData.id}
 				/>
 			)}
-		</>
+		</div>
 	)
 }
 

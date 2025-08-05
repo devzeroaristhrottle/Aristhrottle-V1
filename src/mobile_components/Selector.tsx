@@ -18,7 +18,7 @@ function Selector({
 	handleViewNewContents: () => void
 }) {
 	return (
-		<div className="flex flex-row justify-between px-3">
+		<div className="flex flex-row justify-between p-3">
 			<div id="sorting_selector">
 				<Button
 					size={{ sm: 'xs', md: 'sm' }}

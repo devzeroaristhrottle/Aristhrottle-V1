@@ -21,7 +21,7 @@ function Carousel({ items = [] }: CarouselProps) {
 	const duplicatedItems = [...items, ...items]
 
 	return (
-		<div className="w-full h-32 overflow-hidden my-4">
+		<div className="w-full h-32 overflow-hidden">
 			<div className="flex animate-scroll">
 				{duplicatedItems.map((meme, index) => (
 					<div key={`${meme._id}-${index}`} className="w-1/3 flex-shrink-0 px-2 rounded-sm">
