@@ -10,6 +10,7 @@ import axiosInstance from '@/utils/axiosInstance'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
 import MemesList from '@/mobile_components/MemesList'
+import { useMemeActions } from '../../home/bookmark/bookmarkHelper'
 
 import { Meme } from '@/mobile_components/types'
 
@@ -86,32 +87,36 @@ function Page() {
         }
     }
 
-    const handleBookmark = async (id: string, name: string, imageUrl: string) => {
+    const { handleBookmark: bookmarkAction } = useMemeActions()
+
+    const handleBookmark = async (id: string) => {
         if (!user || !user.address) {
             openAuthModal?.()
             return
         }
 
+        // Store the current state for potential rollback
+        const previousMemes = [...memes]
+        const previousSavedMemes = new Set(savedMemes)
+
         try {
-            const response = await axiosInstance.post('/api/bookmark', {
-                meme: id,
-                name,
-                image_url: imageUrl,
+            // Optimistically update the local state
+            setMemes(prev => prev.filter(meme => meme._id !== id))
+            setSavedMemes(prev => {
+                const newSet = new Set(prev)
+                newSet.delete(id)
+                return newSet
             })
 
-            if (response.status === 201 || response.status === 200) {
-                // Remove the meme from the list since it's being unbookmarked
-                setMemes(prev => prev.filter(meme => meme._id !== id))
-                setSavedMemes(prev => {
-                    const newSet = new Set(prev)
-                    newSet.delete(id)
-                    return newSet
-                })
-                toast.success('Bookmark updated!')
-            }
+            // Make the API call
+            await bookmarkAction(id)
+            toast.success('Bookmark removed!')
         } catch (error) {
-            console.error(error);
+            console.error(error)
             toast.error('Error updating bookmark')
+            // Revert to previous state on error
+            setMemes(previousMemes)
+            setSavedMemes(previousSavedMemes)
         }
     }
 
