@@ -37,6 +37,19 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    phone_no: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function(phone: string) {
+          // Allow empty string or valid phone number format
+          if (!phone) return true;
+          // Basic phone validation - adjust regex as needed for your requirements
+          return /^[\+]?[1-9][\d]{0,15}$/.test(phone);
+        },
+        message: "Please enter a valid phone number"
+      }
+    },
     refer_code: {
       type: String,
       unique: true,

@@ -54,7 +54,7 @@ async function handlePostRequest(req: NextRequest) {
         const amount = ethers.parseUnits(points_mint.toString(), 18);
         
         // Process blockchain transaction
-        const tx = await contract.mintCoins(user.user_wallet_address, amount);
+        const tx = await contract.mint(user.user_wallet_address, amount);
         await tx.wait();
         
         // If everything went well, commit the transaction

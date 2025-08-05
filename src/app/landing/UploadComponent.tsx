@@ -441,6 +441,38 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsU
 				) : (
 					/* Upload Instructions */
 					<div className="border h-full flex flex-col justify-between border-white rounded-xl p-4 lg:p-5 text-gray-400 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20 cursor-pointer">
+						
+						{/* AI Instructions */}
+						<div
+							id="top-sec"
+							className="flex justify-center items-center"
+							onClick={getImage}
+						>
+							<div className="flex flex-col gap-x-2 lg:gap-x-3 items-center mb-2 lg:mb-3">
+								<HiSparkles
+									size={32}
+									className="lg:w-10 lg:h-10 text-blue-400 hover:scale-110 hover:rotate-12 transition-all duration-300 flex-shrink-0"
+								/>
+								<div className="text-blue-400 text-lg lg:text-3xl hover:text-white transition-colors duration-200">
+									Create with Aris-Intelligence
+								</div>
+								<div className="text-xs lg:text-2xl">
+									Enter title and tags(atleast one)
+								</div>
+							</div>
+						</div>
+
+						{/* Divider */}
+						<div className="flex items-center w-full gap-3 lg:gap-4 my-3 lg:my-4">
+							<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
+							<span className="px-2 lg:px-4 text-xs lg:text-sm font-medium hover:text-blue-400 transition-colors duration-200">
+								or
+							</span>
+							<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
+						</div>
+
+
+						{/* manual uplode */}
 						<div
 							id="top-sec"
 							className="flex justify-center items-center"
@@ -462,34 +494,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({ onUpload, onRevert, setIsU
 							</div>
 						</div>
 
-						{/* Divider */}
-						<div className="flex items-center w-full gap-3 lg:gap-4 my-3 lg:my-4">
-							<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
-							<span className="px-2 lg:px-4 text-xs lg:text-sm font-medium hover:text-blue-400 transition-colors duration-200">
-								or
-							</span>
-							<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
-						</div>
-
-						{/* AI Instructions */}
-						<div
-							id="top-sec"
-							className="flex justify-center items-center"
-							onClick={getImage}
-						>
-							<div className="flex flex-col gap-x-2 lg:gap-x-3 items-center mb-2 lg:mb-3">
-								<HiSparkles
-									size={32}
-									className="lg:w-10 lg:h-10 text-blue-400 hover:scale-110 hover:rotate-12 transition-all duration-300 flex-shrink-0"
-								/>
-								<div className="text-blue-400 text-lg lg:text-3xl hover:text-white transition-colors duration-200">
-									Create with Aris-Intelligence
-								</div>
-								<div className="text-xs lg:text-2xl">
-									Enter title and tags(atleast one)
-								</div>
-							</div>
-						</div>
+						
 					</div>
 				)}
 			</div>
