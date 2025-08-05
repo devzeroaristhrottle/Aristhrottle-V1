@@ -3,7 +3,7 @@ import BottomNav from '@/mobile_components/BottomNav'
 import Carousel from '@/mobile_components/Carousel'
 import Navbar from '@/mobile_components/Navbar'
 import Selector from '@/mobile_components/Selector'
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import axiosInstance from '@/utils/axiosInstance'
 import MemesList from '@/mobile_components/MemesList'
 import { useAuthModal, useUser } from '@account-kit/react'
@@ -23,13 +23,14 @@ interface Meme {
 		username: string
 		profile_pic?: string
 	}
+	createdAt: string
 }
 
 function Page() {
 	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')
 	const [isNewAvail, setIsNewAvail] = useState<boolean>(false)
 	const [carouselMemes, setCarouselMemes] = useState<Meme[]>([])
-	const [memes, setMemes] = useState<Meme[]>([])
+	const [allMemes, setAllMemes] = useState<Meme[]>([])
 	const [loading, setLoading] = useState(true)
 	const [bookmarkedMemes, setBookmarkedMemes] = useState<Set<string>>(new Set())
 	const [isShareOpen, setIsShareOpen] = useState(false)
@@ -37,6 +38,25 @@ function Page() {
 
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
+
+	// Filter memes for live view (last 24 hours)
+	const filterLiveMemes = useCallback((memes: Meme[]) => {
+		const now = new Date()
+		now.setUTCHours(0, 0, 0, 0)
+		const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+		return memes.filter(meme => {
+			const createdAt = new Date(meme.createdAt)
+			return createdAt >= twentyFourHoursAgo
+		})
+	}, [])
+
+	// Filtered memes based on active tab
+	const displayedMemes = useMemo(() => {
+		if (activeTab === 'live') {
+			return filterLiveMemes(allMemes)
+		}
+		return allMemes
+	}, [activeTab, allMemes, filterLiveMemes])
 
 	// Fetch bookmarks from localStorage on mount
 	useEffect(() => {
@@ -71,14 +91,13 @@ function Page() {
 			const response = await axiosInstance.get('/api/meme', {
 				params: {
 					userId: user?.address,
-					...(activeTab === 'live' ? {} : { type: 'all' })
 				},
 			})
 			if (response.data?.memes) {
 				const sortedMemes = [...response.data.memes].sort(
 					(a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
 				)
-				setMemes(sortedMemes)
+				setAllMemes(sortedMemes)
 			}
 		} catch (error) {
 			console.error('Error fetching memes:', error)
@@ -90,7 +109,7 @@ function Page() {
 	useEffect(() => {
 		fetchCarouselMemes()
 		fetchMemes()
-	}, [activeTab])
+	}, [])
 
 	const handleViewNewContents = async () => {
 		await Promise.all([fetchCarouselMemes(), fetchMemes()])
@@ -185,7 +204,7 @@ function Page() {
 			</div>
 			<div className="flex-1 overflow-hidden">
 				<MemesList
-					memes={memes}
+					memes={displayedMemes}
 					pageType={activeTab}
 					onVote={handleVote}
 					onShare={handleShare}

@@ -7,7 +7,7 @@ import { LuTrophy } from 'react-icons/lu'
 
 function BottomNav() {
 	return (
-	<div className=" bottom-0 absolute z-50 flex flex-row justify-evenly w-screen items-center">
+	<div className="bottom-0 w-full bg-black/90 py-3 flex flex-row justify-evenly items-center">
 		<div>
 			<LuTrophy className="h-6 w-6" />
 		</div>
