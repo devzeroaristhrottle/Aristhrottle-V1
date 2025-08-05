@@ -38,50 +38,78 @@ function Memecard({
 }: MemeCardProps) {
   return (
     <div className="w-full bg-black/5 rounded-lg overflow-hidden mb-4">
-      <div className="relative">
-        <img
-          src={meme.image_url}
-          alt={meme.name}
-          className="w-full aspect-square object-cover"
-        />
-        
-        {/* Overlay with actions */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <h3 className="text-white text-sm truncate max-w-[150px]">{meme.name}</h3>
-              {pageType === 'all' && meme.rank && (
-                <span className="text-white text-xs">#{meme.rank}</span>
-              )}
+      {/* User info header */}
+      <div className="p-3 flex items-center space-x-2">
+        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-700 flex-none">
+          {meme.created_by?.profile_pic ? (
+            <img
+              src={meme.created_by.profile_pic}
+              alt={meme.created_by.username}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-white text-sm">
+              {meme.created_by?.username?.[0]?.toUpperCase() || '?'}
             </div>
-            
-            <div className="flex items-center space-x-3">
-              {!meme.is_onchain && onVote && (
-                <Logo
-                  classNames="w-6 h-6 cursor-pointer"
-                  onClick={() => onVote(meme._id)}
-                />
-              )}
-              {onShare && (
-                <FaRegShareFromSquare
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-white text-sm font-medium truncate">{meme.name}</h3>
+          <div className="flex items-center space-x-2">
+            <span className="text-gray-400 text-xs truncate">
+              {meme.created_by?.username || 'Anonymous'}
+            </span>
+            {pageType === 'all' && meme.rank && (
+              <span className="text-gray-400 text-xs">#{meme.rank}</span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Meme image */}
+      <img
+        src={meme.image_url}
+        alt={meme.name}
+        className="w-full aspect-square object-cover"
+      />
+      
+      {/* Action buttons */}
+      <div className="p-3 bg-black/5">
+        <div className="flex justify-between items-center">
+          {/* Empty div for spacing */}
+          <div className="w-16" />
+          
+          {/* Vote button in middle */}
+          <div className="flex justify-center">
+            {!meme.is_onchain && onVote && (
+              <Logo
+                classNames="w-8 h-8 cursor-pointer"
+                onClick={() => onVote(meme._id)}
+              />
+            )}
+          </div>
+          
+          {/* Share and bookmark on right */}
+          <div className="flex items-center space-x-3 w-16 justify-end">
+            {onShare && (
+              <FaRegShareFromSquare
+                className="w-5 h-5 text-white cursor-pointer"
+                onClick={() => onShare(meme._id, meme.image_url)}
+              />
+            )}
+            {onBookmark && (
+              isBookmarked ? (
+                <FaBookmark
                   className="w-5 h-5 text-white cursor-pointer"
-                  onClick={() => onShare(meme._id, meme.image_url)}
+                  onClick={() => onBookmark(meme._id, meme.name, meme.image_url)}
                 />
-              )}
-              {onBookmark && (
-                isBookmarked ? (
-                  <FaBookmark
-                    className="w-5 h-5 text-white cursor-pointer"
-                    onClick={() => onBookmark(meme._id, meme.name, meme.image_url)}
-                  />
-                ) : (
-                  <CiBookmark
-                    className="w-6 h-6 text-white cursor-pointer"
-                    onClick={() => onBookmark(meme._id, meme.name, meme.image_url)}
-                  />
-                )
-              )}
-            </div>
+              ) : (
+                <CiBookmark
+                  className="w-6 h-6 text-white cursor-pointer"
+                  onClick={() => onBookmark(meme._id, meme.name, meme.image_url)}
+                />
+              )
+            )}
           </div>
         </div>
       </div>
