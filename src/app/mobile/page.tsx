@@ -21,6 +21,7 @@ function Page() {
 	const [allMemes, setAllMemes] = useState<Meme[]>([])
 	const [allMemeDataFilter, setAllMemeDataFilter] = useState<Meme[]>([])
 	const [loading, setLoading] = useState(true)
+	const [initialLoad, setInitialLoad] = useState(true)
 	const [bookMarks, setBookMarks] = useState<Meme[]>([])
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [shareData, setShareData] = useState<{ id: string; imageUrl: string } | null>(null)
@@ -43,7 +44,7 @@ function Page() {
 	// Fetch memes for the "all" tab from leaderboard
 	const getMyMemes = async () => {
 		try {
-			setLoading(true)
+			if (initialLoad) setLoading(true)
 			const response = await axiosInstance.get(
 				`/api/leaderboard?daily=false&offset=0`
 			)
@@ -55,7 +56,10 @@ function Page() {
 			console.log(error)
 			setAllMemeDataFilter([])
 		} finally {
-			setLoading(false)
+			if (initialLoad) {
+				setLoading(false)
+				setInitialLoad(false)
+			}
 		}
 	}
 
@@ -105,7 +109,7 @@ function Page() {
 
 	const fetchMemes = async () => {
 		try {
-			setLoading(true)
+			if (initialLoad) setLoading(true)
 			const response = await axiosInstance.get('/api/meme', {
 				params: {
 					userId: userDetails?._id || "",
@@ -121,16 +125,28 @@ function Page() {
 			console.error('Error fetching memes:', error)
 		} finally {
 			setLoading(false)
+			setInitialLoad(false)
+		}
+	}
+
+	// Handle tab change without showing loading state
+	const handleTabChange = async (newTab: 'live' | 'all') => {
+		setActiveTab(newTab)
+		if (newTab === 'all' && allMemeDataFilter.length === 0) {
+			await getMyMemes()
 		}
 	}
 
 	useEffect(() => {
-		fetchCarouselMemes()
-		fetchMemes()
-		if (activeTab === 'all') {
-			getMyMemes()
+		const init = async () => {
+			await Promise.all([
+				fetchCarouselMemes(),
+				fetchMemes(),
+				activeTab === 'all' ? getMyMemes() : Promise.resolve()
+			])
 		}
-	}, [activeTab])
+		init()
+	}, [])
 
 	const handleViewNewContents = async () => {
 		await Promise.all([fetchCarouselMemes(), fetchMemes()])
@@ -248,7 +264,7 @@ function Page() {
 				<Carousel items={carouselMemes} />
 				<Selector
 					activeTab={activeTab}
-					handleTabChange={setActiveTab}
+					handleTabChange={handleTabChange}
 					isNewAvail={isNewAvail}
 					handleViewNewContents={handleViewNewContents}
 				/>
