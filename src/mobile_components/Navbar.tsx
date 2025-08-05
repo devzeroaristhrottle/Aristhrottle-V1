@@ -178,6 +178,17 @@ export default function Navbar() {
 					</div>
 
 					<div className="flex items-center justify-center gap-4">
+					<main className="py-2">
+						<Button
+							size={{ base: 'xs', md: 'lg' }}
+							variant="solid"
+							className="bg-slate-50 text-slate-800 font-bold px-1 md:px-3 rounded-lg md:rounded-xl text-base md:text-lg"
+							onClick={() => openAuthModal()}
+							hidden={user != null}
+						>
+							Login / Signup
+						</Button>
+						</main>
 						
 						{/* <ConnectButton /> */}
 						{/* TODO: on hover add eArt Balance */}
