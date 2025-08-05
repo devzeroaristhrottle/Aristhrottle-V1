@@ -1,0 +1,36 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - staging-v1.2
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # Change to 'yarn' or 'pnpm' if needed
+
+      - name: Install dependencies
+        run: |
+          rm -rf node_modules package-lock.json
+          npm cache clean --force
+          npm install
+
+      - name: Build the project
+        run: npm run build # Ensure your Next.js build works
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: aKFW6kwtGkTQIEg18i7xpjqA
+          VERCEL_ORG_ID: team_1i3y5bQyRSGc5jvGhgrZviSn
+          VERCEL_PROJECT_ID: prj_ouhrKqA5dItA4hpOJCzpFVeojrES
+        run: npx vercel --token=${{ secrets.VERCEL_TOKEN }} --prod
