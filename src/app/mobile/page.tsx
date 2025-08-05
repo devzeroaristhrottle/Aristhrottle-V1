@@ -3,12 +3,14 @@ import BottomNav from '@/mobile_components/BottomNav'
 import Carousel from '@/mobile_components/Carousel'
 import Navbar from '@/mobile_components/Navbar'
 import Selector from '@/mobile_components/Selector'
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useContext } from 'react'
 import axiosInstance from '@/utils/axiosInstance'
 import MemesList from '@/mobile_components/MemesList'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { toast } from 'react-toastify'
 import Share from '@/components/Share'
+import { useMemeActions } from '../home/bookmark/bookmarkHelper'
+import { Context } from '@/context/contextProvider'
 
 interface Meme {
 	_id: string
@@ -32,12 +34,13 @@ function Page() {
 	const [carouselMemes, setCarouselMemes] = useState<Meme[]>([])
 	const [allMemes, setAllMemes] = useState<Meme[]>([])
 	const [loading, setLoading] = useState(true)
-	const [bookmarkedMemes, setBookmarkedMemes] = useState<Set<string>>(new Set())
+	const [bookMarks, setBookMarks] = useState<Meme[]>([])
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [shareData, setShareData] = useState<{ id: string; imageUrl: string } | null>(null)
 
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
+	const { userDetails, setUserDetails } = useContext(Context)
 
 	// Filter memes for live view (last 24 hours)
 	const filterLiveMemes = useCallback((memes: Meme[]) => {
@@ -58,13 +61,22 @@ function Page() {
 		return allMemes
 	}, [activeTab, allMemes, filterLiveMemes])
 
-	// Fetch bookmarks from localStorage on mount
-	useEffect(() => {
-		const bookmarks = localStorage.getItem('bookmarks')
-		if (bookmarks) {
-			const bookmarksObj = JSON.parse(bookmarks)
-			setBookmarkedMemes(new Set(Object.keys(bookmarksObj)))
+	const { handleBookmark: bookmarkAction } = useMemeActions()
+
+	// Fetch bookmarks from server on mount
+	const fetchBookmarks = async () => {
+		try {
+			const resp = await axiosInstance.get('/api/bookmark')
+			if (resp.status === 200) {
+				setBookMarks(resp.data.memes)
+			}
+		} catch (err) {
+			toast.error('Error fetching bookmarks')
 		}
+	}
+
+	useEffect(() => {
+		fetchBookmarks()
 	}, [])
 
 	const fetchCarouselMemes = async () => {
@@ -90,7 +102,7 @@ function Page() {
 			setLoading(true)
 			const response = await axiosInstance.get('/api/meme', {
 				params: {
-					userId: user?.address,
+					userId: userDetails?._id || "",
 				},
 			})
 			if (response.data?.memes) {
@@ -117,26 +129,67 @@ function Page() {
 	}
 
 	const handleVote = async (memeId: string) => {
-		if (!user || !user.address) {
-			openAuthModal?.()
+		if (!userDetails && openAuthModal) {
+			openAuthModal()
 			return
 		}
 
 		try {
-			const response = await axiosInstance.post('/api/vote', {
-				vote_to: memeId,
-				vote_by: user.address,
-			})
-			if (response.status === 201) {
-				toast.success('Vote casted successfully!')
-				fetchMemes() // Refresh memes to update vote status
+			if (user && user.address) {
+				// Update userDetails optimistically
+				if (userDetails) {
+					setUserDetails({
+						...userDetails,
+						votes: userDetails.votes + 1,
+					})
+				}
+
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: memeId,
+					vote_by: userDetails?._id,
+				})
+
+				if (response.status === 201) {
+					toast.success('Vote casted successfully!')
+					// Update the memes list to reflect the new vote
+					setAllMemes(prev =>
+						prev.map(meme =>
+							meme._id === memeId
+								? {
+										...meme,
+										vote_count: meme.vote_count + 1,
+										has_user_voted: true,
+								  }
+								: meme
+						)
+					)
+				}
 			}
 		} catch (error: any) {
-			if (error.response?.data?.message === 'You cannot vote on your own meme') {
+			// Revert userDetails on error
+			if (userDetails) {
+				setUserDetails({
+					...userDetails,
+					votes: userDetails.votes,
+				})
+			}
+			if (error.response?.data?.message === 'You cannot vote on your own content') {
 				toast.error(error.response.data.message)
 			} else {
-				toast.error('Already voted to this meme')
+				toast.error('Already voted to this content')
 			}
+			// Revert the optimistic update
+			setAllMemes(prev =>
+				prev.map(meme =>
+					meme._id === memeId
+						? {
+								...meme,
+								vote_count: meme.vote_count,
+								has_user_voted: false,
+						  }
+						: meme
+				)
+			)
 		}
 	}
 
@@ -152,33 +205,22 @@ function Page() {
 		}
 
 		try {
-			const response = await axiosInstance.post('/api/bookmark', {
-				meme: id,
-				name,
-				image_url: imageUrl,
+			bookmarkAction(id)
+			// Optimistically update the local state
+			setBookMarks(prev => {
+				const isCurrentlyBookmarked = prev.some(meme => meme._id === id)
+				if (isCurrentlyBookmarked) {
+					return prev.filter(meme => meme._id !== id)
+				} else {
+					return [...prev, { _id: id, name, image_url: imageUrl } as Meme]
+				}
 			})
-
-			const newBookmarks = new Set(bookmarkedMemes)
-			if (response.status === 201) {
-				newBookmarks.add(id)
-				toast.success('Added to bookmarks!')
-			} else if (response.status === 200) {
-				newBookmarks.delete(id)
-				toast.success('Removed from bookmarks!')
-			}
-			setBookmarkedMemes(newBookmarks)
-
-			// Update localStorage
-			const bookmarksStr = localStorage.getItem('bookmarks')
-			const bookmarksObj = bookmarksStr ? JSON.parse(bookmarksStr) : {}
-			if (response.status === 201) {
-				bookmarksObj[id] = { id, name, image_url: imageUrl }
-			} else {
-				delete bookmarksObj[id]
-			}
-			localStorage.setItem('bookmarks', JSON.stringify(bookmarksObj))
+			// Fetch the actual state from server
+			await fetchBookmarks()
 		} catch (error) {
 			toast.error('Error updating bookmark')
+			// Revert on error
+			await fetchBookmarks()
 		}
 	}
 
@@ -209,7 +251,7 @@ function Page() {
 					onVote={handleVote}
 					onShare={handleShare}
 					onBookmark={handleBookmark}
-					bookmarkedMemes={bookmarkedMemes}
+					bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
 				/>
 			</div>
 			<div className="flex-none">

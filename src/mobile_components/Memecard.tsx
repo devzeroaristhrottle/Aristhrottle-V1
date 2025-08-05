@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Logo } from '@/components/Logo'
 import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { CiBookmark } from 'react-icons/ci'
 import { FaBookmark } from 'react-icons/fa'
+import { LazyImage } from '@/components/LazyImage'
 
 interface Meme {
   _id: string
@@ -36,6 +37,16 @@ function Memecard({
   onBookmark,
   isBookmarked = false
 }: MemeCardProps) {
+  const [showPointsAnimation, setShowPointsAnimation] = useState(false);
+  const [localVoteCount, setLocalVoteCount] = useState(meme.vote_count);
+  const [hasVoted, setHasVoted] = useState(meme.has_user_voted);
+
+  // Sync with prop changes
+  useEffect(() => {
+    setLocalVoteCount(meme.vote_count);
+    setHasVoted(meme.has_user_voted);
+  }, [meme.vote_count, meme.has_user_voted]);
+
   return (
     <div className="w-full bg-black/5 rounded-lg overflow-hidden mb-4">
       {/* User info header */}
@@ -67,7 +78,7 @@ function Memecard({
       </div>
 
       {/* Meme image */}
-      <img
+      <LazyImage
         src={meme.image_url}
         alt={meme.name}
         className="w-full aspect-square object-cover"
@@ -76,16 +87,46 @@ function Memecard({
       {/* Action buttons */}
       <div className="p-3 bg-black/5">
         <div className="flex justify-between items-center">
-          {/* Empty div for spacing */}
-          <div className="w-16" />
+          <div className="w-16" /> {/* Spacer */}
           
-          {/* Vote button in middle */}
-          <div className="flex justify-center">
+          {/* Vote button and count in middle */}
+          <div className="flex flex-row items-center gap-2 relative">
             {!meme.is_onchain && onVote && (
-              <Logo
-                classNames="w-8 h-8 cursor-pointer"
-                onClick={() => onVote(meme._id)}
-              />
+              <>
+                {hasVoted ? (
+                  <img
+                    src="/assets/vote/icon1.png"
+                    alt="voted"
+                    className="w-8 h-8"
+                  />
+                ) : (
+                  <Logo
+                    classNames="w-8 h-8 cursor-pointer"
+                    onClick={() => {
+                      // Optimistic updates
+                      setHasVoted(true);
+                      setLocalVoteCount(prev => prev + 1);
+                      setShowPointsAnimation(true);
+                      
+                      // Call the actual vote function
+                      onVote(meme._id);
+                      
+                      setTimeout(() => {
+                        setShowPointsAnimation(false);
+                      }, 2000);
+                    }}
+                  />
+                )}
+                {pageType === 'all' && (
+                  <span className="text-2xl mt-1">{localVoteCount}</span>
+                )}
+                {/* Points Animation */}
+                {showPointsAnimation && (
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-[#28e0ca] font-bold text-lg opacity-0 animate-[flyUp_2s_ease-out_forwards]">
+                    +0.1 $eART
+                  </div>
+                )}
+              </>
             )}
           </div>
           
