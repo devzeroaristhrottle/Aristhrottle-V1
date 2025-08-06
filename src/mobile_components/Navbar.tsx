@@ -175,18 +175,18 @@ export default function Navbar() {
 					</div>
 
 					<div className="flex items-center justify-center gap-4">
-					<main className="py-2">
-						<Button
-							size={{ base: 'xs', md: 'lg' }}
-							variant="solid"
-							className="bg-slate-50 text-slate-800 font-bold px-1 md:px-3 rounded-lg md:rounded-xl text-base md:text-lg"
-							onClick={() => openAuthModal()}
-							hidden={user != null}
-						>
-							Login / Signup
-						</Button>
+						<main className="py-2">
+							<Button
+								size={{ base: 'xs', md: 'lg' }}
+								variant="solid"
+								className="bg-slate-50 text-slate-800 font-bold px-1 md:px-3 rounded-lg md:rounded-xl text-base md:text-lg"
+								onClick={() => openAuthModal()}
+								hidden={user != null}
+							>
+								Login / Signup
+							</Button>
 						</main>
-						
+
 						{/* <ConnectButton /> */}
 						{/* TODO: on hover add eArt Balance */}
 						{user?.address ? (
@@ -211,7 +211,10 @@ export default function Navbar() {
 					</div>
 				</div>
 				{userDetails && user != null && user.address && (
-					<div className="flex flex-row justify-evenly" style={{fontSize: "12px"}}>
+					<div
+						className="flex flex-row justify-evenly"
+						style={{ fontSize: '12px' }}
+					>
 						<div className="flex gap-1 items-center">
 							<label>Vote</label>
 							<p className="border border-white rounded-md p-1">

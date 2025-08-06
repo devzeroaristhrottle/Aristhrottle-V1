@@ -15,174 +15,179 @@ import { useMemeActions } from '../../home/bookmark/bookmarkHelper'
 import { Meme } from '@/mobile_components/types'
 
 function Page() {
-    const [loading, setLoading] = useState<boolean>(false)
-    const [memes, setMemes] = useState<Meme[]>([])
-    const [isShareOpen, setIsShareOpen] = useState(false)
-    const [shareData, setShareData] = useState<{ id: string; imageUrl: string } | null>(null)
-    const [savedMemes, setSavedMemes] = useState<Set<string>>(new Set())
+	const [loading, setLoading] = useState<boolean>(false)
+	const [memes, setMemes] = useState<Meme[]>([])
+	const [isShareOpen, setIsShareOpen] = useState(false)
+	const [shareData, setShareData] = useState<{
+		id: string
+		imageUrl: string
+	} | null>(null)
+	const [savedMemes, setSavedMemes] = useState<Set<string>>(new Set())
 
-    const user = useUser()
-    const router = useRouter()
-    const { openAuthModal } = useAuthModal()
-    const { userDetails } = useContext(Context)
-    useEffect(() => {
-        if (user && user.address) {
-            getMyMemes()
-        }
-    }, [user])
+	const user = useUser()
+	const router = useRouter()
+	const { openAuthModal } = useAuthModal()
+	const { userDetails } = useContext(Context)
+	useEffect(() => {
+		if (user && user.address) {
+			getMyMemes()
+		}
+	}, [user])
 
-    const getMyMemes = async () => {
-        try {
-            setLoading(true)
-            const resp = await axiosInstance.get('/api/bookmark')
-            if (resp.status === 200) {
-                setMemes(resp.data.memes)
-                setSavedMemes(new Set(resp.data.memes.map((meme: Meme) => meme._id)))
-            }
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
-        }
-    }
+	const getMyMemes = async () => {
+		try {
+			setLoading(true)
+			const resp = await axiosInstance.get('/api/bookmark')
+			if (resp.status === 200) {
+				setMemes(resp.data.memes)
+				setSavedMemes(new Set(resp.data.memes.map((meme: Meme) => meme._id)))
+			}
+		} catch (error) {
+			console.log(error)
+		} finally {
+			setLoading(false)
+		}
+	}
 
-    const handleShare = (memeId: string, imageUrl: string) => {
-        setShareData({ id: memeId, imageUrl })
-        setIsShareOpen(true)
-    }
+	const handleShare = (memeId: string, imageUrl: string) => {
+		setShareData({ id: memeId, imageUrl })
+		setIsShareOpen(true)
+	}
 
-    const handleVote = async (memeId: string) => {
-        if (!userDetails && openAuthModal) {
-            openAuthModal()
-            return
-        }
+	const handleVote = async (memeId: string) => {
+		if (!userDetails && openAuthModal) {
+			openAuthModal()
+			return
+		}
 
-        try {
-            if (user && user.address) {
-                const response = await axiosInstance.post('/api/vote', {
-                    vote_to: memeId,
-                    vote_by: userDetails?._id,
-                })
-                if (response.status === 201) {
-                    toast.success('Vote casted successfully!')
-                    setMemes(prev =>
-                        prev.map(meme =>
-                            meme._id === memeId
-                                ? {
-                                    ...meme,
-                                    vote_count: meme.vote_count + 1,
-                                    has_user_voted: true,
-                                }
-                                : meme
-                        )
-                    )
-                }
-            }
-        } catch (error: any) {
-            if (error.response?.data?.message === 'You cannot vote on your own content') {
-                toast.error(error.response.data.message)
-            } else {
-                toast.error('Already voted to this content')
-            }
-        }
-    }
+		try {
+			if (user && user.address) {
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: memeId,
+					vote_by: userDetails?._id,
+				})
+				if (response.status === 201) {
+					toast.success('Vote casted successfully!')
+					setMemes(prev =>
+						prev.map(meme =>
+							meme._id === memeId
+								? {
+										...meme,
+										vote_count: meme.vote_count + 1,
+										has_user_voted: true,
+								  }
+								: meme
+						)
+					)
+				}
+			}
+		} catch (error: any) {
+			if (
+				error.response?.data?.message === 'You cannot vote on your own content'
+			) {
+				toast.error(error.response.data.message)
+			} else {
+				toast.error('Already voted to this content')
+			}
+		}
+	}
 
-    const { handleBookmark: bookmarkAction } = useMemeActions()
+	const { handleBookmark: bookmarkAction } = useMemeActions()
 
-    const handleBookmark = async (id: string) => {
-        if (!user || !user.address) {
-            openAuthModal?.()
-            return
-        }
+	const handleBookmark = async (id: string) => {
+		if (!user || !user.address) {
+			openAuthModal?.()
+			return
+		}
 
-        // Store the current state for potential rollback
-        const previousMemes = [...memes]
-        const previousSavedMemes = new Set(savedMemes)
+		// Store the current state for potential rollback
+		const previousMemes = [...memes]
+		const previousSavedMemes = new Set(savedMemes)
 
-        try {
-            // Optimistically update the local state
-            setMemes(prev => prev.filter(meme => meme._id !== id))
-            setSavedMemes(prev => {
-                const newSet = new Set(prev)
-                newSet.delete(id)
-                return newSet
-            })
+		try {
+			// Optimistically update the local state
+			setMemes(prev => prev.filter(meme => meme._id !== id))
+			setSavedMemes(prev => {
+				const newSet = new Set(prev)
+				newSet.delete(id)
+				return newSet
+			})
 
-            // Make the API call
-            await bookmarkAction(id)
-            toast.success('Bookmark removed!')
-        } catch (error) {
-            console.error(error)
-            toast.error('Error updating bookmark')
-            // Revert to previous state on error
-            setMemes(previousMemes)
-            setSavedMemes(previousSavedMemes)
-        }
-    }
+			// Make the API call
+			await bookmarkAction(id)
+			toast.success('Bookmark removed!')
+		} catch (error) {
+			console.error(error)
+			toast.error('Error updating bookmark')
+			// Revert to previous state on error
+			setMemes(previousMemes)
+			setSavedMemes(previousSavedMemes)
+		}
+	}
 
-    if (!user || !user.address) {
-        return (
-            <div className="h-screen flex items-center justify-center">
-                <button
-                    className="px-6 py-3 bg-gradient-to-r from-[#1783fb]/20 to-[#1783fb]/10 border border-[#1783fb]/50 rounded-lg text-xl text-white font-medium hover:bg-[#1783fb]/20 transition-all duration-300"
-                    onClick={() => openAuthModal?.()}
-                >
-                    Connect Wallet to View Bookmarks
-                </button>
-            </div>
-        )
-    }
+	if (!user || !user.address) {
+		return (
+			<div className="h-screen flex items-center justify-center">
+				<button
+					className="px-6 py-3 bg-gradient-to-r from-[#1783fb]/20 to-[#1783fb]/10 border border-[#1783fb]/50 rounded-lg text-xl text-white font-medium hover:bg-[#1783fb]/20 transition-all duration-300"
+					onClick={() => openAuthModal?.()}
+				>
+					Connect Wallet to View Bookmarks
+				</button>
+			</div>
+		)
+	}
 
-    if (loading) {
-        return (
-            <div className="h-screen flex items-center justify-center">
-                Loading...
-            </div>
-        )
-    }
+	if (loading) {
+		return (
+			<div className="h-screen flex items-center justify-center">
+				Loading...
+			</div>
+		)
+	}
 
-    if (!loading && (!memes || memes.length === 0)) {
-        return (
-            <div className="h-screen flex flex-col items-center justify-center gap-6">
-                <p className="text-2xl text-white text-center">No bookmarks yet</p>
-                <button
-                    onClick={() => router.push('/mobile')}
-                    className="px-6 py-3 bg-gradient-to-r from-[#1783fb]/20 to-[#1783fb]/10 border border-[#1783fb]/50 rounded-lg text-xl text-white font-medium hover:bg-[#1783fb]/20 transition-all duration-300"
-                >
-                    Browse Memes
-                </button>
-            </div>
-        )
-    }
+	if (!loading && (!memes || memes.length === 0)) {
+		return (
+			<div className="h-screen flex flex-col items-center justify-center gap-6">
+				<p className="text-2xl text-white text-center">No bookmarks yet</p>
+				<button
+					onClick={() => router.push('/mobile')}
+					className="px-6 py-3 bg-gradient-to-r from-[#1783fb]/20 to-[#1783fb]/10 border border-[#1783fb]/50 rounded-lg text-xl text-white font-medium hover:bg-[#1783fb]/20 transition-all duration-300"
+				>
+					Browse Memes
+				</button>
+			</div>
+		)
+	}
 
-    return (
-        <div className="h-screen flex flex-col overflow-hidden">
-            <Navbar />
-            <div className="flex-none">
-                <Sorter />
-            </div>
-            <div className="flex-1 overflow-hidden">
-                <MemesList
-                    memes={memes}
-                    pageType="all"
-                    onVote={handleVote}
-                    onShare={handleShare}
-                    onBookmark={handleBookmark}
-                    bookmarkedMemes={savedMemes}
-                />
-            </div>
-            <div className="flex-none">
-                <BottomNav />
-            </div>
-            {isShareOpen && shareData && (
-                <Share
-                    onClose={() => setIsShareOpen(false)}
-                    imageUrl={shareData.imageUrl}
-                    id={shareData.id}
-                />
-            )}
-        </div>
-    )
+	return (
+		<div className="h-screen flex flex-col overflow-hidden">
+			<Navbar />
+			<div className="flex-none">
+				<Sorter />
+			</div>
+			<div className="flex-1 overflow-hidden">
+				<MemesList
+					memes={memes}
+					pageType="all"
+					onVote={handleVote}
+					onShare={handleShare}
+					onBookmark={handleBookmark}
+					bookmarkedMemes={savedMemes}
+				/>
+			</div>
+			<div className="flex-none">
+				<BottomNav />
+			</div>
+			{isShareOpen && shareData && (
+				<Share
+					onClose={() => setIsShareOpen(false)}
+					imageUrl={shareData.imageUrl}
+					id={shareData.id}
+				/>
+			)}
+		</div>
+	)
 }
 
 export default Page

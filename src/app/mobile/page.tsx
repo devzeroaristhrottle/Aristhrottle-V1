@@ -3,7 +3,13 @@ import BottomNav from '@/mobile_components/BottomNav'
 import Carousel from '@/mobile_components/Carousel'
 import Navbar from '@/mobile_components/Navbar'
 import Selector from '@/mobile_components/Selector'
-import React, { useState, useEffect, useCallback, useMemo, useContext } from 'react'
+import React, {
+	useState,
+	useEffect,
+	useCallback,
+	useMemo,
+	useContext,
+} from 'react'
 import axiosInstance from '@/utils/axiosInstance'
 import MemesList from '@/mobile_components/MemesList'
 import { useAuthModal, useUser } from '@account-kit/react'
@@ -24,7 +30,10 @@ function Page() {
 	const [initialLoad, setInitialLoad] = useState(true)
 	const [bookMarks, setBookMarks] = useState<Meme[]>([])
 	const [isShareOpen, setIsShareOpen] = useState(false)
-	const [shareData, setShareData] = useState<{ id: string; imageUrl: string } | null>(null)
+	const [shareData, setShareData] = useState<{
+		id: string
+		imageUrl: string
+	} | null>(null)
 
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
@@ -35,10 +44,15 @@ function Page() {
 		const now = new Date()
 		now.setUTCHours(0, 0, 0, 0)
 		const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-		return memes.filter(meme => {
-			const createdAt = new Date(meme.createdAt)
-			return createdAt >= twentyFourHoursAgo
-		}).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+		return memes
+			.filter(meme => {
+				const createdAt = new Date(meme.createdAt)
+				return createdAt >= twentyFourHoursAgo
+			})
+			.sort(
+				(a, b) =>
+					new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+			)
 	}, [])
 
 	// Fetch memes for the "all" tab from leaderboard
@@ -50,7 +64,12 @@ function Page() {
 			)
 
 			if (response?.data?.memes) {
-				setAllMemeDataFilter([...response.data.memes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+				setAllMemeDataFilter(
+					[...response.data.memes].sort(
+						(a, b) =>
+							new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+					)
+				)
 			}
 		} catch (error) {
 			console.log(error)
@@ -99,7 +118,8 @@ function Page() {
 			})
 			if (response.data?.memes) {
 				const sortedMemes = [...response.data.memes].sort(
-					(a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+					(a, b) =>
+						new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
 				)
 				setCarouselMemes(sortedMemes)
 			}
@@ -112,12 +132,13 @@ function Page() {
 		try {
 			const response = await axiosInstance.get('/api/meme', {
 				params: {
-					userId: userDetails?._id || "",
+					userId: userDetails?._id || '',
 				},
 			})
 			if (response.data?.memes) {
 				const sortedMemes = [...response.data.memes].sort(
-					(a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+					(a, b) =>
+						new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
 				)
 				setAllMemes(sortedMemes)
 			} else {
@@ -151,7 +172,7 @@ function Page() {
 				await Promise.all([
 					fetchCarouselMemes(),
 					fetchMemes(),
-					activeTab === 'all' ? getMyMemes() : Promise.resolve()
+					activeTab === 'all' ? getMyMemes() : Promise.resolve(),
 				])
 			} catch (error) {
 				console.error('Error during initialization:', error)
@@ -213,7 +234,9 @@ function Page() {
 					votes: userDetails.votes,
 				})
 			}
-			if (error.response?.data?.message === 'You cannot vote on your own content') {
+			if (
+				error.response?.data?.message === 'You cannot vote on your own content'
+			) {
 				toast.error(error.response.data.message)
 			} else {
 				toast.error('Already voted to this content')

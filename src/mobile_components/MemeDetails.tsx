@@ -138,7 +138,7 @@ export default function MemeDetails({
             {/* User Info, Title, and Tags */}
             <div className="flex gap-4 items-center">
               {/* Profile Photo */}
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-[#29e0ca]/20 flex-none bg-red-600">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-[#29e0ca]/20 flex-none">
                 {meme.created_by?.profile_pic ? (
                   <img
                     src={meme.created_by.profile_pic}
