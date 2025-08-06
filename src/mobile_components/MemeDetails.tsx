@@ -234,7 +234,7 @@ export default function MemeDetails({
 						{isMeme(meme) && relatedMemes.length > 0 && (
 							<div className="mt-6 space-y-3">
 								<label className="text-[#1783fb] text-lg font-semibold block">
-									Related Memes
+									Related Contents
 								</label>
 								{!isLoad ? (
 									<Carousel
