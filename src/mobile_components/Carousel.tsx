@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { LazyImage } from '@/components/LazyImage'
 
 interface Meme {
 	_id: string
@@ -11,14 +12,21 @@ interface CarouselProps {
 }
 
 function Carousel({ items = [] }: CarouselProps) {
+	const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set())
+
 	if (!items.length) {
 		return (
 			<div className="h-32 flex items-center justify-center">Loading...</div>
 		)
 	}
 
-	// Duplicate items to create seamless loop
-	const duplicatedItems = [...items, ...items]
+	// Filter out hidden items and duplicate for seamless loop
+	const visibleItems = items.filter(item => !hiddenItems.has(item._id))
+	const duplicatedItems = [...visibleItems, ...visibleItems]
+
+	if (!visibleItems.length) {
+		return null // Hide carousel if no visible items
+	}
 
 	return (
 		<div className="w-full h-32 overflow-hidden">
@@ -29,10 +37,13 @@ function Carousel({ items = [] }: CarouselProps) {
 						className="w-1/3 flex-shrink-0 px-2 rounded-sm"
 					>
 						<div className="p-0.5 h-32">
-							<img
+							<LazyImage
 								src={meme.image_url}
 								alt={meme.name}
 								className="w-full h-full object-cover rounded"
+								onError={() => {
+									setHiddenItems(prev => new Set([...prev, meme._id]))
+								}}
 							/>
 						</div>
 					</div>
