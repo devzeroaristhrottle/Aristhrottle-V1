@@ -14,6 +14,7 @@ function Memecard({
 	onShare,
 	onBookmark,
 	isBookmarked = false,
+	onImageClick,
 }: MemeCardProps) {
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const [localVoteCount, setLocalVoteCount] = useState(meme.vote_count)
@@ -63,12 +64,14 @@ function Memecard({
 			</div>
 
 			{/* Meme image */}
-			<LazyImage
-				src={meme.image_url}
-				alt={meme.name}
-				className="w-full aspect-square object-cover"
-				onError={() => setIsHidden(true)}
-			/>
+			<div onClick={onImageClick} className="cursor-pointer">
+				<LazyImage
+					src={meme.image_url}
+					alt={meme.name}
+					className="w-full aspect-square object-cover"
+					onError={() => setIsHidden(true)}
+				/>
+			</div>
 
 			{/* Action buttons */}
 			<div className="p-3 bg-black/5">

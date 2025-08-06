@@ -38,6 +38,7 @@ export interface MemeCardProps {
 	onShare?: (memeId: string, imageUrl: string) => void
 	onBookmark?: (memeId: string, name: string, imageUrl: string) => void
 	isBookmarked?: boolean
+	onImageClick?: () => void
 }
 
 export interface MemesListProps {
