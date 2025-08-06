@@ -138,7 +138,7 @@ export default function NotificationsPage() {
 							size={48}
 						/>
 						<p className="text-gray-400 text-center">
-							You don't have any notifications yet
+							You don&apos;t have any notifications yet
 						</p>
 					</div>
 				)}
