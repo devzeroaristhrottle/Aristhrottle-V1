@@ -12,7 +12,7 @@
     "@account-kit/infra": "^4.26.0",
     "@account-kit/react": "^4.26.0",
      "@account-kit/core": "^4.31.0",
-    "@account-kit/react-native-signer": "^4.31.0",
+    
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/modal": "^2.3.1",
     "@chakra-ui/react": "^3.17.0",
