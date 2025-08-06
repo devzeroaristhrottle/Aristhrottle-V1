@@ -4,14 +4,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import { FaBookmark, FaRegShareFromSquare, FaSpinner } from 'react-icons/fa6'
 import { CgCloseO } from 'react-icons/cg'
 import { CiBookmark } from 'react-icons/ci'
-import Image from 'next/image'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
 import Share from '@/components/Share'
 import Carousel from './Carousel'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
-import { TagI } from '@/app/home/page'
 import { Meme } from '@/mobile_components/types'
 import axiosInstance from '@/utils/axiosInstance'
 
@@ -28,7 +26,6 @@ export default function MemeDetails({
 	isOpen = true,
 	onClose = () => {},
 	meme,
-	tab,
 	onVoteMeme,
 	bmk,
 }: MemeDetailProps) {
@@ -36,7 +33,6 @@ export default function MemeDetails({
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const [relatedMemes, setRelatedMemes] = useState<Meme[]>([])
 	const [isLoad, setIsLoad] = useState<boolean>(false)
-	const [hidden, setHidden] = useState<Set<string>>(new Set())
 	const user = useUser()
 	const { handleBookmark } = useMemeActions()
 	const [isBookmarked, setIsBookmarked] = useState(bmk)
@@ -242,9 +238,7 @@ export default function MemeDetails({
 								</label>
 								{!isLoad ? (
 									<Carousel
-										items={relatedMemes.filter(
-											item => !hidden.has(item._id) && item.name !== meme.name
-										)}
+										items={relatedMemes}
 									/>
 								) : (
 									<div className="flex justify-center items-center py-8">
