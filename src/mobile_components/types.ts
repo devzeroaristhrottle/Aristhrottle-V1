@@ -20,7 +20,13 @@ export interface Meme {
     createdAt: string
     updatedAt?: string
     shares?: string[]
-    tags?: string[]
+    tags?: {
+        _id: string
+        name: string
+        createdAt: string
+        updatedAt: string
+        __v: number
+    }[]
     categories?: string[]
     __v?: number
 }
