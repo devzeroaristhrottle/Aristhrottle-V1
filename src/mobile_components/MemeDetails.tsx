@@ -9,6 +9,7 @@ import { useAuthModal, useUser } from '@account-kit/react'
 import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
 import Share from '@/components/Share'
+import Carousel from './Carousel'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
 import { TagI } from '@/app/home/page'
 import { Meme } from '@/mobile_components/types'
@@ -123,30 +124,56 @@ export default function MemeDetails({
       <div className="fixed inset-0 z-50 flex flex-col">
         <div className="relative w-full h-full bg-black/90 overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-black/90 px-4 py-3 flex items-center justify-between border-b border-white/10">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-full bg-[#29e0ca]/20">
-                <img
-                  src={meme.created_by?.profile_pic}
-                  alt="Profile Pic"
-                  className="h-8 w-8 rounded-full"
-                />
-              </div>
-              <span className="text-[#29e0ca] text-lg font-semibold">
-                {meme.created_by?.username}
-              </span>
-            </div>
-
+          <div className="sticky top-0 z-10 bg-black/90 px-4 py-3 flex justify-end">
             <button
               onClick={onClose}
-              className="p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20"
+              className="p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border"
             >
               <CgCloseO className="text-white w-6 h-6" />
             </button>
           </div>
 
           {/* Content */}
-          <div className="p-4 space-y-6">
+          <div className="p-4 space-y-4">
+            {/* User Info, Title, and Tags */}
+            <div className="flex gap-4 items-center">
+              {/* Profile Photo */}
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-[#29e0ca]/20 flex-none bg-red-600">
+                {meme.created_by?.profile_pic ? (
+                  <img
+                    src={meme.created_by.profile_pic}
+                    alt={meme.created_by.username}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white text-lg">
+                    {meme.created_by?.username?.[0]?.toUpperCase() || '?'}
+                  </div>
+                )}
+              </div>
+
+              {/* Title, Author, and Tags */}
+              <div className="flex-1 space-y-1">
+                <h3 className="text-white text-lg font-medium">{meme.name}</h3>
+                {/* Tags */}
+                {isMeme(meme) && meme.tags && meme.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {meme.tags.map((tag, index: number) => (
+                      <span
+                        key={index}
+                        className=" border-[#1783fb] rounded-lg px-1 text-sm font-medium bg-gray-600"
+                      >
+                        {tag.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <span className="text-gray-400 text-sm block">
+                    {meme.created_by?.username || 'Anonymous'}
+                </span>
+              </div>
+            </div>
+
             {/* Image */}
             <div className="relative aspect-square w-full">
               <img
@@ -157,155 +184,73 @@ export default function MemeDetails({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3">
-              {/* Vote Count */}
-              <div className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm">
-                {eyeOpen ? (
-                  <Image
-                    src="/assets/vote/icon1.png"
-                    width={20}
-                    height={20}
-                    alt="vote"
-                    className="transition-all duration-300 cursor-not-allowed"
-                  />
-                ) : (
-                  <Logo
-                    classNames={
-                      'w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 ' +
-                      (meme.created_by?._id === userDetails?._id
-                        ? '!cursor-not-allowed'
-                        : '!cursor-pointer')
-                    }
-                    onClick={() =>
-                      meme.created_by?._id != userDetails?._id &&
-                      handleVote(meme._id)
-                    }
-                  />
-                )}
-                <span className="text-[#1783fb] font-bold text-lg">
-                  {meme.vote_count}
-                </span>
-                {showPointsAnimation && (
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-[#28e0ca] font-bold text-lg opacity-0 animate-[flyUp_2s_ease-out_forwards]">
-                    +0.1 $eART
-                  </div>
-                )}
-              </div>
-
-              {/* Bookmark */}
-              {user && user.address && (
-                <button
-                  onClick={() => handleBookmarkClick(meme._id)}
-                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
-                >
-                  {isBookmarked ? (
-                    <FaBookmark className="text-white w-4 h-4" />
+            <div className="p-3 bg-black/5">
+              <div className="flex justify-between items-center">
+                <div className="w-16" /> {/* Spacer */}
+                
+                {/* Vote button and count in middle */}
+                <div className="flex flex-row items-center gap-2 relative">
+                  {eyeOpen ? (
+                    <img
+                      src="/assets/vote/icon1.png"
+                      alt="voted"
+                      className="w-8 h-8"
+                    />
                   ) : (
-                    <CiBookmark className="text-white w-4 h-4" />
+                    <Logo
+                      classNames="w-8 h-8 cursor-pointer"
+                      onClick={() =>
+                        meme.created_by?._id != userDetails?._id &&
+                        handleVote(meme._id)
+                      }
+                    />
                   )}
-                  <span className="text-[#1783fb] font-bold text-lg">
-                    {Array.isArray(meme.bookmarks)
-                      ? meme.bookmarks.length
-                      : meme.bookmarks}
-                  </span>
-                </button>
-              )}
-
-              {/* Share */}
-              <button
-                onClick={() => setIsShareOpen(true)}
-                className="flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-blue-500/20 border border-blue-500/50 rounded-xl px-3 py-2 backdrop-blur-sm hover:bg-blue-500/30 transition-all duration-300"
-              >
-                <FaRegShareFromSquare className="text-white w-4 h-4" />
-              </button>
+                  <span className="text-2xl mt-1">{meme.vote_count}</span>
+                  {showPointsAnimation && (
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-[#28e0ca] font-bold text-lg opacity-0 animate-[flyUp_2s_ease-out_forwards]">
+                      +0.1 $eART
+                    </div>
+                  )}
+                </div>
+                
+                {/* Share and bookmark on right */}
+                <div className="flex items-center space-x-3 w-16 justify-end">
+                  <FaRegShareFromSquare
+                    className="w-5 h-5 text-white cursor-pointer"
+                    onClick={() => setIsShareOpen(true)}
+                  />
+                  {user && user.address && (
+                    isBookmarked ? (
+                      <FaBookmark
+                        className="w-5 h-5 text-white cursor-pointer"
+                        onClick={() => handleBookmarkClick(meme._id)}
+                      />
+                    ) : (
+                      <CiBookmark
+                        className="w-6 h-6 text-white cursor-pointer"
+                        onClick={() => handleBookmarkClick(meme._id)}
+                      />
+                    )
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* Details Section */}
-            <div className="space-y-4">
-              {/* Title */}
-              <div className="space-y-2">
+            {/* Related Memes */}
+            {isMeme(meme) && relatedMemes.length > 0 && (
+              <div className="mt-6 space-y-3">
                 <label className="text-[#1783fb] text-lg font-semibold block">
-                  Title
+                  Related Memes
                 </label>
-                <p className="text-white text-base font-medium bg-white/10 rounded-lg p-3 border border-white/20">
-                  {meme.name}
-                </p>
-              </div>
-
-              {/* Tags */}
-              {isMeme(meme) && meme.tags && meme.tags.length > 0 && (
-                <div className="space-y-3">
-                  <label className="text-[#1783fb] text-lg font-semibold block">
-                    Tags
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {meme.tags.map((tag, index: number) => (
-                      <span
-                        key={index}
-                        className="bg-transparent border-2 border-[#1783fb] rounded-lg px-3 py-1.5 text-sm text-white font-medium backdrop-blur-sm"
-                      >
-                        {tab === 'live'
-                          ? tag.name
-                          : typeof tag === 'string'
-                          ? tag
-                          : tag.name}
-                      </span>
-                    ))}
+                {!isLoad ? (
+                  <Carousel items={relatedMemes.filter(item => !hidden.has(item._id) && item.name !== meme.name)} />
+                ) : (
+                  <div className="flex justify-center items-center py-8">
+                    <FaSpinner className="animate-spin h-8 w-8 text-[#1783fb]" />
                   </div>
-                </div>
-              )}
-
-              {/* Related Memes */}
-              {isMeme(meme) && relatedMemes.length > 0 && (
-                <div className="mt-6 space-y-3">
-                  <label className="text-[#1783fb] text-lg font-semibold block">
-                    Related Memes
-                  </label>
-                  {!isLoad ? (
-                    <div className="grid grid-cols-2 gap-3">
-                      {(() => {
-                        let displayedCount = 0;
-                        return relatedMemes.map((item, index) => {
-                          if (
-                            displayedCount < 6 &&
-                            !hidden.has(item._id) &&
-                            meme.name !== item.name
-                          ) {
-                            displayedCount++;
-                            return (
-                              <div
-                                key={index}
-                                className={`group relative aspect-square border-2 border-white/20 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-white/40 ${
-                                  hidden.has(item._id) ? "!hidden" : ""
-                                }`}
-                                hidden={hidden.has(item._id)}
-                              >
-                                <img
-                                  src={item.image_url}
-                                  alt={`Related meme ${displayedCount}`}
-                                  className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 ${
-                                    hidden.has(item._id) ? "!hidden" : ""
-                                  }`}
-                                  hidden={hidden.has(item._id)}
-                                  onError={() =>
-                                    setHidden((prev) => new Set([...prev, item._id]))
-                                  }
-                                />
-                              </div>
-                            );
-                          }
-                          return null;
-                        });
-                      })()}
-                    </div>
-                  ) : (
-                    <div className="flex justify-center items-center py-8">
-                      <FaSpinner className="animate-spin h-8 w-8 text-[#1783fb]" />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
