@@ -93,7 +93,8 @@ export function MemeCard({
 	}
 
 	return (
-		<div key={index} className="flex flex-col  lg:mx-auto cursor-s">
+		// Added margin classes for spacing between cards
+		<div key={index} className="flex flex-col lg:mx-auto cursor-s mb-6 mx-3 md:mb-8 md:mx-4">
 			<div
 				className="flex items-center gap-x-1 md:gap-x-2 mb-1 md:mb-2 cursor-pointer"
 				onClick={() => router.push(`/home/profiles/${meme.created_by._id}`)}
@@ -103,18 +104,18 @@ export function MemeCard({
 					{meme.created_by?.username}
 				</span>
 			</div>
-			<div className="flex cursor-pointer">
+			<div className="flex cursor-pointer ">
 				<LazyImage
 					onClick={() => {
 						onOpenMeme()
 					}}
 					src={meme.image_url}
 					alt={meme.name}
-					className="w-full h-full md:w-[270px] md:h-[270px] lg:w-[250px] lg:h-[250px] xl:w-[360px] xl:h-[360px] object-cover border-2 border-white"
+					className="image_wrapper w-full h-full sm:w-[15rem] sm:h-[15rem] md:w-[15rem] md:h-[15rem] lg:w-[14rem] lg:h-[14rem] xl:w-[20rem] xl:h-[20rem] object-cover border-2 border-white"
 					onError={() => setIsHidden(true)}
 				/>
 				{/* For above mobile */}
-				<div className="hidden md:block ml-3 place-content-end space-y-8">
+				<div className="hidden md:block ml-1 place-content-end space-y-8">
 					{loading ? (
 						<AiOutlineLoading3Quarters className="animate-spin text-2xl" />
 					) : (
@@ -126,7 +127,7 @@ export function MemeCard({
 										width={30}
 										height={30}
 										alt="logo"
-										className="transition-all duration-300 "
+										className="transition-all duration-300  "
 									/>
 								</>
 							) : (

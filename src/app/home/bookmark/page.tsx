@@ -197,6 +197,7 @@ export default function Page() {
 					imageUrl={shareData.imageUrl}
 					onClose={handleCloseShare}
 				/>
+
 			)}
 
 			{/* MemeDetail Component */}

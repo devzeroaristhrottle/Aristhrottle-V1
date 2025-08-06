@@ -117,9 +117,9 @@ export const getMilestoneTitles = (
       const title = (() => {
         switch (type) {
           case 'vote':
-            return milestone === 10
-              ? 'Reach 10 Majority Votes'
-              : `Reach ${milestone} Majority Votes`
+            // return milestone === 10
+            //   ? 'Reach 10 Majority Votes'
+            //   : `Reach ${milestone} Majority Votes`
           case 'vote-total':
             return milestone === 1
               ? 'Cast First Vote'

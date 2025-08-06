@@ -18,7 +18,7 @@ import { Context } from '@/context/contextProvider'
 import { useRouter } from 'next/navigation'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 
-import Notifications from './Notifications'
+// import Notifications from './Notifications'
 import useCountdown from '@/app/hooks/useCountdown'
 import { GoogleTranslate } from './languageSupport'
 import {
@@ -157,9 +157,151 @@ export default function Navbar() {
 	}
 
 	return (
-		<div className="sticky top-0 z-50 backdrop-blur-md bg-black/20">
-			<div className="relative w-[100%] pr-4 md:pr-8">
-				<div className="flex justify-between align-middle items-center py-3 md:py-0">
+		<div className="sticky top-0 z-50 backdrop-blur-md bg-black/20 w-full">
+			<div className="relative w-full px-2 sm:px-4 md:px-8">
+
+				{/* Mobile Layout - Two Rows */}
+				<div className="block md:hidden py-2 ">
+					{userDetails && user != null && user.address && (
+						<>
+							{/* First Row - Avatar on left, Wallet Address + Token on right */}
+							<div className="flex justify-between items-center mb-2">
+								<Avatar
+									name="Random"
+									colorPalette="blue"
+									src={userDetails.profile_pic}
+									css={ringCss}
+									className="cursor-pointer"
+									size="2xs"
+									onClick={() => {
+										route.replace('/home/profile')
+									}}
+								/>
+								
+								<div className="flex items-center gap-3">
+									{/* Wallet Address Button */}
+									<Popover.Root
+										open={open}
+										onOpenChange={e => {
+											if (!e.open && user && user.address) {
+												setOpen(e.open)
+											}
+										}}
+									>
+										<Popover.Trigger asChild>
+											<Button
+												size="xs"
+												variant="solid"
+												className="bg-slate-50 text-slate-800 font-bold px-1.5 py-0.5 rounded text-[10px] h-6"
+												onClick={() => {
+													if (user && user.address) {
+														setOpen(true)
+													} else {
+														openAuthModal()
+													}
+												}}
+											>
+												{user
+													? '0' +
+													  user.address.slice(1, 3) +
+													  '..' +
+													  user.address.slice(
+															user.address.length - 2,
+															user.address.length
+													  )
+													: 'Login'}
+											</Button>
+										</Popover.Trigger>
+										<Portal>
+											<Popover.Positioner>
+												<Popover.Content className="bg-slate-50">
+													<Popover.Arrow />
+													<Popover.Body className="flex flex-col">
+														<Popover.Title
+															fontWeight="medium"
+															className="text-slate-900 text-base mb-4"
+														>
+															<p>
+																<strong>Wallet (EOA): </strong>
+																{user?.address}
+															</p>
+															<p>
+																<strong>Smart Account: </strong>
+																{address}
+															</p>
+														</Popover.Title>
+														<Button
+															size="lg"
+															variant="solid"
+															className="text-slate-50 font-bold px-3 bg-slate-900"
+															onClick={() => {
+																logout()
+																setOpen(false)
+																setUserDetails(undefined)
+																route.replace('/landing')
+															}}
+														>
+															Disconnect
+														</Button>
+													</Popover.Body>
+												</Popover.Content>
+											</Popover.Positioner>
+										</Portal>
+									</Popover.Root>
+
+									{/* Token Balance */}
+									{user?.address && (
+										<div className="flex items-center gap-1">
+											<Image
+												className="!w-4 !h-4"
+												alt="icon"
+												src="/assets/token_e.png"
+												height={16}
+												width={16}
+											/>
+											<span className="text-[10px] font-medium">
+												{userDetails?.mintedCoins
+													? parseFloat(ethers.formatEther(userDetails.mintedCoins)).toFixed(1)
+													: 0}
+											</span>
+										</div>
+									)}
+								</div>
+							</div>
+
+							{/* Second Row - Stats - Text left of boxes */}
+							<div className="flex justify-between text-white text-[10px] font-medium">
+								<div className="flex items-center gap-2">
+									<label className="text-[9px] text-gray-300">Vote</label>
+									<p className="border border-white rounded px-1.5 py-0.5 text-[10px] font-medium">
+										{userDetails.votes}/20
+									</p>
+								</div>
+								<div className="flex items-center gap-1">
+									<label className="text-[9px] text-gray-300">Upload</label>
+									<p className="border border-white rounded px-1.5 py-0.5 text-[10px] font-medium">
+										{userDetails.uploads}/20
+									</p>
+								</div>
+								<div className="flex items-center gap-1">
+									<label className="text-[9px] text-gray-300">Create</label>
+									<p className="border border-white rounded px-1.5 py-0.5 text-[10px] font-medium">
+										{userDetails.generations}/5
+									</p>
+								</div>
+								<div className="flex items-center gap-1">
+									<label className="text-[9px] text-gray-300">New Phase</label>
+									<p className="border border-white rounded-md px-2 py-0.5 text-[9px] font-medium bg-gray-800/50">
+										{timeLeft.split(':').slice(0, 2).join(':')}
+									</p>
+								</div>
+							</div>
+						</>
+					)}
+				</div>
+
+				{/* Desktop Layout - Text left of boxes preserved */}
+				<div className="hidden md:flex justify-between align-middle items-center py-3 md:py-0">
 					<div className="flex align-middle items-center gap-5">
 						{userDetails && user != null && user.address && (
 							<div className="flex gap-5">
@@ -168,35 +310,50 @@ export default function Navbar() {
 									colorPalette="blue"
 									src={userDetails.profile_pic}
 									css={ringCss}
-									className="ml-5 cursor-pointer"
+									className="ml-5 cursor-pointer "
 									size={'xs'}
 									onClick={() => {
 										route.replace('/home/profile')
 									}}
 								/>
-								<div className="hidden md:flex gap-1 items-center">
+								<div className="flex gap-1 items-center">
 									<label>Votes</label>
 									<p className="border border-white rounded-md p-1">
 										{userDetails.votes}/20
 									</p>
 								</div>
-								<div className="hidden md:flex gap-1 items-center">
+								<div className="flex gap-1 items-center">
 									<label>Uploads</label>
 									<p className="border border-white rounded-md p-1">
 										{userDetails.uploads}/20
 									</p>
 								</div>
-								<div className="hidden md:flex gap-1 items-center">
+								<div className="flex gap-1 items-center">
 									<label>Generated</label>
 									<p className="border border-white rounded-md p-1">
 										{userDetails.generations}/5
 									</p>
 								</div>
-								<div className="hidden md:flex gap-1 items-center">
+								<div className="flex gap-1 items-center relative group">
 									<label>Next phase starts</label>
+									<svg 
+										className="w-4 h-4 text-gray-400 hover:text-white cursor-help mx-1" 
+										fill="currentColor" 
+										viewBox="0 0 20 20"
+									>
+										<path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+									</svg>
 									<p className="border border-white w-[90px] text-center rounded-md p-1">
 										{timeLeft}
 									</p>
+									{/* Tooltip */}
+									<div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded-lg p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+										<div className="font-semibold mb-1">Info button</div>
+										<div>Content goes from live to leaderboard with the vote count visible. Votes, uploads and generated counts reset for the user </div>
+										
+										{/* Arrow */}
+										<div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-gray-800"></div>
+									</div>
 								</div>
 							</div>
 						)}
@@ -213,14 +370,13 @@ export default function Navbar() {
 									if (!e.open && user && user.address) {
 										setOpen(e.open)
 									}
-									// setOpen(false);
 								}}
 							>
 								<Popover.Trigger asChild>
 									<Button
-										size={{ base: 'xs', md: 'lg' }}
+										size="lg"
 										variant="solid"
-										className="bg-slate-50 text-slate-800 font-bold px-1 md:px-3 rounded-lg md:rounded-xl text-base md:text-lg"
+										className="bg-slate-50 text-slate-800 font-bold px-3 rounded-xl text-lg"
 										onClick={() => {
 											if (user && user.address) {
 												setOpen(true)
@@ -266,7 +422,6 @@ export default function Navbar() {
 														logout()
 														setOpen(false)
 														setUserDetails(undefined)
-
 														route.replace('/landing')
 													}}
 												>
@@ -278,8 +433,6 @@ export default function Navbar() {
 								</Portal>
 							</Popover.Root>
 						</main>
-						{/* <ConnectButton /> */}
-						{/* TODO: on hover add eArt Balance */}
 						{user?.address ? (
 							<div className="flex items-center justify-center gap-2">
 								<Image
@@ -290,14 +443,12 @@ export default function Navbar() {
 									width={24}
 								/>
 								<span className="text-2xl">
-									{' '}
 									{userDetails?.mintedCoins
 										? ethers.formatEther(userDetails.mintedCoins)
 										: 0}
 								</span>
 							</div>
 						) : null}
-						<Notifications />
 					</div>
 				</div>
 

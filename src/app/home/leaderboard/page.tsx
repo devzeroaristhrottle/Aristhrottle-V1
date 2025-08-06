@@ -60,7 +60,6 @@ export default function Page() {
 	const [selectedMeme, setSelectedMeme] = useState<
 		LeaderboardMeme | undefined | Meme
 	>()
-	const [hiddenMemes, setHiddenMemes] = useState<Set<string>>(new Set())
 
 	const [page, setPage] = useState(1)
 	const [totalVoteCount, setTotalVoteCount] = useState<number>(0)
@@ -71,6 +70,8 @@ export default function Page() {
 	const [sortOpen, setSortOpen] = useState(false)
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
 	const [finalFilterMeme, setFinalFilterMeme] = useState<LeaderboardMeme[]>([])
+	const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set()) // Track failed images
+	
 	const onClose = () => {
 		setIsMemeDetailOpen(false)
 		setSelectedMeme(undefined)
@@ -121,12 +122,14 @@ export default function Page() {
 	}
 
 	useEffect(() => {
+		// Reset all states when tab changes
 		setTotalVoteCount(0)
 		setTotalUploadCount(0)
 		setMemes([])
+		setFailedImageIds(new Set()) // Reset failed images
 		resetFilters() // Reset filters when page, tab, or user changes
 		getMyMemes()
-	}, [ page, activeTab])
+	}, [page, activeTab])
 
 	const applyFilters = () => {
 		setPage(1)
@@ -135,7 +138,10 @@ export default function Page() {
 	}
 
 	const handleTabChange = (tab: string) => {
+		// Set loading to true immediately to prevent "Content not found" flash
+		setLoading(true)
 		setMemes([])
+		setFailedImageIds(new Set())
 		setActiveTab(tab.toLowerCase() as 'live' | 'all' | 'daily')
 	}
 
@@ -160,9 +166,10 @@ export default function Page() {
 	}
 
 	useEffect(() => {
-		const filtered = filteredMemes.filter(meme => !hiddenMemes.has(meme._id))
-		setFinalFilterMeme(filtered)
-	}, [filteredMemes, hiddenMemes])
+		// Filter out memes with failed images
+		const validMemes = filteredMemes.filter(meme => !failedImageIds.has(meme._id))
+		setFinalFilterMeme(validMemes)
+	}, [filteredMemes, failedImageIds])
 
 	const handleVote = async (meme_id: string) => {
 		try {
@@ -192,6 +199,11 @@ export default function Page() {
 			console.log('error: ', err)
 			toast.error('Error voting meme')
 		}
+	}
+
+	// Handle image error callback
+	const handleImageError = (memeId: string) => {
+		setFailedImageIds(prev => new Set(prev).add(memeId))
 	}
 
 	useEffect(() => {
@@ -284,13 +296,13 @@ export default function Page() {
 			</div>
 
 			<div
-				className="grid grid-cols-1 md:grid-cols-3 md:gap-8"
+				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-y-10 grid-cols-1 grid-flow-row !min-h-[47vh]  mt-6 mb-4 no-scrollbar w-full"
 				ref={memeContainerRef}
 			>
 				{/* For mobile */}
 				<div className="md:hidden w-full flex flex-col items-center justify-center">
 					{finalFilterMeme.map((item, index) => (
-						<div key={index} className={"w-full max-w-sm" + (hiddenMemes.has(item._id) ? "hidden" : "")} >
+						<div key={item._id} className="w-full max-w-sm">
 							<LeaderboardMemeCard
 								meme={item}
 								onOpenMeme={() => {
@@ -304,9 +316,7 @@ export default function Page() {
 								}}
 								activeTab={activeTab}
 								voteMeme={meme_id => handleVote(meme_id)}
-								onImageError={() => {
-									setHiddenMemes(prev => new Set([...prev, item._id]))
-								}}
+								onImageError={() => handleImageError(item._id)}
 							/>
 						</div>
 					))}
@@ -327,9 +337,7 @@ export default function Page() {
 								setSelectedMemeIndex(index)
 							}}
 							voteMeme={meme_id => handleVote(meme_id)}
-							onImageError={() => {
-								setHiddenMemes(prev => new Set([...prev, item._id]))
-							}}
+							onImageError={() => handleImageError(item._id)}
 						/>
 					</div>
 				))}
@@ -337,7 +345,7 @@ export default function Page() {
 					{loading && (
 						<AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto" />
 					)}
-					{!loading && finalFilterMeme.length === 0 && (
+					{!loading && finalFilterMeme.length === 0 && memes.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto">
 							Content not found
 						</p>

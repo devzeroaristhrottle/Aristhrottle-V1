@@ -3,7 +3,7 @@ import { Milestones } from './Milestones'
 import {
 	getMilestoneKeys,
 	getMilestoneTitles,
-	majorityVotesRewards,
+	// majorityVotesRewards,
 	Milestone,
 	MilestoneTitles,
 	totalVotesRewards,
@@ -105,13 +105,13 @@ const Votes = () => {
 						currentValue={votesData?.totalVotesCount ?? 0}
 					/>
 				</div>
-				<div className="majority_votes mt-6 md:mt-0 flex flex-col gap-4 md:p-5">
+				{/* <div className="majority_votes mt-6 md:mt-0 flex flex-col gap-4 md:p-5">
 					<h2 className="text-2xl md:text-4xl">Majority Votes</h2>
 					<ProgressBar
 						milestones={getMilestoneKeys(majorityVotesRewards)}
 						currentValue={votesData?.majorityVotesCount ?? 0}
 					/>
-				</div>
+				</div> */}
 				<div className="milestones mt-8 md:mt-6 md:pr-10 flex flex-col">
 					<h2 className="text-2xl md:text-4xl md:pl-5">Milestones</h2>
 					<Milestones hasBorder={false} tasks={votesMilestones} />

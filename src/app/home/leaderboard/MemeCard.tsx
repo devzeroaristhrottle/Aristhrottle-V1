@@ -17,7 +17,7 @@ export const LeaderboardMemeCard: React.FC<{
 	voteMeme?: (memeId: string) => void
 	activeTab?: string
 	bmk?: boolean
-	onImageError?: () => void
+	onImageError?: () => void // Add callback for image error
 }> = ({ meme, onOpenMeme, voteMeme, bmk, onImageError }) => {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [isBookmarked, setIsBookmarked] = useState(bmk)
@@ -26,7 +26,7 @@ export const LeaderboardMemeCard: React.FC<{
 	const [bmkCount, setBmkCount] = useState<number>(meme.bookmarks?.length | meme.bookmark_count | 0);
 	const [eyeOpen, setEyeOpen] = useState<boolean>(meme.has_user_voted);
 	const [count, setCount] = useState<number>(meme.vote_count);
-	const [isHidden, setIsHidden] = useState(false)
+	const [imageError, setImageError] = useState(false)
 
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
@@ -64,15 +64,23 @@ export const LeaderboardMemeCard: React.FC<{
 		}
 	}
 
-	if (isHidden) {
+	const handleImageError = () => {
+		setImageError(true)
+		if (onImageError) {
+			onImageError() // Notify parent component
+		}
+	}
+
+	// Don't render the component if image failed to load
+	if (imageError) {
 		return null
 	}
 
 	return (
-		<div className="p-4 md:p-4 w-full lg:mx-auto">
-			<div className="flex flex-col md:flex-row gap-x-1">
+		<div className="p-3 md:p-4 w-full lg:mx-auto">
+			<div className="flex flex-col md:flex-row gap-x-3">
 				<div className="flex flex-col">
-					<div className="username_rank_wrapper flex justify-between items-center md:mb-1">
+					<div className="username_rank_wrapper flex justify-between items-center md:mb-1 md:mt-1">
 						<div
 							className="flex items-center gap-x-1 cursor-pointer"
 							onClick={() =>
@@ -88,7 +96,7 @@ export const LeaderboardMemeCard: React.FC<{
 							#{meme.rank}
 						</p>}
 					</div>
-					<div className="image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[23rem] xl:h-[23rem] object-cover border-2 border-white">
+					<div className="image_wrapper w-full h-full sm:w-[15rem] sm:h-[15rem] md:w-[15rem] md:h-[15rem] lg:w-[14rem] lg:h-[14rem] xl:w-[20rem] xl:h-[20rem] object-cover border-2 border-white">
 						<LazyImage
 							onClick={() => {
 								onOpenMeme()
@@ -96,48 +104,30 @@ export const LeaderboardMemeCard: React.FC<{
 							src={meme.image_url}
 							alt={meme.name}
 							className="w-full h-full cursor-pointer"
-							onError={() => {
-								setIsHidden(true)
-								onImageError?.()
-							}}
+							onError={handleImageError}
 						/>
 					</div>
-					<div className="title_wrapper flex justify-between text-lg leading-tight md:text-xl max-w-full">
-						<p>
+					
+					{/* Mobile: Text and Icons on same line */}
+					<div className="flex justify-between items-start md:hidden text-lg leading-tight max-w-full mt-2">
+						<p className="flex-1">
 							{meme.name.length > 30
 								? meme.name.slice(0, 30) + '...'
 								: meme.name}
 						</p>
-					</div>
-				</div>
-				<div className="flex flex-row md:flex-col justify-between ml-1 md:pt-8 md:pb-4">
-					<p className="text-[#1783fb] text-lg md:text-xl font-bold"></p>
-					<div className="flex flex-row justify-center md:justify-normal md:flex-col items-center md:items-start gap-y-0 md:gap-y-5 gap-x-4 md:gap-x-0">
-						<div className="flex flex-row md:flex-col items-start gap-x-0.5 md:gap-y-0 lg:gap-y-2">
-							{/* {activeTab === 'all' && (
-								<div title="upvote" className="upvote-wrapper cursor-pointer">
-									<BiUpArrow
-										className="w-3 h-3 md:w-5 md:h-5 lg:w-7 lg:h-7"
-										onClick={() => {
-											if (onUpvoteDownvote) {
-												onUpvoteDownvote(meme._id, 'upvote')
-											}
-										}}
-									/>
-								</div>
-							)} */}
-
-							<div className="flex flex-col items-center justify-center gap-x-2 relative">
+						<div className="flex flex-row items-start gap-x-3 ml-2">
+							{/* Vote Section */}
+							<div className="flex flex-col items-center justify-start relative">
 								{eyeOpen ? (
 									<img
 										src={'/assets/vote/icon1.png'}
 										alt="vote"
-										className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 "
+										className="w-5 h-5"
 									/>
 								) : (
 									<Logo
 										classNames={
-											'w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 ' +
+											'w-5 h-5 ' +
 											(voteMeme
 												? meme.created_by._id === userDetails?._id
 													? '!cursor-not-allowed'
@@ -147,7 +137,7 @@ export const LeaderboardMemeCard: React.FC<{
 										onClick={() => (meme.created_by._id != userDetails?._id) && localVoteMeme(meme._id)}
 									/>
 								)}
-								<span className="text-base md:text-2xl text-[#1783fb]">
+								<span className="text-xs text-[#1783fb] mt-1">
 									{count}
 								</span>
 
@@ -158,61 +148,110 @@ export const LeaderboardMemeCard: React.FC<{
 									</div>
 								)}
 							</div>
-
-							{/* {activeTab === 'all' && (
-								<div
-									title="downvote"
-									className="downvote-wrapper cursor-pointer"
+							
+							{/* Bookmark Section */}
+							{user && user.address ? (
+								<div className="flex flex-col items-center cursor-pointer"
+									onClick={() => {
+										handleBookmark(meme._id)
+										setIsBookmarked(!isBookmarked)
+										setBmkCount(bmkCount + (isBookmarked ? -1 : 1));
+									}}
 								>
-									<BiDownArrow
-										className="w-3 h-3 md:w-5 md:h-5 lg:w-7 lg:h-7"
-										onClick={() => {
-											if (onUpvoteDownvote) {
-												onUpvoteDownvote(meme._id, 'downvote')
-											}
-										}}
-									/>
+									{isBookmarked ? (
+										<FaBookmark className="w-5 h-5 text-[#1783fb]" />
+									) : (
+										<CiBookmark className="w-5 h-5" />
+									)}
+									<span className="text-xs text-[#1783fb] mt-1">{bmkCount}</span>
 								</div>
-							)} */}
-						</div>
-						
-						{user && user.address ? (
-							<div className="-ml-1">
-								{isBookmarked ? (
-									<div className="flex flex-col items-center cursor-pointer">
-										<FaBookmark
-											className="w-4 h-4 md:w-6 md:h-6 lg:w-8 lg:h-8"
-											onClick={() => {
-												handleBookmark(meme._id)
-												setIsBookmarked(!isBookmarked)
-												setBmkCount(bmkCount + (isBookmarked ? -1 : 1));
-											}}
-										/>
-										<span className="text-lg md:text-2xl text-[#1783fb]">{bmkCount}</span>
-									</div>
-								) : (
-									<div className="flex flex-col items-center cursor-pointer">
-										<CiBookmark
-											className="w-4 h-4 md:w-6 md:h-6 lg:w-8 lg:h-8"
-											onClick={() => {
-												handleBookmark(meme._id)
-												setIsBookmarked(!isBookmarked)
-												setBmkCount(bmkCount + (isBookmarked ? -1 : 1));
-											}}
-										/>
-										<span className="text-lg md:text-2xl text-[#1783fb]">{bmkCount}</span>
-									</div>
-								)}
-							</div>
-						) : null}
-						<div className="flex flex-col items-center">
-							<FaRegShareFromSquare
-								className="w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 cursor-pointer"
+							) : null}
+							
+							{/* Share Section */}
+							<div className="flex flex-col items-center cursor-pointer"
 								onClick={() => {
 									setIsShareOpen(true)
 								}}
-							/>
-							<span className="text-lg md:text-2xl text-[#1783fb]"></span>
+							>
+								<FaRegShareFromSquare className="w-5 h-5" />
+								<span className="text-xs text-[#1783fb] mt-1 opacity-0">0</span>
+							</div>
+						</div>
+					</div>
+
+					{/* Desktop: Text separate from icons */}
+					<div className="hidden md:block title_wrapper text-xl leading-tight max-w-full">
+						<p>
+							{meme.name.length > 30
+								? meme.name.slice(0, 30) + '...'
+								: meme.name}
+						</p>
+					</div>
+				</div>
+
+				{/* Desktop Icons */}
+				<div className="hidden md:flex flex-col justify-between ml-0 pt-1 pb-4">
+					<p className="text-[#1783fb] text-xl font-bold"></p>
+					<div className="flex flex-col items-start gap-y-2">
+						{/* Vote Section */}
+						<div className="flex flex-col items-center justify-center relative">
+							{eyeOpen ? (
+								<img
+									src={'/assets/vote/icon1.png'}
+									alt="vote"
+									className="w-5 h-5 lg:w-7 lg:h-7"
+								/>
+							) : (
+								<Logo
+									classNames={
+										'w-6 h-6 lg:w-7 lg:h-7 ' +
+										(voteMeme
+											? meme.created_by._id === userDetails?._id
+												? '!cursor-not-allowed'
+												: '!cursor-pointer'
+											: '!cursor-not-allowed')
+									}
+									onClick={() => (meme.created_by._id != userDetails?._id) && localVoteMeme(meme._id)}
+								/>
+							)}
+							<span className="text-2xl text-[#1783fb]">
+								{count}
+							</span>
+
+							{/* +0.1 Points Animation */}
+							{showPointsAnimation && (
+								<div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-[#28e0ca] font-bold text-lg opacity-0 animate-[flyUp_2s_ease-out_forwards]">
+									+0.1 $eART
+								</div>
+							)}
+						</div>
+						
+						{/* Bookmark Section */}
+						{user && user.address ? (
+							<div className="flex flex-col items-center cursor-pointer"
+								onClick={() => {
+									handleBookmark(meme._id)
+									setIsBookmarked(!isBookmarked)
+									setBmkCount(bmkCount + (isBookmarked ? -1 : 1));
+								}}
+							>
+								{isBookmarked ? (
+									<FaBookmark className="w-7 h-7 lg:w-8 lg:h-8 text-[#1783fb]" />
+								) : (
+									<CiBookmark className="w-7 h-7 lg:w-8 lg:h-8" />
+								)}
+								<span className="text-2xl text-[#1783fb]">{bmkCount}</span>
+							</div>
+						) : null}
+						
+						{/* Share Section */}
+						<div className="flex flex-col items-center cursor-pointer"
+							onClick={() => {
+								setIsShareOpen(true)
+							}}
+						>
+							<FaRegShareFromSquare className="w-5 h-5 lg:w-7 lg:h-7" />
+							<span className="text-2xl text-[#1783fb]"></span>
 						</div>
 					</div>
 				</div>

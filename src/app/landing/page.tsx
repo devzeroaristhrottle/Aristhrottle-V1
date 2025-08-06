@@ -32,9 +32,10 @@ import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { LeaderboardMemeCard } from '../home/leaderboard/MemeCard'
 import { LeaderboardMeme } from '../home/leaderboard/page'
 import Share from '@/components/Share'
-import UploadComponent from './UploadComponent'
+
 import WelcomeCard from '@/components/WelcomeCard'
 import { type Meme } from '../home/page'
+import MemeCarouse from "./carousel"
 
 export interface TagI {
 	_id: string
@@ -73,7 +74,6 @@ export default function Page() {
 	const { openAuthModal } = useAuthModal()
 	const [isUploading, setIsUploading] = useState(false)
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
-	const [hiddenMemes, setHiddenMemes] = useState<Set<string>>(new Set())
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
 	const [loading, setLoading] = useState<boolean>(false)
@@ -683,15 +683,16 @@ export default function Page() {
 			</div>
 
 			{/* Upload Component */}
-			<UploadComponent 
+			{/* <UploadComponent 
 				onUpload={addMeme} 
 				onRevert={revertMeme} 
 				setIsUploading={setIsUploading} 
-			/>
+			/> */}
+			<MemeCarouse className='mb-4 '/>
 			<WelcomeCard isOpen={welcOpen} onClose={() => setWelcOpen(false)} />
-			<div className="h-8" />
+			 <div className="h-0" />
 			{/* Popular Tags */}
-			<div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">
+			{/* <div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">
 				<div className="md:col-span-12 md:mx-auto">
 					<p className="font-bold text-[#1783fb] text-base md:text-xl">
 						Popular Tags
@@ -711,11 +712,11 @@ export default function Page() {
 						))}
 					</div>
 				</div>
-			</div>
+			</div>  */}
 
 			{/* Tabs and Sort (Normal Layout) */}
 			{/* Sort and Tabs Row */}
-			<div className="flex items-center justify-between flex-wrap gap-y-4">
+			<div className="flex items-center justify-between flex-wrap gap-y-2">
 				{/* Sort Button and Filter Checkbox */}
 				<div className="lg:flex-1 flex items-center gap-4">
 					{/* Uninteracted Content Filter */}
@@ -883,10 +884,10 @@ export default function Page() {
 				</div>
 			</div>
 
-			{/* Meme Container */}
+			{/* Meme Container - Updated with proper grid gap */}
 			<div
 				ref={memeContainerRef}
-				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-y-10 grid-cols-1 grid-flow-row !min-h-[47vh]  mt-6 mb-4 no-scrollbar w-full"
+				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 grid-cols-1 grid-flow-row gap-4 md:gap-6 !min-h-[40vh] mt-6 mb-4 no-scrollbar w-full"
 				style={{ height: 'calc(100vh - 150px)', paddingBottom: '200px' }}
 			>
 				{!loading &&
@@ -913,7 +914,7 @@ export default function Page() {
 					activeTab === 'all' &&
 					allMemeDataFilter?.length > 0 &&
 					allMemeDataFilter.map((item, index) => (
-						<div key={index} className={hiddenMemes.has(item._id) ? "hidden"  : ""}>
+						<div key={index}>
 							<LeaderboardMemeCard
 								meme={item}
 								onOpenMeme={() => {
@@ -924,9 +925,6 @@ export default function Page() {
 								voteMeme={memeId => handleUpvoteDownvote(memeId)}
 								bmk={bookMarks.some(get_meme => get_meme._id == item._id)}
 								activeTab={activeTab}
-								onImageError={() => {
-									setHiddenMemes(prev => new Set([...prev, item._id]))
-								}}
 							/>
 						</div>
 					))}
