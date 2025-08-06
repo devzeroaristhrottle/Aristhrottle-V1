@@ -18,7 +18,7 @@ import { Context } from '@/context/contextProvider'
 import { useRouter } from 'next/navigation'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 
-import Notifications from '../components/Notifications'
+import { IoMdNotificationsOutline } from 'react-icons/io'
 import useCountdown from '@/app/hooks/useCountdown'
 import {
 	useAuthModal,
@@ -207,7 +207,16 @@ export default function Navbar() {
 								</span>
 							</div>
 						) : null}
-						<Notifications />
+						<div 
+							className="relative inline-block"
+							onClick={() => route.push('/mobile/notifications')}
+						>
+							<IoMdNotificationsOutline className="cursor-pointer" size={30} />
+							<span className="absolute -top-1 right-1 flex h-3 w-3 items-center justify-center">
+								<span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
+								<span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
+							</span>
+						</div>
 					</div>
 				</div>
 				{userDetails && user != null && user.address && (
