@@ -84,7 +84,7 @@ export default function UploadPage() {
             <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
             <p className="text-white">Uploading your content...</p>
             <p className="text-gray-400 text-sm mt-1">
-              Please don't close this page
+              Please don t close this page
             </p>
           </div>
         </div>
