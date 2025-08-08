@@ -300,7 +300,7 @@ export default function Page() {
 				ref={memeContainerRef}
 			>
 				{/* For mobile */}
-				<div className="md:hidden w-full flex flex-col items-center justify-center">
+				<div className="md:hidden w-full flex flex-col items-center justify-center rounded-xl">
 					{finalFilterMeme.map((item, index) => (
 						<div key={item._id} className="w-full max-w-sm">
 							<LeaderboardMemeCard

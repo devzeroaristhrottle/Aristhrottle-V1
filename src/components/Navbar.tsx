@@ -158,27 +158,104 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-0 z-50 backdrop-blur-md bg-black/20 w-full">
-      <div className="relative w-full px-2 sm:px-4 md:px-8">
-        {/* Mobile Layout - Two Rows */}
-        <div className="block md:hidden py-2 ">
+      <div className="relative w-full mx-0 px-0">
+        {/* Mobile Layout - Full Width Matching Design */}
+        <div className="block md:hidden w-30 m-0 p-0">
           {userDetails && user != null && user.address && (
-            <>
-              {/* First Row - Avatar on left, Wallet Address + Token on right */}
-              <div className="flex justify-between items-center mb-2">
-                <Avatar
-                  name="Random"
-                  colorPalette="blue"
-                  src={userDetails.profile_pic}
-                  css={ringCss}
-                  className="cursor-pointer"
-                  size="2xs"
-                  onClick={() => {
-                    route.replace("/home/profile");
-                  }}
-                />
+            <div className="w-full px-0 py-0 backdrop-blur-md bg-black/20 m-0">
+              {/* Mobile Navigation Bar - Horizontal Layout */}
+              <div className="flex items-center justify-between w-full px-0 ">
+                {/* Left Side - Avatar */}
+                <div className="flex items-center flex-shrink-0 mb-20 mr-2 mt-3 ">
+                  <Avatar
+                    name="Random"
+                    colorPalette="blue"
+                    src={userDetails.profile_pic}
+                    css={ringCss}
+                    className="cursor-pointer "
+                    size="xs"
+                    onClick={() => {
+                      route.replace("/home/profile");
+                    }}
+                  />
+                </div>
 
-                <div className="flex items-center gap-3">
-                  {/* Wallet Address Button */}
+                {/* Center - Stats in horizontal row */}
+                <div className="flex items-center gap-5 flex-1 justify-center min-w-0 mt-6">
+                  {/* Vote Stats */}
+                  <div className="flex items-center gap-1 flex-shrink-0 ml-6">
+                    <span className="text-white text-xs font-medium whitespace-nowrap">Vote</span>
+                    <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30">
+                      <span className="text-white text-xs font-medium">
+                        {userDetails.votes}/20
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Upload Stats */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="text-white text-xs font-medium whitespace-nowrap">Upload</span>
+                    <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30">
+                      <span className="text-white text-xs font-medium">
+                        {userDetails.uploads}/20
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Create Stats */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="text-white text-xs font-medium whitespace-nowrap">Create</span>
+                    <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30">
+                      <span className="text-white text-xs font-medium">
+                        {userDetails.generations}/5
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Phase with Info Icon */}
+                  <div className="flex items-center gap-1 flex-shrink-0 ">
+                    <span className="text-white text-xs font-medium whitespace-nowrap">New Phase</span>
+                    <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30">
+                      <span className="text-white text-xs font-medium">
+                        {timeLeft.split(":").slice(0, 2).join(":")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side - Token Balance and User Info */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {/* Token Balance */}
+                  <div className="flex items-center gap-1 mb-20">
+                    <Image
+                      className="!w-4 !h-4"
+                      alt="icon"
+                      src="/assets/token_e.png"
+                      height={16}
+                      width={16}
+                    />
+                    <span className="text-white text-xs font-medium">
+                      {userDetails?.mintedCoins
+                        ? parseFloat(
+                            ethers.formatEther(userDetails.mintedCoins)
+                          ).toFixed(1)
+                        : "0.0"}
+                    </span>
+                  </div>
+
+                  {/* User Avatar Small */}
+                  <Avatar
+                    name="User"
+                    colorPalette="blue"
+                    src={userDetails.profile_pic}
+                    className="cursor-pointer mb-20"
+                    size="2xs"
+                    onClick={() => {
+                      route.replace("/home/profile");
+                    }}
+                  />
+
+                  {/* Hidden Wallet Popover for functionality */}
                   <Popover.Root
                     open={open}
                     onOpenChange={(e) => {
@@ -188,28 +265,7 @@ export default function Navbar() {
                     }}
                   >
                     <Popover.Trigger asChild>
-                      <Button
-                        size="xs"
-                        variant="solid"
-                        className="bg-slate-50 text-slate-800 font-bold px-1.5 py-0.5 rounded text-[10px] h-6"
-                        onClick={() => {
-                          if (user && user.address) {
-                            setOpen(true);
-                          } else {
-                            openAuthModal();
-                          }
-                        }}
-                      >
-                        {user
-                          ? "0" +
-                            user.address.slice(1, 3) +
-                            ".." +
-                            user.address.slice(
-                              user.address.length - 2,
-                              user.address.length
-                            )
-                          : "Login"}
-                      </Button>
+                      <div className="hidden"></div>
                     </Popover.Trigger>
                     <Portal>
                       <Popover.Positioner>
@@ -247,62 +303,14 @@ export default function Navbar() {
                       </Popover.Positioner>
                     </Portal>
                   </Popover.Root>
-
-                  {/* Token Balance */}
-                  {user?.address && (
-                    <div className="flex items-center gap-1">
-                      <Image
-                        className="!w-4 !h-4"
-                        alt="icon"
-                        src="/assets/token_e.png"
-                        height={16}
-                        width={16}
-                      />
-                      <span className="text-[10px] font-medium">
-                        {userDetails?.mintedCoins
-                          ? parseFloat(
-                              ethers.formatEther(userDetails.mintedCoins)
-                            ).toFixed(1)
-                          : 0}
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
-
-              {/* Second Row - Stats - Text left of boxes */}
-              <div className="flex justify-between text-white text-[10px] font-medium">
-                <div className="flex items-center gap-2">
-                  <label className="text-[9px] text-gray-300">Vote</label>
-                  <p className="border border-white rounded px-1.5 py-0.5 text-[10px] font-medium">
-                    {userDetails.votes}/20
-                  </p>
-                </div>
-                <div className="flex items-center gap-1">
-                  <label className="text-[9px] text-gray-300">Upload</label>
-                  <p className="border border-white rounded px-1.5 py-0.5 text-[10px] font-medium">
-                    {userDetails.uploads}/20
-                  </p>
-                </div>
-                <div className="flex items-center gap-1">
-                  <label className="text-[9px] text-gray-300">Create</label>
-                  <p className="border border-white rounded px-1.5 py-0.5 text-[10px] font-medium">
-                    {userDetails.generations}/5
-                  </p>
-                </div>
-                <div className="flex items-center gap-1">
-                  <label className="text-[9px] text-gray-300">New Phase</label>
-                  <p className="border border-white rounded-md px-2 py-0.5 text-[9px] font-medium bg-gray-800/50">
-                    {timeLeft.split(":").slice(0, 2).join(":")}
-                  </p>
-                </div>
-              </div>
-            </>
+            </div>
           )}
         </div>
 
-        {/* Desktop Layout - Text left of boxes preserved */}
-        <div className="hidden md:flex justify-between align-middle items-center py-3 md:py-0">
+        {/* Desktop Layout - Unchanged */}
+        <div className="hidden md:flex justify-between align-middle items-center py-0 md:py-0 px-2 sm:px-4 md:px-0">
           <div className="flex align-middle items-center gap-5">
             {userDetails && user != null && user.address && (
               <div className="flex gap-5">
@@ -356,8 +364,9 @@ export default function Navbar() {
                     <div className="font-semibold mb-1">Info button</div>
                     <div>
                       Content goes from live to leaderboard with the vote count
-                      visible. Votes, uploads and generated counts reset for the
-                      user{" "}
+                      visible. 
+                      <div>Votes, uploads and generated counts reset for the
+                      user</div>
                     </div>
 
                     {/* Arrow */}
@@ -410,7 +419,7 @@ export default function Navbar() {
                     <Popover.Content className="bg-slate-50">
                       <Popover.Arrow />
                       <Popover.Body className="flex flex-col">
-                        <Popover.Title
+                        {/* <Popover.Title
                           fontWeight="medium"
                           className="text-slate-900 text-base mb-4"
                         >
@@ -422,7 +431,7 @@ export default function Navbar() {
                             <strong>Smart Account: </strong>
                             {address}
                           </p>
-                        </Popover.Title>
+                        </Popover.Title> */}
                         <Button
                           size="lg"
                           variant="solid"

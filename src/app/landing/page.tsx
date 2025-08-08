@@ -123,11 +123,11 @@ export default function Page() {
 		}
 	}
 
-	// Debounce search
+	// Debounce search - increased timeout from 400ms to 800ms
 	useEffect(() => {
 		const timeout = setTimeout(() => {
 			findTag()
-		}, 400)
+		}, 800)
 		return () => clearTimeout(timeout)
 	}, [query])
 
@@ -246,7 +246,7 @@ export default function Page() {
 		}
 	}
 
-	// Background polling function that doesn't show loader
+	// Background polling function that doesn't show loader - increased interval from 30s to 60s
 	const pollMemes = async () => {
 		try {
 			const offsetI = offset * page
@@ -265,14 +265,13 @@ export default function Page() {
 		// Note: No loading state changes here
 	}
 
-
+	// Updated filterLiveMemes function to be more consistent
 	const filterLiveMemes = (memes: any[]) => {
 		const now = new Date()
-		now.setUTCHours(0, 0, 0, 0)
 		const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 		return memes.filter(meme => {
 			const createdAt = new Date(meme.createdAt);
-			return createdAt >= twentyFourHoursAgo;
+			return createdAt >= twentyFourHoursAgo && createdAt <= now;
 		});
 	};
 
@@ -403,6 +402,7 @@ export default function Page() {
 		getMyMemes()
 	}, [user, page, isRefreshMeme])
 
+	// Updated polling effect - increased interval from 30s to 60s
 	useEffect(() => {
 		let pollInterval: NodeJS.Timeout | null = null
 
@@ -413,14 +413,14 @@ export default function Page() {
 			} else if (!document.hidden && !isUploading && activeTab === 'live') {
 				pollInterval = setInterval(() => {
 					pollMemes()
-				}, 30000)
+				}, 60000) // Increased from 30000 to 60000 (60 seconds)
 			}
 		}
 
 		if (activeTab === 'live' && !isUploading) {
 			pollInterval = setInterval(() => {
 				pollMemes()
-			}, 30000)
+			}, 60000) // Increased from 30000 to 60000 (60 seconds)
 			document.addEventListener('visibilitychange', handleVisibilityChange)
 		}
 
@@ -432,26 +432,26 @@ export default function Page() {
 		}
 	}, [activeTab, page, userDetails?._id, isUploading])
 
+	// Increased timeout from 400ms to 800ms for search debouncing
 	useEffect(() => {
 		const time = setTimeout(() => {
 			getMemesByName()
-		}, 400)
+		}, 800)
 		return () => clearTimeout(time)
 	}, [query])
 
-	// Tab-based filtering
+	// Fixed Tab-based filtering - this was the main issue
 	const getFilteredMemes = () => {
 		let filtered = [...filterMemes]
 
 		if (activeTab === 'live') {
-			const today = new Date()
-			today.setUTCHours(0, 0, 0, 0)
+			// Use the same logic as filterLiveMemes for consistency
+			const now = new Date()
+			const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+			
 			filtered = filtered.filter(meme => {
 				const createdAt = new Date(meme.createdAt)
-				return (
-					createdAt >= today &&
-					createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)
-				)
+				return createdAt >= twentyFourHoursAgo && createdAt <= now;
 			})
 		}
 
@@ -737,18 +737,7 @@ export default function Page() {
 							</label>
 						</div>
 					)}
-					
-					{/* View New Contents Button */}
-					{isNewAvail && activeTab === 'live' && (
-						<Button
-							size={{ sm: 'xs', md: 'sm' }}
-							variant="outline"
-							onClick={handleViewNewContents}
-							className="border-2 border-[#29e0ca] px-3 rounded-full text-[#29e0ca] text-lg hover:bg-[#29e0ca] hover:text-black transition-colors animate-pulse"
-						>
-							New Contents
-						</Button>
-					)}
+				
 					
 					<PopoverRoot>
 						<PopoverTrigger asChild>
@@ -884,6 +873,18 @@ export default function Page() {
 				</div>
 			</div>
 
+			{/* New Content Available Button */}
+			{isNewAvail && activeTab === 'live' && (
+				<div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
+					<Button
+						onClick={handleViewNewContents}
+						className="bg-[#1783fb] text-white px-4 py-2 rounded-full shadow-lg hover:bg-[#1461cc] transition-all duration-200"
+					>
+						🔥 New content available
+					</Button>
+				</div>
+			)}
+
 			{/* Meme Container - Updated with proper grid gap */}
 			<div
 				ref={memeContainerRef}
@@ -930,12 +931,21 @@ export default function Page() {
 					))}
 
 				{!loading &&
-					displayedMemes?.length === 0 &&
-					allMemeData?.length === 0 && (
+					activeTab === 'live' &&
+					displayedMemes?.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
-							Content not found
+							No live content available
 						</p>
 					)}
+
+				{!loading &&
+					activeTab === 'all' &&
+					allMemeDataFilter?.length === 0 && (
+						<p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
+							No content available
+						</p>
+					)}
+					
 				{loading && (
 					<AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto md:col-span-12" />
 				)}

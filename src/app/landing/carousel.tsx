@@ -320,10 +320,15 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                         {/* Hover effect */}
                         <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         
-                        {/* Vote count overlay */}
-                        <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-bold">
-                          {meme.vote_count} votes
-                        </div>
+                                             {/* Vote count overlay */}
+<div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center justify-center gap-1">
+  {meme.vote_count}
+  <img
+    src={'/assets/vote/icon1.png'}
+    alt="vote"
+    className="w-3 h-3 lg:w-4 lg:h-4"
+  />
+</div>
 
                         {/* Meme info overlay */}
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
@@ -355,10 +360,16 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                         {/* Hover effect */}
                         <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         
-                        {/* Vote count overlay */}
-                        <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-bold">
-                          {meme.vote_count} votes
-                        </div>
+                       {/* Vote count overlay */}
+<div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center justify-center gap-1">
+  {meme.vote_count}
+  <img
+    src={'/assets/vote/icon1.png'}
+    alt="vote"
+    className="w-3 h-3 lg:w-4 lg:h-4"
+  />
+</div>
+
 
                         {/* Meme info overlay */}
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
