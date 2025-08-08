@@ -934,7 +934,7 @@ export default function Page() {
 					activeTab === 'live' &&
 					displayedMemes?.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
-							No live content available
+							No live content available.
 						</p>
 					)}
 
