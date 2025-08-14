@@ -72,6 +72,8 @@ const MemoizedLeaderboardMemeCard = memo(LeaderboardMemeCard)
 const MemoizedMemeCard = memo(MemeCard)
 
 export default function Page() {
+
+	
 	const [query, setQuery] = useState('')
 	const [showRecommendations, setShowRecommendations] = useState(false)
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
