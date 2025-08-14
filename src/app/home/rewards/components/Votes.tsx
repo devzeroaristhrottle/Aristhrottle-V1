@@ -99,7 +99,7 @@ const Votes = () => {
 		<div className="grid h-full md:grid-cols-3 grid-cols-1 gap-y-6 md:gap-y-0 flex-col-reverse">
 			<div className="total_majority_milestones_wrapper md:col-span-2 col-span-1 md:order-1 order-2">
 				<div className="total_votes flex flex-col gap-4 md:p-5">
-					<h2 className="text-2xl md:text-4xl">Total Votes</h2>
+					<h2 className="text-2xl md:text-4xl">Votes cast</h2>
 					<ProgressBar
 						milestones={getMilestoneKeys(totalVotesRewards)}
 						currentValue={votesData?.totalVotesCount ?? 0}

@@ -90,12 +90,14 @@ body {
   display: none !important;
 } */
 
+/* global.css */
 #google_translate_element {
-  font-size: 0; /* Hides text */
+  font-size: 2; /* Hides text */
 }
 
+
 #google_translate_element select {
-  margin-top: 10px;
+  margin-top: 19px;
   margin-right: 10px;
   padding: 7px 20px;
   border-radius: 10px;
@@ -103,6 +105,8 @@ body {
   border-color: rgb(23 131 251) !important;
   background-color: transparent !important;
   font-size: 14px;
+  width: 185px; /* force smaller width */
+  height: 40px; /* force smaller height */
 }
 
 #google_translate_element select > option {

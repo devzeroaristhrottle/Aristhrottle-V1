@@ -116,7 +116,6 @@ const Sidebar = () => {
 	const itemRef = useRef(null)
 	const [isHovered, setIsHovered] = useState(false)
 	const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-	const [clickedItem, setClickedItem] = useState<string | null>(null)
 
 	const getActiveTab = () => {
 		if (pathname?.includes('leaderboard')) return 'Leaderboard'
@@ -130,14 +129,6 @@ const Sidebar = () => {
 	}
 
 	const activeTab = getActiveTab()
-
-	const handleMobileClick = (item: any) => {
-		setClickedItem(item.title)
-		setTimeout(() => {
-			item.action(route)
-			setClickedItem(null)
-		}, 300) // Show name for 300ms before navigation
-	}
 
 	return (
 		<>
@@ -189,11 +180,10 @@ const Sidebar = () => {
 				<div className="flex justify-around items-center py-3">
 					{sidebarItems.map(item => {
 						const isActive = activeTab === item.title
-						const isClicked = clickedItem === item.title
 						return (
 							<div
 								key={item.title}
-								onClick={() => handleMobileClick(item)}
+								onClick={() => item.action(route)}
 								className="flex flex-col items-center cursor-pointer"
 							>
 								<div
@@ -228,13 +218,9 @@ const Sidebar = () => {
 										)}
 									</div>
 								</div>
-								{/* Show title below icon when clicked or active on mobile */}
-								{(isClicked || isActive) && (
-									<span 
-										className={`text-xs mt-1 transition-all duration-200 ${
-											isActive ? 'text-[#1783FB]' : 'text-white'
-										}`}
-									>
+								{/* Show title below icon only when active on mobile */}
+								{isActive && (
+									<span className="text-xs mt-1 text-[#1783FB]">
 										{item.title}
 									</span>
 								)}

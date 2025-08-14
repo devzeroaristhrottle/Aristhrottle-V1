@@ -165,18 +165,39 @@ export default function Page() {
 		}
 	}
 
+	// Optimized useEffect to prevent unnecessary re-filtering and flickering
 	useEffect(() => {
 		// Filter out memes with failed images
 		const validMemes = filteredMemes.filter(meme => !failedImageIds.has(meme._id))
-		setFinalFilterMeme(validMemes)
+		
+		// Only update if there's actually a change to prevent unnecessary re-renders
+		setFinalFilterMeme(prev => {
+			// Simple comparison to avoid unnecessary updates
+			if (prev.length !== validMemes.length) {
+				return validMemes
+			}
+			
+			// Check if any meme data has changed
+			const hasChanged = validMemes.some((meme, index) => {
+				const prevMeme = prev[index]
+				return !prevMeme || 
+					   prevMeme._id !== meme._id || 
+					   prevMeme.vote_count !== meme.vote_count ||
+					   prevMeme.has_user_voted !== meme.has_user_voted
+			})
+			
+			return hasChanged ? validMemes : prev
+		})
 	}, [filteredMemes, failedImageIds])
 
 	const handleVote = async (meme_id: string) => {
 		try {
 			if (userDetails) {
-				setFinalFilterMeme(prev =>
+				// Update both memes and finalFilterMeme states optimistically
+				// This prevents flickering by ensuring consistency across all state
+				setMemes(prev =>
 					prev.map(meme =>
-						meme._id == meme_id
+						meme._id === meme_id
 							? {
 									...meme,
 									vote_count: meme.vote_count + 1,
@@ -185,19 +206,76 @@ export default function Page() {
 							: meme
 					)
 				)
+				
+				setFinalFilterMeme(prev =>
+					prev.map(meme =>
+						meme._id === meme_id
+							? {
+									...meme,
+									vote_count: meme.vote_count + 1,
+									has_user_voted: true,
+							  }
+							: meme
+					)
+				)
+
+				// Update selected meme if it's the one being voted on
+				if (selectedMeme && selectedMeme._id === meme_id) {
+					setSelectedMeme(prev => prev ? {
+						...prev,
+						vote_count: prev.vote_count + 1,
+						has_user_voted: true,
+					} : prev)
+				}
+
 				const response = await axiosInstance.post('/api/vote', {
 					vote_to: meme_id,
 					vote_by: userDetails._id,
 				})
-				if (response.status == 201) {
+				
+				if (response.status === 201) {
 					toast.success('Voted successfully!')
 				}
-			}else{
-				if(openAuthModal) openAuthModal();
+			} else {
+				if (openAuthModal) openAuthModal()
 			}
 		} catch (err) {
 			console.log('error: ', err)
 			toast.error('Error voting meme')
+			
+			// Revert the optimistic updates on error
+			setMemes(prev =>
+				prev.map(meme =>
+					meme._id === meme_id
+						? {
+								...meme,
+								vote_count: meme.vote_count - 1,
+								has_user_voted: false,
+						  }
+						: meme
+				)
+			)
+			
+			setFinalFilterMeme(prev =>
+				prev.map(meme =>
+					meme._id === meme_id
+						? {
+								...meme,
+								vote_count: meme.vote_count - 1,
+								has_user_voted: false,
+						  }
+						: meme
+				)
+			)
+
+			// Revert selected meme if it's the one that failed
+			if (selectedMeme && selectedMeme._id === meme_id) {
+				setSelectedMeme(prev => prev ? {
+					...prev,
+					vote_count: prev.vote_count - 1,
+					has_user_voted: false,
+				} : prev)
+			}
 		}
 	}
 

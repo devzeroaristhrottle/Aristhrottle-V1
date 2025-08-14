@@ -288,7 +288,7 @@ export default function Page({}: Props) {
                 <LazyImage
                   src={item.vote_to.image_url}
                   alt="Content"
-                  className="w-full aspect-square object-cover border-2 border-white cursor-pointer hover:opacity-80 transition-opacity"
+                  className="w-full aspect-square object-cover rounded-xl cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() => handleOpenMeme(item, index)}
                 />
               </div>

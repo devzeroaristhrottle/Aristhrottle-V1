@@ -1,6 +1,6 @@
 'use client'
 
-import { useContext, useEffect, useState, useRef } from 'react'
+import { useContext, useEffect, useState, useRef, useCallback, memo } from 'react'
 import { LuSearch } from 'react-icons/lu'
 import {
 	LiaSortAmountUpAltSolid,
@@ -32,10 +32,10 @@ import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { LeaderboardMemeCard } from '../home/leaderboard/MemeCard'
 import { LeaderboardMeme } from '../home/leaderboard/page'
 import Share from '@/components/Share'
-
+// import UploadComponent from './UploadComponent'
 import WelcomeCard from '@/components/WelcomeCard'
 import { type Meme } from '../home/page'
-import MemeCarouse from "./carousel"
+import MemeCarousel from "./carousel"
 
 export interface TagI {
 	_id: string
@@ -53,6 +53,23 @@ export interface TagI {
 export interface Bookmark {
 	[key: string]: { id: string; name: string; image_url: string }
 }
+
+// Debounce utility function
+const debounce = (func: Function, wait: number) => {
+	let timeout: NodeJS.Timeout
+	return function executedFunction(...args: any[]) {
+		const later = () => {
+			clearTimeout(timeout)
+			func(...args)
+		}
+		clearTimeout(timeout)
+		timeout = setTimeout(later, wait)
+	}
+}
+
+// Memoized components to prevent unnecessary re-renders
+const MemoizedLeaderboardMemeCard = memo(LeaderboardMemeCard)
+const MemoizedMemeCard = memo(MemeCard)
 
 export default function Page() {
 	const [query, setQuery] = useState('')
@@ -74,6 +91,7 @@ export default function Page() {
 	const { openAuthModal } = useAuthModal()
 	const [isUploading, setIsUploading] = useState(false)
 	// const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
+	const [hiddenMemes, setHiddenMemes] = useState<Set<string>>(new Set())
 	const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
 	const [page, setPage] = useState(1)
 	const [loading, setLoading] = useState<boolean>(false)
@@ -123,11 +141,11 @@ export default function Page() {
 		}
 	}
 
-	// Debounce search - increased timeout from 400ms to 800ms
+	// Debounce search
 	useEffect(() => {
 		const timeout = setTimeout(() => {
 			findTag()
-		}, 800)
+		}, 400)
 		return () => clearTimeout(timeout)
 	}, [query])
 
@@ -192,39 +210,93 @@ export default function Page() {
 		}
 	}
 
-	const voteToMeme = async (vote_to: string) => {
-		if (!userDetails && openAuthModal) openAuthModal()
+	// Updated voteToMeme function for live tab with optimistic updates
+	const voteToMeme = useCallback(async (vote_to: string) => {
+		if (!userDetails && openAuthModal) {
+			openAuthModal();
+			return;
+		}
+		
 		try {
 			if (user && user.address && activeTab === 'live') {
+				// Find the current meme to check if already voted
+				const currentMeme = displayedMemes.find(meme => meme._id === vote_to);
+				
+				// Prevent voting if already voted or if it's user's own meme
+				if (currentMeme?.has_user_voted || currentMeme?.created_by._id === userDetails?._id) {
+					return;
+				}
+
+				// Optimistic update for displayed memes
+				setDisplayedMeme(prev => 
+					prev.map(meme =>
+						meme._id === vote_to
+							? { ...meme, vote_count: meme.vote_count + 1, has_user_voted: true }
+							: meme
+					)
+				);
+
+				// Optimistic update for filter memes
+				setFilterMemes(prev => 
+					prev.map(meme =>
+						meme._id === vote_to
+							? { ...meme, vote_count: meme.vote_count + 1, has_user_voted: true }
+							: meme
+					)
+				);
+
+				// Update user stats optimistically
 				if (userDetails) {
 					setUserDetails({
 						...userDetails,
 						votes: userDetails.votes + 1,
-					})
+					});
 				}
+
 				const response = await axiosInstance.post('/api/vote', {
 					vote_to: vote_to,
 					vote_by: userDetails?._id,
-				})
+				});
+				
 				if (response.status === 201) {
-					toast.success('Vote casted successfully!')
-					getMemes()
+					toast.success('Vote casted successfully!');
+					// Refresh memes data in background without showing loader
+					pollMemes();
 				}
 			}
 		} catch (error: any) {
+			// Revert optimistic updates on error
+			setDisplayedMeme(prev => 
+				prev.map(meme =>
+					meme._id === vote_to
+						? { ...meme, vote_count: Math.max(0, meme.vote_count - 1), has_user_voted: false }
+						: meme
+				)
+			);
+
+			setFilterMemes(prev => 
+				prev.map(meme =>
+					meme._id === vote_to
+						? { ...meme, vote_count: Math.max(0, meme.vote_count - 1), has_user_voted: false }
+						: meme
+				)
+			);
+
+			// Revert user stats
 			if (userDetails) {
 				setUserDetails({
 					...userDetails,
-					votes: userDetails.votes,
-				})
+					votes: Math.max(0, userDetails.votes - 1),
+				});
 			}
-			if (error.response.data.message === 'You cannot vote on your own content') {
-				toast.error(error.response.data.message)
+
+			if (error.response?.data?.message === 'You cannot vote on your own content') {
+				toast.error(error.response.data.message);
 			} else {
-				toast.error('Already voted to this content')
+				toast.error('Already voted to this content');
 			}
 		}
-	}
+	}, [userDetails, openAuthModal, user, activeTab, displayedMemes, setDisplayedMeme, setFilterMemes, setUserDetails]);
 
 	const getMemes = async () => {
 		try {
@@ -246,7 +318,7 @@ export default function Page() {
 		}
 	}
 
-	// Background polling function that doesn't show loader - increased interval from 30s to 60s
+	// Background polling function that doesn't show loader
 	const pollMemes = async () => {
 		try {
 			const offsetI = offset * page
@@ -265,13 +337,13 @@ export default function Page() {
 		// Note: No loading state changes here
 	}
 
-	// Updated filterLiveMemes function to be more consistent
 	const filterLiveMemes = (memes: any[]) => {
 		const now = new Date()
+		now.setUTCHours(0, 0, 0, 0)
 		const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 		return memes.filter(meme => {
 			const createdAt = new Date(meme.createdAt);
-			return createdAt >= twentyFourHoursAgo && createdAt <= now;
+			return createdAt >= twentyFourHoursAgo;
 		});
 	};
 
@@ -402,7 +474,6 @@ export default function Page() {
 		getMyMemes()
 	}, [user, page, isRefreshMeme])
 
-	// Updated polling effect - increased interval from 30s to 60s
 	useEffect(() => {
 		let pollInterval: NodeJS.Timeout | null = null
 
@@ -413,14 +484,14 @@ export default function Page() {
 			} else if (!document.hidden && !isUploading && activeTab === 'live') {
 				pollInterval = setInterval(() => {
 					pollMemes()
-				}, 60000) // Increased from 30000 to 60000 (60 seconds)
+				}, 30000)
 			}
 		}
 
 		if (activeTab === 'live' && !isUploading) {
 			pollInterval = setInterval(() => {
 				pollMemes()
-			}, 60000) // Increased from 30000 to 60000 (60 seconds)
+			}, 30000)
 			document.addEventListener('visibilitychange', handleVisibilityChange)
 		}
 
@@ -432,26 +503,26 @@ export default function Page() {
 		}
 	}, [activeTab, page, userDetails?._id, isUploading])
 
-	// Increased timeout from 400ms to 800ms for search debouncing
 	useEffect(() => {
 		const time = setTimeout(() => {
 			getMemesByName()
-		}, 800)
+		}, 400)
 		return () => clearTimeout(time)
 	}, [query])
 
-	// Fixed Tab-based filtering - this was the main issue
+	// Tab-based filtering
 	const getFilteredMemes = () => {
 		let filtered = [...filterMemes]
 
 		if (activeTab === 'live') {
-			// Use the same logic as filterLiveMemes for consistency
-			const now = new Date()
-			const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-			
+			const today = new Date()
+			today.setUTCHours(0, 0, 0, 0)
 			filtered = filtered.filter(meme => {
 				const createdAt = new Date(meme.createdAt)
-				return createdAt >= twentyFourHoursAgo && createdAt <= now;
+				return (
+					createdAt >= today &&
+					createdAt < new Date(today.getTime() + 24 * 60 * 60 * 1000)
+				)
 			})
 		}
 
@@ -571,48 +642,75 @@ export default function Page() {
 		}
 	}
 
-	const handleUpvoteDownvote = async (meme_id: string) => {
-		if (!userDetails && openAuthModal) openAuthModal()
-		setAllMemeDataFilter(prev =>
-			prev
-				.map(meme =>
-					meme._id === meme_id
-						? {
-								...meme,
-								vote_count: meme.vote_count + 1,
-								has_user_voted: true,
-						  }
-						: meme
-				)
-				.sort((a, b) => a.rank - b.rank)
-		)
+	// Updated handleUpvoteDownvote function with optimistic updates and anti-flicker
+	const handleUpvoteDownvote = useCallback(async (meme_id: string) => {
+		if (!userDetails && openAuthModal) {
+			openAuthModal()
+			return;
+		}
+		
 		try {
 			if (user && user.address && activeTab === 'all') {
-				const response = await axiosInstance.post('/api/vote', {
-					vote_to: meme_id,
-					vote_by: userDetails?._id,
-				})
-				if (response.status == 201) {
-					toast.success('Voted successfully!')
+				// Find the current meme to check if already voted
+				const currentMeme = allMemeDataFilter.find(meme => meme._id === meme_id);
+				
+				// Prevent voting if already voted or if it's user's own meme
+				if (currentMeme?.has_user_voted || currentMeme?.created_by._id === userDetails?._id) {
+					return;
 				}
-			}
-		} catch (error: any) {
-			setAllMemeDataFilter(prev =>
-				prev
-					.map(meme =>
+
+				// Optimistic update with stable sorting
+				setAllMemeDataFilter(prev => {
+					const updated = prev.map(meme =>
 						meme._id === meme_id
 							? {
 									...meme,
-									vote_count: meme.vote_count - 1,
+									vote_count: meme.vote_count + 1,
+									has_user_voted: true,
 							  }
 							: meme
-					)
-					.sort((a, b) => a.rank - b.rank)
-			)
-			console.error('Error in handleUpvoteDownvote:', error)
-			toast.error(error.response.data.message)
+					);
+					
+					// Maintain original sort order to prevent flickering
+					return [...updated];
+				});
+
+				// Make API call
+				const response = await axiosInstance.post('/api/vote', {
+					vote_to: meme_id,
+					vote_by: userDetails?._id,
+				});
+				
+				if (response.status === 201) {
+					toast.success('Voted successfully!');
+					
+					// Update user details
+					if (userDetails) {
+						setUserDetails({
+							...userDetails,
+							mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(1e17),
+						});
+					}
+				}
+			}
+		} catch (error: any) {
+			// Revert optimistic update on error
+			setAllMemeDataFilter(prev =>
+				prev.map(meme =>
+					meme._id === meme_id
+						? {
+								...meme,
+								vote_count: Math.max(0, meme.vote_count - 1),
+								has_user_voted: false,
+						  }
+						: meme
+				)
+			);
+			
+			console.error('Error in handleUpvoteDownvote:', error);
+			toast.error(error.response?.data?.message || 'Failed to vote');
 		}
-	}
+	}, [userDetails, openAuthModal, user, activeTab, allMemeDataFilter, setAllMemeDataFilter, setUserDetails]);
 
 	const addMeme = (meme: Meme) => {
 		setDisplayedMeme(prevMemes => [...prevMemes, meme].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
@@ -663,6 +761,14 @@ export default function Page() {
 		}		
 	}
 
+	// Add debounced state update to prevent excessive re-renders
+	const debouncedSetAllMemeDataFilter = useCallback(
+		debounce((newData: LeaderboardMeme[]) => {
+			setAllMemeDataFilter(newData);
+		}, 100),
+		[]
+	);
+
 	return (
 		<div
 			className="mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]"
@@ -683,14 +789,10 @@ export default function Page() {
 			</div>
 
 			{/* Upload Component */}
-			{/* <UploadComponent 
-				onUpload={addMeme} 
-				onRevert={revertMeme} 
-				setIsUploading={setIsUploading} 
-			/> */}
-			<MemeCarouse className='mb-4 '/>
+			<MemeCarousel/>
 			<WelcomeCard isOpen={welcOpen} onClose={() => setWelcOpen(false)} />
-			 <div className="h-0" />
+			<div className="h-8" />
+			
 			{/* Popular Tags */}
 			{/* <div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">
 				<div className="md:col-span-12 md:mx-auto">
@@ -712,33 +814,40 @@ export default function Page() {
 						))}
 					</div>
 				</div>
-			</div>  */}
+			</div> */}
 
 			{/* Tabs and Sort (Normal Layout) */}
 			{/* Sort and Tabs Row */}
-			<div className="flex items-center justify-between flex-wrap gap-y-2">
+			<div className="flex items-center justify-between flex-wrap gap-y-4">
 				{/* Sort Button and Filter Checkbox */}
 				<div className="lg:flex-1 flex items-center gap-4">
-					{/* Uninteracted Content Filter */}
-					{userDetails && (
-						<div className="flex items-center gap-2">
-							<input
-								type="checkbox"
-								id="uninteracted-filter"
-								checked={showUninteractedOnly}
-								onChange={(e) => setShowUninteractedOnly(e.target.checked)}
-								className="w-4 h-4 text-[#1783fb] bg-transparent border-2 border-[#1783fb] rounded focus:ring-[#1783fb] focus:ring-2"
-							/>
-							<label 
-								htmlFor="uninteracted-filter" 
-								className="text-sm md:text-base text-white cursor-pointer whitespace-nowrap"
+					{/* New Content Available Button - Only show in live tab when new content is available */}
+					{activeTab === 'live' && isNewAvail && (
+						<div className="flex justify-center mb-4 mt-2">
+							<button
+								onClick={handleViewNewContents}
+								className="bg-gradient-to-r from-[#1783fb] to-[#28e0ca] hover:from-[#28e0ca] hover:to-[#1783fb] text-white font-medium px-1 py-1 sm:px-2 sm:py-2 text-xs rounded-full shadow-sm hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-1 animate-pulse mt-1"
 							>
-								New content
-							</label>
+								<svg 
+									className="w-3 h-3 sm:w-4 sm:h-4" 
+									fill="none" 
+									stroke="currentColor" 
+									viewBox="0 0 24 24"
+								>
+									<path 
+										strokeLinecap="round" 
+										strokeLinejoin="round" 
+										strokeWidth={2} 
+										d="M5 10l7-7m0 0l7 7m-7-7v18" 
+									/>
+								</svg>
+								<span className="text-xs sm:text-sm">New Content</span>
+								<div className="bg-white text-[#1783fb] text-xs font-bold px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-full">
+									NEW
+								</div>
+							</button>
 						</div>
-					)}
-				
-					
+					)}				
 					<PopoverRoot>
 						<PopoverTrigger asChild>
 							<Button
@@ -873,29 +982,17 @@ export default function Page() {
 				</div>
 			</div>
 
-			{/* New Content Available Button */}
-			{isNewAvail && activeTab === 'live' && (
-				<div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
-					<Button
-						onClick={handleViewNewContents}
-						className="bg-[#1783fb] text-white px-4 py-2 rounded-full shadow-lg hover:bg-[#1461cc] transition-all duration-200"
-					>
-						🔥 New content available
-					</Button>
-				</div>
-			)}
-
-			{/* Meme Container - Updated with proper grid gap */}
+			{/* Meme Container */}
 			<div
 				ref={memeContainerRef}
-				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 grid-cols-1 grid-flow-row gap-4 md:gap-6 !min-h-[40vh] mt-6 mb-4 no-scrollbar w-full"
+				className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-y-10 grid-cols-1 grid-flow-row !min-h-[47vh] mt-6 mb-4 no-scrollbar w-full"
 				style={{ height: 'calc(100vh - 150px)', paddingBottom: '200px' }}
 			>
 				{!loading &&
 					activeTab === 'live' &&
 					displayedMemes.length > 0 &&
 					displayedMemes.map((meme, index) => (
-						<MemeCard
+						<MemoizedMemeCard
 							key={meme._id}
 							bookmark={handleBookmark}
 							index={index}
@@ -915,8 +1012,8 @@ export default function Page() {
 					activeTab === 'all' &&
 					allMemeDataFilter?.length > 0 &&
 					allMemeDataFilter.map((item, index) => (
-						<div key={index}>
-							<LeaderboardMemeCard
+						<div key={item._id} className={hiddenMemes.has(item._id) ? "hidden" : ""}>
+							<MemoizedLeaderboardMemeCard
 								meme={item}
 								onOpenMeme={() => {
 									setSelectedMeme(item)
@@ -926,33 +1023,26 @@ export default function Page() {
 								voteMeme={memeId => handleUpvoteDownvote(memeId)}
 								bmk={bookMarks.some(get_meme => get_meme._id == item._id)}
 								activeTab={activeTab}
+								onImageError={() => {
+									setHiddenMemes(prev => new Set([...prev, item._id]))
+								}}
 							/>
 						</div>
 					))}
 
 				{!loading &&
-					activeTab === 'live' &&
-					displayedMemes?.length === 0 && (
+					displayedMemes?.length === 0 &&
+					allMemeData?.length === 0 && (
 						<p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
-							No live content available.
+							<AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto md:col-span-12" />
 						</p>
 					)}
-
-				{!loading &&
-					activeTab === 'all' &&
-					allMemeDataFilter?.length === 0 && (
-						<p className="text-center text-nowrap text-2xl mx-auto md:col-span-12">
-							No content available
-						</p>
-					)}
-					
 				{loading && (
 					<AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto md:col-span-12" />
 				)}
 			</div>
 
 			{/* Pagination */}
-			{/* {displayedMemes.length > 0 && ( */}
 			<PaginationRoot
 				count={activeTab === 'all' ? allMemeCount : totalMemeCount}
 				pageSize={pageSize}
@@ -962,13 +1052,8 @@ export default function Page() {
 				page={page}
 				onPageChange={e => setPage(e.page)}
 			>
-				{/* <HStack className="justify-center">
-					<PaginationPrevTrigger />
-					<PaginationItems />
-					<PaginationNextTrigger />
-				</HStack> */}
 			</PaginationRoot>
-			{/* )} */}
+
 			{/* Meme Detail Modal */}
 			{isMemeDetailOpen && selectedMeme && (
 				<MemeDetail
