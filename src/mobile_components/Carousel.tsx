@@ -1,17 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { LazyImage } from '@/components/LazyImage'
-
-interface Meme {
-	_id: string
-	name: string
-	image_url: string
-}
+import { Meme } from './types'
 
 interface CarouselProps {
 	items?: Meme[]
+	onMemeClick?: (meme: Meme) => void
 }
 
-function Carousel({ items = [] }: CarouselProps) {
+function Carousel({ items = [], onMemeClick }: CarouselProps) {
 	const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set())
 	const [isDragging, setIsDragging] = useState(false)
 	const [startX, setStartX] = useState(0)
@@ -102,12 +98,18 @@ function Carousel({ items = [] }: CarouselProps) {
 					<div
 						key={`${meme._id}-${index}`}
 						className="w-1/3 flex-shrink-0 px-2 rounded-sm"
+						onClick={(e) => {
+							if (!isDragging && onMemeClick) {
+								e.stopPropagation();
+								onMemeClick(meme);
+							}
+						}}
 					>
 						<div className="p-0.5 h-32">
 							<LazyImage
 								src={meme.image_url}
 								alt={meme.name}
-								className="w-full h-full object-cover rounded"
+								className="w-full h-full object-cover rounded cursor-pointer"
 								onError={() => {
 									setHiddenItems(prev => new Set([...prev, meme._id]))
 								}}

@@ -15,6 +15,7 @@ import MemesList from '@/mobile_components/MemesList'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { toast } from 'react-toastify'
 import Share from '@/components/Share'
+import MemeDetails from '@/mobile_components/MemeDetails'
 import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { Context } from '@/context/contextProvider'
 
@@ -35,6 +36,8 @@ function Page() {
 		id: string
 		imageUrl: string
 	} | null>(null)
+	const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null)
+	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
@@ -261,6 +264,16 @@ function Page() {
 		setShareData({ id: memeId, imageUrl })
 		setIsShareOpen(true)
 	}
+	
+	const handleMemeClick = (meme: Meme) => {
+		setSelectedMeme(meme)
+		setIsDetailsOpen(true)
+	}
+	
+	const handleDetailsClose = () => {
+		setIsDetailsOpen(false)
+		setSelectedMeme(null)
+	}
 
 	const handleBookmark = async (id: string, name: string, imageUrl: string) => {
 		if (!user || !user.address) {
@@ -302,7 +315,10 @@ function Page() {
 			<Navbar />
 			<div className="flex-1 overflow-y-auto">
 				<div>
-					<Carousel items={carouselMemes} />
+					<Carousel 
+						items={carouselMemes} 
+						onMemeClick={(meme) => handleMemeClick(meme)}
+					/>
 					<Selector
 						activeTab={activeTab}
 						handleTabChange={handleTabChange}
@@ -338,6 +354,17 @@ function Page() {
 					onClose={() => setIsShareOpen(false)}
 					imageUrl={shareData.imageUrl}
 					id={shareData.id}
+				/>
+			)}
+			{selectedMeme && (
+				<MemeDetails
+					isOpen={isDetailsOpen}
+					onClose={handleDetailsClose}
+					meme={selectedMeme}
+					tab={activeTab}
+					onVoteMeme={(memeId: string) => handleVote(memeId)}
+					bmk={bookMarks.some(bookmark => bookmark._id === selectedMeme._id)}
+					onMemeChange={(newMeme) => setSelectedMeme(newMeme)}
 				/>
 			)}
 		</div>

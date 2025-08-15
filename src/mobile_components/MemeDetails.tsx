@@ -20,6 +20,7 @@ interface MemeDetailProps {
 	tab: string
 	onVoteMeme: (memeId: string) => void
 	bmk: boolean
+	onMemeChange?: (newMeme: Meme) => void
 }
 
 export default function MemeDetails({
@@ -28,6 +29,7 @@ export default function MemeDetails({
 	meme,
 	onVoteMeme,
 	bmk,
+	onMemeChange,
 }: MemeDetailProps) {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
@@ -92,6 +94,26 @@ export default function MemeDetails({
 			setIsBookmarked(!isBookmarked)
 		} catch (err) {
 			console.log(err)
+		}
+	}
+	
+	const handleRelatedMemeClick = (relatedMeme: Meme) => {
+		// Update the current meme to the clicked related meme
+		if (relatedMeme && relatedMeme._id !== meme?._id) {
+			// Reset states for the new meme
+			setEyeOpen(relatedMeme.has_user_voted || false)
+			setIsBookmarked(bmk)
+			
+			// Scroll to top of modal
+			const modalContent = document.querySelector('.fixed.inset-0.z-50.flex.flex-col > div')
+			if (modalContent) {
+				modalContent.scrollTop = 0
+			}
+			
+			// Call the parent component's onMemeChange handler if provided
+			if (onMemeChange) {
+				onMemeChange(relatedMeme);
+			}
 		}
 	}
 
@@ -239,6 +261,7 @@ export default function MemeDetails({
 								{!isLoad ? (
 									<Carousel
 										items={relatedMemes}
+										onMemeClick={handleRelatedMemeClick}
 									/>
 								) : (
 									<div className="flex justify-center items-center py-8">
