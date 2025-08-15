@@ -166,15 +166,17 @@ function Page() {
 			<div className="flex-none">
 				<Sorter />
 			</div>
-			<div className="flex-1 overflow-hidden">
-				<MemesList
-					memes={memes}
-					pageType="all"
-					onVote={handleVote}
-					onShare={handleShare}
-					onBookmark={handleBookmark}
-					bookmarkedMemes={savedMemes}
-				/>
+			<div className="flex-1 overflow-y-auto">
+				<div className="h-full overflow-y-auto">
+					<MemesList
+						memes={memes}
+						pageType="all"
+						onVote={handleVote}
+						onShare={handleShare}
+						onBookmark={handleBookmark}
+						bookmarkedMemes={savedMemes}
+					/>
+				</div>
 			</div>
 			<div className="flex-none">
 				<BottomNav />
