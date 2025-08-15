@@ -299,30 +299,32 @@ function Page() {
 	return (
 		<div className="h-screen flex flex-col overflow-hidden">
 			<Navbar />
-			<div className="flex-none">
-				<Carousel items={carouselMemes} />
-				<Selector
-					activeTab={activeTab}
-					handleTabChange={handleTabChange}
-					isNewAvail={isNewAvail}
-					handleViewNewContents={handleViewNewContents}
-				/>
-			</div>
-			<div className="flex-1 overflow-hidden">
-				{tabLoading ? (
-					<div className="h-full flex items-center justify-center">
-						Loading...
-					</div>
-				) : (
-					<MemesList
-						memes={displayedMemes}
-						pageType={activeTab}
-						onVote={handleVote}
-						onShare={handleShare}
-						onBookmark={handleBookmark}
-						bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
+			<div className="flex-1 overflow-y-auto">
+				<div>
+					<Carousel items={carouselMemes} />
+					<Selector
+						activeTab={activeTab}
+						handleTabChange={handleTabChange}
+						isNewAvail={isNewAvail}
+						handleViewNewContents={handleViewNewContents}
 					/>
-				)}
+				</div>
+				<div>
+					{tabLoading ? (
+						<div className="flex items-center justify-center py-8">
+							Loading...
+						</div>
+					) : (
+						<MemesList
+							memes={displayedMemes}
+							pageType={activeTab}
+							onVote={handleVote}
+							onShare={handleShare}
+							onBookmark={handleBookmark}
+							bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
+						/>
+					)}
+				</div>
 			</div>
 			<div className="flex-none">
 				<BottomNav />

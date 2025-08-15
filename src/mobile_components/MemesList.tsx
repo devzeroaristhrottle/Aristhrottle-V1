@@ -36,21 +36,19 @@ function MemesList({
 
 	return (
 		<>
-			<div className="h-full overflow-y-auto">
-				<div className="grid grid-cols-1 gap-4 px-4 pb-4">
-					{memes.map(meme => (
-						<Memecard
-							key={meme._id}
-							meme={meme}
-							pageType={pageType}
-							onVote={onVote}
-							onShare={onShare}
-							onBookmark={onBookmark}
-							isBookmarked={bookmarkedMemes.has(meme._id)}
-							onImageClick={() => handleMemeClick(meme)}
-						/>
-					))}
-				</div>
+			<div className="grid grid-cols-1 gap-4 px-4 pb-4">
+				{memes.map(meme => (
+					<Memecard
+						key={meme._id}
+						meme={meme}
+						pageType={pageType}
+						onVote={onVote}
+						onShare={onShare}
+						onBookmark={onBookmark}
+						isBookmarked={bookmarkedMemes.has(meme._id)}
+						onImageClick={() => handleMemeClick(meme)}
+					/>
+				))}
 			</div>
 
 			{selectedMeme && (
