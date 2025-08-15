@@ -22,6 +22,7 @@ import { Meme } from '@/mobile_components/types'
 
 function Page() {
 	const [activeTab, setActiveTab] = useState<'live' | 'all'>('live')
+	const [view, setView] = useState<'grid' | 'list'>('list')
 	const [isNewAvail, setIsNewAvail] = useState<boolean>(false)
 	const [carouselMemes, setCarouselMemes] = useState<Meme[]>([])
 	const [allMemes, setAllMemes] = useState<Meme[]>([])
@@ -307,6 +308,8 @@ function Page() {
 						handleTabChange={handleTabChange}
 						isNewAvail={isNewAvail}
 						handleViewNewContents={handleViewNewContents}
+						view={view}
+						onViewChange={setView}
 					/>
 				</div>
 				<div>
@@ -322,6 +325,7 @@ function Page() {
 							onShare={handleShare}
 							onBookmark={handleBookmark}
 							bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
+							view={view}
 						/>
 					)}
 				</div>

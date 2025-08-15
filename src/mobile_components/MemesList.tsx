@@ -10,6 +10,7 @@ function MemesList({
 	onShare,
 	onBookmark,
 	bookmarkedMemes = new Set(),
+	view = 'list'
 }: MemesListProps) {
 	const [selectedMeme, setSelectedMeme] = useState<
 		(typeof memes)[0] | undefined
@@ -36,18 +37,19 @@ function MemesList({
 
 	return (
 		<>
-			<div className="grid grid-cols-1 gap-4 px-4 pb-4">
+			<div className={`grid ${view === 'grid' ? 'grid-cols-2' : 'grid-cols-1'} gap-4 px-4 pb-4`}>
 				{memes.map(meme => (
-					<Memecard
-						key={meme._id}
-						meme={meme}
-						pageType={pageType}
-						onVote={onVote}
-						onShare={onShare}
-						onBookmark={onBookmark}
-						isBookmarked={bookmarkedMemes.has(meme._id)}
-						onImageClick={() => handleMemeClick(meme)}
-					/>
+					<div key={meme._id} className={view === 'grid' ? 'aspect-square' : ''}>
+						<Memecard
+							meme={meme}
+							pageType={pageType}
+							onVote={onVote}
+							onShare={onShare}
+							onBookmark={onBookmark}
+							isBookmarked={bookmarkedMemes.has(meme._id)}
+							onImageClick={() => handleMemeClick(meme)}
+						/>
+					</div>
 				))}
 			</div>
 

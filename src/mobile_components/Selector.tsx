@@ -2,7 +2,7 @@ import { TabButton } from '@/components/TabButton'
 import { Button } from '@/components/ui/button'
 import { IoReloadOutline } from 'react-icons/io5'
 import { LiaSortSolid } from 'react-icons/lia'
-import { IoGridOutline } from 'react-icons/io5'
+import { IoGridOutline, IoListOutline } from 'react-icons/io5'
 
 import React from 'react'
 
@@ -11,11 +11,15 @@ function Selector({
 	handleTabChange,
 	activeTab,
 	handleViewNewContents,
+	view = 'list',
+	onViewChange,
 }: {
 	isNewAvail: boolean
 	handleTabChange: (nos: 'all' | 'live') => void
 	activeTab: 'all' | 'live'
 	handleViewNewContents: () => void
+	view?: 'grid' | 'list'
+	onViewChange?: (view: 'grid' | 'list') => void
 }) {
 	return (
 		<div className="flex flex-row justify-between p-3">
@@ -45,8 +49,17 @@ function Selector({
 					/>
 				</div>
 			</div>
-			<div id="new_or_grid_buttons" className="flex flex-row gap-2">
-				<IoGridOutline className="h-full" />
+			<div id="new_or_grid_buttons" className="flex flex-row gap-2 items-center">
+				<button
+					onClick={() => onViewChange?.(view === 'grid' ? 'list' : 'grid')}
+					className="p-2 hover:text-blue-400 transition-colors"
+				>
+					{view === 'grid' ? (
+						<IoListOutline className="w-5 h-5" />
+					) : (
+						<IoGridOutline className="w-5 h-5" />
+					)}
+				</button>
 				{isNewAvail && activeTab === 'live' && (
 					<Button
 						size={{ sm: 'xs', md: 'sm' }}

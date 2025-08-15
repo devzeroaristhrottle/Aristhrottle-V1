@@ -48,4 +48,5 @@ export interface MemesListProps {
 	onShare?: (memeId: string, imageUrl: string) => void
 	onBookmark?: (memeId: string, name: string, imageUrl: string) => void
 	bookmarkedMemes?: Set<string>
+	view?: 'grid' | 'list'
 }
