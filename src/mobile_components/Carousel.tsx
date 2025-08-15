@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { LazyImage } from '@/components/LazyImage'
 
 interface Meme {
@@ -13,6 +13,64 @@ interface CarouselProps {
 
 function Carousel({ items = [] }: CarouselProps) {
 	const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set())
+	const [isDragging, setIsDragging] = useState(false)
+	const [startX, setStartX] = useState(0)
+	const [scrollLeft, setScrollLeft] = useState(0)
+	const [autoScroll, setAutoScroll] = useState(true)
+	const containerRef = useRef<HTMLDivElement>(null)
+	const animationRef = useRef<number>(0);
+	const lastScrollLeft = useRef(0)
+
+	useEffect(() => {
+		const container = containerRef.current
+		if (!container) return
+
+		const handleAutoScroll = () => {
+			if (!autoScroll || isDragging) return
+			
+			const maxScroll = container.scrollWidth / 2
+			lastScrollLeft.current += 1
+			
+			if (lastScrollLeft.current >= maxScroll) {
+				lastScrollLeft.current = 0
+			}
+			
+			container.scrollLeft = lastScrollLeft.current
+			animationRef.current = requestAnimationFrame(handleAutoScroll)
+		}
+
+		animationRef.current = requestAnimationFrame(handleAutoScroll)
+
+		return () => {
+			if (animationRef.current) {
+				cancelAnimationFrame(animationRef.current)
+			}
+		}
+	}, [autoScroll, isDragging])
+
+	const handleTouchStart = (e: React.TouchEvent) => {
+		setIsDragging(true)
+		setAutoScroll(false)
+		setStartX(e.touches[0].pageX - (containerRef.current?.offsetLeft || 0))
+		setScrollLeft(containerRef.current?.scrollLeft || 0)
+	}
+
+	const handleTouchMove = (e: React.TouchEvent) => {
+		if (!isDragging) return
+
+		e.preventDefault()
+		const x = e.touches[0].pageX - (containerRef.current?.offsetLeft || 0)
+		const walk = (x - startX) * 2
+		if (containerRef.current) {
+			containerRef.current.scrollLeft = scrollLeft - walk
+			lastScrollLeft.current = containerRef.current.scrollLeft
+		}
+	}
+
+	const handleTouchEnd = () => {
+		setIsDragging(false)
+		setTimeout(() => setAutoScroll(true), 1000) // Resume auto-scroll after 1 second
+	}
 
 	if (!items.length) {
 		return (
@@ -29,8 +87,17 @@ function Carousel({ items = [] }: CarouselProps) {
 	}
 
 	return (
-		<div className="w-full h-32 overflow-hidden">
-			<div className="flex animate-scroll">
+		<div 
+			className="w-full h-32 overflow-hidden"
+			onTouchStart={handleTouchStart}
+			onTouchMove={handleTouchMove}
+			onTouchEnd={handleTouchEnd}
+		>
+			<div 
+				ref={containerRef}
+				className={`flex overflow-x-hidden ${!isDragging && autoScroll ? 'transition-all duration-300' : ''}`}
+				style={{ scrollBehavior: isDragging ? 'auto' : 'smooth' }}
+			>
 				{duplicatedItems.map((meme, index) => (
 					<div
 						key={`${meme._id}-${index}`}
@@ -49,19 +116,6 @@ function Carousel({ items = [] }: CarouselProps) {
 					</div>
 				))}
 			</div>
-			<style jsx>{`
-				@keyframes scroll {
-					0% {
-						transform: translateX(0);
-					}
-					100% {
-						transform: translateX(-50%);
-					}
-				}
-				.animate-scroll {
-					animation: scroll 20s linear infinite;
-				}
-			`}</style>
 		</div>
 	)
 }
