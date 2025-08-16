@@ -26,7 +26,7 @@ def get_genai_client():
 def get_genai_config():
     return types.GenerateContentConfig(
         temperature=0.7,
-        max_output_tokens=100,
+        max_output_tokens=300,
         top_p=0.9,
         top_k=40
     )

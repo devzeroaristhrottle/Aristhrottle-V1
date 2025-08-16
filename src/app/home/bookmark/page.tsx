@@ -1,116 +1,229 @@
-"use client";
+'use client'
+
+import { Context } from '@/context/contextProvider'
+import { useAuthModal, useUser } from '@account-kit/react'
+import React, { useContext, useEffect, useState } from 'react'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+import { Meme } from '../page'
+import axiosInstance from '@/utils/axiosInstance'
+
+import Share from '@/components/Share'
+import { useRouter } from 'next/navigation'
+import MemeDetail from '@/components/MemeDetail'
+import { toast } from 'react-toastify'
+import BookmarkMemeCard from '@/components/BookmarkMemeCard'
+
+export default function Page() {
+	const [loading, setLoading] = useState<boolean>(false)
+	const [memes, setMemes] = useState<Meme[]>([])
+	const [isShareOpen, setIsShareOpen] = useState(false)
+	const [shareData, setShareData] = useState<{ id: string; imageUrl: string } | null>(null)
+	const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null)
+	const [currentMemeIndex, setCurrentMemeIndex] = useState<number>(0)
+	const [savedMemes, setSavedMemes] = useState<Set<string>>(new Set())
+	
+	const user = useUser()
+	const router = useRouter()
+	const { openAuthModal } = useAuthModal()
+	const { userDetails } = useContext(Context)
+
+	useEffect(() => {
+		if (user && user.address) {
+			getMyMemes()
+		}
+	}, [user, userDetails])
+
+	const getMyMemes = async () => {
+		try {
+			setLoading(true)
+			const resp = await axiosInstance.get('/api/bookmark')
+			if (resp.status == 200) {
+				const formattedMemes = resp.data.memes.map((meme: any) => ({
+					_id: meme._id,
+					vote_count: meme.vote_count || 0,
+					name: meme.name,
+					image_url: meme.image_url,
+					tags: meme.tags || [],
+					categories: meme.categories || [],
+					created_by: {
+						_id: meme.created_by._id,
+						username: meme.created_by.username,
+						user_wallet_address: meme.created_by.user_wallet_address || '',
+						createdAt: meme.created_by.createdAt || '',
+						updatedAt: meme.created_by.updatedAt || '',
+						__v: meme.created_by.__v || 0,
+						profile_pic: meme.created_by.profile_pic
+					},
+					createdAt: meme.createdAt,
+					updatedAt: meme.updatedAt,
+					shares: meme.shares || [],
+					bookmarks: meme.bookmarks || [],
+					is_onchain: meme.is_onchain || false,
+					__v: meme.__v || 0,
+					has_user_voted: meme.has_user_voted
+				}))
+				setMemes(formattedMemes)
+				setSavedMemes(new Set(formattedMemes.map((meme: Meme) => meme._id)));
+
+			}
+		} catch (error) {
+			console.log(error)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const handleShare = (id: string, imageUrl: string) => {
+		setShareData({ id, imageUrl })
+		setIsShareOpen(true)
+	}
+
+	const handleCloseShare = () => {
+		setIsShareOpen(false)
+		setShareData(null)
+	}
+
+	const handleMemeClick = (meme: Meme, index: number) => {
+		setSelectedMeme(meme)
+		setCurrentMemeIndex(index)
+	}
+
+	const handleCloseMemeDetail = () => {
+		setSelectedMeme(null)
+	}
+
+	const handleNextMeme = () => {
+		if (currentMemeIndex < memes.length - 1) {
+			const nextIndex = currentMemeIndex + 1
+			setSelectedMeme(memes[nextIndex])
+			setCurrentMemeIndex(nextIndex)
+		}
+	}
+
+	const handlePrevMeme = () => {
+		if (currentMemeIndex > 0) {
+			const prevIndex = currentMemeIndex - 1
+			setSelectedMeme(memes[prevIndex])
+			setCurrentMemeIndex(prevIndex)
+		}
+	}
+
+	const handleVoteUpdate = (memeId: string) => {
+		// Update the meme in the list
+		setMemes(prevMemes => 
+			prevMemes.map(meme => 
+				meme._id === memeId 
+					? { ...meme, vote_count: meme.vote_count + 1, has_user_voted: true }
+					: meme
+			)
+		)
+		
+		// Update selected meme if it's the same one
+		if (selectedMeme && selectedMeme._id === memeId) {
+			setSelectedMeme(prev => prev ? { ...prev, vote_count: prev.vote_count + 1, has_user_voted: true } : null)
+		}
+	}
+
+	const handleSavedMemesUpdate = (memeId: string) => {
+		setSavedMemes(prev => {
+			const newSet = new Set(prev)
+			if (newSet.has(memeId)) {
+				newSet.delete(memeId)
+			} else {
+				newSet.add(memeId)
+			}
+			return newSet
+		})
+	}
+
+	if (!user || !user.address) {
+		return (
+			<div className="flex items-center justify-center h-screen">
+				<button
+					className="px-6 py-3 bg-gradient-to-r from-[#1783fb]/20 to-[#1783fb]/10 border border-[#1783fb]/50 rounded-lg text-xl text-white font-medium hover:bg-[#1783fb]/20 transition-all duration-300"
+					onClick={() => openAuthModal()}
+				>
+					Connect Wallet to View Bookmarks
+				</button>
+			</div>
+		)
+	}
+
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center h-screen">
+				<AiOutlineLoading3Quarters className="animate-spin text-4xl text-[#1783fb]" />
+			</div>
+		)
+	}
+
+	if (!loading && (!memes || memes.length === 0)) {
+		return (
+			<div className="flex flex-col items-center justify-center h-screen gap-6">
+				<p className="text-2xl text-white text-center">No bookmarks yet</p>
+				<button
+					onClick={() => router.push('/home')}
+					className="px-6 py-3 bg-gradient-to-r from-[#1783fb]/20 to-[#1783fb]/10 border border-[#1783fb]/50 rounded-lg text-xl text-white font-medium hover:bg-[#1783fb]/20 transition-all duration-300"
+				>
+					Browse Memes
+				</button>
+			</div>
+		)
+	}
+
+	return (
+		<div className="flex flex-col items-center justify-center mx-4 md:mx-0 md:ml-20 lg:ml-0">
+
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full md:max-w-7xl mb-4">
+				{memes.map((item, index) => (
+					<BookmarkMemeCard
+						key={item._id}
+						meme={item}
+						index={index}
+						userDetails={userDetails}
+						savedMemes={savedMemes}
+						onMemeClick={handleMemeClick}
+						onShare={handleShare}
+						onSavedMemesUpdate={handleSavedMemesUpdate}
+						onVoteUpdate={handleVoteUpdate}
+					/>
+				))}
+			</div>
 
 
-import { Context } from "@/context/contextProvider";
+			{isShareOpen && shareData && (
+				<Share
+					id={shareData.id}
+					imageUrl={shareData.imageUrl}
+					onClose={handleCloseShare}
+				/>
+			)}
 
-import React, { useContext, useEffect, useState } from "react";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-
-type Props = {};
-
-// interface TabButtonProps {
-//   label: string;
-//   isActive: boolean;
-// }
-
-interface MyVotedMeme {
-  [key: string]: { id: string; name: string; image_url: string };
-}
-
-export default function Page({}: Props) {
-
-  const [loading, setLoading] = useState<boolean>(false);
-  const [memes, setMemes] = useState<MyVotedMeme>();
-
-  const { userDetails } = useContext(Context);
-
-
-
-  useEffect(() => {
-    getMyMemes();
-  }, [userDetails]);
-
-  const getMyMemes = async () => {
-    try {
-      setLoading(true);
-      const bookmarks = localStorage.getItem("bookmarks");
-      if (bookmarks) {
-        const bookmarksObj: {
-          [key: string]: { id: string; name: string; image_url: string };
-        } = JSON.parse(bookmarks);
-        setMemes(bookmarksObj);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="flex flex-col max-w-7xl mx-auto p-8">
-      <h2 className="cursor-pointer text-[#29e0ca] text-4xl font-medium text-center mb-10">
-        My Bookmarks
-      </h2>
-
-      <div className="grid grid-cols-3 gap-8">
-        {memes &&
-          Object.entries(memes).map((item, index) => (
-            <div key={index} className="p-4">
-              <div className="flex gap-4">
-                <div className="relative flex-grow">
-                  <img
-                    src={item[1].image_url}
-                    alt="Content"
-                    className="w-full aspect-square object-cover border-2 border-white"
-                  />
-                  <div className="flex justify-between">
-                    <p>{item[1].name}</p>
-                  </div>
-                </div>
-
-                {/* <div className="flex flex-col justify-between mb-7">
-                <div>
-                  <p className="text-[#1783fb] text-lg font-bold">
-                    {item.votes}
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col items-center">
-                    <FaRegEye className="rotate-90" size={22} />
-                    <span className="text-base text-[#1783fb]">
-                      {item.views}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <FaRegShareFromSquare size={22} />
-                    <span className="text-base text-[#1783fb]">
-                      {item.shares}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <FaRegBookmark size={22} />
-                    <span className="text-base text-[#1783fb]">
-                      {item.saves}
-                    </span>
-                  </div>
-                </div>
-              </div> */}
-              </div>
-            </div>
-          ))}
-        <div className="col-span-3">
-          {loading && (
-            <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto col-span-12" />
-          )}
-          {!loading && !memes && (
-            <p className="text-center text-nowrap text-2xl mx-auto col-span-12">
-              Meme not found
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+			{/* MemeDetail Component */}
+			{selectedMeme && (
+				<MemeDetail
+					isOpen={!!selectedMeme}
+					onClose={handleCloseMemeDetail}
+					onNext={currentMemeIndex < memes.length - 1 ? handleNextMeme : undefined}
+					onPrev={currentMemeIndex > 0 ? handlePrevMeme : undefined}
+					meme={selectedMeme}
+					tab="bookmark"
+					onVoteMeme={(memeId) => {
+						handleVoteUpdate(memeId)
+						if (!userDetails) {
+							openAuthModal()
+						} else {
+							axiosInstance.post('/api/vote', { vote_to: memeId, vote_by: userDetails._id })
+								.catch(error => {
+									console.error('Error voting for meme:', error)
+									toast.error("Error voting meme")
+								})
+						}
+					}}
+					searchRelatedMemes={() => {}}
+					bmk={true}
+				/>
+			)}
+		</div>
+	)
 }

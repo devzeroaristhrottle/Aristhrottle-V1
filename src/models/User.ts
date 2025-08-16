@@ -1,5 +1,29 @@
 import mongoose from "mongoose";
 
+// Define a schema for a single interest category
+const InterestCategorySchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    tags: {
+      type: [String],
+      validate: [
+        {
+          validator: function(tags: string[]) {
+            return tags.length <= 10;
+          },
+          message: "An interest category cannot have more than 10 tags"
+        }
+      ],
+      default: []
+    }
+  },
+  { _id: false } // Don't create _id for subdocuments
+);
+
 const UserSchema = new mongoose.Schema(
   {
     username: {
@@ -12,6 +36,19 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
+    },
+    phone_no: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function(phone: string) {
+          // Allow empty string or valid phone number format
+          if (!phone) return true;
+          // Basic phone validation - adjust regex as needed for your requirements
+          return /^[\+]?[1-9][\d]{0,15}$/.test(phone);
+        },
+        message: "Please enter a valid phone number"
+      }
     },
     refer_code: {
       type: String,
@@ -31,9 +68,45 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+      trim: true,
+    },
     tags: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Tags",
+    },
+    interests: {
+      type: [InterestCategorySchema],
+      validate: [
+        {
+          validator: function(interests: any[]) {
+            return interests.length <= 5;
+          },
+          message: "User cannot have more than 5 interest categories"
+        }
+      ],
+      default: []
+    },
+    generations: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    lastGenerationReset: {
+      type: Date,
+      default: function() {
+        // Initialize with current UTC date (00:00 UTC of the current day)
+        const now = new Date();
+        return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+      }
+    },
+    tokens_minted: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
   },
   {

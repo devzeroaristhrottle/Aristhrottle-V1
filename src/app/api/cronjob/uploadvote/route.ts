@@ -1,4 +1,3 @@
-import { contract } from "@/ethers/contractUtils";
 import connectToDatabase from "@/lib/db";
 import Vote from "@/models/Vote";
 import { NextResponse } from "next/server";
@@ -21,20 +20,17 @@ export async function POST() {
       userAddresses.push(vote.vote_by.user_wallet_address);
     }
 
-    if (
-      memeIds.length > 0 &&
-      userAddresses.length > 0 &&
-      memeIds.length === userAddresses.length
-    ) {
-      const tx = await contract.addMemeVotesBulk(memeIds, userAddresses);
-      await tx.wait();
-    }
-
+    // Mark votes as processed even without blockchain interaction
     if (votes.length > 0) {
       await Vote.updateMany({ is_onchain: false }, { is_onchain: true });
+      console.log(`Marked ${votes.length} votes as processed without blockchain interaction`);
     }
 
-    return NextResponse.json({ memeIds, userAddresses }, { status: 200 });
+    return NextResponse.json({ 
+      memeIds, 
+      userAddresses,
+      processedCount: votes.length 
+    }, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(

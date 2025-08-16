@@ -14,6 +14,8 @@ const MilestoneSchema = new mongoose.Schema(
       type: String,
       enum: ["vote", "vote-total", "referral", "upload", "upload-total"],
     },
+    transaction_hash: { type: String },
+    claiming_in_progress: { type: Boolean },
   },
   { timestamps: true }
 );

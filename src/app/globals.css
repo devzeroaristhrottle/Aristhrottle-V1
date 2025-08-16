@@ -7,8 +7,15 @@
   font-family: "Jersey 10", serif;
   letter-spacing: 1px;
   font-style: normal;
-  background-image: url("/assets/bg.jpg");
+  /* background-image: url("/assets/bg.jpg"); */
 }
+
+html {
+  color-scheme: dark;
+  background-color: #010101;
+  color: #ededed;
+}
+
 
 .no-scrollbar {
   overflow: scroll; /* Allows scrolling */
@@ -48,14 +55,14 @@ body {
 
 .bg {
   height: 100vh;
-  background-image: url("/assets/bg.jpg");
+  /* background-image: url("/assets/bg.jpg"); */
   background-size: contain;
 }
 
 .bg1 {
-  height: 100vh;
-  overflow-y: auto;
-  background-image: url("/assets/bg1.jpeg");
+  /* height: 100vh; */
+  /* overflow-y: auto; */
+  /* background-image: url("/assets/bg1.jpeg"); */
   background-size: cover;
 }
 
@@ -123,3 +130,16 @@ body {
 .css-aphhdw {
   padding: 0 !important;
 }
+/* Custom animation for flying up points */
+@keyframes flyUp {
+  0% {
+    opacity: 1;
+    transform: translateX(-10%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-10%) translateY(-30px);
+  }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
