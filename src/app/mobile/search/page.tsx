@@ -49,6 +49,7 @@ function Page() {
                     <TabButton isActive={activeTab === 'popular'} label='Popular' onClick={() => setActiveTab('popular')}/>
                 </div>
 
+                {input}
                 {/*Rendered Contents */}
                 <div className="pb-4">{renderContent()}</div>
             </div>

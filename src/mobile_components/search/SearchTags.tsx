@@ -1,8 +1,8 @@
 import React from 'react'
 
-function Tags({ showRank = false } : {showRank?: Boolean}) {
+function Tags({ showRank = false } : {showRank?: boolean}) {
     return (
-        <div>Tags</div>
+        <div>Tags + {showRank}</div>
     )
 }
 
