@@ -17,6 +17,7 @@ function Memecard({
 	isBookmarked = false,
 	onImageClick,
 	onReport,
+	isGridView
 }: MemeCardProps) {
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const [localVoteCount, setLocalVoteCount] = useState(meme.vote_count)
@@ -36,7 +37,7 @@ function Memecard({
 	return (
 		<div className="w-full bg-black/5 rounded-lg overflow-hidden mb-4">
 			{/* User info header */}
-			<div className="p-3 flex items-center space-x-2">
+			<div className="p-3 flex items-center space-x-2" hidden={isGridView || false}>
 				<div className="w-8 h-8 rounded-full overflow-hidden bg-gray-700 flex-none">
 					{meme.created_by?.profile_pic ? (
 						<img
@@ -76,7 +77,7 @@ function Memecard({
 			</div>
 
 			{/* Action buttons */}
-			<div className="py-2 px-3 bg-black/5">
+			<div className="py-2 px-3 bg-black/5" hidden={isGridView || false}>
 				<div className="flex justify-between items-center">
 					<div className="w-16 flex flex-row justify-between" > 
 						<div className='flex items-center flex-col justify-center'>

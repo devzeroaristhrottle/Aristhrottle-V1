@@ -41,6 +41,7 @@ export interface MemeCardProps {
 	isBookmarked?: boolean
 	onImageClick?: () => void
 	onReport?: (memeId: string) => void
+	isGridView?: boolean
 }
 
 export interface MemesListProps {

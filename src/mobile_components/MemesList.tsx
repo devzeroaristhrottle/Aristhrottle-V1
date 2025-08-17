@@ -49,6 +49,7 @@ function MemesList({
 							isBookmarked={bookmarkedMemes.has(meme._id)}
 							onImageClick={() => handleMemeClick(meme)}
 							onReport={() => {}}
+							isGridView={view === 'grid'}
 						/>
 					</div>
 				))}
