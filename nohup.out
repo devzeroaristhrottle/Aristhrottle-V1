@@ -1,0 +1,1051 @@
+[2025-08-14 19:12:13.762] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:13.765] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:13.765] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:13.774] [info] Hyprland IPC starting
+[2025-08-14 19:12:13.775] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:13.775] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:13.775] [warning] 'swap-icon-label' must be a bool.
+
+** (waybar:1629570): WARNING **: 19:12:13.905: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:13.934] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:14.689] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:14.692] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:14.692] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:14.700] [info] Hyprland IPC starting
+[2025-08-14 19:12:14.701] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:14.701] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:14.701] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1629811): WARNING **: 19:12:14.824: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:14.851] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+
+** (waybar:1629811): WARNING **: 19:12:15.312: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:15.387] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:15.390] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:15.390] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:15.399] [info] Hyprland IPC starting
+[2025-08-14 19:12:15.400] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:15.400] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:15.400] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1630088): WARNING **: 19:12:15.530: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:15.558] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:16.025] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:16.028] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:16.028] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:16.037] [info] Hyprland IPC starting
+[2025-08-14 19:12:16.037] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:16.037] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:16.037] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1630345): WARNING **: 19:12:16.162: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:16.192] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+
+** (waybar:1630345): WARNING **: 19:12:16.305: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:16.532] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:16.534] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:16.534] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:16.543] [info] Hyprland IPC starting
+[2025-08-14 19:12:16.544] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:16.544] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:16.544] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1630586): WARNING **: 19:12:16.674: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:16.709] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:17.143] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:17.146] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:17.146] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:17.158] [info] Hyprland IPC starting
+[2025-08-14 19:12:17.158] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:17.158] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:17.158] [warning] 'swap-icon-label' must be a bool.
+
+** (waybar:1630834): WARNING **: 19:12:17.290: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:17.323] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:17.671] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:17.672] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:17.672] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:17.681] [info] Hyprland IPC starting
+[2025-08-14 19:12:17.681] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:17.681] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:17.682] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1631154): WARNING **: 19:12:17.810: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:17.844] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:18.171] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:18.175] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:18.180] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:18.189] [info] Hyprland IPC starting
+[2025-08-14 19:12:18.190] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:18.190] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:18.190] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1631430): WARNING **: 19:12:18.322: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:18.358] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+
+** (waybar:1631430): WARNING **: 19:12:18.359: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:18.612] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:18.615] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:18.615] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:18.624] [info] Hyprland IPC starting
+[2025-08-14 19:12:18.625] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:18.625] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:18.625] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1631738): WARNING **: 19:12:18.753: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:18.794] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:19.065] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:19.067] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:19.067] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:19.078] [info] Hyprland IPC starting
+[2025-08-14 19:12:19.079] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:19.079] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:19.079] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1632009): WARNING **: 19:12:19.211: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:19.252] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:19.468] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:19.470] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:19.470] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:19.480] [info] Hyprland IPC starting
+[2025-08-14 19:12:19.481] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:19.481] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:19.482] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+==> ERROR: Cannot fetch updates
+[2025-08-14 19:12:19.620] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+
+** (waybar:1632285): WARNING **: 19:12:19.620: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:20.000] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:20.002] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:20.002] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:20.011] [info] Hyprland IPC starting
+[2025-08-14 19:12:20.012] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:20.012] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:20.012] [warning] 'swap-icon-label' must be a bool.
+
+** (waybar:1632660): WARNING **: 19:12:20.144: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:20.196] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+
+** (waybar:1632660): WARNING **: 19:12:20.340: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:20.736] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:20.739] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:20.739] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:20.747] [info] Hyprland IPC starting
+[2025-08-14 19:12:20.748] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:20.748] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:20.748] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1632980): WARNING **: 19:12:20.890: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:20.922] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:21.269] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:21.272] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:21.272] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:21.282] [info] Hyprland IPC starting
+[2025-08-14 19:12:21.282] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:21.282] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:21.282] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1633288): WARNING **: 19:12:21.410: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:21.421] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+[2025-08-14 19:12:21.421] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:21.451] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:21.451] [error] Item '': No icon name or pixmap given.
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:21.686] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:21.689] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:21.689] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:21.697] [info] Hyprland IPC starting
+[2025-08-14 19:12:21.698] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:21.698] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:21.698] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1633582): WARNING **: 19:12:21.827: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:21.836] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+[2025-08-14 19:12:21.836] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:21.869] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:21.869] [error] Item '': No icon name or pixmap given.
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:22.243] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:22.246] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:22.246] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:22.254] [info] Hyprland IPC starting
+[2025-08-14 19:12:22.254] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:22.254] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:22.255] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1633938): WARNING **: 19:12:22.389: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:22.399] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+[2025-08-14 19:12:22.399] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:22.431] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:22.431] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:22.431] [error] Item '': No icon name or pixmap given.
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:22.754] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:22.757] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:22.757] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:22.766] [info] Hyprland IPC starting
+[2025-08-14 19:12:22.767] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:22.767] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:22.767] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1634259): WARNING **: 19:12:22.902: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:22.909] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+[2025-08-14 19:12:22.909] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:22.939] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:22.939] [error] Item '': No icon name or pixmap given.
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:23.328] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:23.331] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:23.331] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:23.340] [info] Hyprland IPC starting
+[2025-08-14 19:12:23.341] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:23.341] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:23.341] [warning] 'swap-icon-label' must be a bool.
+
+** (waybar:1634613): WARNING **: 19:12:23.474: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:23.515] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:23.826] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:23.828] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:23.828] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:23.835] [info] Hyprland IPC starting
+[2025-08-14 19:12:23.836] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:23.836] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:23.836] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+[2025-08-14 19:12:23.975] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+
+** (waybar:1635014): WARNING **: 19:12:23.976: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:24.258] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:24.260] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:24.260] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:24.271] [info] Hyprland IPC starting
+[2025-08-14 19:12:24.272] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:24.272] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:24.273] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+[2025-08-14 19:12:24.426] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+
+** (waybar:1635411): WARNING **: 19:12:24.426: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:24.668] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:24.670] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:24.670] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:24.680] [info] Hyprland IPC starting
+[2025-08-14 19:12:24.681] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:24.681] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:24.681] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1635744): WARNING **: 19:12:24.814: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:24.823] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+[2025-08-14 19:12:24.823] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:24.857] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:24.857] [error] Item '': No icon name or pixmap given.
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:25.071] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:25.073] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:25.073] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:25.084] [info] Hyprland IPC starting
+[2025-08-14 19:12:25.085] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:25.085] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:25.085] [warning] 'swap-icon-label' must be a bool.
+
+** (waybar:1636094): WARNING **: 19:12:25.220: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:25.272] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:25.449] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:25.452] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:25.452] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:25.461] [info] Hyprland IPC starting
+[2025-08-14 19:12:25.462] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:25.462] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:25.462] [warning] 'swap-icon-label' must be a bool.
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+
+** (waybar:1636416): WARNING **: 19:12:25.593: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:25.603] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+[2025-08-14 19:12:25.603] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:25.640] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:25.640] [error] Item '': No icon name or pixmap given.
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:25.796] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:25.799] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:25.799] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:25.807] [info] Hyprland IPC starting
+[2025-08-14 19:12:25.808] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:25.808] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:25.808] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1636760): WARNING **: 19:12:25.942: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:25.951] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:26.271] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:26.273] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:26.273] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:26.285] [info] Hyprland IPC starting
+[2025-08-14 19:12:26.285] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:26.285] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:26.286] [warning] 'swap-icon-label' must be a bool.
+==> ERROR: Cannot fetch updates
+==> ERROR: Cannot fetch updates
+[2025-08-14 19:12:26.451] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+
+** (waybar:1637103): WARNING **: 19:12:26.453: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:26.702] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:26.705] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:26.705] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:26.717] [info] Hyprland IPC starting
+[2025-08-14 19:12:26.718] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:26.718] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:26.719] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+
+** (waybar:1637574): WARNING **: 19:12:26.869: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:26.882] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:27.061] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:27.064] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:27.064] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:27.075] [info] Hyprland IPC starting
+[2025-08-14 19:12:27.076] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:27.076] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:27.076] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+[2025-08-14 19:12:27.218] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+
+** (waybar:1637911): WARNING **: 19:12:27.218: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:27.396] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:27.399] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:27.399] [info] Using CSS file /home/himesh/.config/waybar/style.css
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:27.409] [info] Hyprland IPC starting
+[2025-08-14 19:12:27.409] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:27.409] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:27.409] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+
+** (waybar:1638239): WARNING **: 19:12:27.561: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:27.579] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+[2025-08-14 19:12:27.579] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:27.617] [error] Item '': No icon name or pixmap given.
+[2025-08-14 19:12:27.617] [error] Item '': No icon name or pixmap given.
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:27.743] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:27.745] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:27.745] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:27.753] [info] Hyprland IPC starting
+[2025-08-14 19:12:27.754] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:27.754] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:27.755] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+
+** (waybar:1638613): WARNING **: 19:12:27.899: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  pa_context_connect() failed: OK
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:28.152] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:28.155] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:28.155] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:28.168] [info] Hyprland IPC starting
+[2025-08-14 19:12:28.169] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:28.169] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:28.169] [warning] 'swap-icon-label' must be a bool.
+shared memfd open() failed: Too many open files
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:28.337] [error] cpu: Can't open /proc/stat
+[2025-08-14 19:12:28.337] [error] memory: Can't open /proc/meminfo
+[2025-08-14 19:12:28.350] [error] hyprland/workspaces: Hyprland IPC: Couldn't open a socket (1)
+[2025-08-14 19:12:28.351] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:28.356] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:28.357] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:28.357] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:28.357] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:28.361] [warning] Failed to open netdev file /proc/net/dev
+
+** (waybar:1639011): WARNING **: 19:12:28.362: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+[2025-08-14 19:12:28.363] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:28.366] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:28.369] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:28.373] [error] Item 'nm-applet': Could not find an icon named 'nm-signal-100' and no pixmap given.
+
+(waybar:1639011): Gtk-WARNING **: 19:12:28.375: Could not load a pixbuf from /org/gtk/libgtk/icons/32x32/status/image-missing.png.
+This may indicate that pixbuf loaders or the mime database could not be found.
+[2025-08-14 19:12:28.376] [error] Failed to create DBus Proxy for :1.10 /org/ayatana/NotificationItem/nm_applet: Unrecognized image file format
+[2025-08-14 19:12:28.376] [error] Item 'udiskie': Could not find an icon named 'drive-removable-media-usb-pendrive' and no pixmap given.
+[2025-08-14 19:12:28.377] [error] Failed to create DBus Proxy for :1.39 /org/ayatana/NotificationItem/udiskie: Unrecognized image file format
+[2025-08-14 19:12:28.377] [error] Item 'spotify-client': Could not find an icon named 'spotify-linux-32' and no pixmap given.
+[2025-08-14 19:12:28.377] [error] Failed to create DBus Proxy for :1.245 /org/ayatana/NotificationItem/spotify_client: Unrecognized image file format
+
+(waybar:1639011): Pango-WARNING **: 19:12:28.386: failed to create cairo scaled font, expect ugly output. the offending font is 'JetBrainsMono Nerd Font Bold 7.5'
+
+(waybar:1639011): Pango-WARNING **: 19:12:28.386: font_face status is: <unknown error status>
+
+(waybar:1639011): Pango-WARNING **: 19:12:28.386: scaled_font status is: out of memory
+[2025-08-14 19:12:28.391] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+[2025-08-14 19:12:28.392] [error] Item 'nm-applet': Could not find an icon named 'nm-signal-100' and no pixmap given.
+
+** (waybar:1639011): CRITICAL **: 19:12:28.392: 
+unhandled exception (type Glib::Error) in signal handler:
+domain: gdk-pixbuf-error-quark
+code  : 3
+what  : Unrecognized image file format
+
+[2025-08-14 19:12:28.393] [error] Item 'udiskie': Could not find an icon named 'drive-removable-media-usb-pendrive' and no pixmap given.
+
+** (waybar:1639011): CRITICAL **: 19:12:28.393: 
+unhandled exception (type Glib::Error) in signal handler:
+domain: gdk-pixbuf-error-quark
+code  : 3
+what  : Unrecognized image file format
+
+[2025-08-14 19:12:28.393] [error] Item 'spotify-client': Could not find an icon named 'spotify-linux-32' and no pixmap given.
+
+** (waybar:1639011): CRITICAL **: 19:12:28.393: 
+unhandled exception (type Glib::Error) in signal handler:
+domain: gdk-pixbuf-error-quark
+code  : 3
+what  : Unrecognized image file format
+
+
+(waybar:1639011): Gdk-CRITICAL **: 19:12:28.394: ../gtk/gdk/wayland/gdkdisplay-wayland.c:1349: creating shared memory file (using memfd_create) failed: Too many open files
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:28.592] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:28.594] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:28.594] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:28.606] [info] Hyprland IPC starting
+[2025-08-14 19:12:28.607] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:28.607] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:28.608] [warning] 'swap-icon-label' must be a bool.
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+terminate called recursively
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  pa_context_connect() failed: OK
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:29.229] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:29.233] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:29.233] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:29.261] [info] Hyprland IPC starting
+[2025-08-14 19:12:29.262] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:29.275] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:29.276] [warning] 'swap-icon-label' must be a bool.
+[2025-08-14 19:12:29.400] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.400] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.400] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.400] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.400] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.401] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.401] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.401] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.401] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.401] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.401] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.401] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.401] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.401] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.402] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.402] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.402] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.402] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.402] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.402] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.402] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.402] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.403] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.403] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.403] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.404] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.404] [error] Host: Operation was cancelled
+[2025-08-14 19:12:29.404] [error] Host: Operation was cancelled
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+Failed to load cookie file from cookie: Too many open files
+shared memfd open() failed: Too many open files
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:29.500] [error] cpu: Can't open /proc/stat
+[2025-08-14 19:12:29.500] [error] memory: Can't open /proc/meminfo
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:29.515] [error] hyprland/workspaces: Hyprland IPC: Couldn't open a socket (1)
+[2025-08-14 19:12:29.516] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:29.517] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:29.517] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:29.517] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:29.519] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:29.519] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:29.519] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:29.522] [warning] Failed to open netdev file /proc/net/dev
+[2025-08-14 19:12:29.522] [warning] Failed to open netdev file /proc/net/dev
+
+(waybar:1639874): Pango-WARNING **: 19:12:29.531: failed to create cairo scaled font, expect ugly output. the offending font is 'JetBrainsMono Nerd Font Bold 7.5'
+
+(waybar:1639874): Pango-WARNING **: 19:12:29.532: font_face status is: <unknown error status>
+
+(waybar:1639874): Pango-WARNING **: 19:12:29.532: scaled_font status is: out of memory
+[2025-08-14 19:12:29.537] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+
+** (waybar:1639874): WARNING **: 19:12:29.537: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+
+(waybar:1639874): Gdk-CRITICAL **: 19:12:29.540: ../gtk/gdk/wayland/gdkdisplay-wayland.c:1349: creating shared memory file (using memfd_create) failed: Too many open files
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:30.147] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:30.152] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:30.152] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:30.195] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:30.195] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:30.196] [warning] 'swap-icon-label' must be a bool.
+[2025-08-14 19:12:30.197] [info] Hyprland IPC starting
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:12:30.512] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+
+** (waybar:1640444): WARNING **: 19:12:30.512: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  pa_context_connect() failed: OK
+[2025-08-14 19:12:30.728] [info] Using configuration file /home/himesh/.config/waybar/config.jsonc
+[2025-08-14 19:12:30.731] [info] Discovered appearance 'dark'
+[2025-08-14 19:12:30.732] [info] Using CSS file /home/himesh/.config/waybar/style.css
+[2025-08-14 19:12:30.750] [info] Hyprland IPC starting
+[2025-08-14 19:12:30.751] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:12:30.751] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:12:30.752] [warning] 'swap-icon-label' must be a bool.
+Fontconfig warning: using without calling FcInit()
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+==> ERROR: Cannot fetch updates
+[2025-08-14 19:12:31.160] [info] Bar configured (width: 1600, height: 28) for output: eDP-1
+
+** (waybar:1640826): WARNING **: 19:12:31.161: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+Failed to create secure directory (/run/user/1000/pulse): Too many open files
+socket(): Too many open files
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  pa_context_connect() failed: OK
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.059] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:11.930] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.059] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.059] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.059] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.059] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.059] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.059] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.059] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.059] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.058] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.091] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.091] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.091] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.091] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.091] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.091] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.091] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.091] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.092] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.093] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.093] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.093] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.093] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.093] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.093] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.099] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.099] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.099] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.109] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.110] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.242] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.243] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.243] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.243] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.243] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.243] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.243] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.243] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.243] [error] Host: Operation was cancelled
+[2025-08-14 19:13:12.243] [error] Host: Operation was cancelled
+
+** (waybar:1638239): WARNING **: 19:13:12.245: Status Notifier Item with bus name ':1.39' and object path '/org/ayatana/NotificationItem/udiskie' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.246: Status Notifier Host with bus name ':1.20' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.246: Status Notifier Host with bus name ':1.308' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.246: Status Notifier Host with bus name ':1.345' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.246: Status Notifier Host with bus name ':1.314' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.325' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.317' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.367' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.322' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.300' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.373' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.287' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.303' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.292' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.359' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.381' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.336' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.296: Status Notifier Host with bus name ':1.356' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.342' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.339' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.331' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.350' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.384' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.364' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.376' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.353' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.328' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.295' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.297: Status Notifier Host with bus name ':1.311' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.298: Status Notifier Host with bus name ':1.387' and object path '/StatusNotifierHost/0' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.476: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.477: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.843: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.843: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.843: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+
+** (waybar:1638239): WARNING **: 19:13:12.843: Status Notifier Item with bus name ':1.10' and object path '/org/ayatana/NotificationItem/nm_applet' is already registered
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+
+** (waybar:1638239): WARNING **: 19:13:20.125: Status Notifier Item with bus name ':1.245' and object path '/org/ayatana/NotificationItem/spotify_client' is already registered
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+[2025-08-14 19:13:21.056] [error] Host: Operation was cancelled
+[2025-08-14 19:13:21.057] [error] Host: Operation was cancelled
+[2025-08-14 19:13:21.057] [error] Host: Operation was cancelled
+[2025-08-14 19:13:21.057] [error] Host: Operation was cancelled
+[2025-08-14 19:13:21.057] [error] Host: Operation was cancelled
+
+** (waybar:1638239): WARNING **: 19:13:21.057: Status Notifier Host with bus name ':1.370' and object path '/StatusNotifierHost/0' is already registered
+==> ERROR: Cannot fetch updates
+==> ERROR: Cannot fetch updates
+==> ERROR: Cannot fetch updates
+==> ERROR: Cannot fetch updates
+[2025-08-14 19:13:22.594] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.594] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.595] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.596] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.597] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.597] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.597] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.597] [info] Hyprland config reloaded, reinitializing hyprland/workspaces module...
+[2025-08-14 19:13:22.823] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.823] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.823] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.823] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.824] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.825] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.825] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.825] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.825] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.827] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.827] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.827] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.827] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.827] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.827] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.827] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.827] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.828] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.828] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.828] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.828] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.828] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.828] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.829] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.829] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.829] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.829] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.829] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.829] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.830] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.830] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.831] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.831] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.831] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.831] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.831] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.831] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.831] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.831] [info] Loading persistent workspaces from Hyprland workspace rules
+[2025-08-14 19:13:22.832] [info] Loading persistent workspaces from Waybar config
+[2025-08-14 19:13:22.833] [info] Loading persistent workspaces from Hyprland workspace rules
+Gdk-Message: 19:13:22.874: Unable to load arrow from the cursor theme
+wc: write error
+==> ERROR: Cannot fetch updates
+==> ERROR: Cannot fetch updates
+wc: write error
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+wc: write error
+==> ERROR: Cannot fetch updates
+==> ERROR: Cannot fetch updates
+==> ERROR: Cannot fetch updates
+wc: write error
+==> ERROR: Cannot fetch updates
+==> ERROR: Cannot fetch updates
+wc: write error
+wc: write error
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+ERROR: Can't get value of subfeature temp1_max_alarm: Can't read
+/home/himesh/.local/share/bin/gpuinfo.sh: line 149: echo: write error: Broken pipe
+jq: error: writing output failed: Broken pipe
+/home/himesh/.local/share/bin/gpuinfo.sh: line 149: echo: write error: Broken pipe

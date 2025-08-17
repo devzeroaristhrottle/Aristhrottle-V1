@@ -1,6 +1,7 @@
 import { getContractUtils } from "./contractUtils";
 import { ethers } from "ethers";
 import MintLog from "@/models/MintLog";
+import User from "@/models/User";
 import connectToDatabase from "@/lib/db";
 
 /**
@@ -71,6 +72,19 @@ export async function mintTokensAndLog(
     mintLog.status = "success";
     await mintLog.save();
     
+    // Update user's tokens_minted count
+    try {
+      await User.findOneAndUpdate(
+        { user_wallet_address: recipient },
+        { $inc: { tokens_minted: amount } },
+        { upsert: false } // Don't create if user doesn't exist
+      );
+      console.log(`Updated tokens_minted count for ${recipient} by ${amount}`);
+    } catch (userUpdateError) {
+      console.error(`Error updating tokens_minted for ${recipient}:`, userUpdateError);
+      // Don't fail the entire transaction if user update fails
+    }
+    
     console.log(`Successfully minted ${amount} tokens to ${recipient} for ${reason}. TX: ${tx.hash}`);
     
     return { 
@@ -122,6 +136,19 @@ export async function mintTokensAndLog(
         // Update log with success status
         mintLog.status = "success";
         await mintLog.save();
+        
+        // Update user's tokens_minted count
+        try {
+          await User.findOneAndUpdate(
+            { user_wallet_address: recipient },
+            { $inc: { tokens_minted: amount } },
+            { upsert: false } // Don't create if user doesn't exist
+          );
+          console.log(`Updated tokens_minted count for ${recipient} by ${amount} (retry)`);
+        } catch (userUpdateError) {
+          console.error(`Error updating tokens_minted for ${recipient} (retry):`, userUpdateError);
+          // Don't fail the entire transaction if user update fails
+        }
         
         console.log(`Successfully minted ${amount} tokens to ${recipient} for ${reason} after retry. TX: ${tx.hash}`);
         

@@ -103,6 +103,11 @@ const UserSchema = new mongoose.Schema(
         return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
       }
     },
+    tokens_minted: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   {
     timestamps: true,

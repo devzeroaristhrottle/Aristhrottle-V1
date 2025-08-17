@@ -113,6 +113,7 @@ async function handleGetRequest(request: NextRequest) {
           followersCount: followersCount,
           followingCount: followingCount,
           mintedCoins: BigInt(mintedCoins).toString(),
+          tokensMinted: user.tokens_minted || 0,
         },
         { status: 200 }
       );
