@@ -16,7 +16,7 @@ function BottomNav() {
 			<Link href="/mobile/rewards">
 				<div className="flex items-center flex-col gap-0">
 					<LuTrophy className="h-5 w-5" />
-					{pathname === '/mobile/rewards' && <div className="text-[10px] leading-tight">Rewards</div>}
+					{pathname === '/mobile/rewards' && <div className="text-[10px] leading-tight" style={{fontSize: '10px'}}>Rewards</div>}
 				</div>
 			</Link>
 			<Link href="/mobile/upload">
@@ -26,7 +26,7 @@ function BottomNav() {
 					) : (
 						<IoCloudUploadOutline className="h-5 w-5" />
 					)}
-					{pathname === '/mobile/upload' && <div className="text-[10px] leading-tight">Upload</div>}
+					{pathname === '/mobile/upload' && <div className="text-[10px] leading-tight" style={{fontSize: '10px'}}>Upload</div>}
 				</div>
 			</Link>
 			<Link href="/mobile">
@@ -38,19 +38,19 @@ function BottomNav() {
 						src="/assets/aris-logo.svg"
 						width={40}
 					/>
-					{pathname === '/mobile' && <div className="text-[10px] leading-tight">Home</div>}
+					{pathname === '/mobile' && <div className="text-[10px] leading-tight" style={{fontSize: '10px'}}>Home</div>}
 				</div>
 			</Link>
 			<Link href="/mobile/search">
 				<div className="flex items-center flex-col gap-0">
 					<IoSearchSharp className="h-5 w-5" />
-					{pathname === '/mobile/search' && <div className="text-[10px] leading-tight">Search</div>}
+					{pathname === '/mobile/search' && <div className="text-[10px] leading-tight" style={{fontSize: '10px'}}>Search</div>}
 				</div>
 			</Link>
 			<Link href="/mobile/leaderboard">
 				<div className="flex items-center flex-col gap-0">
-					<IoPodiumOutline className="h-5 w-5" />
-					{pathname === '/mobile/leaderboard' && <div className="text-[10px] leading-tight">Leaderboard</div>}
+					<IoPodiumOutline className="h-6 w-6" />
+					{pathname === '/mobile/leaderboard' && <div className="text-[10px] leading-tight" style={{fontSize: '10px'}}>Leaderboard</div>}
 				</div>
 			</Link>
 		</div>
