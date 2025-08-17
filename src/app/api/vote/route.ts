@@ -102,8 +102,7 @@ async function handlePostRequest(request: NextRequest) {
           const oneDayInMillis = 24 * 60 * 60 * 1000;
           
           // If vote is within 1 day of upload, give 1 token instead of 0.25
-          // const creatorAmount = timeDifference < oneDayInMillis ? 1 : 0.25;
-          const creatorAmount = 1;
+          const creatorAmount = timeDifference < oneDayInMillis ? 1 : 0.25;
           
           await mintTokensAndLog(
             creator.user_wallet_address,

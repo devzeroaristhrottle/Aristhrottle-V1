@@ -113,7 +113,6 @@ async function handleGetRequest(request: NextRequest) {
           followersCount: followersCount,
           followingCount: followingCount,
           mintedCoins: BigInt(mintedCoins).toString(),
-          tokensMinted: user.tokens_minted || 0,
         },
         { status: 200 }
       );
@@ -141,7 +140,6 @@ async function handlePostRequest(request: NextRequest) {
     const user_wallet_address = formData.get("user_wallet_address") as string;
     const referral_code = formData.get("referral_code") as string;
     const bio = formData.get("bio") as string;
-    const phone_no = formData.get("phone_no") as string;
     const file = formData.get("file") as File;
     const tags = JSON.parse((formData.get("tags") as string) || "[]");
     const interests = JSON.parse((formData.get("interests") as string) || "[]");
@@ -152,17 +150,6 @@ async function handlePostRequest(request: NextRequest) {
         { message: "Missing required fields" },
         { status: 400 }
       );
-    }
-
-    // Validate phone number format if provided
-    if (phone_no && phone_no.trim() !== "") {
-      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-      if (!phoneRegex.test(phone_no.trim())) {
-        return NextResponse.json(
-          { error: "Please enter a valid phone number" },
-          { status: 400 }
-        );
-      }
     }
 
     // Validate interests format if provided
@@ -238,7 +225,6 @@ async function handlePostRequest(request: NextRequest) {
         username: username,
         user_wallet_address: user_wallet_address,
         bio: bio || "",
-        phone_no: phone_no || "",
         tags: tags || [],
         profile_pic: profile_pic,
         interests: interests || []
@@ -291,7 +277,6 @@ async function handlePostRequest(request: NextRequest) {
       // Update existing user
       existingUser.username = username;
       if (bio !== undefined) existingUser.bio = bio;
-      if (phone_no !== undefined) existingUser.phone_no = phone_no;
       if (tags && tags.length > 0) existingUser.tags = tags;
       if (interests && interests.length > 0) existingUser.interests = interests;
       if (file && file.size > 0) existingUser.profile_pic = profile_pic;
@@ -319,7 +304,6 @@ async function handlePutRequest(request: NextRequest) {
     const user_wallet_address = formData.get("user_wallet_address") as string;
     const new_username = formData.get("username") as string; // Changed from new_username to username for consistency
     const bio = formData.get("bio") as string;
-    const phone_no = formData.get("phone_no") as string;
     const file = formData.get("file") as File;
     const tags = JSON.parse((formData.get("tags") as string) || "[]");
     const interests = JSON.parse((formData.get("interests") as string) || "[]");
@@ -329,17 +313,6 @@ async function handlePutRequest(request: NextRequest) {
         { message: "Missing wallet address" },
         { status: 400 }
       );
-    }
-
-    // Validate phone number format if provided
-    if (phone_no && phone_no.trim() !== "") {
-      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-      if (!phoneRegex.test(phone_no.trim())) {
-        return NextResponse.json(
-          { error: "Please enter a valid phone number" },
-          { status: 400 }
-        );
-      }
     }
 
     // Validate interests format if provided
@@ -396,10 +369,6 @@ async function handlePutRequest(request: NextRequest) {
     
     if (bio !== undefined) {
       user.bio = bio;
-    }
-
-    if (phone_no !== undefined) {
-      user.phone_no = phone_no;
     }
 
     if (tags && tags.length > 0) {

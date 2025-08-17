@@ -3,7 +3,7 @@ import { Milestones } from './Milestones'
 import {
 	getMilestoneKeys,
 	getMilestoneTitles,
-	majorityVotesRewards,
+	// majorityVotesRewards,
 	Milestone,
 	MilestoneTitles,
 	totalVotesRewards,
@@ -99,19 +99,19 @@ const Votes = () => {
 		<div className="grid h-full md:grid-cols-3 grid-cols-1 gap-y-6 md:gap-y-0 flex-col-reverse">
 			<div className="total_majority_milestones_wrapper md:col-span-2 col-span-1 md:order-1 order-2">
 				<div className="total_votes flex flex-col gap-4 md:p-5">
-					<h2 className="text-2xl md:text-4xl">Total Votes</h2>
+					<h2 className="text-2xl md:text-4xl">Votes cast</h2>
 					<ProgressBar
 						milestones={getMilestoneKeys(totalVotesRewards)}
 						currentValue={votesData?.totalVotesCount ?? 0}
 					/>
 				</div>
-				<div className="majority_votes mt-6 md:mt-0 flex flex-col gap-4 md:p-5">
+				{/* <div className="majority_votes mt-6 md:mt-0 flex flex-col gap-4 md:p-5">
 					<h2 className="text-2xl md:text-4xl">Majority Votes</h2>
 					<ProgressBar
 						milestones={getMilestoneKeys(majorityVotesRewards)}
 						currentValue={votesData?.majorityVotesCount ?? 0}
 					/>
-				</div>
+				</div> */}
 				<div className="milestones mt-8 md:mt-6 md:pr-10 flex flex-col">
 					<h2 className="text-2xl md:text-4xl md:pl-5">Milestones</h2>
 					<Milestones hasBorder={false} tasks={votesMilestones} />
@@ -166,7 +166,7 @@ const Votes = () => {
 							View on blockchain explorer
 						</p>
 						<a 
-							href={`https://sepolia.arbiscan.io/token/${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}?a=${user.address}`}
+							href={`https://amoy.polygonscan.com/token/${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}?a=${user.address}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className="bg-[#040f2b] border-2 border-[#1783FB] rounded-lg text-xl md:text-2xl px-4 md:px-8 py-1 md:py-2 hover:bg-blue-500/20 transition-all duration-200 text-center bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"

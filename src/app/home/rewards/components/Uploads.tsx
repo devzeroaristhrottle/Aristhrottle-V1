@@ -3,7 +3,7 @@ import { Milestones } from './Milestones'
 import {
 	getMilestoneKeys,
 	getMilestoneTitles,
-	majorityUploadRewards,
+	// majorityUploadRewards,
 	Milestone,
 	MilestoneTitles,
 	totalUploadRewards,
@@ -108,13 +108,13 @@ const Uploads = () => {
 					/>
 				</div>
 				{/* TODO: add later */}
-				<div className="majority_uploads mt-6 md:mt-0 flex flex-col gap-4 md:p-5">
+				{/* <div className="majority_uploads mt-6 md:mt-0 flex flex-col gap-4 md:p-5">
 					<h2 className="text-2xl md:text-4xl">Majority Uploads</h2>
 					<ProgressBar
 						milestones={getMilestoneKeys(majorityUploadRewards)}
 						currentValue={uploadData?.majorityUploads ?? 0}
 					/>
-				</div>
+				</div> */}
 
 				<div className="milestones mt-8 md:mt-6 md:pr-10 flex flex-col">
 					<h2 className="text-2xl md:text-4xl md:pl-5">Milestones</h2>
@@ -172,7 +172,7 @@ const Uploads = () => {
 							View on blockchain explorer
 						</p>
 						<a 
-							href={`https://sepolia.arbiscan.io/token/${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}?a=${user.address}`}
+							href={`https://amoy.polygonscan.com/token/${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}?a=${user.address}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className="bg-[#040f2b] border-2 border-[#1783FB] rounded-lg text-xl md:text-2xl px-4 md:px-8 py-1 md:py-2 hover:bg-blue-500/20 transition-all duration-200 text-center bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"

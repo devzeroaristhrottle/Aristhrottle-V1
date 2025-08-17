@@ -99,17 +99,17 @@ export default function BookmarkMemeCard({
 				{/* Action Buttons - Vertical Layout */}
 				<div className="flex flex-col justify-end gap-2 w-4">
 					{/* Vote Button */}
-					<div className="flex flex-col items-center">
+					<div className="flex flex-col items-center ">
 						{meme.has_user_voted ? (
 							<img
 								src={'/assets/vote/icon1.png'}
 								alt="vote"
-								className="!w-12 h-6"
+								className="!w-15 h-6"
 							/>
 						) : (
 							<Logo
 								classNames={
-									'w-6 h-6 md:w-7 md:h-7 ' +
+									'w-9 h-6 md:w- md:h-7 ' +
 									(meme.created_by._id === userDetails?._id
 										? '!cursor-not-allowed'
 										: '!cursor-pointer')

@@ -262,7 +262,7 @@ export default function AdminDashboard() {
                     <td key={`${item._id}-${header}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {header === 'transactionHash' && item[header] ? (
                         <a 
-                          href={`https://sepolia.arbiscan.io/tx/${item[header]}`}
+                          href={`https://amoy.polygonscan.com/tx/${item[header]}`}
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-blue-500 hover:underline"
