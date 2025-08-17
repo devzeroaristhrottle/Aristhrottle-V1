@@ -11,12 +11,11 @@ import {
 import ProgressBar from './ProgressBar'
 import { Context } from '@/context/contextProvider'
 import axiosInstance from '@/utils/axiosInstance'
-import { BiDownArrowAlt } from 'react-icons/bi'
+// import { BiDownArrowAlt } from 'react-icons/bi'
 import Loader from '@/components/Loader'
 import {
 	useSendUserOperation,
 	useSmartAccountClient,
-	useUser,
 } from '@account-kit/react'
 import { toast } from 'react-toastify'
 import { EArtTokenABI } from '@/ethers/contractAbi'
@@ -42,7 +41,7 @@ const Uploads = () => {
 	)
 
 	const { client } = useSmartAccountClient({})
-	const user = useUser()
+	// const user = useUser()
 
 	const { sendUserOperation, isSendingUserOperation } = useSendUserOperation({
 		client,
@@ -143,7 +142,7 @@ const Uploads = () => {
 			</div> */}
 
 			{/* Points */}
-			{/* {uploadData?.unClaimedReward && uploadData?.unClaimedReward > 0 && (
+			{uploadData?.unClaimedReward && uploadData?.unClaimedReward > 0 && (
 				<div className="flex flex-col gap-2 items-center border border-[#2FCAC7] rounded-lg p-3 mt-2">
 					<span className="text-xl">Points</span>
 					<h2 className="text-[#2FCAC7] text-2xl">
@@ -183,7 +182,7 @@ const Uploads = () => {
 						{isSendingUserOperation ? 'Sending...' : 'Claim'}
 					</button>
 				</div>
-			)} */}
+			)}
 
 			{/* History */}
 			{/* {user && user.address && (

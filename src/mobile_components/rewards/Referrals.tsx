@@ -12,9 +12,9 @@ import { PiShare } from 'react-icons/pi'
 import { toast } from 'react-toastify'
 import axiosInstance from '@/utils/axiosInstance'
 import ProgressBar from './ProgressBar'
-import { BiDownArrowAlt } from 'react-icons/bi'
+// import { BiDownArrowAlt } from 'react-icons/bi'
 import Loader from '@/components/Loader'
-import { useUser } from '@account-kit/react'
+// import { useUser } from '@account-kit/react'
 
 export type ReferralResponse = {
 	totalReferralCount: number
@@ -30,7 +30,7 @@ const Referrals = () => {
 	>(getMilestoneTitles([], 'referrals'))
 	const [isLoading, setIsLoading] = useState(true)
 	const [isClaimLoading, setIsClaimLoading] = useState(false)
-	const user = useUser()
+	// const user = useUser()
 
 	const userId = userDetails?._id
 
@@ -135,7 +135,7 @@ const Referrals = () => {
 			</div>
 
 			{/* Points section (only shown if points are available) */}
-			{/* {referrals?.points && referrals.points > 0 && (
+			{referrals?.points && referrals.points > 0 && (
 				<div className="flex flex-col gap-2 items-center border border-[#2FCAC7] rounded-lg p-3 mt-2">
 					<span className="text-xl">Points</span>
 					<h2 className="text-[#2FCAC7] text-2xl">
@@ -154,7 +154,7 @@ const Referrals = () => {
 						)}
 					</button>
 				</div>
-			)} */}
+			)}
 
 			{/* Rules */}
 			{/* <div className="flex flex-col gap-2 items-center border border-[#2FCAC7] rounded-lg p-3 mt-2">

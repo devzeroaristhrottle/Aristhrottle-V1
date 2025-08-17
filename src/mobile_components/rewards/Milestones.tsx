@@ -1,9 +1,10 @@
-import { FaCheckCircle, FaRegCircle } from 'react-icons/fa'
+//import { FaCheckCircle, FaRegCircle } from 'react-icons/fa'
 import { useContext, useState } from 'react'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
 import { toast } from 'react-toastify'
 import { MilestoneTitles } from '@/app/home/rewards/constants'
+import { GrCheckmark } from 'react-icons/gr'
 
 export const Milestones = ({
 	tasks: milestones,
@@ -73,7 +74,7 @@ export const Milestones = ({
 			{milestonesList
 				.sort((a, b) => a.reward - b.reward)
 				.map((milestone, index) => (
-					<div key={index} className="flex items-center gap-2 justify-between">
+					<div key={index} className="flex items-center gap-2 justify-between border border-[#2FCAC7] rounded-lg px-2 py-1 ">
 						{/* Status Icon */}
 						{/* <div className="flex items-center justify-center shrink-0">
 							{milestone.isClaimed || milestone.canClaim ? (
@@ -84,22 +85,22 @@ export const Milestones = ({
 						</div> */}
 
 						{/* Title & Reward */}
-						<div className="flex-1 border border-[#2FCAC7]/50 rounded-lg px-2 py-1 flex items-center justify-between gap-x-2">
+						<div className="flex-1 flex items-center justify-between gap-x-2">
 							<p className="text-sm leading-tight">{milestone.title}</p>
-							<p className="text-sm whitespace-nowrap">
+							<p className="text-sm whitespace-nowrap" hidden={milestone.isClaimed}>
 								{milestone.reward} $eART
 							</p>
 						</div>
 
 						{/* Claim Button or Placeholder */}
 						<div className="flex items-center justify-center">
-							{milestone.canClaim ? (
+							{!milestone.isClaimed ? (
 								<button
-									className="relative px-2 py-1 bg-black/10 border border-[#2FCAC7] rounded-lg text-sm"
+									className={`relative px-4 rounded-md text-sm text-black ${(isClaimLoading || !milestone.canClaim) ? 'bg-[#2FCAC7]/20' : 'bg-[#2FCAC7] hover:bg-[#20B2AF]'}`}
 									onClick={() => {
 										handleClaim(milestone.type, milestone, index)
 									}}
-									disabled={isClaimLoading}
+									disabled={isClaimLoading || !milestone.canClaim}
 								>
 									{isClaimLoading ? (
 										<div className="absolute inset-0 flex items-center justify-center">
@@ -108,10 +109,13 @@ export const Milestones = ({
 									) : (
 										'Claim'
 									)}
-								</button>
-							) : (
-								<div className="w-full h-full" />
-							)}
+								</button>) : (
+                                    <div className='flex justify-between items-center'>
+                                        <GrCheckmark className='text-[#2FCAC7]'/>
+                                        <div className='text-[#2FCAC7] ml-2'>Claimed</div>
+                                    </div>
+                                )
+							}
 						</div>
 					</div>
 				))}

@@ -61,7 +61,7 @@ const Money = () => {
                 <div className="text-xs text-white text-right pr-2">Current: {userReferrals} Referrals</div>
             </div>
             {/* Milestones List */}
-            <Milestones tasks={moneyMilestones} hasBorder={true} />
+            <Milestones tasks={moneyMilestones} hasBorder={false} />
         </div>
     )
 }
