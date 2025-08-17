@@ -72,6 +72,8 @@ export default function MemeDetail({
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
   const [hidden, setHidden] = useState<Set<string>>(new Set())
 
+  console.log(meme, meme && meme.tags, 'abc')
+
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50
 
@@ -204,6 +206,16 @@ export default function MemeDetail({
   if (!meme) return null
 
   if (!isOpen) return null
+
+  console.log(
+    meme,
+    meme.tags,
+    isMeme(meme),
+    tab === 'live',
+    typeof meme.tags[0] === 'string',
+    meme.tags[0],
+    'abc'
+  )
 
   return (
     <>
@@ -421,11 +433,7 @@ export default function MemeDetail({
                         key={index}
                         className='bg-transparent border-2 border-[#1783fb] rounded-lg px-3 py-1.5 text-sm text-white font-medium backdrop-blur-sm flex flex-row items-center justify-center gap-1'
                       >
-                        {tab === 'live'
-                          ? tag.name
-                          : typeof tag === 'string'
-                          ? tag
-                          : tag.name}
+                        {typeof tag === 'string' ? tag : tag.name}
                       </span>
                     ))}
                   </div>
