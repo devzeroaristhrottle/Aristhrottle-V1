@@ -3,7 +3,7 @@ import BottomNav from '@/mobile_components/BottomNav'
 import Navbar from '@/mobile_components/Navbar'
 import React from 'react'
 
-function page() {
+function Page() {
     return (
         <div className='h-screen flex flex-col overflow-hidden'>
             <Navbar />
@@ -13,4 +13,4 @@ function page() {
     )
 }
 
-export default page
+export default Page

@@ -7,26 +7,11 @@ import Referrals from '@/mobile_components/rewards/Referrals'
 import Money from '@/mobile_components/rewards/Money'
 import BottomNav from '@/mobile_components/BottomNav'
 import Navbar from '@/mobile_components/Navbar'
+import { TabButton } from '@/mobile_components/TabButton'
 
-interface TabButtonProps {
-	label: string
-	isActive: boolean
-	onClick: () => void
-}
 
 export default function Page() {
 	const [activeTab, setActiveTab] = useState('vote')
-
-	const TabButton = ({ label, isActive, onClick }: TabButtonProps) => (
-		<button
-			onClick={onClick}
-			className={`text-base px-3 rounded-full transition-all duration-300 border border-[#2FCAC7] ${
-				isActive ? 'bg-[#2FCAC7] text-black font-medium' : 'bg-black/30 text-white'
-			}`}
-		>
-			{label}
-		</button>
-	)
 
 	const renderContent = () => {
 		switch (activeTab) {
