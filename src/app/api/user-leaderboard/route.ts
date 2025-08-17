@@ -11,6 +11,7 @@ async function handleGetRequest(request: NextRequest) {
     const filter = searchParams.get("filter") || "tokens_minted";
     const limit = parseInt(searchParams.get("limit") || "50");
     const offset = parseInt(searchParams.get("offset") || "0");
+    const daily = searchParams.get("daily");
 
     // Validate filter parameter
     const validFilters = ["tokens_minted", "votes_received", "votes_casted", "uploads", "username"];
@@ -36,21 +37,41 @@ async function handleGetRequest(request: NextRequest) {
       );
     }
 
+    // Calculate daily window if needed
+    let dateFilter = {};
+    if (daily === "true") {
+      const now = new Date();
+      const today6amIST = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        0, 30
+      ));
+      const yesterday6amIST = new Date(today6amIST.getTime() - 24 * 60 * 60 * 1000);
+      dateFilter = { $gte: yesterday6amIST, $lt: today6amIST };
+    }
+
     // Build aggregation pipeline for comprehensive user data
     const comprehensivePipeline: any[] = [
       {
         $lookup: {
           from: "memes",
-          localField: "_id",
-          foreignField: "created_by",
+          let: { userId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$created_by", "$$userId"] } } },
+            ...(daily === "true" ? [{ $match: { createdAt: dateFilter } }] : [])
+          ],
           as: "user_memes"
         }
       },
       {
         $lookup: {
           from: "votes",
-          localField: "_id",
-          foreignField: "vote_by",
+          let: { userId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$vote_by", "$$userId"] } } },
+            ...(daily === "true" ? [{ $match: { createdAt: dateFilter } }] : [])
+          ],
           as: "user_votes"
         }
       },
@@ -82,11 +103,11 @@ async function handleGetRequest(request: NextRequest) {
 
     comprehensivePipeline.push({
       $sort: { [sortField]: sortOrder, _id: 1 } // Add _id as secondary sort for consistency
-    } as any);
+    });
 
     // Add pagination
-    comprehensivePipeline.push({ $skip: offset } as any);
-    comprehensivePipeline.push({ $limit: limit } as any);
+    comprehensivePipeline.push({ $skip: offset });
+    comprehensivePipeline.push({ $limit: limit });
 
     // Execute the aggregation
     const users = await User.aggregate(comprehensivePipeline);
@@ -103,20 +124,26 @@ async function handleGetRequest(request: NextRequest) {
     }));
 
     // Get total count for pagination info
-    const totalCountPipeline: any[] = [
+    const totalCountPipeline = [
       {
         $lookup: {
           from: "memes",
-          localField: "_id",
-          foreignField: "created_by",
+          let: { userId: "_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$created_by", "$$userId"] } } },
+            ...(daily === "true" ? [{ $match: { createdAt: dateFilter } }] : [])
+          ],
           as: "user_memes"
         }
       },
       {
         $lookup: {
           from: "votes",
-          localField: "_id",
-          foreignField: "vote_by",
+          let: { userId: "_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$vote_by", "$$userId"] } } },
+            ...(daily === "true" ? [{ $match: { createdAt: dateFilter } }] : [])
+          ],
           as: "user_votes"
         }
       },
