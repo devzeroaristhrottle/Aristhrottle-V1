@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Memecard from './Memecard'
 import MemeDetails from './MemeDetails'
 import { MemesListProps } from './types'
+import ReportModal from './ReportModal';
 
 function MemesList({
 	memes,
@@ -16,6 +17,21 @@ function MemesList({
 		(typeof memes)[0] | undefined
 	>(undefined)
 	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+	const [reportModalOpen, setReportModalOpen] = useState(false);
+    const [reportMemeId, setReportMemeId] = useState<string | null>(null);
+
+    const handleOpenReport = (memeId: string) => {
+        setReportMemeId(memeId);
+        setReportModalOpen(true);
+    };
+    const handleCloseReport = () => {
+        setReportModalOpen(false);
+        setReportMemeId(null);
+    };
+    const handleSubmitReport = (memeId: string, reason: string) => {
+        // TODO: Implement report submission logic (API call, toast, etc.)
+        console.log('Report submitted for', memeId, 'Reason:', reason);
+    };
 
 	if (!memes.length) {
 		return (
@@ -48,7 +64,7 @@ function MemesList({
 							onBookmark={onBookmark}
 							isBookmarked={bookmarkedMemes.has(meme._id)}
 							onImageClick={() => handleMemeClick(meme)}
-							onReport={() => {}}
+							onReport={handleOpenReport}
 							isGridView={view === 'grid'}
 						/>
 					</div>
@@ -65,6 +81,12 @@ function MemesList({
 					bmk={bookmarkedMemes.has(selectedMeme._id)}
 				/>
 			)}
+			<ReportModal
+                isOpen={reportModalOpen}
+                onClose={handleCloseReport}
+                memeId={reportMemeId}
+                onSubmit={handleSubmitReport}
+            />
 		</>
 	)
 }
