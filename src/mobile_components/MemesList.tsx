@@ -48,6 +48,7 @@ function MemesList({
 							onBookmark={onBookmark}
 							isBookmarked={bookmarkedMemes.has(meme._id)}
 							onImageClick={() => handleMemeClick(meme)}
+							onReport={() => {}}
 						/>
 					</div>
 				))}

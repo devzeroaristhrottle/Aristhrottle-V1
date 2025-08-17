@@ -28,6 +28,7 @@ export interface Meme {
 		__v: number
 	}[]
 	categories?: string[]
+	views?: number
 	__v?: number
 }
 
@@ -39,6 +40,7 @@ export interface MemeCardProps {
 	onBookmark?: (memeId: string, name: string, imageUrl: string) => void
 	isBookmarked?: boolean
 	onImageClick?: () => void
+	onReport?: (memeId: string) => void
 }
 
 export interface MemesListProps {

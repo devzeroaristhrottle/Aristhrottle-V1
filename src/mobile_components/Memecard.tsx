@@ -4,8 +4,9 @@ import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { CiBookmark } from 'react-icons/ci'
 import { FaBookmark } from 'react-icons/fa'
 import { LazyImage } from '@/components/LazyImage'
-
+import { MdOutlineReport } from "react-icons/md";
 import { MemeCardProps } from './types'
+import { CiUser } from "react-icons/ci";
 
 function Memecard({
 	meme,
@@ -15,6 +16,7 @@ function Memecard({
 	onBookmark,
 	isBookmarked = false,
 	onImageClick,
+	onReport,
 }: MemeCardProps) {
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const [localVoteCount, setLocalVoteCount] = useState(meme.vote_count)
@@ -74,9 +76,24 @@ function Memecard({
 			</div>
 
 			{/* Action buttons */}
-			<div className="p-3 bg-black/5">
+			<div className="py-2 px-3 bg-black/5">
 				<div className="flex justify-between items-center">
-					<div className="w-16" /> {/* Spacer */}
+					<div className="w-16 flex flex-row justify-between" > 
+						<div className='flex items-center flex-col justify-center'>
+							<CiUser className="w-6 h-6 text-white"/>
+							<span className="text-xs text-white">{meme.views || 0}</span>
+						</div>
+						{
+							onReport && 
+							(
+								<div className="flex items-center flex-col justify-center">
+									<MdOutlineReport 
+									className="w-6 h-6 text-white cursor-pointer"
+									onClick={() => onReport(meme._id)}/>
+								</div>
+							)
+						}
+					</div>
 					{/* Vote button and count in middle */}
 					<div className="flex flex-row items-center gap-2 relative">
 						{onVote && (
@@ -85,11 +102,11 @@ function Memecard({
 									<img
 										src="/assets/vote/icon1.png"
 										alt="voted"
-										className="w-8 h-8"
+										className="w-6 h-6"
 									/>
 								) : (
 									<Logo
-										classNames="w-8 h-8 cursor-pointer"
+										classNames="w-6 h-6 cursor-pointer"
 										onClick={() => {
 											// Optimistic updates
 											setHasVoted(true)
@@ -121,14 +138,14 @@ function Memecard({
 					<div className="flex items-center space-x-3 w-16 justify-end">
 						{onShare && (
 							<FaRegShareFromSquare
-								className="w-5 h-5 text-white cursor-pointer"
+								className="w-6 h-6 text-white cursor-pointer"
 								onClick={() => onShare(meme._id, meme.image_url)}
 							/>
 						)}
 						{onBookmark &&
 							(isBookmarked ? (
 								<FaBookmark
-									className="w-5 h-5 text-white cursor-pointer"
+									className="w-6 h-6 text-white cursor-pointer"
 									onClick={() =>
 										onBookmark(meme._id, meme.name, meme.image_url)
 									}
