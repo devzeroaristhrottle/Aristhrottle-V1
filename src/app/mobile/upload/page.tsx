@@ -371,10 +371,10 @@ function Page() {
 				{/* Image Upload Section */}
 				<div className="w-full h-full pb-5">
 					{isGenerating ? (
-						<div className="flex flex-col justify-center items-center border border-blue-400 rounded-xl p-3 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300 cursor-pointer hover:border-blue-300 h-64">
-							<div className="w-20 h-20 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+						<div className="flex flex-col justify-center items-center border border-[#2FCAC7] rounded-xl p-3 hover:shadow-lg hover:shadow-[#2FCAC7]/20 transition-all duration-300 cursor-pointer hover:border-[#2FCAC7] h-64">
+							<div className="w-20 h-20 border-4 border-[#2FCAC7]/30 border-t-[#2FCAC7] rounded-full animate-spin"></div>
 							<div className="mt-4 text-center">
-								<p className="text-blue-400 font-medium">
+								<p className="text-[#2FCAC7] font-medium">
 									Generating your content...
 								</p>
 								<p className="text-gray-400 text-xs mt-1">
@@ -389,7 +389,7 @@ function Page() {
 							onClick={handleFileSelect}
 							title="Click to select a different image"
 						>
-							<div className="w-full border border-blue-400 rounded-xl p-3 hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300 cursor-pointer hover:border-blue-300 h-fit">
+							<div className="w-full border border-[#2FCAC7] rounded-xl p-3 hover:shadow-lg hover:shadow-[#2FCAC7]/20 transition-all duration-300 cursor-pointer hover:border-[#2FCAC7] h-fit">
 								<img
 									src={generatedImage}
 									alt="Generated content"
@@ -403,7 +403,7 @@ function Page() {
 						</div>
 					) : (
 						/* Upload Instructions */
-						<div className="border h-1/2 flex flex-col justify-between border-white rounded-xl p-4 text-gray-400 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20">
+						<div className="border h-1/2 flex flex-col justify-between border-white rounded-xl p-4 text-gray-400 hover:border-[#2FCAC7] transition-all duration-300 hover:shadow-lg hover:shadow-[#2FCAC7]/20">
 							{/* AI Instructions */}
 							<div
 								className="flex-1 flex justify-center items-center cursor-pointer"
@@ -412,9 +412,9 @@ function Page() {
 								<div className="flex flex-col items-center text-center">
 									<HiSparkles
 										size={32}
-										className="text-blue-400 hover:scale-110 hover:rotate-12 transition-all duration-300 flex-shrink-0 mb-2"
+										className="text-[#2FCAC7] hover:scale-110 hover:rotate-12 transition-all duration-300 flex-shrink-0 mb-2"
 									/>
-									<div className="text-blue-400 text-2xl hover:text-white transition-colors duration-200 mb-1">
+									<div className="text-[#2FCAC7] text-2xl hover:text-white transition-colors duration-200 mb-1">
 										Create with Aris-Intelligence
 									</div>
 									<div className="text-xs">
@@ -425,11 +425,11 @@ function Page() {
 
 							{/* Divider */}
 							<div className="flex items-center w-full gap-3 my-4">
-								<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
-								<span className="px-2 text-xs font-medium hover:text-blue-400 transition-colors duration-200">
+								<div className="flex-1 border-t border-[#86878B] hover:border-[#2FCAC7] transition-colors duration-300"></div>
+								<span className="px-2 text-xs font-medium hover:text-[#2FCAC7] transition-colors duration-200">
 									or
 								</span>
-								<div className="flex-1 border-t border-[#86878B] hover:border-blue-400 transition-colors duration-300"></div>
+								<div className="flex-1 border-t border-[#86878B] hover:border-[#2FCAC7] transition-colors duration-300"></div>
 							</div>
 
 							{/* Manual Upload */}
@@ -440,9 +440,9 @@ function Page() {
 								<div className="flex flex-col items-center text-center">
 									<IoCloudUploadOutline
 										size={32}
-										className="text-blue-400 hover:scale-110 transition-transform duration-200 mb-2"
+										className="text-[#2FCAC7] hover:scale-110 transition-transform duration-200 mb-2"
 									/>
-									<div className="text-blue-400 text-2xl mb-1">Choose File</div>
+									<div className="text-[#2FCAC7] text-2xl mb-1">Choose File</div>
 									<div className="text-xs">JPG / PNG Max. 10 MB</div>
 								</div>
 							</div>
@@ -462,7 +462,7 @@ function Page() {
 					<div className="mt-6 space-y-4">
 						{/* Title Input */}
 						<div className="flex flex-col group">
-							<label className="text-lg mb-1 group-hover:text-blue-400 transition-colors duration-200">
+							<label className="text-lg mb-1 group-hover:text-[#2FCAC7] transition-colors duration-200">
 								Title
 							</label>
 							<div className="relative">
@@ -474,7 +474,7 @@ function Page() {
 									}
 									maxLength={100}
 									rows={2}
-									className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none border-[#1583fb] hover:border-blue-300 focus:border-blue-300 focus:shadow-lg focus:shadow-blue-400/20 transition-all duration-200 w-full resize-none"
+									className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none border-[#2FCAC7] hover:border-[#2FCAC7] focus:border-[#2FCAC7] focus:shadow-lg focus:shadow-[#2FCAC7]/20 transition-all duration-200 w-full resize-none"
 									ref={titleRef as any}
 								/>
 								<span
@@ -489,13 +489,13 @@ function Page() {
 
 						{/* Tags Input */}
 						<div className="flex flex-col group">
-							<label className="text-lg mb-1 group-hover:text-blue-400 transition-colors duration-200">
+							<label className="text-lg mb-1 group-hover:text-[#2FCAC7] transition-colors duration-200">
 								Tags
 							</label>
 
 							{/* Tags input */}
 							<div className="relative w-full" ref={dropdownRef}>
-								<div className="w-full rounded-lg px-3 pt-2 pb-8 text-sm text-white border border-[#1583fb] bg-transparent focus-within:outline-none hover:border-blue-300 focus-within:border-blue-300 focus-within:shadow-lg focus-within:shadow-blue-400/20 transition-all duration-200 min-h-[40px] flex flex-wrap gap-2 items-center">
+								<div className="w-full rounded-lg px-3 pt-2 pb-8 text-sm text-white border border-[#2FCAC7] bg-transparent focus-within:outline-none hover:border-[#2FCAC7] focus-within:border-[#2FCAC7] focus-within:shadow-lg focus-within:shadow-[#2FCAC7]/20 transition-all duration-200 min-h-[40px] flex flex-wrap gap-2 items-center">
 									<span
 										className={`absolute bottom-2 right-3 text-xs ${
 											selectedTags.length >= 5
@@ -508,7 +508,7 @@ function Page() {
 									{selectedTags.map((tag, index) => (
 										<span
 											key={index}
-											className="bg-[#1783fb]/20 rounded-lg cursor-pointer text-balance px-2 py-1 flex items-center gap-1 text-sm"
+											className="bg-[#2FCAC7]/20 rounded-lg cursor-pointer text-balance px-2 py-1 flex items-center gap-1 text-sm"
 											onClick={() => removeTag(tag.name)}
 										>
 											{tag.name}
@@ -533,22 +533,24 @@ function Page() {
 								</div>
 
 								{filteredTags && newTagInput.length > 0 && (
-									<div className="absolute z-10 w-full mt-1 bg-gray-800 border border-blue-400 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+									<div className="absolute z-10 w-full mt-1 bg-gray-800 border border-[#2FCAC7] rounded-lg shadow-lg max-h-48 overflow-y-auto p-2">
 										{filteredTags.length > 0 ? (
-											filteredTags.map((tag, index) => (
-												<div
-													key={index}
-													className="px-3 py-2 hover:bg-blue-600 cursor-pointer text-white text-sm transition-colors duration-200 border-b border-gray-700 last:border-b-0"
-													onClick={() => {
-														if (tag._id) {
-															handleTagSelect(tag.name, false, tag._id)
-															setNewTagInput('')
-														}
-													}}
-												>
-													{tag.name}
-												</div>
-											))
+											<div className="flex flex-wrap gap-2">
+												{filteredTags.map((tag, index) => (
+													<div
+														key={index}
+														className="px-3 py-1 hover:bg-[#2FCAC7] cursor-pointer text-white text-sm transition-colors duration-200 rounded-md border border-[#2FCAC7]/30"
+														onClick={() => {
+															if (tag._id) {
+																handleTagSelect(tag.name, false, tag._id)
+																setNewTagInput('')
+															}
+														}}
+													>
+														{tag.name}
+													</div>
+												))}
+											</div>
 										) : (
 											<div className="px-3 py-2 text-gray-400 text-sm">
 												No suggestions found
@@ -587,8 +589,7 @@ function Page() {
 							disabled={isGenerating || isUploading || isSavingDraft}
 							className="flex-1 rounded-lg border border-[#28e0ca] text-[#28e0ca] py-1 flex items-center justify-center gap-1 font-semibold hover:bg-[#28e0ca] hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-[#28e0ca]/30 transition-all duration-200 active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed text-lg"
 						>
-							{isGenerating ? 'Generating...' : 'Generate'}
-							<HiSparkles className="group-hover:rotate-12 transition-transform duration-200" />
+							{isGenerating ? 'Creating...' : 'Create'}
 						</button>
 					</div>
 
@@ -601,7 +602,7 @@ function Page() {
 										key={i}
 										className={`w-2 h-2 rounded-full ${
 											i < (userDetails.generations || 0)
-												? 'bg-blue-500'
+												? 'bg-[#2FCAC7]'
 												: 'bg-gray-600'
 										}`}
 									/>
