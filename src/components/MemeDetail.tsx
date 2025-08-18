@@ -26,12 +26,29 @@ import { useRouter } from 'next/navigation'
 import { FaSpinner } from 'react-icons/fa'
 import { MemeData } from '@/app/landing/carousel'
 
+// Create a unified type that includes all possible meme properties
+type UnifiedMeme = (LeaderboardMeme | Meme | MemeData) & {
+  _id: string
+  image_url: string
+  name: string
+  created_by: {
+    _id: string
+    username: string
+    profile_pic: string
+  }
+  vote_count: number
+  bookmarks: any[] | number
+  has_user_voted?: boolean
+  tags?: TagI[]
+  categories?: { name: string }[]
+}
+
 interface MemeDetailProps {
   isOpen?: boolean
   onClose?: () => void
   onNext?: () => void
   onPrev?: () => void
-  meme: LeaderboardMeme | Meme | undefined | MemeData
+  meme: UnifiedMeme | undefined
   searchRelatedMemes?: Dispatch<SetStateAction<string>>
   tab: string
   onVoteMeme: (memeId: string) => void
@@ -78,7 +95,8 @@ export default function MemeDetail({
 
 	const handleShareClose = () => setIsShareOpen(false)
 
-	const isMeme = (meme: Meme | LeaderboardMeme): meme is Meme =>
+	// Type guard to check if meme has tags property (is Meme type)
+	const isMeme = (meme: UnifiedMeme): meme is UnifiedMeme & { tags: TagI[] } =>
 		'tags' in meme && Array.isArray(meme.tags)
 
 	const getRelatedMemes = async () => {
@@ -384,7 +402,7 @@ export default function MemeDetail({
 							</div>
 
 							{/* Categories */}
-							{'categories' in meme && meme.categories?.length > 0 && (
+							{'categories' in meme && meme.categories?.length && meme.categories.length > 0 && (
 								<div className="space-y-3">
 									<label className="text-[#1783fb] text-lg font-semibold block">
 										Categories
@@ -500,4 +518,4 @@ export default function MemeDetail({
 			)}
 		</>
 	)
-	
+}
