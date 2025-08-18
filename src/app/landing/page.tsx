@@ -939,14 +939,12 @@ export default function Page() {
     []
   )
 
-
   // Updated handleMemeClickCarousel function for your main page component
 const handleMemeClickCarousel = (meme: MemeData, index: number) => {
 	setIsMemeDetailOpen(true);
 	setSelectedMeme(meme);
 	setSelectedMemeIndex(index);
   };
-
 
   return (
     <div
@@ -1262,4 +1260,5 @@ const handleMemeClickCarousel = (meme: MemeData, index: number) => {
   )
 
 }
+
 

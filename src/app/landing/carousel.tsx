@@ -32,7 +32,6 @@ interface MemeCarouselProps {
   onMemeClick?: (meme: MemeData, index: number) => void; // Updated to include index
   className?: string;
   activeTab?: 'daily' | 'all'; // Add activeTab prop to control fetch type
-
 }
 
 const MemeCarousel: React.FC<MemeCarouselProps> = ({
@@ -41,6 +40,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   className = '',
   activeTab = 'daily',
 }) => {
+
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -61,7 +61,37 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   const touchEndX = useRef<number>(0)
   const isDragging = useRef<boolean>(false)
 
+      `Validated ${googleCloudMemes.length} Google Cloud URLs, ${validGoogleCloudMemes.length} are valid`
+    )
 
+    return [...otherMemes, ...validGoogleCloudMemes]
+  }
+
+  // Function to filter memes based on image URL (sync version for Cloudinary)
+  const filterCloudinaryUrls = (memes: MemeData[]): MemeData[] => {
+    return memes.filter((meme) => {
+      if (isCloudinaryUrl(meme.image_url)) {
+        console.log(
+          `Blocking Cloudinary URL for meme: ${meme.name} - ${meme.image_url}`
+        )
+        return false
+      }
+      return true
+    })
+  }
+
+  // Function to filter memes based on image URL (async version with Google validation)
+  const filterValidImageUrls = async (
+    memes: MemeData[]
+  ): Promise<MemeData[]> => {
+    const nonCloudinaryMemes = filterCloudinaryUrls(memes)
+    const finalValidMemes = await validateGoogleCloudUrls(nonCloudinaryMemes)
+
+    console.log(
+      `Total memes: ${memes.length}, After filtering: ${finalValidMemes.length}`
+    )
+    return finalValidMemes
+  }
 
   // Function to fetch both daily and all-time memes
   const fetchLeaderboardMemes = async () => {
@@ -107,10 +137,8 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
 
   const [processedMemes, setProcessedMemes] = useState<MemeData[]>([])
 
-
   // Use propMemes if provided, otherwise use fetched memes
   const memes = propMemes && propMemes.length > 0 ? propMemes : fetchedMemes;
-
 
   useEffect(() => {
     const filtered = memes.filter((meme) => !failedImageIds.has(meme._id))
@@ -134,7 +162,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   };
 
   // Enhanced image loading
-
+=
   const handleImageLoad = (meme: MemeData) => {
     console.log(
       `Image loaded successfully for meme: ${meme.name} - URL: ${meme.image_url}`
@@ -192,6 +220,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   }
 
   const goToSlide = (index: number): void => {
+
 
     setCurrentIndex(Math.min(index, maxIndex));
   };
@@ -287,6 +316,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   if (!memes || memes.length === 0) {
     return (
 
+
       <div className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
         <div className="flex flex-col items-center gap-4">
           <p className="text-gray-400 text-lg">No memes available</p>
@@ -328,6 +358,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
         
         <div 
 
+
           className={`relative w-full overflow-hidden rounded-xl shadow-2xl ${className}`}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -346,6 +377,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
                 >
+
 
                   {getCurrentMemes().map((meme: MemeData, index: number) => {
                     const absoluteIndex = currentIndex * slidesPerView + index;
@@ -461,6 +493,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
               </>
             )}
           </div>
+
 
           {/* Progress bar */}
           {totalSlides > 1 && !isPaused && !isHovered && (
