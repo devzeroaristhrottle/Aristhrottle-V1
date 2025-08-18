@@ -5,7 +5,13 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 
 import { CgCloseO } from 'react-icons/cg'
 import Share from './Share'
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { Meme, TagI } from '@/app/home/page'
 import { LeaderboardMeme } from '@/app/home/leaderboard/page'
 import { MdOutlineExpandMore } from 'react-icons/md'
@@ -18,37 +24,38 @@ import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
 import { useRouter } from 'next/navigation'
 import { FaSpinner } from 'react-icons/fa'
-
+import { MemeData } from '@/app/landing/carousel'
 
 interface MemeDetailProps {
-	isOpen?: boolean
-	onClose?: () => void
-	onNext?: () => void
-	onPrev?: () => void
-	meme:  LeaderboardMeme | Meme |undefined
-	searchRelatedMemes?: Dispatch<SetStateAction<string>>
-	tab: string
-	onVoteMeme: (memeId: string) => void
-	bmk: boolean
-	onRelatedMemeClick?: (meme: Meme) => void
+  isOpen?: boolean
+  onClose?: () => void
+  onNext?: () => void
+  onPrev?: () => void
+  meme: LeaderboardMeme | Meme | undefined | MemeData
+  searchRelatedMemes?: Dispatch<SetStateAction<string>>
+  tab: string
+  onVoteMeme: (memeId: string) => void
+  bmk: boolean
+  onRelatedMemeClick?: (meme: Meme) => void
 }
 
 interface Category {
-	name: string
+  name: string
 }
 
 export default function MemeDetail({
-	isOpen = true,
-	onClose = () => {},
-	onNext,
-	onPrev,
-	meme,
-	searchRelatedMemes,
-	tab,
-	onVoteMeme,
-	bmk,
-	onRelatedMemeClick
+  isOpen = true,
+  onClose = () => {},
+  onNext,
+  onPrev,
+  meme,
+  searchRelatedMemes,
+  tab,
+  onVoteMeme,
+  bmk,
+  onRelatedMemeClick,
 }: MemeDetailProps) {
+
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [relatedMemes, setRelatedMemes] = useState<Meme[]>([])
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
@@ -493,4 +500,3 @@ export default function MemeDetail({
 			)}
 		</>
 	)
-}
