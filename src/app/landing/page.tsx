@@ -42,7 +42,7 @@ import Share from '@/components/Share'
 // import UploadComponent from './UploadComponent'
 import WelcomeCard from '@/components/WelcomeCard'
 import { type Meme } from '../home/page'
-import MemeCarousel, { MemeData } from './carousel'
+import MemeCarousel, { type MemeData } from './carousel'
 
 export interface TagI {
   _id: string
