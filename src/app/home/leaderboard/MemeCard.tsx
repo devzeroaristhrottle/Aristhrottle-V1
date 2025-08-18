@@ -11,11 +11,6 @@ import { useRouter } from 'next/navigation'
 import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
 
-// Block Cloudinary URLs for faster loading
-const isCloudinaryUrl = (url: string): boolean => {
-	return url.includes('res.cloudinary.com');
-};
-
 export const LeaderboardMemeCard: React.FC<{
 	meme: LeaderboardMeme
 	onOpenMeme: () => void
@@ -42,7 +37,6 @@ export const LeaderboardMemeCard: React.FC<{
 	const [count, setCount] = useState<number>(meme.vote_count);
 	const [imageError, setImageError] = useState(false)
 	const [isBookmarkLoading, setIsBookmarkLoading] = useState(false)
-	const [isHidden, setIsHidden] = useState(false)
 
 	const { openAuthModal } = useAuthModal()
 	const user = useUser()
@@ -64,18 +58,6 @@ export const LeaderboardMemeCard: React.FC<{
 		setEyeOpen(meme.has_user_voted || false);
 		setCount(meme.vote_count || 0);
 	}, [meme._id, meme.has_user_voted, meme.vote_count, userDetails?._id]);
-
-	// Block Cloudinary URLs immediately
-	useEffect(() => {
-		if (isCloudinaryUrl(meme.image_url)) {
-			console.log(`Blocking Cloudinary URL for meme: ${meme.name} - ${meme.image_url}`);
-			setImageError(true);
-			setIsHidden(true);
-			if (onImageError) {
-				onImageError();
-			}
-		}
-	}, [meme.image_url, meme.name, onImageError]);
 
 	// Sync bookmark state when bmk prop changes
 	useEffect(() => {
@@ -175,12 +157,12 @@ export const LeaderboardMemeCard: React.FC<{
 
 	const handleImageError = () => {
 		console.log(`Image failed to load for meme: ${meme.name} - URL: ${meme.image_url}`);
-		setIsHidden(true)
-		onImageError?.()
+		setImageError(true);
+		onImageError?.();
 	}
 
-	// Don't render if image error or hidden
-	if (isHidden || imageError) {
+	// Don't render if image error
+	if (imageError) {
 		return null
 	}
 
