@@ -79,7 +79,7 @@ export default function MemeDetail({
 
   const handleShareClose = () => setIsShareOpen(false)
 
-  const isMeme = (meme: Meme | LeaderboardMeme | MemeData): meme is Meme =>
+  const isMeme = (meme: Meme | LeaderboardMeme | MemeData  ): meme is Meme =>
     'tags' in meme && Array.isArray(meme.tags)
 
   const getRelatedMemes = async () => {
