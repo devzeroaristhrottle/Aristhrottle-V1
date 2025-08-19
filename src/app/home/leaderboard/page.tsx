@@ -52,14 +52,29 @@ export interface TagI {
 	updatedAt: string // ISO 8601 format date
 }
 
+// Create the exact UnifiedMeme type that MemeDetail expects
+type UnifiedMeme = {
+	_id: string
+	image_url: string
+	name: string
+	created_by: {
+		_id: string
+		username: string
+		profile_pic: string // Always string, never undefined
+	}
+	vote_count: number
+	bookmarks: any[] | number
+	has_user_voted?: boolean
+	tags?: TagI[]
+	categories?: { name: string }[]
+}
+
 export default function Page() {
 	const router = useRouter()
 	const { userDetails } = useContext(Context)
 	const [activeTab, setActiveTab] = useState<'all' | 'daily' | 'live'>('daily')
 	const [isMemeDetailOpen, setIsMemeDetailOpen] = useState(false)
-	const [selectedMeme, setSelectedMeme] = useState<
-		LeaderboardMeme | undefined | Meme
-	>()
+	const [selectedMeme, setSelectedMeme] = useState<UnifiedMeme | undefined>()
 
 	const [page, setPage] = useState(1)
 	const [totalVoteCount, setTotalVoteCount] = useState<number>(0)
@@ -96,6 +111,28 @@ export default function Page() {
 		handleResetSort,
 		resetFilters,
 	} = useFilterAndSort(memes, activeTab)
+
+	// Transform any meme type to the exact UnifiedMeme type that MemeDetail expects
+	const transformMemeForDetail = (meme: Meme | LeaderboardMeme): UnifiedMeme => {
+		return {
+			_id: meme._id,
+			image_url: meme.image_url,
+			name: meme.name,
+			created_by: {
+				_id: meme.created_by._id,
+				username: meme.created_by.username,
+				profile_pic: meme.created_by.profile_pic || '' // Ensure it's never undefined
+			},
+			vote_count: meme.vote_count,
+			bookmarks: Array.isArray(meme.bookmarks) ? meme.bookmarks : [],
+			has_user_voted: meme.has_user_voted,
+			tags: meme.tags ? meme.tags.map((tag: any) => 
+				typeof tag === 'string' ? { name: tag, _id: '', count: 0, type: 'Event' as const, startTime: '', endTime: '', created_by: '', __v: 0, createdAt: '', updatedAt: '' } : tag
+			) : [],
+			// Add categories if the meme has them (for Meme type compatibility)
+			categories: 'categories' in meme ? meme.categories : []
+		}
+	}
 
 	const getMyMemes = async () => {
 		try {
@@ -151,7 +188,7 @@ export default function Page() {
 			const nextIndex = selectedMemeIndex + 1
 			setSelectedMemeIndex(nextIndex)
 			console.log(currentData[nextIndex])
-			setSelectedMeme(currentData[nextIndex])
+			setSelectedMeme(transformMemeForDetail(currentData[nextIndex]))
 		}
 	}
 
@@ -161,7 +198,7 @@ export default function Page() {
 			const prevIndex = selectedMemeIndex - 1
 			setSelectedMemeIndex(prevIndex)
 			console.log(currentData[prevIndex])
-			setSelectedMeme(currentData[prevIndex])
+			setSelectedMeme(transformMemeForDetail(currentData[prevIndex]))
 		}
 	}
 
@@ -384,12 +421,7 @@ export default function Page() {
 							<LeaderboardMemeCard
 								meme={item}
 								onOpenMeme={() => {
-									setSelectedMeme({
-										...item,
-										tags: item.tags.map((tag) => 
-											typeof tag === 'string' ? { name: tag } : tag
-										)
-									})
+									setSelectedMeme(transformMemeForDetail(item))
 									setIsMemeDetailOpen(true)
 								}}
 								activeTab={activeTab}
@@ -405,12 +437,7 @@ export default function Page() {
 						<LeaderboardMemeCard
 							meme={item}
 							onOpenMeme={() => {
-								setSelectedMeme({
-									...item,
-									tags: item.tags.map((tag) => 
-										typeof tag === 'string' ? { name: tag } : tag
-									)
-								})
+								setSelectedMeme(transformMemeForDetail(item))
 								setIsMemeDetailOpen(true)
 								setSelectedMemeIndex(index)
 							}}
@@ -441,7 +468,7 @@ export default function Page() {
 					onVoteMeme={meme_id => handleVote(meme_id)}
 					bmk={false}
 					searchRelatedMemes={() => {}}
-					onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
+					onRelatedMemeClick={(meme) => setSelectedMeme(transformMemeForDetail(meme))}
 				/>
 			)}
 		</div>

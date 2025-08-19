@@ -16,7 +16,6 @@ import {
 import { MemeCard } from '@/components/MemeCard'
 import { TabButton } from '@/components/TabButton'
 import { Tag } from '@/components/ui/tag'
-// import { Carousel } from "@/components/Carousel";
 import MemeDetail from '@/components/MemeDetail'
 import { Button } from '@/components/ui/button'
 import { InputGroup } from '@/components/ui/input-group'
@@ -39,10 +38,9 @@ import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { LeaderboardMemeCard } from '../home/leaderboard/MemeCard'
 import { LeaderboardMeme } from '../home/leaderboard/page'
 import Share from '@/components/Share'
-// import UploadComponent from './UploadComponent'
 import WelcomeCard from '@/components/WelcomeCard'
 import { type Meme } from '../home/page'
-import MemeCarousel, { type MemeData } from './carousel'
+import MemeCarousel, { MemeData } from './carousel'
 
 export interface TagI {
   _id: string
@@ -60,9 +58,6 @@ export interface TagI {
 export interface Bookmark {
   [key: string]: { id: string; name: string; image_url: string }
 }
-
-// Create a unified type for meme selection that handles all possible types
-type UnifiedMeme = Meme | MemeData | LeaderboardMeme | undefined
 
 // Debounce utility function
 const debounce = <T extends (...args: any[]) => any>(
@@ -91,11 +86,10 @@ export default function Page() {
   const [memes, setMemes] = useState<Meme[]>([])
   const [filterMemes, setFilterMemes] = useState<Meme[]>([])
   const [popularTags, setPopularTags] = useState<TagI[]>([])
-  
-  // Fix: Use unified type for selected meme
-  const [selectedMeme, setSelectedMeme] = useState<UnifiedMeme>()
+  const [selectedMeme, setSelectedMeme] = useState<
+    Meme | MemeData | undefined | LeaderboardMeme
+  >()
   const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(-1)
-  
   const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
   const [allMemeCount, setAllMemeCount] = useState<number>(0)
   const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([])
@@ -853,7 +847,6 @@ export default function Page() {
     []
   )
 
-  // Fix: Update the carousel click handler to use the unified type
   const handleMemeClickCarousel = useCallback((meme: MemeData, index: number) => {
     setIsMemeDetailOpen(true)
     setSelectedMeme(meme)
@@ -1130,7 +1123,7 @@ export default function Page() {
         <MemeDetail
           tab={activeTab}
           onClose={onClose}
-          meme={selectedMeme} 
+          meme={selectedMeme}
           searchRelatedMemes={setQuery}
           onNext={handleNext}
           onPrev={handlePrev}
