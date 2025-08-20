@@ -30,6 +30,7 @@ import {
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'
 import { ethers } from 'ethers'
+import { MdInfoOutline } from 'react-icons/md'
 
 export default function Navbar() {
   const [isOpenModel, setIsOpenModel] = useState<boolean>(false)
@@ -167,7 +168,7 @@ export default function Navbar() {
                   className='ml-5 cursor-pointer'
                   size={'xs'}
                   onClick={() => {
-                    route.replace('/home/profile')
+                    route.replace('/mobile/profile')
                   }}
                 />
               </div>
@@ -221,30 +222,31 @@ export default function Navbar() {
         </div>
         {userDetails && user != null && user.address && (
           <div
-            className='flex flex-row justify-evenly'
-            style={{ fontSize: '12px' }}
+            className='flex flex-row justify-between items-center pl-4 py-1'
+            style={{ fontSize: '14px' }}
           >
             <div className='flex gap-1 items-center'>
               <label>Vote</label>
-              <p className='border border-white rounded-md p-1'>
-                {userDetails.votes}/20
+              <p className='border border-white rounded-md px-1'>
+                {userDetails.votes} / 20
               </p>
             </div>
             <div className='flex gap-1 items-center'>
               <label>Upload</label>
-              <p className='border border-white rounded-md p-1'>
-                {userDetails.uploads}/20
+              <p className='border border-white rounded-md px-1'>
+                {userDetails.uploads} / 20
               </p>
             </div>
             <div className='flex gap-1 items-center'>
               <label>Create</label>
-              <p className='border border-white rounded-md p-1'>
-                {userDetails.generations}/5
+              <p className='border border-white rounded-md px-1'>
+                &nbsp;{userDetails.generations} / 5&nbsp;
               </p>
             </div>
             <div className='flex gap-1 items-center'>
-              <label>Next phase</label>
-              <p className='border border-white w-[80px] text-center rounded-md p-1'>
+              <label>Phase</label>
+              <MdInfoOutline className='w-5 h-5' />
+              <p className='border border-white w-[80px] text-center rounded-md px-1'>
                 {timeLeft}
               </p>
             </div>

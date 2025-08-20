@@ -185,7 +185,7 @@ export default function Navbar() {
                   className='ml-5 cursor-pointer'
                   size={'xs'}
                   onClick={() => {
-                    route.replace('/home/profile')
+                    route.replace('/mobile/profile')
                   }}
                 />
                 <div className='hidden md:flex gap-1 items-center'>
