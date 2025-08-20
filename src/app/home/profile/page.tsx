@@ -687,11 +687,13 @@ const DraftMemeCard: React.FC<DraftMemeCardProps> = ({
           </div>
           <div className='image_wrapper w-full h-full sm:w-[16.875rem] sm:h-[16.875rem] md:w-[16rem] md:h-[16.875rem] lg:w-[15.625rem] lg:h-[15.625rem] xl:w-[23rem] xl:h-[23rem] object-cover border-2 border-white relative'>
             {draft.image_url ? (
-              <img
+              <Image
                 onClick={onOpenMeme}
                 src={draft.image_url}
                 alt={draft.name || 'Draft meme'}
                 className='w-full h-full cursor-pointer object-cover'
+                width={100}
+                height={100}
               />
             ) : (
               <div
