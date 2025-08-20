@@ -46,6 +46,8 @@ export interface Meme {
   vote_count: number;
   name: string;
   image_url: string;
+  ipfs_cid: string ; 
+  ipfs_pin_status: "pinned" | "failed" | "pending" | null;
   tags: TagI[];
   categories: Category[];
   created_by: User;

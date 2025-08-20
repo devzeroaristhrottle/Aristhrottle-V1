@@ -17,6 +17,7 @@ import {
 	DAILY_LIMITS
 } from "@/config/rewardsConfig";
 import { processActivityMilestones } from "@/utils/milestoneUtils";
+import { uploadToIPFS } from '@/utils/ipfs'
 
 type Tag = {
 	_id: mongoose.Types.ObjectId
@@ -748,6 +749,14 @@ async function handlePostRequest(req: NextRequest) {
 			'meme'
 		)
 
+		let ipfs = null
+		try{
+			ipfs = await uploadToIPFS(buffer, file.name)
+			console.debug("Hello this is IPFS logs", ipfs)
+		} catch(e){
+			console.debug("IPFS pinnig failed", e)
+		}
+
 		let tags: mongoose.Types.ObjectId[] = []
 
 		// let categoriesIds: mongoose.Types.ObjectId[] = [];
@@ -817,6 +826,8 @@ async function handlePostRequest(req: NextRequest) {
 			vote_count: 0,
 			name,
 			image_url,
+			ipfs_cid: ipfs?.cid ?? null,
+			ipfs_pin_status: ipfs ? "pinned" : "failed",
 			tags,
 			categories: [],
 			created_by: new mongoose.Types.ObjectId(created_by),

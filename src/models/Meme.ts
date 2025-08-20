@@ -16,6 +16,17 @@ const MemeSchema = new mongoose.Schema(
       require: true,
       trim: true,
     },
+    //IPFS URLS
+    ipfs_cid: {
+      type: String,
+      index: true,
+      default: null
+    },             
+    ipfs_pin_status: { 
+      type: String,
+      enum: ["pinned","failed","pending"],
+      default: undefined
+    },
     tags: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Tags",
@@ -73,5 +84,10 @@ const MemeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+if (mongoose.models.Meme) {
+  mongoose.deleteModel?.("Meme");          // if available (Mongoose >= 6.8)
+  delete mongoose.models.Meme;             // fallback for older versions
+}
 
 export default mongoose.models.Meme || mongoose.model("Meme", MemeSchema);

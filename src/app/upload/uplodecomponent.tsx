@@ -229,6 +229,8 @@ const UploadComponent: React.FC<UploadCompProps> = ({
       _id: `temp-${Date.now()}`,
       name: title,
       image_url: generatedImage,
+      ipfs_cid: "",
+      ipfs_pin_status: "pending", 
       vote_count: 0,
       tags: selectedTags.map((tag) => ({
         _id: "",
