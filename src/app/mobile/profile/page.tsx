@@ -385,31 +385,51 @@ export default function Page() {
     <div className='h-screen flex flex-col overflow-hidden'>
       <Navbar />
       <div className='px-4'>
-        <div className='flex justify-end items-center gap-2'>
-          <button
-            onClick={() => setEditProfileOpen(true)}
-            className='flex justify-between items-center gap-2 px-1 border border-[#F0F3F4] rounded-md hover:opacity-40'
-          >
-            <MdLogout className='w-5 h-6' fill='#F0F3F4' />
-          </button>
-          <button
-            onClick={() => setEditProfileOpen(true)}
-            className='flex justify-between items-center gap-2 px-1 border border-[#F0F3F4] rounded-md hover:opacity-40'
-          >
-            <PiShareFat className='w-5 h-6' fill='#F0F3F4' />
-          </button>
-          <button
-            onClick={() => setEditProfileOpen(true)}
-            className='flex justify-between items-center gap-2 px-1 border border-[#F0F3F4] rounded-md hover:opacity-40'
-          >
-            <MdEdit className='w-5 h-6' fill='#F0F3F4' />
-          </button>
-          <button
-            onClick={() => setEditProfileOpen(true)}
-            className='flex justify-between items-center gap-2 px-1 border border-[#F0F3F4] rounded-md hover:opacity-40'
-          >
-            <MdQueryStats className='w-5 h-6' fill='#F0F3F4' /> Stats
-          </button>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-2.5'>
+            <div className='h-7 w-7 bg-black rounded-full overflow-hidden flex items-center justify-center'>
+              <Image
+                src={
+                  userDetails?.profile_pic
+                    ? userDetails?.profile_pic
+                    : '/assets/meme1.jpeg'
+                }
+                alt='Profile'
+                className='w-full h-full object-cover'
+                height={100}
+                width={100}
+              />
+            </div>
+            <div className='text-[#29e0ca] text-2xl truncate w-32'>
+              {userDetails?.username}
+            </div>
+          </div>
+          <div className='flex justify-end items-center gap-2'>
+            <button
+              onClick={() => setEditProfileOpen(true)}
+              className='flex justify-between items-center gap-2 px-1 border border-[#F0F3F4] rounded-md hover:opacity-40'
+            >
+              <MdLogout className='w-5 h-6' fill='#F0F3F4' />
+            </button>
+            <button
+              onClick={() => setEditProfileOpen(true)}
+              className='flex justify-between items-center gap-2 px-1 border border-[#F0F3F4] rounded-md hover:opacity-40'
+            >
+              <PiShareFat className='w-5 h-6' fill='#F0F3F4' />
+            </button>
+            <button
+              onClick={() => setEditProfileOpen(true)}
+              className='flex justify-between items-center gap-2 px-1 border border-[#F0F3F4] rounded-md hover:opacity-40'
+            >
+              <MdEdit className='w-5 h-6' fill='#F0F3F4' />
+            </button>
+            <button
+              onClick={() => setEditProfileOpen(true)}
+              className='flex justify-between items-center gap-2 px-1 border border-[#F0F3F4] rounded-md hover:opacity-40'
+            >
+              <MdQueryStats className='w-5 h-6' fill='#F0F3F4' /> Stats
+            </button>
+          </div>
         </div>
         {/* Top Section */}
         <div className='flex items-center gap-5 rounded-lg'>
@@ -427,11 +447,13 @@ export default function Page() {
             />
           </div>
           <div>
-            <div className='text-[#29e0ca] text-3xl'>
+            <div className='text-[#29e0ca] text-3xl truncate w-64'>
               {userDetails?.username}
             </div>
-            <div className='text-[#DEDEDE] text-xl'>{userData?.bio} bio</div>
-            <div className='flex flex-row items-center justify-start gap-2 text-lg'>
+            <div className='text-[#DEDEDE] text-xl w-64 truncate break-words text-wrap line-clamp-2'>
+              {userData?.bio} bio
+            </div>
+            <div className='flex flex-row items-center justify-between text-lg'>
               <div>{userData?.followersCount || 0} Followers</div>
               <div>{userData?.followingCount || 0} Following</div>
             </div>
