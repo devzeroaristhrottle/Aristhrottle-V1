@@ -16,7 +16,6 @@ import {
 import { MemeCard } from '@/components/MemeCard'
 import { TabButton } from '@/components/TabButton'
 import { Tag } from '@/components/ui/tag'
-// import { Carousel } from "@/components/Carousel";
 import MemeDetail from '@/components/MemeDetail'
 import { Button } from '@/components/ui/button'
 import { InputGroup } from '@/components/ui/input-group'
@@ -39,7 +38,6 @@ import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { LeaderboardMemeCard } from '../home/leaderboard/MemeCard'
 import { LeaderboardMeme } from '../home/leaderboard/page'
 import Share from '@/components/Share'
-// import UploadComponent from './UploadComponent'
 import WelcomeCard from '@/components/WelcomeCard'
 import { type Meme } from '../home/page'
 import MemeCarousel, { MemeData } from './carousel'
@@ -95,12 +93,11 @@ export default function Page() {
   const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
   const [allMemeCount, setAllMemeCount] = useState<number>(0)
   const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([])
-  const [allMemeDataFilter, setAllMemeDataFilter] = useState<LeaderboardMeme[]>(
-    []
-  )
+
+  const [allMemeDataFilter, setAllMemeDataFilter] = useState<LeaderboardMeme[]>([])
+  
   const { openAuthModal } = useAuthModal()
   const [isUploading, setIsUploading] = useState(false)
-  // const [totalMemeCountConst, setTotalMemeCountConst] = useState<number>(0);
   const [hiddenMemes, setHiddenMemes] = useState<Set<string>>(new Set())
   const [bookMarks, setBookMarks] = useState<LeaderboardMeme[]>([])
   const [page, setPage] = useState(1)
@@ -116,11 +113,9 @@ export default function Page() {
   } | null>(null)
   const [welcOpen, setWelcOpen] = useState<boolean>(false)
   const [shownCount, setShownCount] = useState<number>(0)
-  const [showUninteractedOnly, setShowUninteractedOnly] =
-    useState<boolean>(false)
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } =
-    useContext(Context)
+  const [showUninteractedOnly, setShowUninteractedOnly] = useState<boolean>(false)
+  
+  const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } = useContext(Context)
 
   const user = useUser()
 
@@ -152,7 +147,6 @@ export default function Page() {
     }
   }
 
-  // Debounce search
   useEffect(() => {
     const timeout = setTimeout(() => {
       findTag()
@@ -167,19 +161,20 @@ export default function Page() {
   }
 
   const readSearch = () => {
-    // Check localStorage for search tags and active tab
+
     const storedTags = localStorage.getItem('landingSearchTags')
     const storedTab = localStorage.getItem('landingActiveTab')
 
     if (storedTags) {
       setQuery(storedTags)
-      // Clear the localStorage after using it
+
       localStorage.removeItem('landingSearchTags')
     }
 
     if (storedTab === 'all') {
       setActiveTab('all')
-      // Clear the localStorage after using it
+
+
       localStorage.removeItem('landingActiveTab')
     }
   }
@@ -197,8 +192,9 @@ export default function Page() {
   }, [])
 
   const handleNext = () => {
-    const currentData =
-      activeTab === 'live' ? displayedMemes : allMemeDataFilter
+
+    const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
+
     if (selectedMemeIndex < currentData.length - 1) {
       const nextIndex = selectedMemeIndex + 1
       setSelectedMemeIndex(nextIndex)
@@ -207,8 +203,9 @@ export default function Page() {
   }
 
   const handlePrev = () => {
-    const currentData =
-      activeTab === 'live' ? displayedMemes : allMemeDataFilter
+
+    const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
+
     if (selectedMemeIndex > 0) {
       const prevIndex = selectedMemeIndex - 1
       setSelectedMemeIndex(prevIndex)
@@ -223,7 +220,7 @@ export default function Page() {
     }
   }
 
-  // Updated voteToMeme function for live tab with optimistic updates
+
   const voteToMeme = useCallback(
     async (vote_to: string) => {
       if (!userDetails && openAuthModal) {
@@ -233,12 +230,9 @@ export default function Page() {
 
       try {
         if (user && user.address && activeTab === 'live') {
-          // Find the current meme to check if already voted
-          const currentMeme = displayedMemes.find(
-            (meme) => meme._id === vote_to
-          )
+          const currentMeme = displayedMemes.find((meme) => meme._id === vote_to)
 
-          // Prevent voting if already voted or if it's user's own meme
+
           if (
             currentMeme?.has_user_voted ||
             currentMeme?.created_by._id === userDetails?._id
@@ -246,7 +240,7 @@ export default function Page() {
             return
           }
 
-          // Optimistic update for displayed memes
+
           setDisplayedMeme((prev) =>
             prev.map((meme) =>
               meme._id === vote_to
@@ -259,7 +253,7 @@ export default function Page() {
             )
           )
 
-          // Optimistic update for filter memes
+
           setFilterMemes((prev) =>
             prev.map((meme) =>
               meme._id === vote_to
@@ -272,7 +266,7 @@ export default function Page() {
             )
           )
 
-          // Update user stats optimistically
+
           if (userDetails) {
             setUserDetails({
               ...userDetails,
@@ -287,12 +281,13 @@ export default function Page() {
 
           if (response.status === 201) {
             toast.success('Vote casted successfully!')
-            // Refresh memes data in background without showing loader
+
+
             pollMemes()
           }
         }
       } catch (error: any) {
-        // Revert optimistic updates on error
+
         setDisplayedMeme((prev) =>
           prev.map((meme) =>
             meme._id === vote_to
@@ -317,7 +312,8 @@ export default function Page() {
           )
         )
 
-        // Revert user stats
+
+
         if (userDetails) {
           setUserDetails({
             ...userDetails,
@@ -325,26 +321,14 @@ export default function Page() {
           })
         }
 
-        if (
-          error.response?.data?.message ===
-          'You cannot vote on your own content'
-        ) {
+        if (error.response?.data?.message === 'You cannot vote on your own content') {
           toast.error(error.response.data.message)
         } else {
           toast.error('Already voted to this content')
         }
       }
     },
-    [
-      userDetails,
-      openAuthModal,
-      user,
-      activeTab,
-      displayedMemes,
-      setDisplayedMeme,
-      setFilterMemes,
-      setUserDetails,
-    ]
+    [userDetails, openAuthModal, user, activeTab, displayedMemes, setDisplayedMeme, setFilterMemes, setUserDetails]
   )
 
   const getMemes = async () => {
@@ -356,7 +340,7 @@ export default function Page() {
       )
       if (response.data.memes) {
         setTotalMemeCount(response.data.memesCount)
-        // setTotalMemeCountConst(response.data.memesCount);
+
         setMemes(
           [...response.data.memes].sort(
             (a, b) =>
@@ -377,7 +361,7 @@ export default function Page() {
     }
   }
 
-  // Background polling function that doesn't show loader
+
   const pollMemes = async () => {
     try {
       const offsetI = offset * page
@@ -403,7 +387,6 @@ export default function Page() {
     } catch (error) {
       console.log(error)
     }
-    // Note: No loading state changes here
   }
 
   const filterLiveMemes = (memes: any[]) => {
@@ -420,13 +403,8 @@ export default function Page() {
     try {
       setLoading(true)
       if (query.length > 0) {
-        const q =
-          query[query.length - 1] === ','
-            ? query.slice(0, query.length - 2)
-            : query
-
+        const q = query[query.length - 1] === ',' ? query.slice(0, query.length - 2) : query
         const response = await axiosInstance.get(`/api/meme?name=${q}`)
-
         setShownCount(response.data.memesCount)
         if (response.data.memes) {
           if (activeTab === 'live') {
@@ -434,16 +412,14 @@ export default function Page() {
             setFilterMemes(
               [...filteredMemes].sort(
                 (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
+                  new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
               )
             )
           } else {
             setAllMemeData(
               [...response.data.memes].sort(
                 (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
+                  new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
               )
             )
           }
@@ -454,16 +430,14 @@ export default function Page() {
           setFilterMemes(
             [...filteredMemes].sort(
               (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             )
           )
         } else {
           setAllMemeData(
             [...allMemeData].sort(
               (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             )
           )
         }
@@ -471,7 +445,6 @@ export default function Page() {
       }
     } catch (error) {
       console.log(error)
-      // Reset to original data on error
       if (activeTab === 'live') {
         const filteredMemes = filterLiveMemes(memes)
         setFilterMemes(
@@ -516,9 +489,7 @@ export default function Page() {
         amd = amd.filter((meme) => {
           if (meme.has_user_voted) return false
           if (meme.created_by._id === userDetails._id) return false
-          if (bookMarks.some((bookmark) => bookmark._id === meme._id))
-            return false
-
+          if (bookMarks.some((bookmark) => bookmark._id === meme._id)) return false
           return true
         })
       }
@@ -542,14 +513,11 @@ export default function Page() {
         else return b.vote_count - a.vote_count
       })
 
-      // Apply uninteracted filter if checkbox is checked
       if (showUninteractedOnly && userDetails) {
         amd = amd.filter((meme) => {
           if (meme.has_user_voted) return false
           if (meme.created_by._id === userDetails._id) return false
-          if (bookMarks.some((bookmark) => bookmark._id === meme._id))
-            return false
-
+          if (bookMarks.some((bookmark) => bookmark._id === meme._id)) return false
           return true
         })
       }
@@ -615,7 +583,6 @@ export default function Page() {
     return () => clearTimeout(time)
   }, [query])
 
-  // Tab-based filtering
   const getFilteredMemes = () => {
     let filtered = [...filterMemes]
 
@@ -631,19 +598,11 @@ export default function Page() {
       })
     }
 
-    // Filter out interacted content if checkbox is checked
     if (showUninteractedOnly && userDetails) {
       filtered = filtered.filter((meme) => {
-        // Exclude if user has voted on this meme
         if (meme.has_user_voted) return false
-
-        // Exclude if user created this meme
         if (meme.created_by._id === userDetails._id) return false
-
-        // Exclude if user has bookmarked this meme
-        if (bookMarks.some((bookmark) => bookmark._id === meme._id))
-          return false
-
+        if (bookMarks.some((bookmark) => bookmark._id === meme._id)) return false
         return true
       })
     }
@@ -661,20 +620,12 @@ export default function Page() {
     setPage(1)
   }
 
-  // Apply uninteracted filter to all memes data
   const applyUninteractedFilterToAll = () => {
     if (showUninteractedOnly && userDetails) {
       const filtered = allMemeData.filter((meme) => {
-        // Exclude if user has voted on this meme
         if (meme.has_user_voted) return false
-
-        // Exclude if user created this meme
         if (meme.created_by._id === userDetails._id) return false
-
-        // Exclude if user has bookmarked this meme
-        if (bookMarks.some((bookmark) => bookmark._id === meme._id))
-          return false
-
+        if (bookMarks.some((bookmark) => bookmark._id === meme._id)) return false
         return true
       })
       setAllMemeDataFilter(
@@ -703,7 +654,7 @@ export default function Page() {
     )
   }, [filterMemes, showUninteractedOnly, bookMarks])
 
-  // Apply uninteracted filter when checkbox state changes or data changes
+
   useEffect(() => {
     if (activeTab === 'all') {
       applyUninteractedFilterToAll()
@@ -711,7 +662,8 @@ export default function Page() {
   }, [showUninteractedOnly, allMemeData, bookMarks, userDetails])
 
   const isInView = useInView(memeContainerRef, {
-    amount: 0.1, // Trigger when 10% visible
+    amount: 0.1,
+
   })
 
   useEffect(() => {
@@ -774,7 +726,6 @@ export default function Page() {
     }
   }
 
-  // Updated handleUpvoteDownvote function with optimistic updates and anti-flicker
   const handleUpvoteDownvote = useCallback(
     async (meme_id: string) => {
       if (!userDetails && openAuthModal) {
@@ -784,12 +735,8 @@ export default function Page() {
 
       try {
         if (user && user.address && activeTab === 'all') {
-          // Find the current meme to check if already voted
-          const currentMeme = allMemeDataFilter.find(
-            (meme) => meme._id === meme_id
-          )
 
-          // Prevent voting if already voted or if it's user's own meme
+          const currentMeme = allMemeDataFilter.find((meme) => meme._id === meme_id)
           if (
             currentMeme?.has_user_voted ||
             currentMeme?.created_by._id === userDetails?._id
@@ -797,7 +744,6 @@ export default function Page() {
             return
           }
 
-          // Optimistic update with stable sorting
           setAllMemeDataFilter((prev) => {
             const updated = prev.map((meme) =>
               meme._id === meme_id
@@ -808,12 +754,10 @@ export default function Page() {
                   }
                 : meme
             )
-
-            // Maintain original sort order to prevent flickering
             return [...updated]
           })
 
-          // Make API call
+
           const response = await axiosInstance.post('/api/vote', {
             vote_to: meme_id,
             vote_by: userDetails?._id,
@@ -822,7 +766,7 @@ export default function Page() {
           if (response.status === 201) {
             toast.success('Voted successfully!')
 
-            // Update user details
+
             if (userDetails) {
               setUserDetails({
                 ...userDetails,
@@ -849,15 +793,8 @@ export default function Page() {
         toast.error(error.response?.data?.message || 'Failed to vote')
       }
     },
-    [
-      userDetails,
-      openAuthModal,
-      user,
-      activeTab,
-      allMemeDataFilter,
-      setAllMemeDataFilter,
-      setUserDetails,
-    ]
+
+    [userDetails, openAuthModal, user, activeTab, allMemeDataFilter, setAllMemeDataFilter, setUserDetails]
   )
 
   const addMeme = (meme: Meme) => {
@@ -932,6 +869,7 @@ export default function Page() {
   }
 
   // Add debounced state update to prevent excessive re-renders
+
   const debouncedSetAllMemeDataFilter = useCallback(
     debounce((newData: LeaderboardMeme[]) => {
       setAllMemeDataFilter(newData)
@@ -939,11 +877,12 @@ export default function Page() {
     []
   )
 
-  const handleMemeClickCarousel = (meme: MemeData, index: number) => {
+
+  const handleMemeClickCarousel = useCallback((meme: MemeData, index: number) => {
     setIsMemeDetailOpen(true)
     setSelectedMeme(meme)
     setSelectedMemeIndex(index)
-  }
+  }, [])
 
   return (
     <div
@@ -968,6 +907,7 @@ export default function Page() {
       <MemeCarousel onMemeClick={handleMemeClickCarousel} />
       <WelcomeCard isOpen={welcOpen} onClose={() => setWelcOpen(false)} />
       <div className='h-8' />
+
 
       {/* Popular Tags */}
       {/* <div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">
@@ -1258,3 +1198,4 @@ export default function Page() {
     </div>
   )
 }
+
