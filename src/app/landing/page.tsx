@@ -93,6 +93,7 @@ export default function Page() {
   const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
   const [allMemeCount, setAllMemeCount] = useState<number>(0)
   const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([])
+
   const [allMemeDataFilter, setAllMemeDataFilter] = useState<LeaderboardMeme[]>([])
   
   const { openAuthModal } = useAuthModal()
@@ -115,6 +116,7 @@ export default function Page() {
   const [showUninteractedOnly, setShowUninteractedOnly] = useState<boolean>(false)
   
   const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } = useContext(Context)
+
   const user = useUser()
 
   const offset = 30
@@ -159,16 +161,20 @@ export default function Page() {
   }
 
   const readSearch = () => {
+
     const storedTags = localStorage.getItem('landingSearchTags')
     const storedTab = localStorage.getItem('landingActiveTab')
 
     if (storedTags) {
       setQuery(storedTags)
+
       localStorage.removeItem('landingSearchTags')
     }
 
     if (storedTab === 'all') {
       setActiveTab('all')
+
+
       localStorage.removeItem('landingActiveTab')
     }
   }
@@ -186,7 +192,9 @@ export default function Page() {
   }, [])
 
   const handleNext = () => {
+
     const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
+
     if (selectedMemeIndex < currentData.length - 1) {
       const nextIndex = selectedMemeIndex + 1
       setSelectedMemeIndex(nextIndex)
@@ -195,7 +203,9 @@ export default function Page() {
   }
 
   const handlePrev = () => {
+
     const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
+
     if (selectedMemeIndex > 0) {
       const prevIndex = selectedMemeIndex - 1
       setSelectedMemeIndex(prevIndex)
@@ -210,6 +220,7 @@ export default function Page() {
     }
   }
 
+
   const voteToMeme = useCallback(
     async (vote_to: string) => {
       if (!userDetails && openAuthModal) {
@@ -221,12 +232,14 @@ export default function Page() {
         if (user && user.address && activeTab === 'live') {
           const currentMeme = displayedMemes.find((meme) => meme._id === vote_to)
 
+
           if (
             currentMeme?.has_user_voted ||
             currentMeme?.created_by._id === userDetails?._id
           ) {
             return
           }
+
 
           setDisplayedMeme((prev) =>
             prev.map((meme) =>
@@ -240,6 +253,7 @@ export default function Page() {
             )
           )
 
+
           setFilterMemes((prev) =>
             prev.map((meme) =>
               meme._id === vote_to
@@ -251,6 +265,7 @@ export default function Page() {
                 : meme
             )
           )
+
 
           if (userDetails) {
             setUserDetails({
@@ -266,10 +281,13 @@ export default function Page() {
 
           if (response.status === 201) {
             toast.success('Vote casted successfully!')
+
+
             pollMemes()
           }
         }
       } catch (error: any) {
+
         setDisplayedMeme((prev) =>
           prev.map((meme) =>
             meme._id === vote_to
@@ -293,6 +311,8 @@ export default function Page() {
               : meme
           )
         )
+
+
 
         if (userDetails) {
           setUserDetails({
@@ -320,6 +340,7 @@ export default function Page() {
       )
       if (response.data.memes) {
         setTotalMemeCount(response.data.memesCount)
+
         setMemes(
           [...response.data.memes].sort(
             (a, b) =>
@@ -339,6 +360,7 @@ export default function Page() {
       setLoading(false)
     }
   }
+
 
   const pollMemes = async () => {
     try {
@@ -632,6 +654,7 @@ export default function Page() {
     )
   }, [filterMemes, showUninteractedOnly, bookMarks])
 
+
   useEffect(() => {
     if (activeTab === 'all') {
       applyUninteractedFilterToAll()
@@ -640,6 +663,7 @@ export default function Page() {
 
   const isInView = useInView(memeContainerRef, {
     amount: 0.1,
+
   })
 
   useEffect(() => {
@@ -711,8 +735,8 @@ export default function Page() {
 
       try {
         if (user && user.address && activeTab === 'all') {
-          const currentMeme = allMemeDataFilter.find((meme) => meme._id === meme_id)
 
+          const currentMeme = allMemeDataFilter.find((meme) => meme._id === meme_id)
           if (
             currentMeme?.has_user_voted ||
             currentMeme?.created_by._id === userDetails?._id
@@ -733,6 +757,7 @@ export default function Page() {
             return [...updated]
           })
 
+
           const response = await axiosInstance.post('/api/vote', {
             vote_to: meme_id,
             vote_by: userDetails?._id,
@@ -740,6 +765,7 @@ export default function Page() {
 
           if (response.status === 201) {
             toast.success('Voted successfully!')
+
 
             if (userDetails) {
               setUserDetails({
@@ -750,6 +776,7 @@ export default function Page() {
           }
         }
       } catch (error: any) {
+        // Revert optimistic update on error
         setAllMemeDataFilter((prev) =>
           prev.map((meme) =>
             meme._id === meme_id
@@ -766,6 +793,7 @@ export default function Page() {
         toast.error(error.response?.data?.message || 'Failed to vote')
       }
     },
+
     [userDetails, openAuthModal, user, activeTab, allMemeDataFilter, setAllMemeDataFilter, setUserDetails]
   )
 
@@ -840,12 +868,15 @@ export default function Page() {
     }
   }
 
+  // Add debounced state update to prevent excessive re-renders
+
   const debouncedSetAllMemeDataFilter = useCallback(
     debounce((newData: LeaderboardMeme[]) => {
       setAllMemeDataFilter(newData)
     }, 100),
     []
   )
+
 
   const handleMemeClickCarousel = useCallback((meme: MemeData, index: number) => {
     setIsMemeDetailOpen(true)
@@ -877,6 +908,31 @@ export default function Page() {
       <WelcomeCard isOpen={welcOpen} onClose={() => setWelcOpen(false)} />
       <div className='h-8' />
 
+
+      {/* Popular Tags */}
+      {/* <div className="mb-14 md:grid md:grid-cols-12 md:gap-x-12 md:mx-auto">
+				<div className="md:col-span-12 md:mx-auto">
+					<p className="font-bold text-[#1783fb] text-base md:text-xl">
+						Popular Tags
+					</p>
+					<div className="my-4 flex flex-wrap gap-2 md:gap-4">
+						{popularTags.map((tag, index) => (
+							<div
+								onClick={() => setQuery(tag.name)}
+								key={index}
+								className="border-2 border-[#1783fb] px-1.5 md:px-3 rounded-lg cursor-pointer text-balance text-base md:text-xl py-0 md:py-1"
+							>
+								{tag.name}{' '}
+								<span className="bg-[#1783fb] rounded-full px-1 text-xs md:text-sm md:px-2 font-bold">
+									{tag.count}
+								</span>
+							</div>
+						))}
+					</div>
+				</div>
+			</div> */}
+
+      {/* Tabs and Sort (Normal Layout) */}
       {/* Sort and Tabs Row */}
       <div className='flex items-center justify-between flex-wrap gap-y-4'>
         {/* Sort Button and Filter Checkbox */}
@@ -1142,3 +1198,4 @@ export default function Page() {
     </div>
   )
 }
+

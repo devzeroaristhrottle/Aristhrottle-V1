@@ -17,6 +17,7 @@ import { Meme } from "../page";
 import { useAuthModal } from "@account-kit/react";
 
 export type LeaderboardMeme = {
+
   _id: string;
   vote_count: number;
   name: string;
@@ -56,6 +57,7 @@ export interface TagI {
   // const transformMemeForDetail = ...
 
 export default function Page() {
+
   const router = useRouter();
   const { userDetails } = useContext(Context);
   const [activeTab, setActiveTab] = useState<"all" | "daily" | "live">("daily");
@@ -82,6 +84,7 @@ export default function Page() {
   const memeContainerRef = useRef<HTMLDivElement>(null);
   const { openAuthModal } = useAuthModal();
 
+
   const {
     percentage,
     setPercentage,
@@ -98,6 +101,7 @@ export default function Page() {
     handleSort,
     handleResetSort,
     resetFilters,
+
   } = useFilterAndSort(memes, activeTab);
 
 
@@ -170,34 +174,43 @@ export default function Page() {
     }
   };
 
+
   // Optimized useEffect to prevent unnecessary re-filtering and flickering
   useEffect(() => {
     // Filter out memes with failed images
     const validMemes = filteredMemes.filter(
       (meme) => !failedImageIds.has(meme._id)
+
     );
+
 
     // Only update if there's actually a change to prevent unnecessary re-renders
     setFinalFilterMeme((prev) => {
       // Simple comparison to avoid unnecessary updates
       if (prev.length !== validMemes.length) {
+
         return validMemes;
+
       }
 
       // Check if any meme data has changed
       const hasChanged = validMemes.some((meme, index) => {
+
         const prevMeme = prev[index];
+
         return (
           !prevMeme ||
           prevMeme._id !== meme._id ||
           prevMeme.vote_count !== meme.vote_count ||
           prevMeme.has_user_voted !== meme.has_user_voted
+
         );
       });
 
       return hasChanged ? validMemes : prev;
     });
   }, [filteredMemes, failedImageIds]);
+
 
   const handleVote = async (meme_id: string) => {
     try {
@@ -214,6 +227,7 @@ export default function Page() {
                 }
               : meme
           )
+
         );
 
         setFinalFilterMeme((prev) =>
@@ -226,6 +240,7 @@ export default function Page() {
                 }
               : meme
           )
+
         );
 
         // Update selected meme if it's the one being voted on
@@ -238,6 +253,7 @@ export default function Page() {
                   has_user_voted: true,
                 }
               : prev
+
           );
         }
 
@@ -256,6 +272,7 @@ export default function Page() {
       console.log("error: ", err);
       toast.error("Error voting meme");
 
+
       // Revert the optimistic updates on error
       setMemes((prev) =>
         prev.map((meme) =>
@@ -267,6 +284,7 @@ export default function Page() {
               }
             : meme
         )
+
       );
 
       setFinalFilterMeme((prev) =>
@@ -279,11 +297,13 @@ export default function Page() {
               }
             : meme
         )
+
       );
 
       // Revert selected meme if it's the one that failed
       if (selectedMeme && selectedMeme._id === meme_id) {
         setSelectedMeme((prev: any) =>
+
           prev
             ? {
                 ...prev,
@@ -301,9 +321,11 @@ export default function Page() {
     setFailedImageIds((prev) => new Set(prev).add(memeId));
   };
 
+
   useEffect(() => {
     if (memeContainerRef.current) {
       memeContainerRef.current.style.overflow = isMemeDetailOpen
+
         ? "hidden"
         : "auto";
     }
@@ -326,13 +348,16 @@ export default function Page() {
           <span className="text-xl md:text-4xl">
             {totalVoteCount === 0 || totalUploadCount === 0
               ? "0"
+
               : Math.round(totalVoteCount / totalUploadCount)}
           </span>
         </div>
       </div>
 
+
       <div className="flex justify-between items-center gap-x-2 my-3 md:my-4">
         <div className="flex space-x-1 md:space-x-8">
+
           <FilterPopover
             activeTab={activeTab}
             filterOpen={filterOpen}
@@ -359,14 +384,17 @@ export default function Page() {
             handleResetSort={handleResetSort}
           />
         </div>
+
         <div className="flex space-x-1 md:space-x-4">
           <button
             onClick={() => router.push("/home/profile")}
             className="font-medium text-[#1783fb] text-base md:text-2xl text-nowrap border-2 border-[#1783fb] rounded-md px-1 md:px-5 md:py-1"
+
           >
             My Uploads
           </button>
           <button
+
             onClick={() => router.push("/home/myVotes")}
             className="font-medium text-[#1783fb] text-base md:text-2xl text-nowrap border-2 border-[#1783fb] rounded-md px-1 md:px-5 md:py-1"
           >
@@ -374,6 +402,7 @@ export default function Page() {
           </button>
         </div>
       </div>
+
 
       <div className="flex items-center text-center gap-x-10 border-2 border-white rounded-10px px-3 py-2 mt-5 md:mt-0 mb-8 w-fit text-nowrap mx-auto">
         <TabButton
@@ -387,10 +416,12 @@ export default function Page() {
           isActive={activeTab === "all"}
           label="All-Time"
           onClick={() => handleTabChange("All")}
+
         />
       </div>
 
       <div
+
         className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-y-10 grid-cols-1 grid-flow-row !min-h-[47vh]  mt-6 mb-4 no-scrollbar w-full"
         ref={memeContainerRef}
       >
@@ -403,6 +434,7 @@ export default function Page() {
                 onOpenMeme={() => {
                   setSelectedMeme(item);
                   setIsMemeDetailOpen(true);
+
                 }}
                 activeTab={activeTab}
                 voteMeme={(meme_id) => handleVote(meme_id)}
@@ -413,6 +445,7 @@ export default function Page() {
         </div>
 
         {finalFilterMeme.map((item, index) => (
+
           <div key={item._id} className="hidden md:block">
             <LeaderboardMemeCard
               meme={item}
@@ -426,12 +459,14 @@ export default function Page() {
             />
           </div>
         ))}
+
         <div className="col-span-1 md:col-span-3">
           {loading && (
             <AiOutlineLoading3Quarters className="animate-spin text-3xl mx-auto" />
           )}
           {!loading && finalFilterMeme.length === 0 && memes.length === 0 && (
             <p className="text-center text-nowrap text-2xl mx-auto">
+
               Content not found
             </p>
           )}
@@ -440,14 +475,17 @@ export default function Page() {
       {/* Meme Detail Modal */}
       {isMemeDetailOpen && selectedMeme && (
         <MemeDetail
+
           tab={activeTab}
           onClose={onClose}
           meme={selectedMeme}
+
           onNext={handleNext}
           onPrev={handlePrev}
           onVoteMeme={(meme_id) => handleVote(meme_id)}
           bmk={false}
           searchRelatedMemes={() => {}}
+
           onRelatedMemeClick={(meme: any) =>
             setSelectedMeme(meme)
           }
@@ -456,3 +494,4 @@ export default function Page() {
     </div>
   );
 }
+

@@ -532,3 +532,4 @@ export default function MemeDetail({
     </>
   )
 }
+
