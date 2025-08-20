@@ -12,7 +12,7 @@ export default function Layout({ children }: Props) {
 
   return (
     <div className='bg1 min-h-screen flex flex-col'>
-      <div className='px-6 sticky top-0 z-[100]'>
+      <div className='md:px-6 sticky top-0 z-[100]'>
         <Navbar />
       </div>
       <div className='flex flex-1'>

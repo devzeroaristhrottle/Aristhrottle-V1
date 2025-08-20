@@ -20,7 +20,6 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 
 import Notifications from './Notifications'
 import useCountdown from '@/app/hooks/useCountdown'
-import { GoogleTranslate } from './languageSupport'
 import {
   useAuthModal,
   useLogout,
@@ -173,7 +172,7 @@ export default function Navbar() {
 
   return (
     <div className='sticky top-0 z-50 backdrop-blur-md bg-black/20'>
-      <div className='relative w-[100%] pr-2 md:pr-0'>
+      <div className='relative w-[100%] px-1 md:px-0'>
         <div className='flex justify-between align-middle items-center py-3 md:py-0'>
           <div className='flex align-middle items-center gap-5'>
             {userDetails && user != null && user.address && (
