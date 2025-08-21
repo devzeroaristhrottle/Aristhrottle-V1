@@ -268,41 +268,7 @@ export default function Navbar() {
                     <Popover.Trigger asChild>
                       <div className="hidden"></div>
                     </Popover.Trigger>
-                    <Portal>
-                      <Popover.Positioner>
-                        <Popover.Content className="bg-slate-50">
-                          <Popover.Arrow />
-                          <Popover.Body className="flex flex-col">
-                            <Popover.Title
-                              fontWeight="medium"
-                              className="text-slate-900 text-base mb-4"
-                            >
-                              <p>
-                                <strong>Wallet (EOA): </strong>
-                                {user?.address}
-                              </p>
-                              <p>
-                                <strong>Smart Account: </strong>
-                                {address}
-                              </p>
-                            </Popover.Title>
-                            <Button
-                              size="lg"
-                              variant="solid"
-                              className="text-slate-50 font-bold px-3 bg-slate-900"
-                              onClick={() => {
-                                logout();
-                                setOpen(false);
-                                setUserDetails(undefined);
-                                route.replace("/landing");
-                              }}
-                            >
-                              Disconnect
-                            </Button>
-                          </Popover.Body>
-                        </Popover.Content>
-                      </Popover.Positioner>
-                    </Portal>
+                   
                   </Popover.Root>
                 </div>
               </div>
@@ -420,7 +386,7 @@ export default function Navbar() {
                     <Popover.Content className="bg-slate-50">
                       <Popover.Arrow />
                       <Popover.Body className="flex flex-col">
-                        {/* <Popover.Title
+                        <Popover.Title
                           fontWeight="medium"
                           className="text-slate-900 text-base mb-4"
                         >
@@ -432,7 +398,7 @@ export default function Navbar() {
                             <strong>Smart Account: </strong>
                             {address}
                           </p>
-                        </Popover.Title> */}
+                        </Popover.Title>
                         <Button
                           size="lg"
                           variant="solid"
