@@ -1,15 +1,13 @@
-
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import axiosInstance from '@/utils/axiosInstance';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
-
 // Define and EXPORT types for your meme data
 interface MemeCreator {
-  _id: string
-  username: string
-  profile_pic: string
+  _id: string;
+  username: string;
+  profile_pic: string;
 }
 
 // Export the MemeData interface so it can be imported elsewhere
@@ -34,14 +32,12 @@ interface MemeCarouselProps {
   onMemeClick?: (meme: MemeData, index: number) => void;
   className?: string;
   activeTab?: 'daily' | 'all';
-
 }
 
-const MemeCarousel: React.FC<MemeCarouselProps> = ({
+const MemeCarousel: React.FC<MemeCarouselProps> = ({ 
   memes: propMemes,
-  onMemeClick,
+  onMemeClick, 
   className = '',
-
   activeTab = 'daily'
 }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -81,14 +77,15 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
       const dailyMemes = dailyResponse.data.memes || [];
       const allTimeMemes = allTimeResponse.data.memes || [];
       
-      // Create a Set for faster lookup
+      // Create a Set for faster lookup to avoid duplicates
       const dailyMemesIds = new Set(dailyMemes.map((meme: MemeData) => meme._id));
       const allTimeFiltered = allTimeMemes.filter(
         (allTimeMeme: MemeData) => !dailyMemesIds.has(allTimeMeme._id)
       );
       
-      // Take only first 12 memes for better performance
-      const combinedMemes = [...dailyMemes, ...allTimeFiltered].slice(0, 12);
+      // Combine: First ALL daily memes, then ALL filtered all-time memes
+      // No limits - fetch all available memes from both leaderboards
+      const combinedMemes = [...dailyMemes, ...allTimeFiltered];
       
       setFetchedMemes(combinedMemes);
     } catch (error) {
@@ -96,11 +93,9 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
       setError('Failed to load memes');
       setFetchedMemes([]);
       hasFetched.current = false; // Allow retry
-
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-
   }, []);
 
   // Only fetch memes once when component mounts (if no propMemes provided)
@@ -163,22 +158,21 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
       intervalRef.current = setInterval(() => {
         setCurrentIndex(prev => prev >= maxIndex ? 0 : prev + 1);
       }, 4000);
-
     } else {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     }
 
     return () => {
       if (intervalRef.current) {
-
         clearInterval(intervalRef.current);
       }
     };
   }, [isHovered, totalSlides, maxIndex, loading, validMemes.length]);
 
+  // Carousel navigation functions
   const goToPrevious = useCallback((): void => {
     setCurrentIndex(prev => prev === 0 ? maxIndex : prev - 1);
   }, [maxIndex]);
@@ -187,12 +181,18 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
     setCurrentIndex(prev => prev >= maxIndex ? 0 : prev + 1);
   }, [maxIndex]);
 
-  const handleMemeClick = useCallback((meme: MemeData, index: number) => {
+  // Handle meme click - find absolute index in the full memes array
+  const handleMemeClick = useCallback((meme: MemeData, relativeIndex: number) => {
     console.log('Clicked meme:', meme.name);
-    if (onMemeClick) {
-      onMemeClick(meme, index);
+    
+    // Find the absolute index of the clicked meme in the validMemes array
+    const absoluteIndex = validMemes.findIndex(m => m._id === meme._id);
+    
+    if (onMemeClick && absoluteIndex !== -1) {
+      // Pass the meme and its absolute index in the full array
+      onMemeClick(meme, absoluteIndex);
     }
-  }, [onMemeClick]);
+  }, [onMemeClick, validMemes]);
 
   // Touch/Swipe handlers for mobile (memoized)
   const handleTouchStart = useCallback((e: React.TouchEvent): void => {
@@ -215,12 +215,11 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
 
     if (Math.abs(diff) > threshold) {
       if (diff > 0) {
-        goToNext()
+        goToNext();
       } else {
-        goToPrevious()
+        goToPrevious();
       }
     }
-
   }, [goToNext, goToPrevious]);
 
   // Get current visible memes (memoized)
@@ -232,23 +231,21 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   // Memoize current memes to prevent unnecessary re-calculations
   const currentMemes = useMemo(() => getCurrentMemes(), [getCurrentMemes]);
 
-
+  // Loading state
   if (loading) {
     return (
-
       <div className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
         <div className="flex flex-col items-center gap-4">
           <AiOutlineLoading3Quarters className="animate-spin text-4xl text-blue-500" />
           <p className="text-gray-400 text-lg">Loading top memes...</p>
-
         </div>
       </div>
-    )
+    );
   }
 
+  // Error state
   if (error) {
     return (
-
       <div className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
         <div className="flex flex-col items-center gap-4">
           <p className="text-red-400 text-lg">{error}</p>
@@ -258,15 +255,13 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
               fetchLeaderboardMemes();
             }}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-
           >
             Try Again
           </button>
         </div>
       </div>
-    )
+    );
   }
-
 
   // Empty state
   if (!memes || memes.length === 0) {
@@ -274,50 +269,43 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
       <div className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
         <div className="flex flex-col items-center gap-4">
           <p className="text-gray-400 text-lg">No memes available</p>
-
         </div>
       </div>
-    )
+    );
   }
 
+  // All memes failed to load
   if (validMemes.length === 0 && memes.length > 0) {
     return (
-      <div
-        className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}
-      >
-        <div className='flex flex-col items-center gap-4'>
-          <p className='text-gray-400 text-lg'>Unable to load meme images</p>
-          <button
+      <div className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-gray-400 text-lg">Unable to load meme images</p>
+          <button 
             onClick={() => {
-
               setFailedImageIds(new Set());
               if (!propMemes) {
                 hasFetched.current = false;
                 fetchLeaderboardMemes();
-
               }
             }}
-            className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors'
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
             Retry Loading Images
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-
     <div className="p-2">
       <div className="max-w-8xl mx-auto">
         <div 
-
           className={`relative w-full overflow-hidden rounded-xl shadow-2xl ${className}`}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           {/* Main carousel container */}
-
           <div className={`relative ${isMobile ? 'aspect-square' : 'h-96 md:h-70 md:w-70 lg:h-96'} p-2`}>
             {/* Cards container */}
             <div className="flex justify-center items-center h-full">
@@ -325,19 +313,17 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                 // Mobile: Single square card view with swipe
                 <div 
                   className="w-full h-full max-w-sm aspect-square"
-
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
                 >
-
                   {currentMemes.map((meme: MemeData, index: number) => {
-                    const absoluteIndex = currentIndex * slidesPerView + index;
+                    const relativeIndex = currentIndex * slidesPerView + index;
                     return (
                       <div
                         key={meme._id}
                         className="relative group cursor-pointer h-full w-full"
-                        onClick={() => handleMemeClick(meme, absoluteIndex)}
+                        onClick={() => handleMemeClick(meme, relativeIndex)}
                       >
                         <div className="relative h-full w-full rounded-xl overflow-hidden bg-gray-700 shadow-xl aspect-square">
                           <img
@@ -347,7 +333,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                             onError={() => handleImageError(meme)}
                             onLoad={() => handleImageLoad(meme)}
                             draggable={false}
-                            loading="lazy" // Add lazy loading for performance
+                            loading="lazy"
                           />
                           
                           {/* Hover effect */}
@@ -364,14 +350,11 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                             />
                           </div>
 
-                        {/* Meme info overlay */}
-                        <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4'>
-                          <h3 className='text-white font-semibold text-sm truncate'>
-                            {meme.name}
-                          </h3>
-                          <p className='text-gray-300 text-xs truncate'>
-                            by @{meme.created_by.username}
-                          </p>
+                          {/* Meme info overlay */}
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                            <h3 className="text-white font-semibold text-sm truncate">{meme.name}</h3>
+                            <p className="text-gray-300 text-xs truncate">by @{meme.created_by.username}</p>
+                          </div>
                         </div>
                       </div>
                     );
@@ -381,12 +364,12 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                 // Desktop: Three cards view with equal heights
                 <div className="flex gap-6 h-full w-full justify-center max-w-7xl">
                   {currentMemes.map((meme: MemeData, index: number) => {
-                    const absoluteIndex = currentIndex * slidesPerView + index;
+                    const relativeIndex = currentIndex * slidesPerView + index;
                     return (
                       <div
                         key={meme._id}
                         className="flex-1 max-w-sm min-w-0 relative group cursor-pointer transition-transform duration-300 hover:scale-105 h-full"
-                        onClick={() => handleMemeClick(meme, absoluteIndex)}
+                        onClick={() => handleMemeClick(meme, relativeIndex)}
                       >
                         <div className="relative h-full w-full rounded-xl overflow-hidden bg-gray-700 shadow-xl">
                           <img
@@ -396,7 +379,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                             onError={() => handleImageError(meme)}
                             onLoad={() => handleImageLoad(meme)}
                             draggable={false}
-                            loading="lazy" // Add lazy loading for performance
+                            loading="lazy"
                           />
                           
                           {/* Hover effect */}
@@ -413,15 +396,11 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                             />
                           </div>
 
-
-                        {/* Meme info overlay */}
-                        <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4'>
-                          <h3 className='text-white font-semibold text-sm truncate'>
-                            {meme.name}
-                          </h3>
-                          <p className='text-gray-300 text-xs truncate'>
-                            by @{meme.created_by.username}
-                          </p>
+                          {/* Meme info overlay */}
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                            <h3 className="text-white font-semibold text-sm truncate">{meme.name}</h3>
+                            <p className="text-gray-300 text-xs truncate">by @{meme.created_by.username}</p>
+                          </div>
                         </div>
                       </div>
                     );
@@ -455,12 +434,10 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                   aria-label="Previous slides"
                 >
                   <ChevronLeft className="w-6 h-6" />
-
                 </button>
 
                 <button
                   onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-
                     e.stopPropagation();
                     goToNext();
                   }}
@@ -470,14 +447,12 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                   aria-label="Next slides"
                 >
                   <ChevronRight className="w-6 h-6" />
-
                 </button>
               </>
             )}
           </div>
 
           {/* Progress bar */}
-
           {totalSlides > 1 && !isHovered && (
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-10">
               <div 
@@ -492,7 +467,6 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
           {/* Mobile swipe indicator */}
           {isMobile && totalSlides > 1 && (
             <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-white/70 text-xs flex items-center gap-1 z-10 bg-black/50 px-3 py-1 rounded-full">
-
               <span>←</span>
               <span>Swipe</span>
               <span>→</span>
@@ -504,5 +478,4 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   );
 };
 
-
-export default MemeCarousel
+export default MemeCarousel;

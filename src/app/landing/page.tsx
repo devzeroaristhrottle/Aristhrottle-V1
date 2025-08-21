@@ -1188,6 +1188,7 @@ export default function Page() {
           onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
         />
       )}
+
       {isShareOpen && shareData && (
         <Share
           id={shareData.id}
@@ -1198,4 +1199,3 @@ export default function Page() {
     </div>
   )
 }
-
