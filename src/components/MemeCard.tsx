@@ -181,7 +181,7 @@ export function MemeCard({
 										alt="voted"
 										className="transition-all duration-300"
 									/>
-									<span className="text-[#1783fb] text-sm">{voteCount}</span>
+									{/* <span className="text-[#1783fb] text-sm">{voteCount}</span> */}
 								</>
 							) : (
 								<>
@@ -268,9 +268,9 @@ export function MemeCard({
 										alt="voted"
 										className="transition-all duration-300"
 									/>
-									{/* {!activeTab?.includes('live') && (
+									{!activeTab?.includes('live') && (
 										<span className="text-[#1783fb] text-xs">{voteCount}</span>
-									)} */}
+									)}
 								</>
 							) : (
 								<>
@@ -286,9 +286,9 @@ export function MemeCard({
 											!canUserVote ? "!cursor-not-allowed opacity-50" : "!cursor-pointer"
 										}
 									/>
-									{/* {!activeTab?.includes('live') && (
+									{!activeTab?.includes('live') && (
 										<span className="text-[#1783fb] text-xs">{voteCount}</span>
-									)} */}
+									)}
 								</>
 							)}
 
