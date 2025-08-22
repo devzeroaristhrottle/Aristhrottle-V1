@@ -29,7 +29,7 @@ export interface MemeData {
 
 interface MemeCarouselProps {
   memes?: MemeData[];
-  onMemeClick?: (meme: MemeData, index: number) => void;
+  onMemeClick?: (meme: MemeData, index: number, allData: MemeData[]) => void;
   className?: string;
   activeTab?: 'daily' | 'all';
 }
@@ -181,7 +181,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
     setCurrentIndex(prev => prev >= maxIndex ? 0 : prev + 1);
   }, [maxIndex]);
 
-  // Handle meme click - find absolute index in the full memes array
+  // Handle meme click - Updated to pass all three parameters including allData
   const handleMemeClick = useCallback((meme: MemeData, relativeIndex: number) => {
     console.log('Clicked meme:', meme.name);
     
@@ -189,8 +189,8 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
     const absoluteIndex = validMemes.findIndex(m => m._id === meme._id);
     
     if (onMemeClick && absoluteIndex !== -1) {
-      // Pass the meme and its absolute index in the full array
-      onMemeClick(meme, absoluteIndex);
+      // Pass the meme, its absolute index, and the complete validMemes array as allData
+      onMemeClick(meme, absoluteIndex, validMemes);
     }
   }, [onMemeClick, validMemes]);
 

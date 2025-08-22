@@ -12,40 +12,37 @@ export const Milestones = ({
   tasks: MilestoneTitles[];
   hasBorder?: boolean;
 }) => {
-  const { userDetails, setUserDetails } = useContext(Context);
+  const { userDetails } = useContext(Context);
   const userId = userDetails?._id;
   const [isClaimLoading, setIsClaimLoading] = useState(false);
   const [milestonesList, setMilestonesList] = useState(milestones);
 
   const handleClaim = async (
     type: string,
-    milestone: MilestoneTitles,
+    milestone: number,
     index: number
   ) => {
     try {
       setIsClaimLoading(true);
-      if(userDetails && !isClaimLoading) setUserDetails({...userDetails, mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(milestone.reward * 1e18) })
       const response = await axiosInstance.post(`/api/claimreward`, {
         userId,
         type,
-        milestone: milestone.number,
-      }, {
-        timeout: 30000
+        milestone,
       });
       if (response.status == 200) {
-        const updatedMilestones = [...milestones];
+        // Fix: Update the milestonesList state (not the original milestones array)
+        const updatedMilestones = [...milestonesList];
         updatedMilestones[index] = {
           ...updatedMilestones[index],
           canClaim: false,
           isClaimed: true,
         };
-        setMilestonesList([...updatedMilestones]);
+        setMilestonesList(updatedMilestones);
         toast.success("Reward claimed successfully!");
       }
     } catch (error) {
       console.error("Error claiming the reward", error);
       toast.error("Error claiming the reward");
-      if(userDetails && !isClaimLoading) setUserDetails({...userDetails, mintedCoins: BigInt(userDetails.mintedCoins) })
     } finally {
       setIsClaimLoading(false);
     }
@@ -59,7 +56,7 @@ export const Milestones = ({
           : "w-full"
       }`}
     >
-      {milestonesList.sort((a, b) => a.reward - b.reward).map((milestone, index) => (
+      {milestonesList.map((milestone, index) => (
         <div
           key={index}
           className="flex items-center gap-2 md:gap-3 justify-between"
@@ -83,14 +80,14 @@ export const Milestones = ({
             </p>
           </div>
 
-          {/* Claim Button or Placeholder */}
+          {/* Claim Button or Placeholder - FIXED CONDITION */}
           <div className="flex items-center justify-center">
-            {milestone.canClaim ? (
+            {milestone.canClaim && !milestone.isClaimed ? (
               <button
                 className="relative px-3 md:px-4 md:py-1 bg-[#040f2b] border-2 border-[#0d4387] rounded-lg text-lg md:text-3xl bg-[linear-gradient(180deg,#050D28_0%,#0F345C_100%)]"
-                onClick={() =>{
-                  handleClaim(milestone.type, milestone, index)
-                }}
+                onClick={() =>
+                  handleClaim(milestone.type, milestone.number, index)
+                }
                 disabled={isClaimLoading}
               >
                 {isClaimLoading ? (
