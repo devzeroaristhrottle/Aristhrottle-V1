@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 
 export default function Home() {
 	const router = useRouter()
-	useEffect(() => router.push('/landing'), [])
+	useEffect(() => router.push('/maintenance'), [])
 	return (
 		<div className="text-center">
 			<Page />
