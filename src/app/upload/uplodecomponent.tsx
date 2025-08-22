@@ -614,7 +614,7 @@ const UploadComponent: React.FC<UploadCompProps> = ({
 							{/* Tag counter and instruction */}
 							<div className="absolute bottom-2 right-3 text-xs text-gray-400 pointer-events-none">
 								<div className="text-right">
-									<div>Enter/Return to Add • {selectedTags.length}/5</div>
+									<div>Press Enter/Return to add tag • {selectedTags.length}/5</div>
 								</div>
 							</div>
 						</div>
