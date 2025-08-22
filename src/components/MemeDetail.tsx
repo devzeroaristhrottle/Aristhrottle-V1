@@ -221,7 +221,7 @@ export default function MemeDetail({
     <>
       {/* Backdrop */}
       <div
-        className='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm'
+        className='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm '
         onClick={onClose}
       />
 
@@ -269,23 +269,23 @@ export default function MemeDetail({
             {/* Header */}
             <div className='flex flex-row justify-between items-center mb-6'>
               <div className='flex items-center gap-3'>
-                <div className='p-2 rounded-full bg-[#29e0ca]/20'>
+                <div className='p-2 rounded-full bg-[#29e0ca]/20 mt-11'>
                   <img
                     src={meme.created_by.profile_pic}
                     alt='Profile Pic'
                     className='h-8 w-8 rounded-full'
                   />
                 </div>
-                <span className='text-[#29e0ca] text-xl font-semibold'>
+                <span className='text-[#29e0ca] text-xl font-semibold mt-11'>
                   {meme.created_by.username}
                 </span>
               </div>
 
               <button
                 onClick={onClose}
-                className='z-50 p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border border-white/20'
+                className='z-50 p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm '
               >
-                <CgCloseO className='text-white w-6 h-6' />
+                <CgCloseO className='text-white w-6 h-6 mt-11' />
               </button>
             </div>
 
