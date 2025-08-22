@@ -33,8 +33,8 @@ export default function MaintenancePage() {
 
         {/* Subtitle */}
         <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          We're making some improvements to bring you an even better experience. 
-          We'll be back soon with exciting new features!
+          We&rsquo;re making some improvements to bring you an even better experience. 
+          We&rsquo;ll be back soon with exciting new features!
         </p>
 
         {/* Status card */}
@@ -128,7 +128,7 @@ export default function MaintenancePage() {
 
         {/* Footer text */}
         <div className="mt-8 text-gray-500 text-sm">
-          <p>Thank you for your patience. We're working hard to bring you the best experience possible!</p>
+          <p>Thank you for your patience. We&rsquo;re working hard to bring you the best experience possible!</p>
         </div>
       </div>
     </div>
