@@ -156,7 +156,7 @@ export default function Page() {
 
   const offset = 30
 
-  const getMyMemes = async () => {
+  const getUserUploadedMemes = async () => {
     try {
       if (!userDetails?._id) throw new Error('User not found')
       setLoading(true)
@@ -233,7 +233,7 @@ export default function Page() {
     if (activeTab === 'drafts') {
       getDraftMemes()
     } else {
-      getMyMemes()
+      getUserUploadedMemes()
     }
     getUserProfile()
   }, [userDetails, page])
@@ -258,7 +258,7 @@ export default function Page() {
     if (activeTab === 'drafts') {
       getDraftMemes()
     } else {
-      getMyMemes()
+      getUserUploadedMemes()
     }
     setFilterOpen(false)
   }
@@ -275,7 +275,7 @@ export default function Page() {
     if (newTab === 'drafts') {
       getDraftMemes()
     } else {
-      getMyMemes()
+      getUserUploadedMemes()
     }
   }
 
@@ -381,6 +381,8 @@ export default function Page() {
     }
   }
 
+  console.log(filteredMemes, 'abc')
+
   return (
     <div className='h-screen flex flex-col overflow-hidden'>
       <Navbar />
@@ -400,7 +402,7 @@ export default function Page() {
                 width={100}
               />
             </div>
-            <div className='text-[#29e0ca] text-2xl truncate w-32'>
+            <div className='text-[#29e0ca] text-2xl truncate w-24 md:w-32'>
               {userDetails?.username}
             </div>
           </div>
@@ -460,10 +462,10 @@ export default function Page() {
           </div>
         </div>
         {/* Gallery Section */}
-        {/* <div className='mt-16 md:mt-12'> */}
-        {/* <div className='flex items-center justify-between'>
+        <div className='mt-4 flex items-center'>
+          <div className='flex items-center justify-between'>
             <div className='flex space-x-2.5 md:space-x-5'>
-              <FilterPopover
+              {/* <FilterPopover
                 activeTab={activeTab}
                 filterOpen={filterOpen}
                 setFilterOpen={setFilterOpen}
@@ -479,7 +481,7 @@ export default function Page() {
                 handleTagRemove={handleTagRemove}
                 resetFilters={resetFilters}
                 applyFilters={applyFilters}
-              />
+              /> */}
               <SortPopover
                 activeTab={activeTab}
                 sortOpen={sortOpen}
@@ -489,7 +491,7 @@ export default function Page() {
                 handleResetSort={handleResetSort}
               />
             </div>
-            <div className='space-x-2.5 md:space-x-5 flex justify-center'>
+            {/* <div className='space-x-2.5 md:space-x-5 flex justify-center'>
               <TabButton
                 classname='!text-base md:!text-xl !px-2 md:!px-5 !rounded-md md:!rounded-10px'
                 isActive={activeTab === 'drafts'}
@@ -502,47 +504,105 @@ export default function Page() {
                 label='All-Time'
                 onClick={() => handleTabChange('posts')}
               />
-            </div>
-          </div> */}
-        {/* <div>
+            </div> */}
+          </div>
+          {/* <div>
             <h2 className='text-[#29e0ca] text-xl md:text-4xl font-medium text-center mt-8 md:my-2'>
               {activeTab === 'drafts' ? 'Your Draft Memes' : 'Your Uploads'}
             </h2>
           </div> */}
-        {/* <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6'> */}
+        </div>
+
+        {/* Meme Detail Modal */}
+        {isMemeDetailOpen && selectedMeme && (
+          <MemeDetail
+            onClose={onClose}
+            meme={selectedMeme}
+            tab={activeTab}
+            onNext={handleNext}
+            onPrev={handlePrev}
+            onVoteMeme={(meme_id) => handleVote(meme_id)}
+            bmk={false}
+            onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
+            searchRelatedMemes={() => {}}
+          />
+        )}
+
+        {editProfileOpen && (
+          <EditProfile
+            onCancel={onCancel}
+            formData={formData}
+            setFormData={setFormData}
+          />
+        )}
+      </div>
+
+      <div className='flex-1 overflow-y-auto py-4'>
+        {/* Tabs */}
+        <div className='flex justify-between rounded-lg mb-4 p-1'>
+          <TabButton
+            label='Posts'
+            isProfileTabs
+            isActive={activeTab === 'posts'}
+            onClick={() => setActiveTab('posts')}
+          />
+          <TabButton
+            label='Votes Cast'
+            isProfileTabs
+            isActive={activeTab === 'votes_cast'}
+            onClick={() => setActiveTab('votes_cast')}
+          />
+          <TabButton
+            label='Drafts'
+            isProfileTabs
+            isActive={activeTab === 'drafts'}
+            onClick={() => setActiveTab('drafts')}
+          />
+          <TabButton
+            label='Saved'
+            isProfileTabs
+            isActive={activeTab === 'saved'}
+            onClick={() => setActiveTab('saved')}
+          />
+        </div>
+
+        {/* Tab Content */}
+        <div className='pb-4'>{renderContent()}</div>
+      </div>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-16 mt-3 md:mt-6'>
         {/* For mobile */}
-        {/* <div
-              className='md:hidden w-full flex flex-col items-center justify-center'
-              ref={scrollComp}
-            >
-              {filteredMemes.map((item, index) => (
-                <div key={index} className='w-full max-w-sm'>
-                  {activeTab === 'drafts' ? (
-                    <DraftMemeCard
-                      draft={draftMemes.find((d) => d._id === item._id)}
-                      onDeleteDraft={handleDeleteDraft}
-                      onPublishDraft={handlePublishDraft}
-                      onOpenMeme={() => {
-                        setSelectedMeme(item)
-                        setIsMemeDetailOpen(true)
-                        setSelectedMemeIndex(index)
-                      }}
-                    />
-                  ) : (
-                    <LeaderboardMemeCard
-                      meme={item}
-                      onOpenMeme={() => {
-                        setSelectedMeme(item)
-                        setIsMemeDetailOpen(true)
-                        setSelectedMemeIndex(index)
-                      }}
-                      activeTab={activeTab}
-                      voteMeme={(meme_id) => handleVote(meme_id)}
-                    />
-                  )}
-                </div>
-              ))}
-            </div> */}
+        <div
+          className='md:hidden w-full flex flex-col items-center justify-center'
+          ref={scrollComp}
+        >
+          {filteredMemes.map((item, index) => (
+            <div key={index} className='w-full max-w-sm'>
+              {activeTab === 'drafts' ? (
+                <DraftMemeCard
+                  draft={draftMemes.find((d) => d._id === item._id)}
+                  onDeleteDraft={handleDeleteDraft}
+                  onPublishDraft={handlePublishDraft}
+                  onOpenMeme={() => {
+                    setSelectedMeme(item)
+                    setIsMemeDetailOpen(true)
+                    setSelectedMemeIndex(index)
+                  }}
+                />
+              ) : (
+                <LeaderboardMemeCard
+                  meme={item}
+                  onOpenMeme={() => {
+                    setSelectedMeme(item)
+                    setIsMemeDetailOpen(true)
+                    setSelectedMemeIndex(index)
+                  }}
+                  activeTab={activeTab}
+                  voteMeme={(meme_id) => handleVote(meme_id)}
+                />
+              )}
+            </div>
+          ))}
+        </div>
 
         {/* For desktop */}
         {/* {filteredMemes.map((item, index) => (
@@ -584,64 +644,6 @@ export default function Page() {
                 </p>
               )}
             </div> */}
-        {/* </div> */}
-        {/* </div> */}
-
-        {/* Meme Detail Modal */}
-        {isMemeDetailOpen && selectedMeme && (
-          <MemeDetail
-            onClose={onClose}
-            meme={selectedMeme}
-            tab={activeTab}
-            onNext={handleNext}
-            onPrev={handlePrev}
-            onVoteMeme={(meme_id) => handleVote(meme_id)}
-            bmk={false}
-            onRelatedMemeClick={(meme) => setSelectedMeme(meme)}
-            searchRelatedMemes={() => {}}
-          />
-        )}
-
-        {editProfileOpen && (
-          <EditProfile
-            onCancel={onCancel}
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )}
-      </div>
-
-      <div className='flex-1 overflow-y-auto px-4 py-4'>
-        {/* Tabs */}
-        <div className='flex justify-between rounded-lg mb-4 p-1'>
-          <TabButton
-            label='Posts'
-            isProfileTabs
-            isActive={activeTab === 'posts'}
-            onClick={() => setActiveTab('posts')}
-          />
-          <TabButton
-            label='Votes Cast'
-            isProfileTabs
-            isActive={activeTab === 'votes_cast'}
-            onClick={() => setActiveTab('votes_cast')}
-          />
-          <TabButton
-            label='Drafts'
-            isProfileTabs
-            isActive={activeTab === 'drafts'}
-            onClick={() => setActiveTab('drafts')}
-          />
-          <TabButton
-            label='Saved'
-            isProfileTabs
-            isActive={activeTab === 'saved'}
-            onClick={() => setActiveTab('saved')}
-          />
-        </div>
-
-        {/* Tab Content */}
-        <div className='pb-4'>{renderContent()}</div>
       </div>
       <div className='flex-none'>
         <BottomNav />

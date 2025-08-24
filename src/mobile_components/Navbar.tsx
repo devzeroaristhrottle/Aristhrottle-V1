@@ -155,7 +155,7 @@ export default function Navbar() {
 
   return (
     <div className='sticky top-0 z-50 backdrop-blur-md bg-black/20 mb-3'>
-      <div className='relative w-[100%] pr-4'>
+      <div className='relative w-[100%]'>
         <div className='flex justify-between align-middle items-center py-3 md:py-0'>
           <div className='flex align-middle items-center gap-5'>
             {userDetails && user != null && user.address && (
@@ -222,25 +222,25 @@ export default function Navbar() {
         </div>
         {userDetails && user != null && user.address && (
           <div
-            className='flex flex-row justify-between items-center pl-4 py-1'
+            className='flex flex-row justify-between items-center py-1'
             style={{ fontSize: '14px' }}
           >
             <div className='flex gap-1 items-center'>
               <label>Vote</label>
               <p className='border border-white rounded-md px-1'>
-                {userDetails.votes} / 20
+                {userDetails.votes}/20
               </p>
             </div>
             <div className='flex gap-1 items-center'>
               <label>Upload</label>
               <p className='border border-white rounded-md px-1'>
-                {userDetails.uploads} / 20
+                {userDetails.uploads}/20
               </p>
             </div>
             <div className='flex gap-1 items-center'>
               <label>Create</label>
               <p className='border border-white rounded-md px-1'>
-                &nbsp;{userDetails.generations} / 5&nbsp;
+                &nbsp;{userDetails.generations}/5&nbsp;
               </p>
             </div>
             <div className='flex gap-1 items-center'>
