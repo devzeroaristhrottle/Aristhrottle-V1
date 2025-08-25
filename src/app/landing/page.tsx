@@ -95,6 +95,10 @@ export default function Page() {
   const [allMemeData, setAllMemeData] = useState<LeaderboardMeme[]>([])
   const [allMemeDataFilter, setAllMemeDataFilter] = useState<LeaderboardMeme[]>([])
   
+  // Add state to track carousel memes and whether we're viewing from carousel
+  const [carouselMemes, setCarouselMemes] = useState<MemeData[]>([])
+  const [isViewingFromCarousel, setIsViewingFromCarousel] = useState<boolean>(false)
+  
   const { openAuthModal } = useAuthModal()
   const [isUploading, setIsUploading] = useState(false)
   const [hiddenMemes, setHiddenMemes] = useState<Set<string>>(new Set())
@@ -158,6 +162,8 @@ export default function Page() {
     setIsMemeDetailOpen(false)
     setSelectedMeme(undefined)
     setSelectedMemeIndex(-1)
+    setIsViewingFromCarousel(false)
+    setCarouselMemes([])
   }
 
   const readSearch = () => {
@@ -186,23 +192,43 @@ export default function Page() {
     setTimeout(() => readSearch(), 1000)
   }, [])
 
+  // Updated handleNext to work with carousel memes
   const handleNext = () => {
-    const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
-
-    if (selectedMemeIndex < currentData.length - 1) {
-      const nextIndex = selectedMemeIndex + 1
-      setSelectedMemeIndex(nextIndex)
-      setSelectedMeme(currentData[nextIndex])
+    if (isViewingFromCarousel && carouselMemes.length > 0) {
+      // Navigate within carousel memes only
+      if (selectedMemeIndex < carouselMemes.length - 1) {
+        const nextIndex = selectedMemeIndex + 1
+        setSelectedMemeIndex(nextIndex)
+        setSelectedMeme(carouselMemes[nextIndex])
+      }
+    } else {
+      // Original logic for page memes
+      const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
+      if (selectedMemeIndex < currentData.length - 1) {
+        const nextIndex = selectedMemeIndex + 1
+        setSelectedMemeIndex(nextIndex)
+        setSelectedMeme(currentData[nextIndex])
+      }
     }
   }
 
+  // Updated handlePrev to work with carousel memes
   const handlePrev = () => {
-    const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
-
-    if (selectedMemeIndex > 0) {
-      const prevIndex = selectedMemeIndex - 1
-      setSelectedMemeIndex(prevIndex)
-      setSelectedMeme(currentData[prevIndex])
+    if (isViewingFromCarousel && carouselMemes.length > 0) {
+      // Navigate within carousel memes only
+      if (selectedMemeIndex > 0) {
+        const prevIndex = selectedMemeIndex - 1
+        setSelectedMemeIndex(prevIndex)
+        setSelectedMeme(carouselMemes[prevIndex])
+      }
+    } else {
+      // Original logic for page memes
+      const currentData = activeTab === 'live' ? displayedMemes : allMemeDataFilter
+      if (selectedMemeIndex > 0) {
+        const prevIndex = selectedMemeIndex - 1
+        setSelectedMemeIndex(prevIndex)
+        setSelectedMeme(currentData[prevIndex])
+      }
     }
   }
 
@@ -832,10 +858,13 @@ export default function Page() {
     }
   }
 
-  const handleMemeClickCarousel = useCallback((meme: MemeData, index: number) => {
+  // Updated handleMemeClickCarousel to store carousel data
+  const handleMemeClickCarousel = useCallback((meme: MemeData, index: number, allData: MemeData[]) => {
     setIsMemeDetailOpen(true)
     setSelectedMeme(meme)
     setSelectedMemeIndex(index)
+    setCarouselMemes(allData) // Store the carousel memes
+    setIsViewingFromCarousel(true) // Flag that we're viewing from carousel
   }, [])
 
   return (
@@ -1051,6 +1080,7 @@ export default function Page() {
                     setSelectedMeme(meme)
                     setSelectedMemeIndex(index)
                     setIsMemeDetailOpen(true)
+                    setIsViewingFromCarousel(false) // Not from carousel
                   }}
                   bmk={bookMarks.some((get_meme) => get_meme._id == meme._id)}
                   onVoteMeme={() => voteToMeme(meme._id)}
@@ -1089,6 +1119,7 @@ export default function Page() {
                       setSelectedMeme(item)
                       setSelectedMemeIndex(index)
                       setIsMemeDetailOpen(true)
+                      setIsViewingFromCarousel(false) // Not from carousel
                     }}
                     voteMeme={(memeId) => handleUpvoteDownvote(memeId)}
                     bmk={bookMarks.some((get_meme) => get_meme._id == item._id)}
