@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { Context } from "@/context/contextProvider";
 import { useRouter } from "next/navigation";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import FeedbackModal from '../components/feedback';
 
 // import Notifications from './Notifications'
 import useCountdown from "@/app/hooks/useCountdown";
@@ -42,6 +43,7 @@ export default function Navbar() {
   const { setUserDetails, userDetails } = useContext(Context);
   const [loading, setLoading] = useState<boolean>(false);
   const [referralCode, setReferralCode] = useState<string>("");
+  const [showFeedback, setShowFeedback] = useState<boolean>(false);
 
   const user = useUser();
   const { openAuthModal } = useAuthModal();
@@ -161,122 +163,126 @@ export default function Navbar() {
     <div className="sticky top-0 z-50 backdrop-blur-md bg-black/20 w-full">
       <div className="relative w-full mx-0 px-0">
         {/* Mobile Layout - Full Width Matching Design */}
-        <div className="block md:hidden w-30 m-0 p-0">
-          {userDetails && user != null && user.address && (
-            <div className="w-full px-0 py-0 backdrop-blur-md bg-black/20 m-0">
-              {/* Mobile Navigation Bar - Horizontal Layout */}
-              <div className="flex items-center justify-between w-full px-0 ">
-                {/* Left Side - Avatar */}
-                <div className="flex items-center flex-shrink-0 mb-20 mr-2 mt-3 ">
-                  <Avatar
-                    name="Random"
-                    colorPalette="blue"
-                    src={userDetails.profile_pic}
-                    css={ringCss}
-                    className="cursor-pointer "
-                    size="xs"
-                    onClick={() => {
-                      route.replace("/home/profile");
-                    }}
-                  />
-                </div>
+        {/* // Replace the mobile layout section (around line 130-200) with this updated version: */}
 
-                {/* Center - Stats in horizontal row */}
-                <div className="flex items-center gap-5 flex-1 justify-center min-w-0 mt-6">
-                  {/* Vote Stats */}
-                  <div className="flex items-center gap-1 flex-shrink-0 ml-6">
-                    <span className="text-white text-xs font-medium whitespace-nowrap">Vote</span>
-                    <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30">
-                      <span className="text-white text-xs font-medium">
-                        {userDetails.votes}/20
-                      </span>
-                    </div>
-                  </div>
+<div className="block md:hidden w-full m-0 p-0">
+  {userDetails && user != null && user.address && (
+    <div className="w-full px-0 py-0 backdrop-blur-md bg-black/20 m-0">
+      {/* Mobile Navigation Bar - 3 Row Layout */}
+      <div className="flex flex-col w-full">
+        
+        {/* First Row - Avatar and Token Balance */}
+        <div className="flex items-center justify-between w-full px-2 py-2">
+          {/* Left Side - Avatar */}
+          <div className="flex items-center flex-shrink-0">
+            <Avatar
+              name="Random"
+              colorPalette="blue"
+              src={userDetails.profile_pic}
+              css={ringCss}
+              className="cursor-pointer"
+              size="sm"
+              onClick={() => {
+                route.replace("/home/profile");
+              }}
+            />
+          </div>
 
-                  {/* Upload Stats */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <span className="text-white text-xs font-medium whitespace-nowrap">Upload</span>
-                    <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30">
-                      <span className="text-white text-xs font-medium">
-                        {userDetails.uploads}/20
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Create Stats */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <span className="text-white text-xs font-medium whitespace-nowrap">Create</span>
-                    <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30">
-                      <span className="text-white text-xs font-medium">
-                        {userDetails.generations}/5
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Phase with Info Icon */}
-                  <div className="flex items-center gap-1 flex-shrink-0 ">
-                    <span className="text-white text-xs font-medium whitespace-nowrap">New Phase</span>
-                    <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30">
-                      <span className="text-white text-xs font-medium">
-                        {timeLeft.split(":").slice(0, 2).join(":")}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Side - Token Balance and User Info */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {/* Token Balance */}
-                  <div className="flex items-center gap-1 mb-20">
-                    <Image
-                      className="!w-4 !h-4"
-                      alt="icon"
-                      src="/assets/token_e.png"
-                      height={16}
-                      width={16}
-                    />
-                    <span className="text-white text-xs font-medium">
-                      {userDetails?.mintedCoins
-                        ? parseFloat(
-                            ethers.formatEther(userDetails.mintedCoins)
-                          ).toFixed(1)
-                        : "0.0"}
-                    </span>
-                  </div>
-
-                  {/* User Avatar Small */}
-                  <Avatar
-                    name="User"
-                    colorPalette="blue"
-                    src={userDetails.profile_pic}
-                    className="cursor-pointer mb-20"
-                    size="2xs"
-                    onClick={() => {
-                      route.replace("/home/profile");
-                    }}
-                  />
-
-                  {/* Hidden Wallet Popover for functionality */}
-                  <Popover.Root
-                    open={open}
-                    onOpenChange={(e) => {
-                      if (!e.open && user && user.address) {
-                        setOpen(e.open);
-                      }
-                    }}
-                  >
-                    <Popover.Trigger asChild>
-                      <div className="hidden"></div>
-                    </Popover.Trigger>
-                   
-                  </Popover.Root>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Right Side - Token Balance */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Image
+              className="!w-6 !h-6"
+              alt="icon"
+              src="/assets/token_e.png"
+              height={24}
+              width={24}
+            />
+            <span className="text-white text-lg font-medium">
+              {userDetails?.mintedCoins
+                ? parseFloat(ethers.formatEther(userDetails.mintedCoins)).toFixed(1)
+                : "0.0"}
+            </span>
+            <span className="text-white text-lg font-medium">$ART</span>
+            
+            
+          </div>
         </div>
 
-        {/* Desktop Layout - Unchanged */}
+        {/* Second Row - Stats - Compact Mobile Layout */}
+        <div className="flex items-center justify-between w-full px-0 py-1">
+          {/* Vote Stats */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <span className="text-white text-xs font-medium ">Vote</span>
+            <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30 min-w-[40px] mr-2 ">
+              <span className="text-white text-xs font-medium ">
+                {userDetails.votes}/20
+              </span>
+            </div>
+          </div>
+
+          {/* Upload Stats */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <span className="text-white text-xs font-medium">Upload</span>
+            <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30 min-w-[40px] mr-2">
+              <span className="text-white text-xs font-medium">
+                {userDetails.uploads}/20
+              </span>
+            </div>
+          </div>
+
+          {/* Create Stats */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <span className="text-white text-xs font-medium">Create</span>
+            <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30 min-w-[32px] mr-2">
+              <span className="text-white text-xs font-medium">
+                {userDetails.generations}/5
+              </span>
+            </div>
+          </div>
+
+          {/* New Phase Timer */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <span className="text-white text-xs font-medium whitespace-nowrap">New Phase</span>
+            <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30 min-w-[50px] mr-2">
+              <span className="text-white text-xs font-medium">
+                {timeLeft.split(":").slice(0, 2).join(":")}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Third Row - Feedback Section */}
+        <div className="flex justify-center items-center w-full px-4 py-2">
+          <div className="flex items-center gap-3">
+            <span className="text-white text-sm font-medium">Fill for 5 $eART</span>
+            <button
+              onClick={() => setShowFeedback(true)}
+              className="border border-white rounded-full px-6 py-2 bg-gray-800/30 hover:bg-gray-700/40 transition-colors"
+            >
+              <span className="text-white text-sm font-medium">Feedback</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Hidden Wallet Popover for functionality */}
+        <Popover.Root
+          open={open}
+          onOpenChange={(e) => {
+            if (!e.open && user && user.address) {
+              setOpen(e.open);
+            }
+          }}
+        >
+          <Popover.Trigger asChild>
+            <div className="hidden"></div>
+          </Popover.Trigger>
+        </Popover.Root>
+      </div>
+    </div>
+  )}
+</div>
+
+        {/* Desktop Layout */}
         <div className="hidden md:flex justify-between align-middle items-center py-0 md:py-0 px-2 sm:px-4 md:px-0">
           <div className="flex align-middle items-center gap-5">
             {userDetails && user != null && user.address && (
@@ -339,6 +345,18 @@ export default function Navbar() {
                     {/* Arrow */}
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-gray-800"></div>
                   </div>
+                </div>
+                
+                {/* Desktop Feedback Section */}
+                <div className="flex gap-1 items-center">
+                  <label>Earn 5 $eART</label>
+                  <span className="text-yellow-400 text-lg">👉</span>
+                  <button
+                    onClick={() => setShowFeedback(true)}
+                    className="border border-white rounded-md px-2 py-1 hover:bg-gray-800/50 transition-colors"
+                  >
+                    Feedback
+                  </button>
                 </div>
               </div>
             )}
@@ -508,6 +526,13 @@ export default function Navbar() {
             </DialogFooter>
           </DialogContent>
         </DialogRoot>
+
+        {/* Feedback Modal */}
+        <FeedbackModal 
+          isOpen={showFeedback} 
+          onClose={() => setShowFeedback(false)} 
+          userWalletAddress={user?.address} 
+        />
       </div>
     </div>
   );
