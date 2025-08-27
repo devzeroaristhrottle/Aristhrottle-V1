@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Star } from 'lucide-react';
-import Starfield from '@/components/Starfield';
+
 
 // Define prop types
 interface FeedbackModalProps {
@@ -198,25 +198,12 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, userWall
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-75"
       onClick={handleBackdropClick}
     >
-      {/* Starfield Background - Fixed position to cover entire viewport */}
-      <div className="fixed inset-0 z-[-1]">
-      
-         <Starfield
-          starCount={2000}
-          starColor={[255, 255, 255]}
-          speedFactor={0.05}
-          gradientTopColor='#000000'
-          gradientMidColor='#000000'
-          gradientBottomColor='#1b1f3b'
-        />
-      </div>
-
-      <div className="relative w-[90vw] max-w-xl bg-[#141e29]/90 backdrop-blur-md border-2 border-[#1783fb] rounded-xl p-6 max-h-[90vh] overflow-y-auto mx-auto my-auto">
+      <div className="relative w-[90vw] max-w-xl bg-[#050D28] rounded-xl p-6 max-h-[90vh] overflow-y-auto mx-auto my-auto shadow-2xl">
         
-        {/* Close Button - Enhanced visibility and functionality */}
+        {/* Close Button */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -234,7 +221,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, userWall
         <div className="relative z-10">
           {/* Header */}
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-cyan-400 mb-2">
+            <h2 className="text-2xl font-bold text-teal-400 mb-2">
               Aristhrottle Beta Feedback
             </h2>
             <p className="text-white text-lg mb-4">
@@ -319,7 +306,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, userWall
                   placeholder="Write your suggestions here"
                   value={formData.otherSuggestion}
                   onChange={(e) => setFormData(prev => ({ ...prev, otherSuggestion: e.target.value }))}
-                  className="w-full p-3 bg-black/30 backdrop-blur-sm border border-cyan-400 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-none"
+                  className="w-full p-3 bg-[#0f1f2e] border border-cyan-400 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-none"
                   rows={3}
                   maxLength={500}
                 />
@@ -390,7 +377,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, userWall
                 placeholder="Optional, write if you have any other feedbacks for us"
                 value={formData.additionalFeedback}
                 onChange={(e) => setFormData(prev => ({ ...prev, additionalFeedback: e.target.value }))}
-                className="w-full p-3 bg-black/30 backdrop-blur-sm border border-cyan-400 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-none"
+                className="w-full p-3 bg-[#0f1f2e] border border-cyan-400 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-none"
                 rows={4}
                 maxLength={1000}
               />
@@ -403,22 +390,24 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, userWall
               </span>
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-[#1783fb] to-[#0f6fd1] hover:from-[#0f6fd1] hover:to-[#0d5bb8] text-white py-3 px-6 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Submitting...
-                </>
-              ) : (
-                'Submit'
-              )}
-            </button>
+            {/* Submit Button - Updated with rounded pill shape and teal color */}
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="bg-teal-400 hover:bg-teal-500 text-black py-3 px-8 rounded-full font-semibold text-lg transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px]"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
+                    Submitting...
+                  </>
+                ) : (
+                  'Submit'
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
