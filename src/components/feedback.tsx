@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Star } from 'lucide-react';
+import Starfield from '@/components/Starfield';
 
 // Define prop types
 interface FeedbackModalProps {
@@ -79,6 +80,13 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, userWall
       document.removeEventListener('keydown', handleEscape);
     };
   }, [isOpen, onClose]);
+
+  // Handle backdrop click to close modal
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget && !isSubmitting) {
+      onClose();
+    }
+  };
 
   const StarRating: React.FC<StarRatingProps> = ({ rating, onRatingChange, label }) => (
     <div className="mb-8">
@@ -186,54 +194,41 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, userWall
     }
   };
 
-  // Starfield component
-  const Starfield: React.FC = () => (
-    <div className="absolute inset-0 overflow-hidden">
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(180deg, 
-              #000000 0%, 
-              #000000 50%, 
-              #1b1f3b 100%
-            )
-          `
-        }}
-      />
-      {[...Array(100)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute rounded-full bg-white animate-pulse"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            width: `${Math.random() * 2 + 1}px`,
-            height: `${Math.random() * 2 + 1}px`,
-            animationDelay: `${Math.random() * 3}s`,
-            animationDuration: `${Math.random() * 3 + 2}s`,
-            opacity: Math.random() * 0.8 + 0.2
-          }}
-        />
-      ))}
-    </div>
-  );
-
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative w-[90vw] max-w-xl bg-[#141e29] border-2 border-[#1783fb] rounded-xl p-6 max-h-[90vh] overflow-y-auto mx-auto my-auto">
-        {/* Starfield Background */}
-        <Starfield />
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50"
+      onClick={handleBackdropClick}
+    >
+      {/* Starfield Background - Fixed position to cover entire viewport */}
+      <div className="fixed inset-0 z-[-1]">
+      
+         <Starfield
+          starCount={2000}
+          starColor={[255, 255, 255]}
+          speedFactor={0.05}
+          gradientTopColor='#000000'
+          gradientMidColor='#000000'
+          gradientBottomColor='#1b1f3b'
+        />
+      </div>
+
+      <div className="relative w-[90vw] max-w-xl bg-[#141e29]/90 backdrop-blur-md border-2 border-[#1783fb] rounded-xl p-6 max-h-[90vh] overflow-y-auto mx-auto my-auto">
         
-        {/* Close Button */}
+        {/* Close Button - Enhanced visibility and functionality */}
         <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-white text-xl hover:text-red-400 transition-colors z-10"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isSubmitting) {
+              onClose();
+            }
+          }}
+          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-red-600/20 hover:bg-red-600/40 text-white hover:text-red-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isSubmitting}
+          aria-label="Close feedback modal"
         >
-          <X size={24} />
+          <X size={20} />
         </button>
 
         <div className="relative z-10">
@@ -324,7 +319,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, userWall
                   placeholder="Write your suggestions here"
                   value={formData.otherSuggestion}
                   onChange={(e) => setFormData(prev => ({ ...prev, otherSuggestion: e.target.value }))}
-                  className="w-full p-3 bg-black bg-opacity-50 border border-cyan-400 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-none backdrop-blur-sm"
+                  className="w-full p-3 bg-black/30 backdrop-blur-sm border border-cyan-400 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-none"
                   rows={3}
                   maxLength={500}
                 />
@@ -395,7 +390,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, userWall
                 placeholder="Optional, write if you have any other feedbacks for us"
                 value={formData.additionalFeedback}
                 onChange={(e) => setFormData(prev => ({ ...prev, additionalFeedback: e.target.value }))}
-                className="w-full p-3 bg-black bg-opacity-50 border border-cyan-400 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-none backdrop-blur-sm"
+                className="w-full p-3 bg-black/30 backdrop-blur-sm border border-cyan-400 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-none"
                 rows={4}
                 maxLength={1000}
               />
