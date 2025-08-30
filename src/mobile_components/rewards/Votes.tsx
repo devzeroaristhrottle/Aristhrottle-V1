@@ -139,7 +139,7 @@ const Votes = () => {
 			</div> */}
 
 			{/* Points */}
-			{votesData?.unClaimedReward && votesData?.unClaimedReward > 0 && (
+			{/* {votesData?.unClaimedReward && votesData?.unClaimedReward > 0 && (
 				<div className="flex flex-col gap-2 items-center border border-[#2FCAC7] rounded-lg p-3 mt-2">
 					<span className="text-xl">Points</span>
 					<p className="text-[#2FCAC7] text-2xl">
@@ -177,7 +177,7 @@ const Votes = () => {
 						{isSendingUserOperation ? 'Sending...' : 'Claim'}
 					</button>
 				</div>
-			)}
+			)} */}
 
 			{/* History */}
 			{/* {user && user.address && (

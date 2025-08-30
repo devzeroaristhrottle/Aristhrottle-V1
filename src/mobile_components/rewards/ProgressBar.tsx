@@ -48,8 +48,8 @@ const ProgressBar = ({
 
 				{/* Current Value Indicator */}
 				<div
-					className="absolute top-[-40px] -translate-x-1/2 text-white text-base"
-					style={{ left: `${clampedProgressPercentage}%` }}
+					className="absolute -translate-x-1/2 text-white text-base"
+					style={{ left: `${clampedProgressPercentage}%` , top: '-40px'}}
 				>
 					<div className="flex flex-col items-center justify-center">
 						{currentValue}

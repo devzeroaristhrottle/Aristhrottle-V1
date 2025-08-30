@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import Votes from '@/mobile_components/rewards/Votes'
 import Uploads from '@/mobile_components/rewards/Uploads'
 import Referrals from '@/mobile_components/rewards/Referrals'
-import Money from '@/mobile_components/rewards/Money'
 import BottomNav from '@/mobile_components/BottomNav'
 import Navbar from '@/mobile_components/Navbar'
 import { TabButton } from '@/mobile_components/TabButton'
@@ -21,8 +20,6 @@ export default function Page() {
 				return <Uploads />
 			case 'referral':
 				return <Referrals />
-			case 'money':
-				return <Money />
 			default:
 				return <Votes />
 		}
@@ -33,7 +30,7 @@ export default function Page() {
 			<Navbar />
 			<div className="flex-1 overflow-y-auto px-4 py-4">
 				{/* Tabs */}
-				<div className="flex justify-between rounded-lg mb-4 p-1">
+				<div className="flex justify-around rounded-lg mb-4 p-1">
 					<TabButton
 						label="Vote"
 						isActive={activeTab === 'vote'}
@@ -48,11 +45,6 @@ export default function Page() {
 						label="Referral"
 						isActive={activeTab === 'referral'}
 						onClick={() => setActiveTab('referral')}
-					/>
-					<TabButton
-						label="Money"
-						isActive={activeTab === 'money'}
-						onClick={() => setActiveTab('money')}
 					/>
 				</div>
 
