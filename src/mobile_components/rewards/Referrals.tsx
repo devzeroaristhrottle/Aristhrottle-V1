@@ -8,10 +8,11 @@ import {
 	referralRewards,
 } from '@/app/home/rewards/constants'
 import { Context } from '@/context/contextProvider'
-import { PiShare } from 'react-icons/pi'
+import { FaCopy } from 'react-icons/fa'
 import { toast } from 'react-toastify'
 import axiosInstance from '@/utils/axiosInstance'
 import ProgressBar from './ProgressBar'
+import ShareModal from '../ShareModal'
 // import { BiDownArrowAlt } from 'react-icons/bi'
 import Loader from '@/components/Loader'
 // import { useUser } from '@account-kit/react'
@@ -23,48 +24,49 @@ export type ReferralResponse = {
 }
 
 const Referrals = () => {
-	const { userDetails, setUserDetails } = useContext(Context)
+	const { userDetails } = useContext(Context)
 	const [referrals, setReferrals] = useState<ReferralResponse>()
 	const [referralMilestones, setReferralMilestones] = useState<
 		MilestoneTitles[]
 	>(getMilestoneTitles([], 'referrals'))
 	const [isLoading, setIsLoading] = useState(true)
 	const [isClaimLoading, setIsClaimLoading] = useState(false)
+	const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
 	// const user = useUser()
 
 	const userId = userDetails?._id
 
 	const handleCopy = () => {
 		if (userDetails?.refer_code) {
-			navigator.clipboard.writeText(userDetails.refer_code)
-			toast.success('Referral code copied to clipboard!')
+			setIsShareModalOpen(true);
+			setIsClaimLoading(false);
 		}
 	}
 
-	const handleReferralClaim = async () => {
-		try {
-			setIsClaimLoading(true)
+	// const handleReferralClaim = async () => {
+	// 	try {
+	// 		setIsClaimLoading(true)
 
-			const response = await axiosInstance.post(`/api/claimreferralreward`, {
-				userId,
-			})
-			if (response.status == 200) {
-				toast.success('Reward claimed successfully!')
-				if (userDetails && referrals)
-					setUserDetails({
-						...userDetails,
-						mintedCoins:
-							BigInt(userDetails?.mintedCoins) +
-							BigInt(referrals.points * 1e18),
-					})
-			}
-		} catch (error) {
-			console.error('Error claiming the reward', error)
-			toast.error('Error claiming the reward')
-		} finally {
-			setIsClaimLoading(false)
-		}
-	}
+	// 		const response = await axiosInstance.post(`/api/claimreferralreward`, {
+	// 			userId,
+	// 		})
+	// 		if (response.status == 200) {
+	// 			toast.success('Reward claimed successfully!')
+	// 			if (userDetails && referrals)
+	// 				setUserDetails({
+	// 					...userDetails,
+	// 					mintedCoins:
+	// 						BigInt(userDetails?.mintedCoins) +
+	// 						BigInt(referrals.points * 1e18),
+	// 				})
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Error claiming the reward', error)
+	// 		toast.error('Error claiming the reward')
+	// 	} finally {
+	// 		setIsClaimLoading(false)
+	// 	}
+	// }
 
 	useEffect(() => {
 		const getReferralData = async () => {
@@ -110,23 +112,6 @@ const Referrals = () => {
 				/>
 			</div>
 
-			{/* Referral Code */}
-			{userDetails && userDetails?.refer_code && (
-				<div className="flex flex-col gap-2 items-center border border-[#2FCAC7] rounded-lg p-3 mt-2">
-					<h4 className="text-xl">Referral Code</h4>
-					<div className="flex items-center gap-3">
-						<span className="text-[#2FCAC7] text-2xl font-medium">
-							{userDetails?.refer_code}
-						</span>
-						<button
-							onClick={handleCopy}
-							className="bg-black/10 rounded-full p-1.5 active:scale-95 transition-transform"
-						>
-							<PiShare className="w-5 h-5" />
-						</button>
-					</div>
-				</div>
-			)}
 
 			{/* Milestones */}
 			<div className="flex flex-col gap-2 mt-2">
@@ -135,7 +120,7 @@ const Referrals = () => {
 			</div>
 
 			{/* Points section (only shown if points are available) */}
-			{referrals?.points && referrals.points > 0 && (
+			{/* {referrals?.points && referrals.points > 0 && (
 				<div className="flex flex-col gap-2 items-center border border-[#2FCAC7] rounded-lg p-3 mt-2">
 					<span className="text-xl">Points</span>
 					<h2 className="text-[#2FCAC7] text-2xl">
@@ -154,7 +139,9 @@ const Referrals = () => {
 						)}
 					</button>
 				</div>
-			)}
+			)} */}
+
+			<ShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} referralCode={userDetails?.refer_code}/>
 
 			{/* Rules */}
 			{/* <div className="flex flex-col gap-2 items-center border border-[#2FCAC7] rounded-lg p-3 mt-2">
@@ -186,6 +173,18 @@ const Referrals = () => {
 					</a>
 				</div>
 			)} */}
+
+			<div className='flex flex-row w-full items-center justify-around text-3xl justify-self-end'>
+				<div className='border border-[#2FCAC7] flex flex-row-reverse gap-2 items-center px-4 py-2 w-fit rounded-lg' 
+					onClick={() => {navigator.clipboard.writeText(userDetails!.refer_code); toast.success("Copied to Clipboard")}}
+					>
+					{userDetails!.refer_code}
+					<FaCopy className='text-[#2FCAC7]' />
+				</div>
+				<button className='bg-[#2FCAC7] p-2 text-black rounded-lg w-fit' onClick={handleCopy}>
+					Refer Now
+				</button>
+			</div>
 		</div>
 	)
 }

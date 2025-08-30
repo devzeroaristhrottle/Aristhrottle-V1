@@ -13,13 +13,13 @@ import { Context } from '@/context/contextProvider'
 import axiosInstance from '@/utils/axiosInstance'
 // import { BiDownArrowAlt } from 'react-icons/bi'
 import Loader from '@/components/Loader'
-import {
-	useSendUserOperation,
-	useSmartAccountClient,
-} from '@account-kit/react'
-import { toast } from 'react-toastify'
-import { EArtTokenABI } from '@/ethers/contractAbi'
-import { encodeFunctionData } from 'viem'
+// import {
+// 	useSendUserOperation, 
+// 	useSmartAccountClient,
+// } from '@account-kit/react'
+// import { toast } from 'react-toastify'
+// import { EArtTokenABI } from '@/ethers/contractAbi'
+// import { encodeFunctionData } from 'viem'
 
 export type UploadResponse = {
 	totalUploadMemeCount: number
@@ -32,7 +32,7 @@ export type UploadResponse = {
 }
 
 const Uploads = () => {
-	const { userDetails, setUserDetails } = useContext(Context)
+	const { userDetails } = useContext(Context)
 	const userId = userDetails?._id
 	const [isLoading, setIsLoading] = useState(true)
 	const [uploadData, setUploadData] = useState<UploadResponse>()
@@ -40,33 +40,33 @@ const Uploads = () => {
 		getMilestoneTitles([], 'uploads')
 	)
 
-	const { client } = useSmartAccountClient({})
+	// const { client } = useSmartAccountClient({})
 	// const user = useUser()
 
-	const { sendUserOperation, isSendingUserOperation } = useSendUserOperation({
-		client,
-		waitForTxn: true,
-		onSuccess: async () => {
-			await axiosInstance
-				.post('/api/rewards/upload/updateall', {
-					userId: userId,
-				})
-				.catch(() => {
-					toast.error('Failed to update upload status. Please try again.')
-				})
-			toast.success('Rewards claimed successfully!')
-			if (userDetails && uploadData && uploadData.unClaimedReward)
-				setUserDetails({
-					...userDetails,
-					mintedCoins:
-						BigInt(userDetails.mintedCoins) +
-						BigInt(uploadData.unClaimedReward * 1e18),
-				})
-		},
-		onError: () => {
-			toast.error('Failed to send user operation. Please try again.')
-		},
-	})
+	// const { sendUserOperation, isSendingUserOperation } = useSendUserOperation({
+	// 	client,
+	// 	waitForTxn: true,
+	// 	onSuccess: async () => {
+	// 		await axiosInstance
+	// 			.post('/api/rewards/upload/updateall', {
+	// 				userId: userId,
+	// 			})
+	// 			.catch(() => {
+	// 				toast.error('Failed to update upload status. Please try again.')
+	// 			})
+	// 		toast.success('Rewards claimed successfully!')
+	// 		if (userDetails && uploadData && uploadData.unClaimedReward)
+	// 			setUserDetails({
+	// 				...userDetails,
+	// 				mintedCoins:
+	// 					BigInt(userDetails.mintedCoins) +
+	// 					BigInt(uploadData.unClaimedReward * 1e18),
+	// 			})
+	// 	},
+	// 	onError: () => {
+	// 		toast.error('Failed to send user operation. Please try again.')
+	// 	},
+	// })
 
 	useEffect(() => {
 		const getUploadData = async () => {

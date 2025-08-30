@@ -12,13 +12,13 @@ import { Context } from '@/context/contextProvider'
 import axiosInstance from '@/utils/axiosInstance'
 import ProgressBar from './ProgressBar'
 import Loader from '@/components/Loader'
-import {
-	useSendUserOperation,
-	useSmartAccountClient,
-} from '@account-kit/react'
-import { encodeFunctionData } from 'viem'
-import { EArtTokenABI } from '@/ethers/contractAbi'
-import { toast } from 'react-toastify'
+// import {
+// 	useSendUserOperation, 
+// 	useSmartAccountClient,
+// } from '@account-kit/react'
+// import { encodeFunctionData } from 'viem'
+// import { EArtTokenABI } from '@/ethers/contractAbi'
+// import { toast } from 'react-toastify'
 
 export type VotesResponse = {
 	totalVotesCount: number
@@ -30,41 +30,41 @@ export type VotesResponse = {
 }
 
 const Votes = () => {
-	const { userDetails, setUserDetails } = useContext(Context)
+	const { userDetails } = useContext(Context)
 	const userId = userDetails?._id
 	const [isLoading, setIsLoading] = useState(true)
 	const [votesData, setVotesData] = useState<VotesResponse>()
 	const [votesMilestones, setVotesMilestones] = useState<MilestoneTitles[]>(
 		getMilestoneTitles([], 'votes')
 	)
-	const { client } = useSmartAccountClient({})
+	// const { client } = useSmartAccountClient({})
 	// const user = useUser()
 
-	const { sendUserOperation, isSendingUserOperation } = useSendUserOperation({
-		client,
-		// optional parameter that will wait for the transaction to be mined before returning
-		waitForTxn: true,
-		onSuccess: async () => {
-			await axiosInstance
-				.post('/api/rewards/votes/updateall', {
-					userId: userId,
-				})
-				.catch(() => {
-					toast.error('Failed to update vote status. Please try again.')
-				})
-			toast.success('Rewards claimed successfully!')
-			if (userDetails && votesData && votesData.unClaimedReward)
-				setUserDetails({
-					...userDetails,
-					mintedCoins:
-						BigInt(userDetails?.mintedCoins) +
-						BigInt(votesData.unClaimedReward * 1e18),
-				})
-		},
-		onError: () => {
-			toast.error('Failed to send user operation. Please try again.')
-		},
-	})
+	// const { sendUserOperation, isSendingUserOperation } = useSendUserOperation({
+	// 	client,
+	// 	// optional parameter that will wait for the transaction to be mined before returning
+	// 	waitForTxn: true,
+	// 	onSuccess: async () => {
+	// 		await axiosInstance
+	// 			.post('/api/rewards/votes/updateall', {
+	// 				userId: userId,
+	// 			})
+	// 			.catch(() => {
+	// 				toast.error('Failed to update vote status. Please try again.')
+	// 			})
+	// 		toast.success('Rewards claimed successfully!')
+	// 		if (userDetails && votesData && votesData.unClaimedReward)
+	// 			setUserDetails({
+	// 				...userDetails,
+	// 				mintedCoins:
+	// 					BigInt(userDetails?.mintedCoins) +
+	// 					BigInt(votesData.unClaimedReward * 1e18),
+	// 			})
+	// 	},
+	// 	onError: () => {
+	// 		toast.error('Failed to send user operation. Please try again.')
+	// 	},
+	// })
 
 	useEffect(() => {
 		const getUploadData = async () => {
