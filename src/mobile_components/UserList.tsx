@@ -200,6 +200,7 @@ const RegularUserRow: React.FC<{ user: UserLeaderboardItem; isCurrentUser?: bool
 const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 	const [currentUser, setCurrentUser] = useState<UserLeaderboardItem | null>(null)
 	const [isCurrentUserVisible, setIsCurrentUserVisible] = useState(true)
+	const [shouldPinAtTop, setShouldPinAtTop] = useState(false)
 	const currentUserRef = useRef<HTMLDivElement>(null)
 	
 	// Real authentication
@@ -219,7 +220,7 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 		}
 	}, [user, users])
 
-	// Intersection Observer to detect if current user's row is visible
+	// Intersection Observer to detect if current user's row is visible and determine position
 	useEffect(() => {
 		if (!currentUserRef.current) {
 			console.log('No current user ref found')
@@ -230,6 +231,15 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 			([entry]) => {
 				console.log('Intersection observer:', entry.isIntersecting)
 				setIsCurrentUserVisible(entry.isIntersecting)
+				
+				// If not visible, determine if it's above or below viewport
+				if (!entry.isIntersecting) {
+					const rect = entry.boundingClientRect
+					const viewportHeight = window.innerHeight
+					const isAboveViewport = rect.top < 0
+					setShouldPinAtTop(isAboveViewport)
+					console.log('User position:', isAboveViewport ? 'above viewport' : 'below viewport')
+				}
 			},
 			{
 				root: null,
@@ -268,7 +278,8 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 		currentUser: currentUser?.username,
 		isCurrentUserVisible,
 		userAddress: user?.address,
-		usersCount: users.length
+		usersCount: users.length,
+		shouldPinAtTop
 	})
 
 	return (
@@ -319,19 +330,19 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 				)
 			})}
 
-			{/* Pinned Current User Row (shown when their real row is not visible) */}
-			{currentUser && !isCurrentUserVisible && (
 
-				<div className="fixed px-1" style={{position: "fixed", left: 2, right: 2, bottom: 64}} >
+			{/* Pinned Current User Row at BOTTOM (when user row is below viewport) */}
+			{currentUser && !isCurrentUserVisible && (
+				<div className="fixed px-1" style={{position: "fixed", left: 2, right: 2, ...(shouldPinAtTop ? {top: 96} : {bottom: 64})} } >
 					<div className="backdrop-blur-sm border border-[#2FCAC7] rounded-lg p-4 shadow-lg h-20 flex items-center" 
-                    style={{ backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"}}>
+						style={{ backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"}}>
 						<div className="flex items-center justify-between w-full">
 							<div className=" text-lg w-12 flex items-center justify-center">
 								{`#${currentUser.rank}`}
 							</div>
 							<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2 rounded-full border-[#2FCAC7] border" 
-                                style={{backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"}}
-                            >
+								style={{backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"}}
+							>
 								<div className="w-6 h-6 rounded-full overflow-hidden">
 									{currentUser.profile_pic ? (
 										<img 
