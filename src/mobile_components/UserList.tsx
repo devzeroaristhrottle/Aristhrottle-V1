@@ -69,7 +69,7 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2 rounded-full border border-[#DBDBDB]"
                 style={{backgroundImage: "linear-gradient(to right, rgba(192, 171, 168, 0.5), rgba(214, 110, 93, 0.5))"}}
                 >
-				<div className="w-7 h-7 rounded-full overflow-hidden">
+				<div className="w-8 h-8 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
 							src={user.profile_pic} 
@@ -118,7 +118,7 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2 rounded-full border border-[#DBDBDB]"
                 style={{backgroundImage: "linear-gradient(to left, rgba(214, 112, 26, 0.5), rgba(255, 91, 43, 0.5))"}}
             >
-				<div className="w-6 h-6 rounded-full overflow-hidden">
+				<div className="w-8 h-8 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
 							src={user.profile_pic} 
@@ -164,7 +164,7 @@ const RegularUserRow: React.FC<{ user: UserLeaderboardItem; isCurrentUser?: bool
 			<div className={`text-white flex-1 text-center flex items-center justify-start space-x-2 ${isCurrentUser && `rounded-full border border-[#2FCAC7]`}`}
                 style={isCurrentUser ? {backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"} : {}}
             >
-				<div className="w-6 h-6 rounded-full overflow-hidden">
+				<div className="w-8 h-8 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
 							src={user.profile_pic} 
@@ -342,7 +342,7 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 							<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2 rounded-full border-[#2FCAC7] border" 
 								style={{backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"}}
 							>
-								<div className="w-6 h-6 rounded-full overflow-hidden">
+								<div className="w-8 h-8 rounded-full overflow-hidden">
 									{currentUser.profile_pic ? (
 										<img 
 											src={currentUser.profile_pic} 
