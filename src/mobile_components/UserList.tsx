@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
-import {UserLeaderboardItem} from '@/mobile_components/types'
+import {UserLeaderboardItem, UserListProps} from '@/mobile_components/types'
 
 
 // Component for 1st Place User
@@ -16,10 +16,20 @@ const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 				/>
 			</div>
 			<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2">
-				<div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
-					<span className="text-black text-sm ">
-						{user.username.charAt(0).toUpperCase()}
-					</span>
+				<div className="w-8 h-8 rounded-full overflow-hidden">
+					{user.profile_pic ? (
+						<img 
+							src={user.profile_pic} 
+							alt={user.username}
+							className="w-full h-full object-cover"
+						/>
+					) : (
+						<div className="w-full h-full bg-yellow-400 flex items-center justify-center">
+							<span className="text-black text-sm font-bold">
+								{user.username.charAt(0).toUpperCase()}
+							</span>
+						</div>
+					)}
 				</div>
 				<span className="text-lg">{user.username}</span>
 			</div>
@@ -51,10 +61,20 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 				/>
 			</div>
 			<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2">
-				<div className="w-7 h-7 bg-gray-400 rounded-full flex items-center justify-center">
-					<span className="text-black text-sm ">
-						{user.username.charAt(0).toUpperCase()}
-					</span>
+				<div className="w-7 h-7 rounded-full overflow-hidden">
+					{user.profile_pic ? (
+						<img 
+							src={user.profile_pic} 
+							alt={user.username}
+							className="w-full h-full object-cover"
+						/>
+					) : (
+						<div className="w-full h-full bg-gray-400 flex items-center justify-center">
+							<span className="text-black text-sm font-bold">
+								{user.username.charAt(0).toUpperCase()}
+							</span>
+						</div>
+					)}
 				</div>
 				<span className="text-base">{user.username}</span>
 			</div>
@@ -86,10 +106,20 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 				/>
 			</div>
 			<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2">
-				<div className="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center">
-					<span className="text-black text-xs ">
-						{user.username.charAt(0).toUpperCase()}
-					</span>
+				<div className="w-6 h-6 rounded-full overflow-hidden">
+					{user.profile_pic ? (
+						<img 
+							src={user.profile_pic} 
+							alt={user.username}
+							className="w-full h-full object-cover"
+						/>
+					) : (
+						<div className="w-full h-full bg-orange-400 flex items-center justify-center">
+							<span className="text-black text-xs font-bold">
+								{user.username.charAt(0).toUpperCase()}
+							</span>
+						</div>
+					)}
 				</div>
 				<span className="text-base">{user.username}</span>
 			</div>
@@ -134,14 +164,14 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 					<div className=" text-sm w-12">
 						Rank
 					</div>
-					<div className="text-white  flex-1 text-center">
+					<div className="text-white flex-1 text-left">
 						Username
 					</div>
 					<div className=" text-sm w-14 text-center">
-						Votes R
+						Votes Received
 					</div>
 					<div className=" text-sm w-14 text-center">
-						Votes C
+						Votes Cast
 					</div>
 					<div className=" text-sm w-12 text-center">
 						Posts
@@ -171,10 +201,20 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 							{`#${user.rank}`}
 						</div>
 						<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2">
-							<div className="w-6 h-6 bg-[#29E0CA] rounded-full flex items-center justify-center">
-								<span className="text-black text-xs ">
-									{user.username.charAt(0).toUpperCase()}
-								</span>
+							<div className="w-6 h-6 rounded-full overflow-hidden">
+								{user.profile_pic ? (
+									<img 
+										src={user.profile_pic} 
+										alt={user.username}
+										className="w-full h-full object-cover"
+									/>
+								) : (
+									<div className="w-full h-full bg-[#29E0CA] flex items-center justify-center">
+										<span className="text-black text-xs font-bold">
+											{user.username.charAt(0).toUpperCase()}
+										</span>
+									</div>
+								)}
 							</div>
 							<span>{user.username}</span>
 						</div>

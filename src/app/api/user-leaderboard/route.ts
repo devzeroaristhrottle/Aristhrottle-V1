@@ -121,7 +121,7 @@ async function handleGetRequest(request: NextRequest) {
       votes_casted: user.votes_casted || 0,
       uploads: user.uploads || 0,
       tokens_minted: user.tokens_minted || 0,
-      profile_pic: user.profile_pic
+      profile_pic: user.profile_pic || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4_WP3VdprlZKs2I6Flr83IcWk5QeZhXGO-g&s"
     }));
 
     // Get total count for pagination info
