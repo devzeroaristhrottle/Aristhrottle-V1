@@ -7,10 +7,10 @@ import { useUser } from '@account-kit/react'
 
 // Component for 1st Place User
 const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="rounded-lg mb-4 border p-4"
-        style={{backgroundImage: "linear-gradient(to left, #D39736, #E37046)"}}
+	<div className="rounded-lg mb-4 border p-4 h-20 flex items-center"
+        style={{backgroundImage: "linear-gradient(to left, rgba(211, 151, 54, 0.5), rgba(227, 112, 70, 0.5))"}}
     >
-		<div className="flex items-center justify-between">
+		<div className="flex items-center justify-between w-full">
 			<div className=" text-lg w-12 flex items-center justify-center">
 				<img 
 					src="/assets/award1.png" 
@@ -18,7 +18,9 @@ const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 					className="w-10 h-10"
 				/>
 			</div>
-			<div className="text-white flex-1 text-center flex items-start justify-start space-x-2 rounded-full bg-gradient-to-r from-green-300 to-blue-400">
+			<div className="text-white flex-1 text-center flex items-center justify-start space-x-2 rounded-full border-[#EAA408] border" 
+                style={{backgroundImage: "linear-gradient(to right, rgba(255, 251, 43, 0.5), rgba(254, 190, 41, 0.5))"}}
+            >
 				<div className="w-8 h-8 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
@@ -54,9 +56,9 @@ const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 
 // Component for 2nd Place User
 const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="rounded-lg mb-4 p-4"
-        style={{backgroundImage: "linear-gradient(to right, #C0ABA8, #D66E5D)"}}>
-		<div className="flex items-center justify-between">
+	<div className="rounded-lg mb-4 p-4 h-20 flex items-center border border-[#F1F1F1]"
+        style={{backgroundImage: "linear-gradient(to right, rgba(192, 171, 168, 0.5), rgba(214, 110, 93, 0.5))"}}>
+		<div className="flex items-center justify-between w-full">
 			<div className=" text-lg w-12 flex items-center justify-center">
 				<img 
 					src="/assets/award2.png" 
@@ -64,7 +66,7 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 					className="w-9 h-9"
 				/>
 			</div>
-			<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2">
+			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2">
 				<div className="w-7 h-7 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
@@ -100,10 +102,10 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 
 // Component for 3rd Place User
 const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="p-4 mb-4 rounded-lg"
-        style={{backgroundImage: "linear-gradient(to left, #D6701A, #FF5B2B)"}}
+	<div className="p-4 mb-4 rounded-lg h-20 flex items-center border border-[#F48634]"
+        style={{backgroundImage: "linear-gradient(to left, rgba(214, 112, 26, 0.5), rgba(255, 91, 43, 0.5))"}}
         >
-		<div className="flex items-center justify-between">
+		<div className="flex items-center justify-between w-full">
 			<div className=" text-lg w-12 flex items-center justify-center">
 				<img 
 					src="/assets/award3.png" 
@@ -111,7 +113,7 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 					className="w-8 h-8"
 				/>
 			</div>
-			<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2">
+			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2">
 				<div className="w-6 h-6 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
@@ -148,14 +150,14 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 // Regular User Row Component
 const RegularUserRow: React.FC<{ user: UserLeaderboardItem; isCurrentUser?: boolean }> = ({ user, isCurrentUser = false }) => (
 	<div
-		className={`border border-[#29E0CA] rounded-lg p-4 mb-4 ${isCurrentUser ? 'bg-blue-500' : ''}`}
-        style={isCurrentUser ? {backgroundImage: "linear-gradient(to right, #29E0CA, #E02121)"} : {}}
+		className={`border border-[#29E0CA] rounded-lg p-4 mb-4 h-20 flex items-center`}
+        style={isCurrentUser ? {backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"} : {}}
 	>
-		<div className="flex items-center justify-between">
+		<div className="flex items-center justify-between w-full">
 			<div className=" text-lg w-12 flex items-center justify-center">
 				{`#${user.rank}`}
 			</div>
-			<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2">
+			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2">
 				<div className="w-6 h-6 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
@@ -315,13 +317,14 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 			{currentUser && !isCurrentUserVisible && (
 
 				<div className="fixed px-1" style={{position: "fixed", left: 2, right: 2, bottom: 64}} >
-					<div className="backdrop-blur-sm border border-[#2FCAC7] rounded-lg p-4 shadow-lg" style={{ backgroundImage: "linear-gradient(to right, #29E0CA, #E02121)"}}>
-						<div className="flex items-center justify-between">
+					<div className="backdrop-blur-sm border border-[#2FCAC7] rounded-lg p-4 shadow-lg h-20 flex items-center" 
+                    style={{ backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"}}>
+						<div className="flex items-center justify-between w-full">
 							<div className=" text-lg w-12 flex items-center justify-center">
 								{`#${currentUser.rank}`}
 							</div>
-							<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2 rounded-full border-[#2FCAC7] border" 
-                                style={{backgroundImage: "linear-gradient(to right, #29E0CA, #E02121)"}}
+							<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2 rounded-full border-[#2FCAC7] border" 
+                                style={{backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"}}
                             >
 								<div className="w-6 h-6 rounded-full overflow-hidden">
 									{currentUser.profile_pic ? (
@@ -356,8 +359,6 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 					</div>
 				</div>
 			)}
-
-			{/* Debug info - remove this in production */}
 		</div>
 	)
 }
