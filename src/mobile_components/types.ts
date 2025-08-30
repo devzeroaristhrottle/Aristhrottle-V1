@@ -53,3 +53,20 @@ export interface MemesListProps {
 	bookmarkedMemes?: Set<string>
 	view?: 'grid' | 'list'
 }
+
+
+export interface UserLeaderboardItem {
+	rank: number
+	username: string
+	user_wallet_address: string
+	votes_received: number
+	votes_casted: number
+	uploads: number
+	tokens_minted: number
+	profile_pic: string
+}
+
+export interface UserListProps {
+	users: UserLeaderboardItem[]
+	loading: boolean
+}

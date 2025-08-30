@@ -3,26 +3,17 @@ import BottomNav from '@/mobile_components/BottomNav'
 import Navbar from '@/mobile_components/Navbar'
 import { TabButton } from '@/mobile_components/TabButton'
 import Sorter from '@/mobile_components/Sorter'
+import UserList from '@/mobile_components/UserList'
 import React, { useState, useEffect, useContext } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import axiosInstance from '@/utils/axiosInstance'
 import { useRouter } from 'next/navigation'
 import MemesList from '@/mobile_components/MemesList'
-import { Meme } from '@/mobile_components/types'
+import { Meme, UserLeaderboardItem } from '@/mobile_components/types'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { toast } from 'react-toastify'
 import { useMemeActions } from '../../home/bookmark/bookmarkHelper'
 import { Context } from '@/context/contextProvider'
-
-interface UserLeaderboardItem {
-	rank: number
-	username: string
-	user_wallet_address: string
-	votes_received: number
-	votes_casted: number
-	uploads: number
-	tokens_minted: number
-}
 
 function Page() {
 	const [active, setActive] = useState<'users' | 'content'>('users')
@@ -32,7 +23,7 @@ function Page() {
 	const [memes, setMemes] = useState<Meme[]>([])
 	const [bookMarks, setBookMarks] = useState<Meme[]>([])
 	const router = useRouter()
-	
+
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
 	const { userDetails, setUserDetails } = useContext(Context)
@@ -42,7 +33,9 @@ function Page() {
 		try {
 			setLoading(true)
 			const response = await axiosInstance.get(
-				`/api/user-leaderboard?daily=${period === 'daily'}&limit=50&offset=0&filter=tokens_minted`
+				`/api/user-leaderboard?daily=${
+					period === 'daily'
+				}&limit=50&offset=0&filter=tokens_minted`
 			)
 			if (response.data.leaderboard) {
 				setUsers(response.data.leaderboard)
@@ -196,8 +189,6 @@ function Page() {
 		}
 	}
 
-
-
 	return (
 		<div className="h-screen flex flex-col overflow-hidden">
 			<Navbar />
@@ -207,16 +198,14 @@ function Page() {
 						<input
 							type="checkbox"
 							checked={active === 'content'}
-							onChange={() => setActive(active === 'users' ? 'content' : 'users')}
+							onChange={() =>
+								setActive(active === 'users' ? 'content' : 'users')
+							}
 							className="sr-only peer"
 						/>
 						<div className="w-32 h-6 bg-gray-300 rounded-full transition-colors duration-200 flex items-center justify-between px-1 relative">
-							<span className="text-black z-10 w-16 text-center">
-								Users
-							</span>
-							<span className="text-black z-10 w-16 text-center">
-								Content
-							</span>
+							<span className="text-black z-10 w-16 text-center">Users</span>
+							<span className="text-black z-10 w-16 text-center">Content</span>
 							<div
 								className={`absolute left-1 top-1 h-4 bg-[#29E0CA] rounded-full shadow-md transition-transform duration-200 ${
 									active === 'content' ? 'translate-x-14 w-16' : 'w-14'
@@ -227,8 +216,8 @@ function Page() {
 				</div>
 
 				<div className="flex items-center justify-between mb-4">
-					<Sorter gridEnable={false}/>
-					
+					<Sorter gridEnable={false} />
+
 					<div className="flex items-center space-x-2">
 						<TabButton
 							isActive={period === 'daily'}
@@ -241,51 +230,12 @@ function Page() {
 							onClick={() => setPeriod('alltime')}
 						/>
 					</div>
-					
+
 					<div className="w-[60px]"></div>
 				</div>
 
 				{/* Content based on active tab */}
-				{active === 'users' && (
-					<div className="space-y-3">
-						{loading ? (
-							<div className="flex justify-center items-center py-8">
-								<AiOutlineLoading3Quarters className="animate-spin text-3xl text-[#29E0CA]" />
-							</div>
-						) : users.length > 0 ? (
-							users.map((user, index) => (
-								<div
-									key={user.user_wallet_address}
-									className="bg-[#0d3159] border border-[#29E0CA] rounded-lg p-4 flex items-center justify-between"
-								>
-									<div className="flex items-center space-x-3">
-										<div className="text-[#29E0CA] font-bold text-lg">
-											#{user.rank}
-										</div>
-										<div className="flex flex-col">
-											<div className="text-white font-semibold">
-												{user.username}
-											</div>
-											<div className="text-gray-400 text-sm">
-												{user.tokens_minted} tokens • {user.uploads} uploads
-											</div>
-										</div>
-									</div>
-									<div className="text-right">
-										<div className="text-[#29E0CA] font-bold">
-											{user.votes_received}
-										</div>
-										<div className="text-gray-400 text-xs">votes</div>
-									</div>
-								</div>
-							))
-						) : (
-							<div className="text-center text-gray-400 py-8">
-								No users found
-							</div>
-						)}
-					</div>
-				)}
+				{active === 'users' && <UserList users={users} loading={loading} />}
 
 				{active === 'content' && (
 					<div>

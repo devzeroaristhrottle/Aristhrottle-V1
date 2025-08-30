@@ -120,7 +120,8 @@ async function handleGetRequest(request: NextRequest) {
       votes_received: user.votes_received || 0,
       votes_casted: user.votes_casted || 0,
       uploads: user.uploads || 0,
-      tokens_minted: user.tokens_minted || 0
+      tokens_minted: user.tokens_minted || 0,
+      profile_pic: user.profile_pic
     }));
 
     // Get total count for pagination info
