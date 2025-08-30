@@ -154,14 +154,16 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 // Regular User Row Component
 const RegularUserRow: React.FC<{ user: UserLeaderboardItem; isCurrentUser?: boolean }> = ({ user, isCurrentUser = false }) => (
 	<div
-		className={`border border-[#29E0CA] rounded-lg p-4 mb-4 h-20 flex items-center`}
+		className={` rounded-lg p-4 mb-4 h-20 flex items-center border-[#2FCAC7] border`}
         style={isCurrentUser ? {backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"} : {}}
 	>
 		<div className="flex items-center justify-between w-full">
 			<div className=" text-lg w-12 flex items-center justify-center">
 				{`#${user.rank}`}
 			</div>
-			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2">
+			<div className={`text-white flex-1 text-center flex items-center justify-start space-x-2 ${isCurrentUser && `rounded-full border border-[#2FCAC7]`}`}
+                style={isCurrentUser ? {backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"} : {}}
+            >
 				<div className="w-6 h-6 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
