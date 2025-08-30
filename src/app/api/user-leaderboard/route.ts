@@ -107,8 +107,8 @@ async function handleGetRequest(request: NextRequest) {
     });
 
     // Add pagination
-    comprehensivePipeline.push({ $skip: offset });
-    comprehensivePipeline.push({ $limit: limit });
+    // comprehensivePipeline.push({ $skip: offset });
+    // comprehensivePipeline.push({ $limit: limit });
 
     // Execute the aggregation
     const users = await User.aggregate(comprehensivePipeline);
