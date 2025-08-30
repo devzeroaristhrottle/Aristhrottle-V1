@@ -235,7 +235,6 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 				// If not visible, determine if it's above or below viewport
 				if (!entry.isIntersecting) {
 					const rect = entry.boundingClientRect
-					const viewportHeight = window.innerHeight
 					const isAboveViewport = rect.top < 0
 					setShouldPinAtTop(isAboveViewport)
 					console.log('User position:', isAboveViewport ? 'above viewport' : 'below viewport')
