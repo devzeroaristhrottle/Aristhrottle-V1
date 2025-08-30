@@ -92,7 +92,8 @@ async function handleGetRequest(request: NextRequest) {
           tokens_minted: 1,
           votes_received: 1,
           votes_casted: 1,
-          uploads: 1
+          uploads: 1,
+          profile_pic: 1
         }
       }
     ];
