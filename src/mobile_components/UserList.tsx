@@ -3,12 +3,13 @@ import React, { useEffect, useRef, useState, useContext } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import {UserLeaderboardItem, UserListProps} from '@/mobile_components/types'
 import { useUser } from '@account-kit/react'
-import { Context } from '@/context/contextProvider'
 
 
 // Component for 1st Place User
 const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="rounded-lg p-4 mb-4 bg-green-600 border-[#EAA408] border">
+	<div className="rounded-lg mb-4 border p-4"
+        style={{backgroundImage: "linear-gradient(to left, #D39736, #E37046)"}}
+    >
 		<div className="flex items-center justify-between">
 			<div className=" text-lg w-12 flex items-center justify-center">
 				<img 
@@ -53,7 +54,8 @@ const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 
 // Component for 2nd Place User
 const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="bg-gradient-to-r from-gray-400/80 to-gray-600/80 bg-gray-500/30 border border-gray-400 rounded-lg p-4 mb-4">
+	<div className="rounded-lg mb-4 p-4"
+        style={{backgroundImage: "linear-gradient(to right, #C0ABA8, #D66E5D)"}}>
 		<div className="flex items-center justify-between">
 			<div className=" text-lg w-12 flex items-center justify-center">
 				<img 
@@ -98,7 +100,9 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 
 // Component for 3rd Place User
 const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="bg-gradient-to-r from-orange-400/80 to-orange-600/80 bg-orange-500/30 border border-orange-400 rounded-lg p-4 mb-4">
+	<div className="p-4 mb-4 rounded-lg"
+        style={{backgroundImage: "linear-gradient(to left, #D6701A, #FF5B2B)"}}
+        >
 		<div className="flex items-center justify-between">
 			<div className=" text-lg w-12 flex items-center justify-center">
 				<img 
@@ -144,7 +148,8 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 // Regular User Row Component
 const RegularUserRow: React.FC<{ user: UserLeaderboardItem; isCurrentUser?: boolean }> = ({ user, isCurrentUser = false }) => (
 	<div
-		className={`border border-[#29E0CA] rounded-lg p-4 mb-4 ${isCurrentUser ? 'bg-blue-500/20' : ''}`}
+		className={`border border-[#29E0CA] rounded-lg p-4 mb-4 ${isCurrentUser ? 'bg-blue-500' : ''}`}
+        style={isCurrentUser ? {backgroundImage: "linear-gradient(to right, #29E0CA, #E02121)"} : {}}
 	>
 		<div className="flex items-center justify-between">
 			<div className=" text-lg w-12 flex items-center justify-center">
@@ -191,7 +196,6 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 	
 	// Real authentication
 	const user = useUser()
-	const { userDetails } = useContext(Context)
 
 	// Find current user in leaderboard based on wallet address
 	useEffect(() => {
@@ -309,13 +313,16 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 
 			{/* Pinned Current User Row (shown when their real row is not visible) */}
 			{currentUser && !isCurrentUserVisible && (
-				<div className="fixed bottom-4 left-2 right-2 z-50">
-					<div className="bg-blue-500/90 backdrop-blur-sm border border-blue-400 rounded-lg p-4 shadow-lg">
+
+				<div className="fixed px-1" style={{position: "fixed", left: 2, right: 2, bottom: 64}} >
+					<div className="backdrop-blur-sm border border-[#2FCAC7] rounded-lg p-4 shadow-lg" style={{ backgroundImage: "linear-gradient(to right, #29E0CA, #E02121)"}}>
 						<div className="flex items-center justify-between">
 							<div className=" text-lg w-12 flex items-center justify-center">
 								{`#${currentUser.rank}`}
 							</div>
-							<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2">
+							<div className="text-white  flex-1 text-center flex items-start justify-start space-x-2 rounded-full border-[#2FCAC7] border" 
+                                style={{backgroundImage: "linear-gradient(to right, #29E0CA, #E02121)"}}
+                            >
 								<div className="w-6 h-6 rounded-full overflow-hidden">
 									{currentUser.profile_pic ? (
 										<img 
@@ -351,11 +358,6 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 			)}
 
 			{/* Debug info - remove this in production */}
-			{currentUser && (
-				<div className="mt-4 p-2 bg-gray-800 text-white text-xs">
-					Debug: Current user {currentUser.username} (rank #{currentUser.rank}) - Visible: {isCurrentUserVisible ? 'Yes' : 'No'}
-				</div>
-			)}
 		</div>
 	)
 }
