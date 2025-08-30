@@ -19,7 +19,7 @@ const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 				/>
 			</div>
 			<div className="text-white flex-1 text-center flex items-center justify-start space-x-2 rounded-full border-[#EAA408] border" 
-                style={{backgroundImage: "linear-gradient(to right, rgba(255, 251, 43, 0.5), rgba(254, 190, 41, 0.5))"}}
+                style={{backgroundImage: "linear-gradient(to right, rgba(255, 251, 43, 0.7), rgba(254, 190, 41, 0.7))"}}
             >
 				<div className="w-8 h-8 rounded-full overflow-hidden">
 					{user.profile_pic ? (
@@ -63,10 +63,12 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 				<img 
 					src="/assets/award2.png" 
 					alt="2nd Place"
-					className="w-9 h-9"
+					className="w-10 h-8"
 				/>
 			</div>
-			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2">
+			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2 rounded-full border border-[#DBDBDB]"
+                style={{backgroundImage: "linear-gradient(to right, rgba(192, 171, 168, 0.5), rgba(214, 110, 93, 0.5))"}}
+                >
 				<div className="w-7 h-7 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
@@ -110,10 +112,12 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 				<img 
 					src="/assets/award3.png" 
 					alt="3rd Place"
-					className="w-8 h-8"
+					className="w-10 h-10"
 				/>
 			</div>
-			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2">
+			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2 rounded-full border border-[#DBDBDB]"
+                style={{backgroundImage: "linear-gradient(to left, rgba(214, 112, 26, 0.5), rgba(255, 91, 43, 0.5))"}}
+            >
 				<div className="w-6 h-6 rounded-full overflow-hidden">
 					{user.profile_pic ? (
 						<img 
