@@ -4,7 +4,7 @@ import { IoGridOutline } from 'react-icons/io5'
 
 import React from 'react'
 
-function Sorter() {
+function Sorter({ gridEnable } : { gridEnable? : boolean}) {
 	return (
 		<div className="flex flex-row justify-between p-3">
 			<div id="sorting_selector">
@@ -17,7 +17,7 @@ function Sorter() {
 					Sort
 				</Button>
 			</div>
-			<div id="new_or_grid_buttons" className="flex flex-row gap-2">
+			<div id="new_or_grid_buttons" className="flex flex-row gap-2" hidden={!gridEnable}>
 				<IoGridOutline className="h-full" />
 			</div>
 		</div>
