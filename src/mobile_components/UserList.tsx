@@ -330,7 +330,7 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 				)
 			})}
 
-
+            <div className='w-full h-20'></div>
 			{/* Pinned Current User Row at BOTTOM (when user row is below viewport) */}
 			{currentUser && !isCurrentUserVisible && (
 				<div className="fixed px-1" style={{position: "fixed", left: 2, right: 2, ...(shouldPinAtTop ? {top: 96} : {bottom: 64})} } >
