@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useRef, useState, useContext } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import {UserLeaderboardItem, UserListProps} from '@/mobile_components/types'
 import { useUser } from '@account-kit/react'
@@ -298,7 +298,7 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 			</div>
 
 			{/* Top 3 Users with Special Components */}
-			{users.slice(0, 3).map((user, index) => {
+			{users.slice(0, 3).map((user) => {
 				if (user.rank === 1) return <FirstPlaceUser key={user.user_wallet_address} user={user} />
 				if (user.rank === 2) return <SecondPlaceUser key={user.user_wallet_address} user={user} />
 				if (user.rank === 3) return <ThirdPlaceUser key={user.user_wallet_address} user={user} />

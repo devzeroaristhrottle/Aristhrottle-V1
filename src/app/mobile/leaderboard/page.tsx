@@ -7,7 +7,6 @@ import UserList from '@/mobile_components/UserList'
 import React, { useState, useEffect, useContext } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import axiosInstance from '@/utils/axiosInstance'
-import { useRouter } from 'next/navigation'
 import MemesList from '@/mobile_components/MemesList'
 import { Meme, UserLeaderboardItem } from '@/mobile_components/types'
 import { useAuthModal, useUser } from '@account-kit/react'
@@ -22,7 +21,6 @@ function Page() {
 	const [users, setUsers] = useState<UserLeaderboardItem[]>([])
 	const [memes, setMemes] = useState<Meme[]>([])
 	const [bookMarks, setBookMarks] = useState<Meme[]>([])
-	const router = useRouter()
 
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
