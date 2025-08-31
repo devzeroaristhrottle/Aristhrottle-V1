@@ -183,7 +183,7 @@ export default function MemeDetails({
 												key={index}
 												className=" border-[#1783fb] rounded-lg px-1 text-sm font-medium bg-gray-600"
 											>
-												{tag as string}
+												{typeof tag === 'string' ? tag : tag.name}
 											</span>
 										))}
 									</div>
