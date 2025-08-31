@@ -414,8 +414,8 @@ function Page() {
 										size={32}
 										className="text-[#2FCAC7] hover:scale-110 hover:rotate-12 transition-all duration-300 flex-shrink-0 mb-2"
 									/>
-									<div className="text-[#2FCAC7] text-2xl hover:text-white transition-colors duration-200 mb-1">
-										Create with Aris-Intelligence
+									<div className="text-[#2FCAC7] text-xl hover:text-white transition-colors duration-200 mb-1">
+										Create with Aris Intelligence
 									</div>
 									<div className="text-xs">
 										Enter title and tags (at least one)
