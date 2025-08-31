@@ -52,7 +52,7 @@ export default function MemeDetails({
 		try {
 			if (meme && isMeme(meme) && meme.tags && meme.tags.length > 0) {
 				setIsLoad(true)
-				const tags = meme.tags.map(t => (t.name ? t.name : t)).join(',')
+				const tags = meme.tags.map(t => (typeof t === 'string' ? t : t.name)).join(',')
 				const response = await axiosInstance.get(`/api/meme?name=${tags}`)
 				if (response.data.memes) {
 					setRelatedMemes(response.data.memes)
@@ -145,7 +145,7 @@ export default function MemeDetails({
 					<div className="sticky top-0 z-10 bg-black/90 px-4 py-3 flex justify-end">
 						<button
 							onClick={onClose}
-							className="p-2 rounded-full bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm border"
+							className="p-2 bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm"
 						>
 							<CgCloseO className="text-white w-6 h-6" />
 						</button>
@@ -174,20 +174,20 @@ export default function MemeDetails({
 							<div className="flex-1 space-y-1">
 								<h3 className="text-white text-lg font-medium">{meme.name}</h3>
 								{/* Tags */}
-								{isMeme(meme) && meme.tags && meme.tags.length > 0 && (
+								{meme.tags && meme.tags.length > 0 && (
 									<div className="flex flex-wrap gap-2">
 										{meme.tags.map((tag, index: number) => (
 											<span
 												key={index}
 												className=" border-[#1783fb] rounded-lg px-1 text-sm font-medium bg-gray-600"
 											>
-												{tag.name}
+												{tag as string}
 											</span>
 										))}
 									</div>
 								)}
 								<span className="text-gray-400 text-sm block">
-									{meme.created_by?.username || 'Anonymous'}
+									{(meme.created_by?.username || 'Anonymous') + " • " + (new Date(meme.createdAt).toLocaleDateString()) + " • " + (new Date(meme.createdAt).toLocaleTimeString())}
 								</span>
 							</div>
 						</div>

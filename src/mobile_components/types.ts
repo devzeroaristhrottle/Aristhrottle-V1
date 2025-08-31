@@ -26,7 +26,7 @@ export interface Meme {
 		createdAt: string
 		updatedAt: string
 		__v: number
-	}[]
+	}[] | string[]
 	categories?: string[]
 	views?: number
 	__v?: number
