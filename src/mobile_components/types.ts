@@ -44,6 +44,18 @@ export interface MemeCardProps {
 	isGridView?: boolean
 }
 
+export interface MemeDetailProps {
+	isOpen?: boolean
+	onClose?: () => void
+	meme: Meme | undefined
+	tab: string
+	onVoteMeme: (memeId: string) => void
+	bmk: boolean
+	onMemeChange?: (newMeme: Meme) => void
+	handleReport? :(memeId: string) => void
+	type?: 'live' | 'all'
+}
+
 export interface MemesListProps {
 	memes: Meme[]
 	pageType: 'live' | 'all'

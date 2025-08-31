@@ -94,6 +94,7 @@ function MemesList({
 					onVoteMeme={(memeId: string) => onVote?.(memeId)}
 					bmk={bookmarkedMemes.has(selectedMeme._id)}
 					handleReport={handleOpenReport}
+					type={pageType}
 				/>
 			)}
 			<ReportModal

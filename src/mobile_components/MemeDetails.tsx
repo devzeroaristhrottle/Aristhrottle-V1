@@ -10,20 +10,11 @@ import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
 import Carousel from './Carousel'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
-import { Meme } from '@/mobile_components/types'
+import { Meme, MemeDetailProps } from '@/mobile_components/types'
 import axiosInstance from '@/utils/axiosInstance'
 import ShareModal from './ShareModal'
 
-interface MemeDetailProps {
-	isOpen?: boolean
-	onClose?: () => void
-	meme: Meme | undefined
-	tab: string
-	onVoteMeme: (memeId: string) => void
-	bmk: boolean
-	onMemeChange?: (newMeme: Meme) => void
-	handleReport? :(memeId: string) => void
-}
+
 
 export default function MemeDetails({
 	isOpen = true,
@@ -32,7 +23,8 @@ export default function MemeDetails({
 	onVoteMeme,
 	bmk,
 	onMemeChange,
-	handleReport
+	handleReport,
+	type = "all"
 }: MemeDetailProps) {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
@@ -239,7 +231,7 @@ export default function MemeDetails({
 											}
 										/>
 									)}
-									<span className="text-2xl mt-1">{meme.vote_count}</span>
+									{type == 'all' && <span className="text-2xl mt-1">{meme.vote_count}</span>}
 									{showPointsAnimation && (
 										<div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-[#28e0ca] font-bold text-lg opacity-0 animate-[flyUp_2s_ease-out_forwards]">
 											+0.1 $eART
