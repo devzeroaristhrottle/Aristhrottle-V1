@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Memecard from './Memecard'
 import MemeDetails from './MemeDetails'
-import { MemesListProps } from './types'
+import { Meme, MemesListProps } from './types'
 import ReportModal from './ReportModal';
 import ShareModal from './ShareModal';
 
@@ -65,6 +65,13 @@ function MemesList({
 		setSelectedMeme(undefined)
 	}
 
+	const handleMemeChange = (newMeme: Meme) => {
+		// Update the selected meme to the new one (related meme)
+		setSelectedMeme(newMeme)
+		// Keep the details modal open
+		setIsDetailsOpen(true)
+	}
+
 	return (
 		<>
 			<div className={`grid ${view === 'grid' ? 'grid-cols-2' : 'grid-cols-1'} gap-4 px-4 pb-4`}>
@@ -95,6 +102,7 @@ function MemesList({
 					bmk={bookmarkedMemes.has(selectedMeme._id)}
 					handleReport={handleOpenReport}
 					type={pageType}
+					onMemeChange={handleMemeChange}
 				/>
 			)}
 			<ReportModal

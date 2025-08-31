@@ -177,7 +177,7 @@ export default function MemeDetails({
 
 							{/* Title, Author, and Tags */}
 							<div className="flex-1 space-y-1">
-								<h3 className="text-white text-lg font-medium">{meme.name}</h3>
+								<h3 className="text-white font-extrabold text-sm">{meme.name}</h3>
 								{/* Tags */}
 								{meme.tags && meme.tags.length > 0 && (
 									<div className="flex flex-wrap gap-2">
@@ -185,6 +185,7 @@ export default function MemeDetails({
 											<span
 												key={index}
 												className=" border-[#1783fb] rounded-lg px-1 text-sm font-medium bg-gray-600"
+												style={{fontSize: '0.6rem'}}
 											>
 												{typeof tag === 'string' ? tag : tag.name}
 											</span>
