@@ -16,7 +16,7 @@ import { Context } from '@/context/contextProvider'
 
 function Page() {
 	const [active, setActive] = useState<'users' | 'content'>('users')
-	const [period, setPeriod] = useState<'daily' | 'alltime'>('daily')
+	const [period, setPeriod] = useState<'daily' | 'alltime'>('alltime')
 	const [loading, setLoading] = useState(false)
 	const [users, setUsers] = useState<UserLeaderboardItem[]>([])
 	const [memes, setMemes] = useState<Meme[]>([])

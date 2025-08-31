@@ -3,7 +3,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { FaBookmark, FaRegShareFromSquare, FaSpinner } from 'react-icons/fa6'
 import { CgCloseO } from 'react-icons/cg'
-import { CiBookmark } from 'react-icons/ci'
+import { CiBookmark, CiUser } from 'react-icons/ci'
+import { MdOutlineReport } from 'react-icons/md'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
@@ -21,6 +22,7 @@ interface MemeDetailProps {
 	onVoteMeme: (memeId: string) => void
 	bmk: boolean
 	onMemeChange?: (newMeme: Meme) => void
+	handleReport? :(memeId: string) => void
 }
 
 export default function MemeDetails({
@@ -30,6 +32,7 @@ export default function MemeDetails({
 	onVoteMeme,
 	bmk,
 	onMemeChange,
+	handleReport
 }: MemeDetailProps) {
 	const [isShareOpen, setIsShareOpen] = useState(false)
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
@@ -187,7 +190,7 @@ export default function MemeDetails({
 									</div>
 								)}
 								<span className="text-gray-400 text-sm block">
-									{(meme.created_by?.username || 'Anonymous') + " • " + (new Date(meme.createdAt).toLocaleDateString()) + " • " + (new Date(meme.createdAt).toLocaleTimeString())}
+									{(meme.created_by?.username || 'Anonymous') + " • " + (new Date(meme.createdAt).toLocaleDateString()) + " • " + (new Date(meme.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))}
 								</span>
 							</div>
 						</div>
@@ -204,7 +207,22 @@ export default function MemeDetails({
 						{/* Action Buttons */}
 						<div className="p-3 bg-black/5">
 							<div className="flex justify-between items-center">
-								<div className="w-16" /> {/* Spacer */}
+								{/* Views and Report buttons on left */}
+								<div className="w-16 flex flex-row justify-between">
+									<div className="flex items-center flex-col justify-center">
+										<CiUser className="w-6 h-6 text-white" />
+										<span className="text-xs text-white">{meme.views || 0}</span>
+									</div>
+									{handleReport && (
+										<div className="flex items-center flex-col justify-center">
+											<MdOutlineReport 
+												className="w-6 h-6 text-white cursor-pointer"
+												onClick={() => handleReport(meme._id)}
+											/>
+										</div>
+									)}
+								</div>
+								
 								{/* Vote button and count in middle */}
 								<div className="flex flex-row items-center gap-2 relative">
 									{eyeOpen ? (
@@ -229,25 +247,39 @@ export default function MemeDetails({
 										</div>
 									)}
 								</div>
+								
 								{/* Share and bookmark on right */}
-								<div className="flex items-center space-x-3 w-16 justify-end">
-									<FaRegShareFromSquare
-										className="w-5 h-5 text-white cursor-pointer"
-										onClick={() => setIsShareOpen(true)}
-									/>
-									{user &&
-										user.address &&
-										(isBookmarked ? (
-											<FaBookmark
-												className="w-5 h-5 text-white cursor-pointer"
-												onClick={() => handleBookmarkClick(meme._id)}
-											/>
-										) : (
-											<CiBookmark
-												className="w-6 h-6 text-white cursor-pointer"
-												onClick={() => handleBookmarkClick(meme._id)}
-											/>
-										))}
+								<div className="flex items-center space-x-6 w-24 justify-end">
+									{/* Share button with count */}
+									<div className="flex flex-col items-center">
+										<FaRegShareFromSquare
+											className="w-5 h-5 text-white cursor-pointer"
+											onClick={() => setIsShareOpen(true)}
+										/>
+										{meme.shares && meme.shares.length > 0 && (
+											<p className="text-[#1783fb] text-sm mt-1">{meme.shares.length}</p>
+										)}
+									</div>
+									
+									{/* Bookmark button with count */}
+									{user && user.address && (
+										<div className="flex flex-col items-center">
+											{isBookmarked ? (
+												<FaBookmark
+													className="w-5 h-5 text-white cursor-pointer"
+													onClick={() => handleBookmarkClick(meme._id)}
+												/>
+											) : (
+												<CiBookmark
+													className="w-6 h-6 text-white cursor-pointer"
+													onClick={() => handleBookmarkClick(meme._id)}
+												/>
+											)}
+											{meme.bookmarks && meme.bookmarks.length > 0 && (
+												<p className="text-[#1783fb] text-sm mt-1">{meme.bookmarks.length}</p>
+											)}
+										</div>
+									)}
 								</div>
 							</div>
 						</div>
@@ -255,8 +287,8 @@ export default function MemeDetails({
 						{/* Related Memes */}
 						{isMeme(meme) && relatedMemes.length > 0 && (
 							<div className="mt-6 space-y-3">
-								<label className="text-[#1783fb] text-lg font-semibold block">
-									Related Contents
+								<label className="text-lg block">
+									Related:
 								</label>
 								{!isLoad ? (
 									<Carousel
