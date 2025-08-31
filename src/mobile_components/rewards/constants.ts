@@ -1,10 +1,9 @@
 import {
-    MAJORITY_VOTES_REWARDS,
-    TOTAL_VOTES_REWARDS,
-    MAJORITY_UPLOAD_REWARDS,
     TOTAL_UPLOAD_REWARDS,
     REFERRAL_REWARDS,
-    MilestoneType
+    MilestoneType,
+    RECEIVED_VOTES_REWARDS,
+    CAST_VOTES_REWARDS
   } from '@/mobile_components/rewards/rewardsConfig';
   
   
@@ -50,9 +49,8 @@ import {
   }
   
   // Use the imported constants but rename them for clarity
-  export const votesReceivedRewards = MAJORITY_VOTES_REWARDS
-  export const votesCastRewards = TOTAL_VOTES_REWARDS
-  export const majorityUploadRewards = MAJORITY_UPLOAD_REWARDS
+  export const votesReceivedRewards = RECEIVED_VOTES_REWARDS
+  export const votesCastRewards = CAST_VOTES_REWARDS
   export const totalUploadRewards = TOTAL_UPLOAD_REWARDS
   export const referralRewards = REFERRAL_REWARDS
   
@@ -80,18 +78,13 @@ import {
           ]
         case 'uploads':
           return [
-            ...Object.entries(majorityUploadRewards).map(
+            ...Object.entries(totalUploadRewards).map(
               ([milestone, reward]) => ({
                 milestone: Number(milestone),
                 reward,
-                type: 'upload' as const,
+                type: 'upload-total' as const,
               })
             ),
-            ...Object.entries(totalUploadRewards).map(([milestone, reward]) => ({
-              milestone: Number(milestone),
-              reward,
-              type: 'upload-total' as const,
-            })),
           ]
         case 'referrals':
           return Object.entries(referralRewards).map(([milestone, reward]) => ({
@@ -124,10 +117,6 @@ import {
               return milestone === 1
                 ? 'Cast First Vote'
                 : `Cast ${milestone} Votes`
-            case 'upload':
-              return milestone === 10
-                ? 'Reach 10 Majority Uploads'
-                : `Reach ${milestone} Majority Uploads`
             case 'upload-total':
               return milestone === 1
                 ? 'First Upload'

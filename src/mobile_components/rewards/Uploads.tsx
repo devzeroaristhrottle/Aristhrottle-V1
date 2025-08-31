@@ -3,7 +3,6 @@ import { Milestones } from './Milestones'
 import {
 	getMilestoneKeys,
 	getMilestoneTitles,
-	majorityUploadRewards,
 	Milestone,
 	MilestoneTitles,
 	totalUploadRewards,
@@ -107,17 +106,8 @@ const Uploads = () => {
 			<div className="flex flex-col gap-2">
 				<h2 className="text-xl font-medium">Total Uploads</h2>
 				<ProgressBar
-					milestones={getMilestoneKeys(totalUploadRewards)}
-					currentValue={uploadData?.totalUploadMemeCount ?? 0}
-				/>
-			</div>
-
-			{/* Majority Uploads */}
-			<div className="flex flex-col gap-2">
-				<h2 className="text-xl font-medium">Majority Uploads</h2>
-				<ProgressBar
-					milestones={getMilestoneKeys(majorityUploadRewards)}
-					currentValue={uploadData?.majorityUploads ?? 0}
+					current={uploadData?.totalUploadMemeCount ?? 0}
+					max={100}
 				/>
 			</div>
 

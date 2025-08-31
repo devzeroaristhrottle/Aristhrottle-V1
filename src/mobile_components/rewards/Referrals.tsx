@@ -108,8 +108,8 @@ const Referrals = () => {
 			<div className="flex flex-col gap-2">
 				<h2 className="text-xl font-medium">Total Referrals</h2>
 				<ProgressBar
-					milestones={getMilestoneKeys(referralRewards)}
-					currentValue={referrals?.totalReferralCount ?? 0}
+					current={referrals?.totalReferralCount ?? 0}
+					max={50}
 				/>
 			</div>
 

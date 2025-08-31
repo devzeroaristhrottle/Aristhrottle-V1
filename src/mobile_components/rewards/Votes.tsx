@@ -105,8 +105,8 @@ const Votes = () => {
 			<div className="flex flex-col gap-2">
 				<h2 className="text-xl font-medium">Votes Cast</h2>
 				<ProgressBar
-					milestones={getMilestoneKeys(votesCastRewards)}
-					currentValue={votesData?.totalVotesCount ?? 0}
+					current={votesData?.totalVotesCount ?? 0}
+					max={500}
 				/>
 			</div>
 
@@ -114,8 +114,8 @@ const Votes = () => {
 			<div className="flex flex-col gap-2">
 				<h2 className="text-xl font-medium">Votes Received</h2>
 				<ProgressBar
-					milestones={getMilestoneKeys(votesReceivedRewards)}
-					currentValue={votesData?.votesReceivedCount ?? 0}
+					current={votesData?.votesReceivedCount ?? 0}
+					max={2000}
 				/>
 			</div>
 
