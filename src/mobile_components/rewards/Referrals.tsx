@@ -101,6 +101,7 @@ const Referrals = () => {
 		)
 	}
 
+
 	return (
 		<div className="flex flex-col gap-4">
 			{/* Total Referrals */}
@@ -141,7 +142,7 @@ const Referrals = () => {
 				</div>
 			)} */}
 
-			<ShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} referralCode={userDetails?.refer_code}/>
+			{userDetails && <ShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} referralCode={userDetails.refer_code}/>}
 
 			{/* Rules */}
 			{/* <div className="flex flex-col gap-2 items-center border border-[#2FCAC7] rounded-lg p-3 mt-2">
@@ -174,17 +175,17 @@ const Referrals = () => {
 				</div>
 			)} */}
 
-			<div className='flex flex-row w-full items-center justify-around text-3xl justify-self-end'>
+			{userDetails && (<div className='flex flex-row w-full items-center justify-around text-3xl justify-self-end'>
 				<div className='border border-[#2FCAC7] flex flex-row-reverse gap-2 items-center px-4 py-2 w-fit rounded-lg' 
 					onClick={() => {navigator.clipboard.writeText(userDetails!.refer_code); toast.success("Copied to Clipboard")}}
 					>
-					{userDetails!.refer_code}
+					{userDetails.refer_code}
 					<FaCopy className='text-[#2FCAC7]' />
 				</div>
 				<button className='bg-[#2FCAC7] p-2 text-black rounded-lg w-fit' onClick={handleCopy}>
 					Refer Now
 				</button>
-			</div>
+			</div>)}
 		</div>
 	)
 }
