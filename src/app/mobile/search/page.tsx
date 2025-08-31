@@ -4,9 +4,9 @@ import Navbar from '@/mobile_components/Navbar'
 import PopularView from '@/mobile_components/search/PopularView';
 import SelfView from '@/mobile_components/search/SelfView';
 import TrendingView from '@/mobile_components/search/TrendingView';
+import SearchBar from '@/mobile_components/search/SearchBar';
 import { TabButton } from '@/mobile_components/TabButton';
 import React, { useState } from 'react'
-import { IoSearchSharp } from 'react-icons/io5';
 
 function Page() {
     const [input, setInput] = useState<string>('');
@@ -31,16 +31,11 @@ function Page() {
             <Navbar />
             <div className='flex-1 overflow-y-auto px-4 py-4'>
                 {/*Search Bar */}
-                <div className="relative mb-4">
-                    <input 
-                        placeholder='search by title, tags or username' 
-                        className='bg-transparent w-full border border-white rounded-full pr-10 pl-3 py-1' 
-                        onChange={(e) => setInput(e.target.value)} 
+                <div className="mb-4">
+                    <SearchBar 
+                        placeholder="Search by title, tags or username"
+                        onSearch={(query) => setInput(query)}
                     />
-                    
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white">
-                        <IoSearchSharp className="w-5 h-5" />
-                    </span>
                 </div>
 
                 <div className='w-full items-center justify-evenly flex mb-4 p-1'>
@@ -49,7 +44,7 @@ function Page() {
                     <TabButton isActive={activeTab === 'popular'} label='Popular' onClick={() => setActiveTab('popular')}/>
                 </div>
 
-                {input}
+                {input && ("Searched: " + input)}
                 {/*Rendered Contents */}
                 <div className="pb-4">{renderContent()}</div>
             </div>
