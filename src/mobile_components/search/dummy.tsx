@@ -100,7 +100,7 @@ export const dummyMemes: Meme[] = [
         created_by: {
             _id: "user1",
             username: "CryptoKing",
-            profile_pic: "/assets/coins/coin1.png",
+            profile_pic: "/assets/coins/1.png",
             user_wallet_address: "0x1234...5678",
             createdAt: "2024-01-15T10:30:00Z",
             updatedAt: "2024-01-15T10:30:00Z",
@@ -127,7 +127,7 @@ export const dummyMemes: Meme[] = [
         created_by: {
             _id: "user2",
             username: "MemeLord",
-            profile_pic: "/assets/coins/coin2.png",
+            profile_pic: "/assets/coins/2.png",
             user_wallet_address: "0x8765...4321",
             createdAt: "2024-01-14T15:45:00Z",
             updatedAt: "2024-01-14T15:45:00Z",
@@ -154,7 +154,7 @@ export const dummyMemes: Meme[] = [
         created_by: {
             _id: "user3",
             username: "ArtMaster",
-            profile_pic: "/assets/coins/coin3.png",
+            profile_pic: "/assets/coins/3.png",
             user_wallet_address: "0x9876...5432",
             createdAt: "2024-01-13T09:20:00Z",
             updatedAt: "2024-01-13T09:20:00Z",
@@ -181,7 +181,7 @@ export const dummyMemes: Meme[] = [
         created_by: {
             _id: "user4",
             username: "DigitalArtist",
-            profile_pic: "/assets/coins/coin4.png",
+            profile_pic: "/assets/coins/4.png",
             user_wallet_address: "0x5555...6666",
             createdAt: "2024-01-12T14:15:00Z",
             updatedAt: "2024-01-12T14:15:00Z",
@@ -208,7 +208,7 @@ export const dummyMemes: Meme[] = [
         created_by: {
             _id: "user5",
             username: "BlockchainBuddy",
-            profile_pic: "/assets/coins/coin5.png",
+            profile_pic: "/assets/coins/5.png",
             user_wallet_address: "0x7777...8888",
             createdAt: "2024-01-11T11:30:00Z",
             updatedAt: "2024-01-11T11:30:00Z",
@@ -235,7 +235,7 @@ export const dummyMemes: Meme[] = [
         created_by: {
             _id: "user6",
             username: "NFTCollector",
-            profile_pic: "/assets/coins/coin6.png",
+            profile_pic: "/assets/coins/6.png",
             user_wallet_address: "0x9999...0000",
             createdAt: "2024-01-10T16:45:00Z",
             updatedAt: "2024-01-10T16:45:00Z",
@@ -262,7 +262,7 @@ export const dummyMemes: Meme[] = [
         created_by: {
             _id: "user7",
             username: "Web3Wizard",
-            profile_pic: "/assets/coins/coin7.png",
+            profile_pic: "/assets/coins/7.png",
             user_wallet_address: "0xaaaa...bbbb",
             createdAt: "2024-01-09T13:20:00Z",
             updatedAt: "2024-01-09T13:20:00Z",
@@ -289,7 +289,7 @@ export const dummyMemes: Meme[] = [
         created_by: {
             _id: "user8",
             username: "DeFiDude",
-            profile_pic: "/assets/coins/coin1.png",
+            profile_pic: "/assets/coins/1.png",
             user_wallet_address: "0xcccc...dddd",
             createdAt: "2024-01-08T10:10:00Z",
             updatedAt: "2024-01-08T10:10:00Z",

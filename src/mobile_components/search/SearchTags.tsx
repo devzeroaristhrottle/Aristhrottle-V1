@@ -27,13 +27,13 @@ function Tags({ showRank = false, tags, startRank = 1 }: TagsProps) {
                                         className="w-6 h-6"
                                     />
                                 ) : (
-                                    <span className="text-md text-[#F0F3F4] min-w-[16px]">
+                                    <span className="text-lg text-[#F0F3F4] min-w-[16px]">
                                         {startRank + index}
                                     </span>
                                 )}
                             </div>
                         )}
-                        <span className="border-[#1783fb] rounded-lg px-2 py-1 text-sm font-medium bg-gray-600 text-white whitespace-nowrap">
+                        <span className="border-[#1783fb] rounded-lg px-2 py-1 font-medium bg-gray-600 text-white whitespace-nowrap" style={{fontSize: '0.6rem'}}>
                             {tag}
                         </span>
                     </div>
@@ -43,7 +43,7 @@ function Tags({ showRank = false, tags, startRank = 1 }: TagsProps) {
             {hasMoreTags && (
                 <button
                     onClick={toggleExpanded}
-                    className="bg-[#2FCAC7] transition-colors rounded-md text-black px-2 mt-2"
+                    className="bg-[#2FCAC7] transition-colors rounded-md text-black px-2 mt-2 text-base"
                 >
                     More
                 </button>

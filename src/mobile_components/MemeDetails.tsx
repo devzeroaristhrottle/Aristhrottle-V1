@@ -243,7 +243,7 @@ export default function MemeDetails({
 											}
 										/>
 									)}
-									{type == 'all' && <span className="text-2xl mt-1">{meme.vote_count}</span>}
+									{type == 'all' && <span className="text-base mt-1">{meme.vote_count}</span>}
 									{showPointsAnimation && (
 										<div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-[#28e0ca] font-bold text-lg opacity-0 animate-[flyUp_2s_ease-out_forwards]">
 											+0.1 $eART

@@ -124,7 +124,7 @@ function Memecard({
 									/>
 								)}
 								{pageType === 'all' && (
-									<span className="text-2xl mt-1">{localVoteCount}</span>
+									<span className="text-base mt-1">{localVoteCount}</span>
 								)}
 								{/* Points Animation */}
 								{showPointsAnimation && (

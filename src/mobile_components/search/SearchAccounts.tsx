@@ -63,7 +63,7 @@ function Accounts({ accounts }: AccountsProps) {
                         </div>
 
                         <div className="flex items-center justify-center">
-                            <button className="bg-[#2FCAC7] hover:bg-[#28b8b5] text-black p-1 rounded-full text-sm font-medium transition-colors">
+                            <button className="bg-[#2FCAC7] hover:bg-[#28b8b5] text-black p-1 rounded-full font-medium transition-colors" style={{fontSize: '0.6rem'}}>
                                 Follow
                             </button>
                         </div>
@@ -74,7 +74,7 @@ function Accounts({ accounts }: AccountsProps) {
             {hasMoreAccounts && (
                 <button
                     onClick={toggleExpanded}
-                    className="bg-[#2FCAC7] transition-colors rounded-md text-black px-2 mt-2"
+                    className="bg-[#2FCAC7] transition-colors rounded-md text-black px-2 mt-2 text-base"
                 >
                     More
                 </button>

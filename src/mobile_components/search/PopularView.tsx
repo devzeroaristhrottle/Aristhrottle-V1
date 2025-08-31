@@ -9,7 +9,7 @@ function PopularView() {
         <div>
             <div className='h-5'></div>
 
-            <div className='flex flex-row justify-between font-bold'>
+            <div className='flex flex-row justify-between font-bold text-base'>
                 Regional
                 <RegionSelect />
             </div>
@@ -17,7 +17,7 @@ function PopularView() {
 
             <div className='h-5'></div>
 
-            <div className='flex flex-row justify-between font-bold'>
+            <div className='flex flex-row justify-between font-bold text-base'>
                 People Trending Regionally
                 <RegionSelect />
             </div>

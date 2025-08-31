@@ -7,17 +7,17 @@ function SelfView() {
 
     return (
         <div>
-            <div className='font-bold'>Tags</div>
+            <div className='font-bold text-base'>Tags</div>
             <Tags tags={dummyTags} />
 
             <div className='h-5'></div>
 
-            <div className='font-bold'>Suggested Accounts</div>
+            <div className='font-bold text-base'>Suggested Accounts</div>
             <Accounts accounts={dummyAccounts} />
 
             <div className='h-5'></div>
 
-            <div className='font-bold'>Content</div>
+            <div className='font-bold text-base'>Content</div>
             <MemesList pageType='all' view='grid' memes={dummyMemes}/>
         </div>
     )
