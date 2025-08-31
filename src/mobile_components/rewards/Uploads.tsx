@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Milestones } from './Milestones'
 import {
-	getMilestoneKeys,
 	getMilestoneTitles,
 	Milestone,
 	MilestoneTitles,
-	totalUploadRewards,
 } from '@/mobile_components/rewards/constants'
 import ProgressBar from './ProgressBar'
 import { Context } from '@/context/contextProvider'

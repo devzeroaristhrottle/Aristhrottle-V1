@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Milestones } from './Milestones'
 import {
-	getMilestoneKeys,
 	getMilestoneTitles,
 	Milestone,
 	MilestoneTitles,
-	referralRewards,
 } from '@/mobile_components/rewards/constants'
 import { Context } from '@/context/contextProvider'
 import { FaCopy } from 'react-icons/fa'

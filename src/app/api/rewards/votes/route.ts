@@ -4,7 +4,7 @@ import Vote from "@/models/Vote";
 import { NextRequest, NextResponse } from "next/server";
 import { ethers } from "ethers";
 import { checkIsAuthenticated } from "@/utils/authFunctions";
-import { POINTS_MULTIPLIERS, MAJORITY_PERCENTILE_THRESHOLD } from "@/config/rewardsConfig";
+import { POINTS_MULTIPLIERS } from "@/config/rewardsConfig";
 
 export async function GET(req: NextRequest) {
   try {

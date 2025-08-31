@@ -1,12 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Milestones } from './Milestones'
 import {
-	getMilestoneKeys,
 	getMilestoneTitles,
-	votesReceivedRewards,
 	Milestone,
 	MilestoneTitles,
-	votesCastRewards,
 } from '@/mobile_components/rewards/constants'
 import { Context } from '@/context/contextProvider'
 import axiosInstance from '@/utils/axiosInstance'
