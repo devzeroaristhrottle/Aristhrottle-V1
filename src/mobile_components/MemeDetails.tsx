@@ -38,6 +38,17 @@ export default function MemeDetails({
 
 	const { openAuthModal } = useAuthModal()
 
+	// Helper function to format date as "31st August 2025"
+	const formatDate = (dateString: string): string => {
+		const date = new Date(dateString)
+		const day = date.getDate()
+		const month = date.toLocaleDateString('en-US', { month: 'long' })
+		const year = date.getFullYear()
+		
+	
+		
+		return `${day} ${month}, ${year}`
+	}
 
 	const isMeme = (meme: Meme): meme is Meme =>
 		'tags' in meme && Array.isArray(meme.tags)
@@ -180,8 +191,8 @@ export default function MemeDetails({
 										))}
 									</div>
 								)}
-								<span className="text-gray-400 text-sm block">
-									{(meme.created_by?.username || 'Anonymous') + " • " + (new Date(meme.createdAt).toLocaleDateString()) + " • " + (new Date(meme.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))}
+								<span className="text-gray-400 block" style={{fontSize: "0.75rem"}}>
+									{(meme.created_by?.username || 'Anonymous') + " • " + formatDate(meme.createdAt) + " • " + (new Date(meme.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))}
 								</span>
 							</div>
 						</div>
