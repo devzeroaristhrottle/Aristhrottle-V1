@@ -1,27 +1,29 @@
 import React from 'react'
 import Tags from './SearchTags'
 import Accounts from './SearchAccounts'
+import { dummyAccounts, dummyTags } from './dummy'
+import RegionSelect from './RegionSelect'
 
 function PopularView() {
     return (
         <div>
             <div>Global</div>
-            <Tags/>
+            <Tags tags={dummyTags}/>
 
-            <div>
+            <div className='flex flex-row justify-between'>
                 Regional
-                {/*Dropdown to select regions */}
+                <RegionSelect />
             </div>
-            <Tags/>
+            <Tags tags={dummyTags}/>
 
             <div>People Trending Worldwide</div>
-            <Accounts />
+            <Accounts accounts={dummyAccounts}/>
 
-            <div>
+            <div className='flex flex-row justify-between'>
                 People Trending Regionally
-                 {/*Dropdown to select regions */}
+                <RegionSelect />
             </div>
-            <Accounts />
+            <Accounts accounts={dummyAccounts}/>
         </div>
     )
 }

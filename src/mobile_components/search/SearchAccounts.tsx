@@ -24,13 +24,13 @@ function Accounts({ accounts }: AccountsProps) {
         <div className="space-y-2 py-2">
             <div className="space-y-3">
                 {visibleAccounts.map((account) => (
-                    <div key={account._id} className="flex items-center gap-3 p-3 rounded-lg">
+                    <div key={account._id} className="flex items-center gap-3 rounded-lg">
                         {/* Profile Picture */}
                         <div className="flex items-center justify-center">
                             <img
                                 src={account.profile_pic}
                                 alt={account.username}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-[#1783fb]/30"
+                                className="w-16 h-16 rounded-full object-cover"
                             />
                         </div>
                         

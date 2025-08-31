@@ -1,27 +1,29 @@
 import React from 'react'
 import Accounts from './SearchAccounts'
 import Tags from './SearchTags'
+import { dummyAccounts, dummyTags } from './dummy'
+import RegionSelect from './RegionSelect'
 
 function TrendingView() {
     return (
         <div>
             <div>Global</div>
-            <Tags showRank={true}/>
+            <Tags showRank={true} tags={dummyTags}/>
 
-            <div>
+            <div className='flex flex-row justify-between'>
                 Regional
-                {/*Dropdown to select regions */}
+                <RegionSelect />
             </div>
-            <Tags showRank={true}/>
+            <Tags showRank={true} tags={dummyTags}/>
 
             <div>People Trending Worldwide</div>
-            <Accounts />
+            <Accounts accounts={dummyAccounts}/>
 
-            <div>
+            <div className='flex flex-row justify-between'>
                 People Trending Regionally
-                 {/*Dropdown to select regions */}
+                <RegionSelect />
             </div>
-            <Accounts />
+            <Accounts accounts={dummyAccounts}/>
         </div>
     )
 }
