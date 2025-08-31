@@ -142,7 +142,7 @@ const RegularUserRow: React.FC<{ user: UserLeaderboardItem; isCurrentUser?: bool
         style={isCurrentUser ? {backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"} : {}}
 	>
 		<div className="flex items-center justify-between w-full">
-			<div className=" text-lg w-12 flex items-center justify-center">
+			<div className="w-10 flex items-center justify-center" style={{fontSize: '0.5rem'}}>
 				{`#${user.rank}`}
 			</div>
 			<div className={`text-white flex-1 text-center flex items-center justify-start space-x-2 ${isCurrentUser && `rounded-full border border-[#2FCAC7]`}`}
@@ -259,7 +259,7 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 			{/* Table Header */}
 			<div className="rounded-lg p-4">
 				<div className="flex items-center justify-between">
-					<div className=" text-sm w-12">
+					<div className=" w-10" style={{fontSize: '0.5rem'}}>
 						Rank
 					</div>
 					<div className="text-white flex-1 text-left"  style={{fontSize: "0.65rem"}}>
