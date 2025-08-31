@@ -222,7 +222,7 @@ export default function Navbar() {
 				{userDetails && user != null && user.address && (
 					<div
 						className="flex flex-row justify-evenly"
-						style={{ fontSize: '12px' }}
+						style={{ fontSize: '10px' }}
 					>
 						<div className="flex gap-1 items-center">
 							<label>Vote</label>
@@ -243,7 +243,7 @@ export default function Navbar() {
 							</p>
 						</div>
 						<div className="flex gap-1 items-center">
-							<label>Next phase</label>
+							<label>Phase</label>
 							<p className="border border-white w-[80px] text-center rounded-md p-1">
 								{timeLeft}
 							</p>

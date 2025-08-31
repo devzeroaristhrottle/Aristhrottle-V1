@@ -10,42 +10,42 @@ const regions: Region[] = [
     {
         code: 'USA',
         name: 'United States',
-        flag: 'https://flagcdn.com/w20/us.png'
+        flag: 'https://flagcdn.com/w160/us.png'
     },
     {
         code: 'GBR',
         name: 'United Kingdom',
-        flag: 'https://flagcdn.com/w20/gb.png'
+        flag: 'https://flagcdn.com/w160/gb.png'
     },
     {
         code: 'CAN',
         name: 'Canada',
-        flag: 'https://flagcdn.com/w20/ca.png'
+        flag: 'https://flagcdn.com/w160/ca.png'
     },
     {
         code: 'AUS',
         name: 'Australia',
-        flag: 'https://flagcdn.com/w20/au.png'
+        flag: 'https://flagcdn.com/w160/au.png'
     },
     {
         code: 'DEU',
         name: 'Germany',
-        flag: 'https://flagcdn.com/w20/de.png'
+        flag: 'https://flagcdn.com/w160/de.png'
     },
     {
         code: 'FRA',
         name: 'France',
-        flag: 'https://flagcdn.com/w20/fr.png'
+        flag: 'https://flagcdn.com/w160/fr.png'
     },
     {
         code: 'JPN',
         name: 'Japan',
-        flag: 'https://flagcdn.com/w20/jp.png'
+        flag: 'https://flagcdn.com/w160/jp.png'
     },
     {
         code: 'IND',
         name: 'India',
-        flag: 'https://flagcdn.com/w20/in.png'
+        flag: 'https://flagcdn.com/w160/in.png'
     }
 ]
 
