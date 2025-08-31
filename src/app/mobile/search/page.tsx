@@ -29,7 +29,7 @@ function Page() {
     return (
         <div className='h-screen flex flex-col overflow-hidden'>
             <Navbar />
-            <div className='flex-1 overflow-y-auto px-4 py-4'>
+            <div className='flex-1 overflow-y-auto px-4 py-4' style={{fontSize: '0.5rem'}}>
                 {/*Search Bar */}
                 <div className="mb-4">
                     <SearchBar 

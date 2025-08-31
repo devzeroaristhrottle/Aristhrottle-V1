@@ -38,25 +38,25 @@ function Accounts({ accounts }: AccountsProps) {
                         <div className="flex-1 min-w-0">
                             {/* Username and Follow Button */}
                             <div className="flex items-center justify-between">
-                                <h3 className="text-white font-semibold text-lg truncate">
+                                <h3 className="text-white font-extrabold text-sm truncate">
                                     {account.username}
                                 </h3>
                                 
                             </div>
                             
                             {/* Bio */}
-                            <p className=" text-sm truncate">
+                            <p className=" text-sm truncate" style={{fontSize: '0.5rem'}}>
                                 {account.bio.length > 50 ? `${account.bio.substring(0, 50)}...` : account.bio}
                             </p>
                             
                             {/* Stats */}
-                            <div className="flex items-center gap-4 text-sm text-gray-400">
+                            <div className="flex items-center gap-4 text-sm text-gray-400" style={{fontSize: '0.5rem'}}>
                                 <span className="flex items-center gap-1">
                                     <span className="font-medium text-white">{account.followers.toLocaleString()}</span>
                                     <span>followers</span>
                                 </span>
-                                <span className="flex items-center gap-1">
-                                    <span className="font-medium text-white">{account.following.toLocaleString()}</span>
+                                <span className="flex items-center gap-1" style={{fontSize: '0.5rem'}}>
+                                    <span className="font-medium text-white" >{account.following.toLocaleString()}</span>
                                     <span>following</span>
                                 </span>
                             </div>
