@@ -86,8 +86,8 @@ export const Milestones = ({
 
 						{/* Title & Reward */}
 						<div className="flex-1 flex items-center justify-between gap-x-2">
-							<p className="text-sm leading-tight">{milestone.title}</p>
-							<p className="text-sm whitespace-nowrap" hidden={milestone.isClaimed}>
+							<p className="text-sm leading-tight" style={{fontSize: '0.7rem'}}>{milestone.title}</p>
+							<p className="text-sm whitespace-nowrap" hidden={milestone.isClaimed} style={{fontSize: '0.6rem'}}>
 								{milestone.reward} $eART
 							</p>
 						</div>
@@ -96,7 +96,8 @@ export const Milestones = ({
 						<div className="flex items-center justify-center">
 							{!milestone.isClaimed ? (
 								<button
-									className={`relative px-4 rounded-md text-sm text-black ${(isClaimLoading || !milestone.canClaim) ? 'bg-[#2FCAC7]/20' : 'bg-[#2FCAC7] hover:bg-[#20B2AF]'}`}
+									className={`relative px-4 rounded-md text-black ${(isClaimLoading || !milestone.canClaim) ? 'bg-[#2FCAC7]/20' : 'bg-[#2FCAC7] hover:bg-[#20B2AF]'}`}
+									style={{fontSize: '0.6rem'}}
 									onClick={() => {
 										handleClaim(milestone.type, milestone, index)
 									}}
@@ -110,7 +111,7 @@ export const Milestones = ({
 										'Claim'
 									)}
 								</button>) : (
-                                    <div className='flex justify-between items-center'>
+                                    <div className='flex justify-between items-center' style={{fontSize: '0.6rem'}}>
                                         <GrCheckmark className='text-[#2FCAC7]'/>
                                         <div className='text-[#2FCAC7] ml-2'>Claimed</div>
                                     </div>

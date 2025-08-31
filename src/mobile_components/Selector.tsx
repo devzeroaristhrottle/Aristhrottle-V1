@@ -23,27 +23,27 @@ function Selector({
 }) {
 	return (
 		<div className="flex flex-row justify-between p-3">
-			<div id="sorting_selector">
+			<div id="sorting_selector"  className='items-center justify-center flex'>
 				<Button
 					size={{ sm: 'xs', md: 'sm' }}
 					variant="outline"
-					className="border-2 px-1 rounded-lg gap-2"
+					className="border-2 px-1 rounded-lg gap-2 text-sm"
 				>
 					<LiaSortSolid />
 					Sort
 				</Button>
 			</div>
-			<div id="live_all_button">
-				<div className="flex gap-x-2 md:gap-x-3 lg:flex-1 justify-center">
+			<div id="live_all_button" className='items-center justify-center flex'>
+				<div className="flex gap-x-2 md:gap-x-3 lg:flex-1 justify-center items-center">
 					<TabButton
 						label="Live"
-						classname="!px-2 md:!px-5 rounded-full"
+						classname="!px-2 md:!px-5 rounded-full !text-sm"
 						isActive={activeTab === 'live'}
 						onClick={() => handleTabChange('live')}
 					/>
 					<TabButton
 						label="All"
-						classname="!px-2 md:!px-5 rounded-full"
+						classname="!px-2 md:!px-5 rounded-full !text-sm"
 						isActive={activeTab === 'all'}
 						onClick={() => handleTabChange('all')}
 					/>

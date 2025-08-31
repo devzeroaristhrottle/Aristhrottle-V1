@@ -24,7 +24,7 @@ const UserStats: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 
 // Component for 1st Place User
 const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="rounded-lg mb-4 border p-4 h-20 flex items-center"
+	<div className="rounded-lg mb-4 border py-4 h-20 flex items-center"
         style={{backgroundImage: "linear-gradient(to left, rgba(211, 151, 54, 0.5), rgba(227, 112, 70, 0.5))"}}
     >
 		<div className="flex items-center justify-between w-full">
@@ -62,7 +62,7 @@ const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 
 // Component for 2nd Place User
 const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="rounded-lg mb-4 p-4 h-20 flex items-center border border-[#F1F1F1]"
+	<div className="rounded-lg mb-4 py-4 h-20 flex items-center border border-[#F1F1F1]"
         style={{backgroundImage: "linear-gradient(to right, rgba(192, 171, 168, 0.5), rgba(214, 110, 93, 0.5))"}}>
 		<div className="flex items-center justify-between w-full">
 			<div className=" text-lg w-12 flex items-center justify-center">
@@ -99,7 +99,7 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 
 // Component for 3rd Place User
 const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="p-4 mb-4 rounded-lg h-20 flex items-center border border-[#F48634]"
+	<div className="py-4 mb-4 rounded-lg h-20 flex items-center border border-[#F48634]"
         style={{backgroundImage: "linear-gradient(to left, rgba(214, 112, 26, 0.5), rgba(255, 91, 43, 0.5))"}}
         >
 		<div className="flex items-center justify-between w-full">
@@ -138,7 +138,7 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 // Regular User Row Component
 const RegularUserRow: React.FC<{ user: UserLeaderboardItem; isCurrentUser?: boolean }> = ({ user, isCurrentUser = false }) => (
 	<div
-		className={` rounded-lg p-4 mb-4 h-20 flex items-center border-[#2FCAC7] border`}
+		className={` rounded-lg py-4 mb-4 h-20 flex items-center border-[#2FCAC7] border`}
         style={isCurrentUser ? {backgroundImage: "linear-gradient(to right, rgba(41, 224, 202, 0.5), rgba(224, 33, 33, 0.5))"} : {}}
 	>
 		<div className="flex items-center justify-between w-full">

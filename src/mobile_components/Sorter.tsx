@@ -11,7 +11,7 @@ function Sorter({ gridEnable } : { gridEnable? : boolean}) {
 				<Button
 					size={{ sm: 'xs', md: 'sm' }}
 					variant="outline"
-					className="border-2 px-1 rounded-lg gap-2"
+					className="border-2 px-1 rounded-lg gap-2 text-sm"
 				>
 					<LiaSortSolid />
 					Sort
