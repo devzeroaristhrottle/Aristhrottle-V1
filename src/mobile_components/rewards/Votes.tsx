@@ -3,11 +3,11 @@ import { Milestones } from './Milestones'
 import {
 	getMilestoneKeys,
 	getMilestoneTitles,
-	majorityVotesRewards,
+	votesReceivedRewards,
 	Milestone,
 	MilestoneTitles,
-	totalVotesRewards,
-} from '@/app/home/rewards/constants'
+	votesCastRewards,
+} from '@/mobile_components/rewards/constants'
 import { Context } from '@/context/contextProvider'
 import axiosInstance from '@/utils/axiosInstance'
 import ProgressBar from './ProgressBar'
@@ -22,7 +22,7 @@ import Loader from '@/components/Loader'
 
 export type VotesResponse = {
 	totalVotesCount: number
-	majorityVotesCount: number
+	votesReceivedCount: number
 	milestoneDetails: Milestone[]
 	points: number
 	unClaimedMemeIds: string[]
@@ -101,21 +101,21 @@ const Votes = () => {
 
 	return (
 		<div className="flex flex-col gap-4">
-			{/* Total Votes */}
+			{/* Votes Cast */}
 			<div className="flex flex-col gap-2">
-				<h2 className="text-xl font-medium">Total Votes</h2>
+				<h2 className="text-xl font-medium">Votes Cast</h2>
 				<ProgressBar
-					milestones={getMilestoneKeys(totalVotesRewards)}
+					milestones={getMilestoneKeys(votesCastRewards)}
 					currentValue={votesData?.totalVotesCount ?? 0}
 				/>
 			</div>
 
-			{/* Majority Votes */}
+			{/* Votes Received */}
 			<div className="flex flex-col gap-2">
-				<h2 className="text-xl font-medium">Majority Votes</h2>
+				<h2 className="text-xl font-medium">Votes Received</h2>
 				<ProgressBar
-					milestones={getMilestoneKeys(majorityVotesRewards)}
-					currentValue={votesData?.majorityVotesCount ?? 0}
+					milestones={getMilestoneKeys(votesReceivedRewards)}
+					currentValue={votesData?.votesReceivedCount ?? 0}
 				/>
 			</div>
 

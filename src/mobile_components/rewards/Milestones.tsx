@@ -3,7 +3,7 @@ import { useContext, useState } from 'react'
 import axiosInstance from '@/utils/axiosInstance'
 import { Context } from '@/context/contextProvider'
 import { toast } from 'react-toastify'
-import { MilestoneTitles } from '@/app/home/rewards/constants'
+import { MilestoneTitles } from '@/mobile_components/rewards/constants'
 import { GrCheckmark } from 'react-icons/gr'
 
 export const Milestones = ({

@@ -7,7 +7,7 @@ import {
 	Milestone,
 	MilestoneTitles,
 	totalUploadRewards,
-} from '@/app/home/rewards/constants'
+} from '@/mobile_components/rewards/constants'
 import ProgressBar from './ProgressBar'
 import { Context } from '@/context/contextProvider'
 import axiosInstance from '@/utils/axiosInstance'

@@ -49,9 +49,9 @@ export const getMilestoneKeys = (rewards: Record<number, any>): number[] => {
     .sort((a, b) => a - b)
 }
 
-// Use the imported constants instead of redefining them
-export const majorityVotesRewards = MAJORITY_VOTES_REWARDS
-export const totalVotesRewards = TOTAL_VOTES_REWARDS
+// Use the imported constants but rename them for clarity
+export const votesReceivedRewards = MAJORITY_VOTES_REWARDS
+export const votesCastRewards = TOTAL_VOTES_REWARDS
 export const majorityUploadRewards = MAJORITY_UPLOAD_REWARDS
 export const totalUploadRewards = TOTAL_UPLOAD_REWARDS
 export const referralRewards = REFERRAL_REWARDS
@@ -65,17 +65,17 @@ export const getMilestoneTitles = (
     switch (groupType) {
       case 'votes':
         return [
-          ...Object.entries(majorityVotesRewards).map(
+          ...Object.entries(votesReceivedRewards).map(
             ([milestone, reward]) => ({
               milestone: Number(milestone),
               reward,
-              type: 'vote' as const,
+              type: 'vote-received' as const,
             })
           ),
-          ...Object.entries(totalVotesRewards).map(([milestone, reward]) => ({
+          ...Object.entries(votesCastRewards).map(([milestone, reward]) => ({
             milestone: Number(milestone),
             reward,
-            type: 'vote-total' as const,
+            type: 'vote-cast' as const,
           })),
         ]
       case 'uploads':
@@ -116,14 +116,14 @@ export const getMilestoneTitles = (
       // Generate human-readable title
       const title = (() => {
         switch (type) {
-          case 'vote':
+          case 'vote-received':
             return milestone === 10
-              ? 'Reach 10 Majority Votes'
-              : `Reach ${milestone} Majority Votes`
-          case 'vote-total':
+              ? 'Receive 10 Votes'
+              : `Receive ${milestone} Votes`
+          case 'vote-cast':
             return milestone === 1
               ? 'Cast First Vote'
-              : `Cast ${milestone} Total Votes`
+              : `Cast ${milestone} Votes`
           case 'upload':
             return milestone === 10
               ? 'Reach 10 Majority Uploads'

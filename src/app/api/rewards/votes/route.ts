@@ -29,22 +29,22 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Get total votes count
+    // Get total votes count (votes cast BY the user)
     const totalVotesCount = await Vote.find({
       vote_by: userId,
     }).countDocuments();
 
-    // Get majority votes count
-    const majorityVotesCount = await Vote.find({
+    // Get votes received count (votes cast ON the user's content)
+    const votesReceived = await Vote.find({
       is_onchain: true,
-      vote_by: userId,
     })
-      .populate("vote_by")
       .populate({
         path: "vote_to",
-        match: { is_onchain: true, in_percentile: { $gte: MAJORITY_PERCENTILE_THRESHOLD } },
+        match: { created_by: userId },
       })
-      .countDocuments();
+      .exec();
+    
+    const votesReceivedCount = votesReceived.filter(vote => vote.vote_to).length;
 
     // Get milestone details
     const milestoneDetails = await Milestone.find({
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         totalVotesCount,
-        majorityVotesCount,
+        votesReceivedCount,
         milestoneDetails,
         points,
         unClaimedMemeIds: memeIds,

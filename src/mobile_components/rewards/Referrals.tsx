@@ -6,7 +6,7 @@ import {
 	Milestone,
 	MilestoneTitles,
 	referralRewards,
-} from '@/app/home/rewards/constants'
+} from '@/mobile_components/rewards/constants'
 import { Context } from '@/context/contextProvider'
 import { FaCopy } from 'react-icons/fa'
 import { toast } from 'react-toastify'
