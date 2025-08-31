@@ -63,7 +63,7 @@ function Accounts({ accounts }: AccountsProps) {
                         </div>
 
                         <div className="flex items-center justify-center">
-                            <button className="bg-[#2FCAC7] hover:bg-[#28b8b5] text-black px-4 py-1 rounded-full text-sm font-medium transition-colors">
+                            <button className="bg-[#2FCAC7] hover:bg-[#28b8b5] text-black p-1 rounded-full text-sm font-medium transition-colors">
                                 Follow
                             </button>
                         </div>

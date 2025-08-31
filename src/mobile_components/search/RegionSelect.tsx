@@ -8,6 +8,11 @@ interface Region {
 
 const regions: Region[] = [
     {
+        code: 'GLB',
+        name: 'Global',
+        flag: ''
+    },
+    {
         code: 'USA',
         name: 'United States',
         flag: 'https://flagcdn.com/w160/us.png'

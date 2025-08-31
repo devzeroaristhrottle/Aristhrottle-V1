@@ -7,19 +7,14 @@ import RegionSelect from './RegionSelect'
 function TrendingView() {
     return (
         <div>
-            <div>Global</div>
-            <Tags showRank={true} tags={dummyTags}/>
-
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between font-bold'>
                 Regional
                 <RegionSelect />
             </div>
             <Tags showRank={true} tags={dummyTags}/>
 
-            <div>People Trending Worldwide</div>
-            <Accounts accounts={dummyAccounts}/>
-
-            <div className='flex flex-row justify-between'>
+            <div className='h-5'></div>
+            <div className='flex flex-row justify-between font-bold'>
                 People Trending Regionally
                 <RegionSelect />
             </div>
