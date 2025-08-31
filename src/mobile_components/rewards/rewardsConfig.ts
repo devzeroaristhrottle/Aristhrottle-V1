@@ -53,7 +53,7 @@ export const POINTS_MULTIPLIERS = {
 };
 
 // Milestone types
-export type MilestoneType = 'vote-received' | 'vote-cast' | 'referral' | 'upload' | 'upload-total';
+export type MilestoneType = 'vote-received' | 'vote-cast' | 'referral' | 'upload-total';
 
 // Helper function to get milestone thresholds for a specific type
 export function getMilestoneThresholds(type: MilestoneType): number[] {

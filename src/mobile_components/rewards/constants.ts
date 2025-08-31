@@ -67,13 +67,13 @@ import {
               ([milestone, reward]) => ({
                 milestone: Number(milestone),
                 reward,
-                type: 'vote-received' as const,
+                type: 'vote-received' as MilestoneType,
               })
             ),
             ...Object.entries(votesCastRewards).map(([milestone, reward]) => ({
               milestone: Number(milestone),
               reward,
-              type: 'vote-cast' as const,
+              type: 'vote-cast' as MilestoneType,
             })),
           ]
         case 'uploads':
@@ -82,7 +82,7 @@ import {
               ([milestone, reward]) => ({
                 milestone: Number(milestone),
                 reward,
-                type: 'upload-total' as const,
+                type: 'upload-total' as MilestoneType,
               })
             ),
           ]
@@ -90,7 +90,7 @@ import {
           return Object.entries(referralRewards).map(([milestone, reward]) => ({
             milestone: Number(milestone),
             reward,
-            type: 'referral' as const,
+            type: 'referral' as MilestoneType,
           }))
         default:
           const _exhaustiveCheck: never = groupType
