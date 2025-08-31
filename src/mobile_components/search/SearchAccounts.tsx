@@ -1,8 +1,94 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { AccountsProps } from '../types'
 
-function Accounts() {
+function Accounts({ accounts }: AccountsProps) {
+    const [isExpanded, setIsExpanded] = useState(false)
+    
+    if (!accounts || accounts.length === 0) {
+        return (
+            <div className="flex items-center justify-center min-h-[200px] text-gray-400">
+                No accounts found
+            </div>
+        )
+    }
+
+    const maxVisibleAccounts = 3
+    const visibleAccounts = isExpanded ? accounts : accounts.slice(0, maxVisibleAccounts)
+    const hasMoreAccounts = accounts.length > maxVisibleAccounts && !isExpanded
+
+    const toggleExpanded = () => {
+        setIsExpanded(!isExpanded)
+    }
+
     return (
-        <div>Accounts</div>
+        <div className="space-y-2 py-2">
+            <div className="space-y-3">
+                {visibleAccounts.map((account) => (
+                    <div key={account._id} className="flex items-center gap-3 p-3 rounded-lg">
+                        {/* Profile Picture */}
+                        <div className="flex items-center justify-center">
+                            <img
+                                src={account.profile_pic}
+                                alt={account.username}
+                                className="w-12 h-12 rounded-full object-cover border-2 border-[#1783fb]/30"
+                            />
+                        </div>
+                        
+                        {/* Account Info */}
+                        <div className="flex-1 min-w-0">
+                            {/* Username and Follow Button */}
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-white font-semibold text-lg truncate">
+                                    {account.username}
+                                </h3>
+                                
+                            </div>
+                            
+                            {/* Bio */}
+                            <p className=" text-sm truncate">
+                                {account.bio.length > 50 ? `${account.bio.substring(0, 50)}...` : account.bio}
+                            </p>
+                            
+                            {/* Stats */}
+                            <div className="flex items-center gap-4 text-sm text-gray-400">
+                                <span className="flex items-center gap-1">
+                                    <span className="font-medium text-white">{account.followers.toLocaleString()}</span>
+                                    <span>followers</span>
+                                </span>
+                                <span className="flex items-center gap-1">
+                                    <span className="font-medium text-white">{account.following.toLocaleString()}</span>
+                                    <span>following</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-center">
+                            <button className="bg-[#2FCAC7] hover:bg-[#28b8b5] text-black px-4 py-1 rounded-full text-sm font-medium transition-colors">
+                                Follow
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            
+            {hasMoreAccounts && (
+                <button
+                    onClick={toggleExpanded}
+                    className="bg-[#2FCAC7] transition-colors rounded-md text-black px-2 mt-2"
+                >
+                    More
+                </button>
+            )}
+            
+            {isExpanded && accounts.length > maxVisibleAccounts && (
+                <button
+                    onClick={toggleExpanded}
+                    className="bg-[#2FCAC7] transition-colors rounded-md text-black px-2 mt-2"
+                >
+                    Show less
+                </button>
+            )}
+        </div>
     )
 }
 

@@ -69,3 +69,22 @@ export interface UserListProps {
 	users: UserLeaderboardItem[]
 	loading: boolean
 }
+
+export interface TagsProps {
+    showRank?: boolean
+    tags: string[]
+    startRank?: number
+}
+
+export interface AccountsProps {
+    accounts: Account[]
+}
+
+export interface Account {
+    _id: string
+    username: string
+    profile_pic: string
+	bio: string
+	followers: number
+	following: number
+}
