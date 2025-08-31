@@ -155,11 +155,6 @@ function Page() {
 		}
 	}
 
-	const handleShare = (memeId: string, imageUrl: string) => {
-		// Handle share functionality
-		console.log('Share meme:', memeId, imageUrl)
-	}
-
 	const handleBookmark = async (id: string, name: string, imageUrl: string) => {
 		if (!user || !user.address) {
 			openAuthModal?.()
@@ -246,7 +241,6 @@ function Page() {
 								memes={memes}
 								pageType={period === 'daily' ? 'live' : 'all'}
 								onVote={handleVote}
-								onShare={handleShare}
 								onBookmark={handleBookmark}
 								bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
 								view="list"

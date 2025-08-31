@@ -3,12 +3,12 @@ import Memecard from './Memecard'
 import MemeDetails from './MemeDetails'
 import { MemesListProps } from './types'
 import ReportModal from './ReportModal';
+import ShareModal from './ShareModal';
 
 function MemesList({
 	memes,
 	pageType,
 	onVote,
-	onShare,
 	onBookmark,
 	bookmarkedMemes = new Set(),
 	view = 'list'
@@ -19,6 +19,8 @@ function MemesList({
 	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 	const [reportModalOpen, setReportModalOpen] = useState(false);
     const [reportMemeId, setReportMemeId] = useState<string | null>(null);
+	const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+	const [shareMeme, setShareMeme] = useState<{ id: string; name: string; imageUrl: string } | null>(null);
 
     const handleOpenReport = (memeId: string) => {
         setReportMemeId(memeId);
@@ -31,6 +33,18 @@ function MemesList({
     const handleSubmitReport = (memeId: string, reason: string) => {
         // TODO: Implement report submission logic (API call, toast, etc.)
         console.log('Report submitted for', memeId, 'Reason:', reason);
+    };
+
+    const handleShare = (memeId: string, imageUrl: string) => {
+        const meme = memes.find(m => m._id === memeId);
+        if (meme) {
+            setShareMeme({
+                id: memeId,
+                name: meme.name,
+                imageUrl: imageUrl
+            });
+            setIsShareModalOpen(true);
+        }
     };
 
 	if (!memes.length) {
@@ -60,7 +74,7 @@ function MemesList({
 							meme={meme}
 							pageType={pageType}
 							onVote={onVote}
-							onShare={onShare}
+							onShare={handleShare}
 							onBookmark={onBookmark}
 							isBookmarked={bookmarkedMemes.has(meme._id)}
 							onImageClick={() => handleMemeClick(meme)}
@@ -88,6 +102,17 @@ function MemesList({
                 memeId={reportMemeId}
                 onSubmit={handleSubmitReport}
             />
+			{shareMeme && (
+				<ShareModal
+					isOpen={isShareModalOpen}
+					onClose={() => {
+						setIsShareModalOpen(false);
+						setShareMeme(null);
+					}}
+					contentTitle={shareMeme.name}
+					contentUrl={`${window.location.origin}/home?id=${shareMeme.id}`}
+				/>
+			)}
 		</>
 	)
 }

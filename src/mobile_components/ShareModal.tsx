@@ -86,8 +86,6 @@ const ShareModal: React.FC<ShareModalProps> = ({
         }
     };
 
-    const finalUrl = `${contentUrl}${referralCode ? `?ref=${referralCode}` : ''}`;
-
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Overlay */}
@@ -145,26 +143,6 @@ const ShareModal: React.FC<ShareModalProps> = ({
                                 </div>
                                 <button
                                     onClick={() => handleCopy(referralCode, 'Referral code')}
-                                    className="px-3 py-1 rounded-r-lg bg-[#29E0CA] text-white hover:opacity-90 transition-opacity"
-                                >
-                                    Copy
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Final Share URL Box - Only show if contentUrl exists */}
-                    {contentUrl && (
-                        <div className="space-y-2">
-                            <label className="text-white text-sm font-medium">Share Link</label>
-                            <div className="flex items-center justify-center gap-0">
-                                <div className="flex-1 px-3 py-1 rounded-l-lg border border-white text-white text-sm overflow-hidden border-r-0"
-                                    style={{borderTopLeftRadius: "0.5rem", borderBottomLeftRadius: "0.5rem"}}
-                                    >
-                                    <div className="truncate">{finalUrl}</div>
-                                </div>
-                                <button
-                                    onClick={() => handleCopy(finalUrl, 'Share link')}
                                     className="px-3 py-1 rounded-r-lg bg-[#29E0CA] text-white hover:opacity-90 transition-opacity"
                                 >
                                     Copy

@@ -14,7 +14,6 @@ import axiosInstance from '@/utils/axiosInstance'
 import MemesList from '@/mobile_components/MemesList'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { toast } from 'react-toastify'
-import Share from '@/components/Share'
 import MemeDetails from '@/mobile_components/MemeDetails'
 import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { Context } from '@/context/contextProvider'
@@ -31,11 +30,6 @@ function Page() {
 	const [loading, setLoading] = useState(true)
 	const [initialLoad, setInitialLoad] = useState(true)
 	const [bookMarks, setBookMarks] = useState<Meme[]>([])
-	const [isShareOpen, setIsShareOpen] = useState(false)
-	const [shareData, setShareData] = useState<{
-		id: string
-		imageUrl: string
-	} | null>(null)
 	const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null)
 	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
@@ -259,11 +253,6 @@ function Page() {
 			)
 		}
 	}
-
-	const handleShare = (memeId: string, imageUrl: string) => {
-		setShareData({ id: memeId, imageUrl })
-		setIsShareOpen(true)
-	}
 	
 	const handleMemeClick = (meme: Meme) => {
 		setSelectedMeme(meme)
@@ -338,7 +327,6 @@ function Page() {
 							memes={displayedMemes}
 							pageType={activeTab}
 							onVote={handleVote}
-							onShare={handleShare}
 							onBookmark={handleBookmark}
 							bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
 							view={view}
@@ -349,13 +337,6 @@ function Page() {
 			<div className="flex-none">
 				<BottomNav />
 			</div>
-			{isShareOpen && shareData && (
-				<Share
-					onClose={() => setIsShareOpen(false)}
-					imageUrl={shareData.imageUrl}
-					id={shareData.id}
-				/>
-			)}
 			{selectedMeme && (
 				<MemeDetails
 					isOpen={isDetailsOpen}

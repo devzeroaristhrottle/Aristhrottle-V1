@@ -8,11 +8,11 @@ import { MdOutlineReport } from 'react-icons/md'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { Context } from '@/context/contextProvider'
 import { Logo } from '@/components/Logo'
-import Share from '@/components/Share'
 import Carousel from './Carousel'
 import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
 import { Meme } from '@/mobile_components/types'
 import axiosInstance from '@/utils/axiosInstance'
+import ShareModal from './ShareModal'
 
 interface MemeDetailProps {
 	isOpen?: boolean
@@ -46,7 +46,6 @@ export default function MemeDetails({
 
 	const { openAuthModal } = useAuthModal()
 
-	const handleShareClose = () => setIsShareOpen(false)
 
 	const isMeme = (meme: Meme): meme is Meme =>
 		'tags' in meme && Array.isArray(meme.tags)
@@ -307,13 +306,12 @@ export default function MemeDetails({
 			</div>
 
 			{/* Share Modal */}
-			{isShareOpen && (
-				<Share
-					onClose={handleShareClose}
-					imageUrl={meme?.image_url}
-					id={meme?._id}
-				/>
-			)}
+			<ShareModal 
+				isOpen={isShareOpen} 
+				onClose={() => setIsShareOpen(false)} 
+				contentTitle={meme.name} 
+				contentUrl={`${window.location.origin}/home?id=${meme._id}`}
+			/>
 		</>
 	)
 }
