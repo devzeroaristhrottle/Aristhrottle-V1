@@ -4,6 +4,23 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import {UserLeaderboardItem, UserListProps} from '@/mobile_components/types'
 import { useUser } from '@account-kit/react'
 
+// UserStats Component for uniform styling across all locations
+const UserStats: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
+	<>
+		<div className="text-sm w-12 text-center">
+			{user.votes_received}
+		</div>
+		<div className="text-sm w-12 text-center">
+			{user.votes_casted}
+		</div>
+		<div className="text-sm w-10 text-center">
+			{user.uploads}
+		</div>
+		<div className="text-sm w-10 text-center">
+			{Math.round(user.tokens_minted)}
+		</div>
+	</>
+)
 
 // Component for 1st Place User
 const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
@@ -15,7 +32,7 @@ const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 				<img 
 					src="/assets/award1.png" 
 					alt="1st Place"
-					className="w-10 h-10"
+					className="w-8 h-8"
 				/>
 			</div>
 			<div className="text-white flex-1 text-center flex items-center justify-start space-x-2 rounded-full border-[#EAA408] border" 
@@ -36,20 +53,9 @@ const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 						</div>
 					)}
 				</div>
-				<span className="text-lg">{user.username}</span>
+				<span style={{fontSize: "0.65rem"}}>{user.username}</span>
 			</div>
-			<div className=" text-lg w-14 text-center">
-				{user.votes_received}
-			</div>
-			<div className=" text-lg w-14 text-center">
-				{user.votes_casted}
-			</div>
-			<div className=" text-lg w-12 text-center">
-				{user.uploads}
-			</div>
-			<div className=" text-lg w-12 text-center">
-				{Math.round(user.tokens_minted)}
-			</div>
+			<UserStats user={user} />
 		</div>
 	</div>
 )
@@ -63,7 +69,7 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 				<img 
 					src="/assets/award2.png" 
 					alt="2nd Place"
-					className="w-10 h-8"
+					className="w-9 h-8"
 				/>
 			</div>
 			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2 rounded-full border border-[#DBDBDB]"
@@ -84,20 +90,9 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 						</div>
 					)}
 				</div>
-				<span className="text-base">{user.username}</span>
+				<span style={{fontSize: "0.65rem"}}>{user.username}</span>
 			</div>
-			<div className=" text-lg w-14 text-center">
-				{user.votes_received}
-			</div>
-			<div className=" text-lg w-14 text-center">
-				{user.votes_casted}
-			</div>
-			<div className=" text-lg w-12 text-center">
-				{user.uploads}
-			</div>
-			<div className=" text-lg w-12 text-center">
-				{Math.round(user.tokens_minted)}
-			</div>
+			<UserStats user={user} />
 		</div>
 	</div>
 )
@@ -112,7 +107,7 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 				<img 
 					src="/assets/award3.png" 
 					alt="3rd Place"
-					className="w-10 h-10"
+					className="w-8 h-6"
 				/>
 			</div>
 			<div className="text-white  flex-1 text-center flex items-center justify-start space-x-2 rounded-full border border-[#DBDBDB]"
@@ -133,20 +128,9 @@ const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 						</div>
 					)}
 				</div>
-				<span className="text-base">{user.username}</span>
+				<span style={{fontSize: "0.65rem"}}>{user.username}</span>
 			</div>
-			<div className=" text-lg w-14 text-center">
-				{user.votes_received}
-			</div>
-			<div className=" text-lg w-14 text-center">
-				{user.votes_casted}
-			</div>
-			<div className=" text-lg w-12 text-center">
-				{user.uploads}
-			</div>
-			<div className=" text-lg w-12 text-center">
-				{Math.round(user.tokens_minted)}
-			</div>
+			<UserStats user={user} />
 		</div>
 	</div>
 )
@@ -179,20 +163,9 @@ const RegularUserRow: React.FC<{ user: UserLeaderboardItem; isCurrentUser?: bool
 						</div>
 					)}
 				</div>
-				<span>{user.username}</span>
+				<span  style={{fontSize: "0.65rem"}}>{user.username}</span>
 			</div>
-			<div className=" text-lg w-14 text-center">
-				{user.votes_received}
-			</div>
-			<div className=" text-lg w-14 text-center">
-				{user.votes_casted}
-			</div>
-			<div className=" text-lg w-12 text-center">
-				{user.uploads}
-			</div>
-			<div className=" text-lg w-12 text-center">
-				{Math.round(user.tokens_minted)}
-			</div>
+			<UserStats user={user} />
 		</div>
 	</div>
 )
@@ -289,19 +262,19 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 					<div className=" text-sm w-12">
 						Rank
 					</div>
-					<div className="text-white flex-1 text-left">
+					<div className="text-white flex-1 text-left"  style={{fontSize: "0.65rem"}}>
 						Username
 					</div>
-					<div className=" text-sm w-14 text-center">
+					<div className=" w-14 text-center" style={{fontSize: "0.65rem"}}>
 						Votes Received
 					</div>
-					<div className=" text-sm w-14 text-center">
+					<div className="w-12 text-center"  style={{fontSize: "0.65rem"}}>
 						Votes Cast
 					</div>
-					<div className=" text-sm w-12 text-center">
+					<div className="w-10 text-center"  style={{fontSize: "0.65rem"}}>
 						Posts
 					</div>
-					<div className=" text-sm w-12 text-center">
+					<div className="w-10 text-center"  style={{fontSize: "0.6rem"}}>
 						Tokens
 					</div>
 				</div>
@@ -359,18 +332,7 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 								</div>
 								<span>{currentUser.username} (You)</span>
 							</div>
-							<div className=" text-lg w-14 text-center">
-								{currentUser.votes_received}
-							</div>
-							<div className=" text-lg w-14 text-center">
-								{currentUser.votes_casted}
-							</div>
-							<div className=" text-lg w-12 text-center">
-								{currentUser.uploads}
-							</div>
-							<div className=" text-lg w-12 text-center">
-								{Math.round(currentUser.tokens_minted)}
-							</div>
+							<UserStats user={currentUser} />
 						</div>
 					</div>
 				</div>

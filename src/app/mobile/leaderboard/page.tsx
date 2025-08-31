@@ -196,12 +196,12 @@ function Page() {
 							}
 							className="sr-only peer"
 						/>
-						<div className="w-32 h-6 bg-gray-300 rounded-full transition-colors duration-200 flex items-center justify-between px-1 relative">
-							<span className="text-black z-10 w-16 text-center">Users</span>
-							<span className="text-black z-10 w-16 text-center">Content</span>
+						<div className="w-48 h-6 bg-gray-300 rounded-full transition-colors duration-200 flex items-center justify-between px-1 relative">
+							<span className={`text-black z-10 w-24 text-center transition-all duration-200 ${active === 'users' ? 'font-bold' : 'font-normal'}`}>Users</span>
+							<span className={`text-black z-10 w-24 text-center transition-all duration-200 ${active === 'content' ? 'font-bold' : 'font-normal'}`}>Content</span>
 							<div
-								className={`absolute left-1 top-1 h-4 bg-[#29E0CA] rounded-full shadow-md transition-transform duration-200 ${
-									active === 'content' ? 'translate-x-14 w-16' : 'w-14'
+								className={`absolute top-1 h-4 bg-[#29E0CA] rounded-full shadow-md transition-all duration-200 ${
+									active === 'content' ? 'left-[92px] w-24' : 'left-1 w-24'
 								}`}
 							/>
 						</div>
