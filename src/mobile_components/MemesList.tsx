@@ -4,6 +4,7 @@ import MemeDetails from './MemeDetails'
 import { Meme, MemesListProps } from './types'
 import ReportModal from './ReportModal';
 import ShareModal from './ShareModal';
+import ConfirmModal from './ConfirmModal';
 
 function MemesList({
 	memes,
@@ -11,7 +12,8 @@ function MemesList({
 	onVote,
 	onBookmark,
 	bookmarkedMemes = new Set(),
-	view = 'list'
+	view = 'list',
+	isSelf = false
 }: MemesListProps) {
 	const [selectedMeme, setSelectedMeme] = useState<
 		(typeof memes)[0] | undefined
@@ -21,6 +23,8 @@ function MemesList({
     const [reportMemeId, setReportMemeId] = useState<string | null>(null);
 	const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
 	const [shareMeme, setShareMeme] = useState<{ id: string; name: string; imageUrl: string } | null>(null);
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const [memeToDelete, setMemeToDelete] = useState<string | null>(null);
 
     const handleOpenReport = (memeId: string) => {
         setReportMemeId(memeId);
@@ -33,6 +37,27 @@ function MemesList({
     const handleSubmitReport = (memeId: string, reason: string) => {
         // TODO: Implement report submission logic (API call, toast, etc.)
         console.log('Report submitted for', memeId, 'Reason:', reason);
+    };
+
+    const handleDeleteClick = (memeId: string) => {
+        setMemeToDelete(memeId);
+        setDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (memeToDelete) {
+            // TODO: Implement actual delete logic (API call, etc.)
+            console.log('Deleting meme:', memeToDelete);
+            // You can add your delete API call here
+            // onDelete?.(memeToDelete);
+        }
+        setDeleteModalOpen(false);
+        setMemeToDelete(null);
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteModalOpen(false);
+        setMemeToDelete(null);
     };
 
     const handleShare = (memeId: string, imageUrl: string) => {
@@ -87,6 +112,8 @@ function MemesList({
 							onImageClick={() => handleMemeClick(meme)}
 							onReport={handleOpenReport}
 							isGridView={view === 'grid'}
+							isSelf={isSelf}
+							onDelete={isSelf ? handleDeleteClick : undefined}
 						/>
 					</div>
 				))}
@@ -122,6 +149,15 @@ function MemesList({
 					contentUrl={`${window.location.origin}/home?id=${shareMeme.id}`}
 				/>
 			)}
+
+			<ConfirmModal
+				isOpen={deleteModalOpen}
+				onClose={handleCancelDelete}
+				onConfirm={handleConfirmDelete}
+				confirmButtonText='Delete'
+				title='Confirm Delete'
+				message='Are you sure you want to delete this content? This action cannot be undone'
+			/>
 		</>
 	)
 }

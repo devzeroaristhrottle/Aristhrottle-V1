@@ -42,6 +42,8 @@ export interface MemeCardProps {
 	onImageClick?: () => void
 	onReport?: (memeId: string) => void
 	isGridView?: boolean
+	isSelf?: boolean
+	onDelete?: (memeId: string) => void
 }
 
 export interface MemeDetailProps {
@@ -63,6 +65,7 @@ export interface MemesListProps {
 	onBookmark?: (memeId: string, name: string, imageUrl: string) => void
 	bookmarkedMemes?: Set<string>
 	view?: 'grid' | 'list'
+	isSelf?: boolean
 }
 
 
@@ -99,4 +102,14 @@ export interface Account {
 	bio: string
 	followers: number
 	following: number
+}
+
+export interface ConfirmModalProps {
+	isOpen: boolean
+	onClose: () => void
+	onConfirm: () => void
+	title?: string
+	message?: string
+	confirmButtonText?: string
+	cancelButtonText?: string
 }

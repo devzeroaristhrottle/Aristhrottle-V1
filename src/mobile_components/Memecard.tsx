@@ -4,7 +4,7 @@ import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { CiBookmark } from 'react-icons/ci'
 import { FaBookmark } from 'react-icons/fa'
 import { LazyImage } from '@/components/LazyImage'
-import { MdOutlineReport } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineReport } from "react-icons/md";
 import { MemeCardProps } from './types'
 import { CiUser } from "react-icons/ci";
 
@@ -17,7 +17,9 @@ function Memecard({
 	isBookmarked = false,
 	onImageClick,
 	onReport,
-	isGridView
+	isGridView,
+	isSelf = false,
+	onDelete,
 }: MemeCardProps) {
 	const [showPointsAnimation, setShowPointsAnimation] = useState(false)
 	const [localVoteCount, setLocalVoteCount] = useState(meme.vote_count)
@@ -85,14 +87,21 @@ function Memecard({
 							<span className="text-xs text-white">{meme.views || 0}</span>
 						</div>
 						{
-							onReport && 
+							!isSelf ? 
+							(onReport && 
 							(
 								<div className="flex items-center flex-col justify-center">
 									<MdOutlineReport 
 									className="w-6 h-6 text-white cursor-pointer"
 									onClick={() => onReport(meme._id)}/>
 								</div>
-							)
+							)) : ( onDelete && (
+								<div className="flex items-center flex-col justify-center">
+									<MdDeleteOutline 
+									className="w-6 h-6 text-white cursor-pointer"
+									onClick={() => onDelete(meme._id)}/>
+								</div>
+							))
 						}
 					</div>
 					{/* Vote button and count in middle */}
