@@ -5,8 +5,7 @@ import useNotifications, { Notification } from '@/app/hooks/useNotifications'
 import { FaCaretDown, FaCaretUp, FaDollarSign, FaThumbsUp } from 'react-icons/fa'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import { CgCloud } from 'react-icons/cg'
-import Navbar from '@/mobile_components/Navbar'
-import BottomNav from '@/mobile_components/BottomNav'
+
 
 const groupNotificationsByDate = (notifications: Notification[]) => {
 	const today = new Date()
@@ -66,12 +65,9 @@ export default function NotificationsPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-black text-white flex flex-col">
-			{/* Top Navbar */}
-			<Navbar />
-
+		<div className="bg-black text-white">
 			{/* Content */}
-			<div className="flex-1 overflow-y-auto pb-20">{/* Add pb-20 to account for bottom nav */}
+			<div className="overflow-y-auto">
 
 			{/* Notifications List */}
 			<div className="p-4">
@@ -143,11 +139,6 @@ export default function NotificationsPage() {
 					</div>
 				)}
 			</div>
-			</div>
-
-			{/* Bottom Navigation */}
-			<div className="fixed bottom-0 left-0 right-0">
-				<BottomNav />
 			</div>
 		</div>
 	)

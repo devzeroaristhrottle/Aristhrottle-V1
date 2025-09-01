@@ -113,3 +113,19 @@ export interface ConfirmModalProps {
 	confirmButtonText?: string
 	cancelButtonText?: string
 }
+
+export interface UserProfileData {
+	_id: string
+	username: string
+	bio: string
+	profile_pic?: string
+	user_wallet_address: string
+	totalCastedVotesCount?: number
+	majorityVotes?: number
+	totalUploadsCount?: number
+	majorityUploads?: number
+	totalVotesReceived?: number
+	mintedCoins?: string
+	followersCount?: number
+	followingCount?: number
+}

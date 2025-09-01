@@ -1,6 +1,4 @@
 'use client'
-import BottomNav from '@/mobile_components/BottomNav'
-import Navbar from '@/mobile_components/Navbar'
 import PopularView from '@/mobile_components/search/PopularView';
 import SelfView from '@/mobile_components/search/SelfView';
 import TrendingView from '@/mobile_components/search/TrendingView';
@@ -27,9 +25,7 @@ function Page() {
 
 
     return (
-        <div className='h-screen flex flex-col overflow-hidden'>
-            <Navbar />
-            <div className='flex-1 overflow-y-auto px-4 py-4' style={{fontSize: '0.5rem'}}>
+        <div className='px-4 py-4' style={{fontSize: '0.5rem'}}>
                 {/*Search Bar */}
                 <div className="mb-4">
                     <SearchBar 
@@ -47,10 +43,6 @@ function Page() {
                 {input && ("Searched: " + input)}
                 {/*Rendered Contents */}
                 <div className="pb-4">{renderContent()}</div>
-            </div>
-            <div className="flex-none">
-				<BottomNav />
-			</div>
         </div>
     )
 }

@@ -1,12 +1,10 @@
-import type { Metadata } from 'next'
+'use client'
+
 import { Inter } from 'next/font/google'
+import Navbar from '@/mobile_components/Navbar'
+import BottomNav from '@/mobile_components/BottomNav'
 
 const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
-  title: 'Aristhrottle',
-  description: 'Aristhrottle',
-}
 
 export default function MobileLayout({
   children,
@@ -33,7 +31,15 @@ export default function MobileLayout({
         </style>
       </head>
       <body className={`${inter.className} antialiased`}>
-        {children}
+        <div className="h-screen flex flex-col overflow-hidden">
+          <Navbar />
+          <div className="flex-1 overflow-y-auto">
+            {children}
+          </div>
+          <div className="flex-none">
+            <BottomNav />
+          </div>
+        </div>
       </body>
     </html>
   )

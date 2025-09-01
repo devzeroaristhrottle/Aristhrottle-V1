@@ -7,6 +7,7 @@ import { LazyImage } from '@/components/LazyImage'
 import { MdDeleteOutline, MdOutlineReport } from "react-icons/md";
 import { MemeCardProps } from './types'
 import { CiUser } from "react-icons/ci";
+import { useRouter } from 'next/navigation'
 
 function Memecard({
 	meme,
@@ -25,6 +26,7 @@ function Memecard({
 	const [localVoteCount, setLocalVoteCount] = useState(meme.vote_count)
 	const [hasVoted, setHasVoted] = useState(meme.has_user_voted)
 	const [isHidden, setIsHidden] = useState(false)
+	const router = useRouter();
 
 	// Sync with prop changes
 	useEffect(() => {
@@ -40,7 +42,7 @@ function Memecard({
 		<div className="w-full bg-black/5 rounded-lg overflow-hidden mb-4">
 			{/* User info header */}
 			<div className="p-3 flex items-center space-x-2" hidden={isGridView || false}>
-				<div className="w-8 h-8 rounded-full overflow-hidden bg-gray-700 flex-none">
+				<div className="w-8 h-8 rounded-full overflow-hidden bg-gray-700 flex-none" onClick={() => router.push(`/mobile/profile/${meme.created_by?._id}`)}>
 					{meme.created_by?.profile_pic ? (
 						<img
 							src={meme.created_by.profile_pic}

@@ -1,7 +1,5 @@
 'use client'
-import BottomNav from '@/mobile_components/BottomNav'
 import Carousel from '@/mobile_components/Carousel'
-import Navbar from '@/mobile_components/Navbar'
 import Selector from '@/mobile_components/Selector'
 import React, {
 	useState,
@@ -300,42 +298,36 @@ function Page() {
 	}
 
 	return (
-		<div className="h-screen flex flex-col overflow-hidden">
-			<Navbar />
-			<div className="flex-1 overflow-y-auto">
-				<div>
-					<Carousel 
-						items={carouselMemes} 
-						onMemeClick={(meme) => handleMemeClick(meme)}
-					/>
-					<Selector
-						activeTab={activeTab}
-						handleTabChange={handleTabChange}
-						isNewAvail={isNewAvail}
-						handleViewNewContents={handleViewNewContents}
-						view={view}
-						onViewChange={setView}
-					/>
-				</div>
-				<div>
-					{tabLoading ? (
-						<div className="flex items-center justify-center py-8">
-							Loading...
-						</div>
-					) : (
-						<MemesList
-							memes={displayedMemes}
-							pageType={activeTab}
-							onVote={handleVote}
-							onBookmark={handleBookmark}
-							bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
-							view={view}
-						/>
-					)}
-				</div>
+		<>
+			<div>
+				<Carousel 
+					items={carouselMemes} 
+					onMemeClick={(meme) => handleMemeClick(meme)}
+				/>
+				<Selector
+					activeTab={activeTab}
+					handleTabChange={handleTabChange}
+					isNewAvail={isNewAvail}
+					handleViewNewContents={handleViewNewContents}
+					view={view}
+					onViewChange={setView}
+				/>
 			</div>
-			<div className="flex-none">
-				<BottomNav />
+			<div>
+				{tabLoading ? (
+					<div className="flex items-center justify-center py-8">
+						Loading...
+					</div>
+				) : (
+					<MemesList
+						memes={displayedMemes}
+						pageType={activeTab}
+						onVote={handleVote}
+						onBookmark={handleBookmark}
+						bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
+						view={view}
+					/>
+				)}
 			</div>
 			{selectedMeme && (
 				<MemeDetails
@@ -348,7 +340,7 @@ function Page() {
 					onMemeChange={(newMeme) => setSelectedMeme(newMeme)}
 				/>
 			)}
-		</div>
+		</>
 	)
 }
 

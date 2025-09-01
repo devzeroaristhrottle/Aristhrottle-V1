@@ -1,6 +1,4 @@
 'use client'
-import BottomNav from '@/mobile_components/BottomNav'
-import Navbar from '@/mobile_components/Navbar'
 import { TabButton } from '@/mobile_components/TabButton'
 import Sorter from '@/mobile_components/Sorter'
 import UserList from '@/mobile_components/UserList'
@@ -183,9 +181,7 @@ function Page() {
 	}
 
 	return (
-		<div className="h-screen flex flex-col overflow-hidden">
-			<Navbar />
-			<div className="flex-1 overflow-y-auto">
+		<div className="overflow-y-auto">
 				<div className="flex justify-center items-center mb-4">
 					<label className="relative inline-flex items-center cursor-pointer">
 						<input
@@ -248,8 +244,6 @@ function Page() {
 						)}
 					</div>
 				)}
-			</div>
-			<BottomNav />
 		</div>
 	)
 }

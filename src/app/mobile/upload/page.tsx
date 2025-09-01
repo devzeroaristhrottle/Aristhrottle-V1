@@ -8,8 +8,6 @@ import { useAuthModal, useUser } from '@account-kit/react'
 import { toast } from 'react-toastify'
 import { getTimeUntilReset } from '@/utils/dateUtils'
 import axios from 'axios'
-import BottomNav from '@/mobile_components/BottomNav'
-import Navbar from '@/mobile_components/Navbar'
 
 interface Tags {
 	name: string
@@ -365,9 +363,7 @@ function Page() {
 	}
 
 	return (
-		<div className="h-screen flex flex-col overflow-hidden">
-			<Navbar />
-			<div className="flex-1 overflow-y-auto px-4 py-6">
+		<div className="px-4 py-6">
 				{/* Image Upload Section */}
 				<div className="w-full h-full pb-5">
 					{isGenerating ? (
@@ -621,10 +617,6 @@ function Page() {
 					)}
 				</div>
 			</div>
-			<div className="flex-none">
-				<BottomNav />
-			</div>
-		</div>
 	)
 }
 
