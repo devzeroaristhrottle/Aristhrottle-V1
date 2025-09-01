@@ -4,11 +4,9 @@ import React, { useContext, useEffect, useMemo, useState, useCallback } from 're
 import { Context } from '@/context/contextProvider'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import axiosInstance from '@/utils/axiosInstance'
-import { TabButton } from '@/components/TabButton'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { useAuthModal, useUser } from '@account-kit/react'
-import { BiPlus } from 'react-icons/bi'
 import { UserProfileData, Meme } from '@/mobile_components/types'
 import MemesList from '@/mobile_components/MemesList'
 import Sorter from '@/mobile_components/Sorter'
@@ -23,7 +21,7 @@ export default function UserProfilePage() {
 	const [userProfile, setUserProfile] = useState<UserProfileData | null>(null)
 	const [isFollowing, setIsFollowing] = useState(false)
 	const [followLoading, setFollowLoading] = useState(false)
-	const [view, setView] = useState<'grid' | 'list'>('grid');
+	const [view, setView] = useState<'grid' | 'list'>('list');
 
 	const { userDetails, setUserDetails } = useContext(Context)
 	const { openAuthModal } = useAuthModal()
@@ -202,10 +200,10 @@ export default function UserProfilePage() {
 	}
 
 	return (
-		<div className="md:max-w-7xl md:mx-auto mx-4">
+		<div>
 			{/* Top Section */}
-			<div className="flex items-center justify-between pb-4 md:pb-6">
-				<div className="flex items-center rounded-lg gap-x-4">
+			<div className="flex items-center justify-between">
+				<div className="flex items-center rounded-lg gap-x-4 px-4">
 					<div className="h-20 w-20 bg-black rounded-full overflow-hidden flex items-center justify-center">
 						<img
 							src={userProfile?.profile_pic || '/assets/meme1.jpeg'}
@@ -238,10 +236,10 @@ export default function UserProfilePage() {
 								</div>
 							)}
 						</div>
-						<h1 className="text-base">
+						<h1 className="text-sm py-1">
 							{userProfile?.bio}
 						</h1>
-						<div className='flex flex-row items-center justify-start gap-2 text-base'>
+						<div className='flex flex-row items-center justify-start gap-2 text-sm'>
 							<div>{userProfile.followersCount} Followers</div>
 							<div>{userProfile.followingCount} Following</div>
 						</div>
@@ -252,9 +250,9 @@ export default function UserProfilePage() {
 					{isOwnProfile && (
 						<button
 							onClick={() => router.push('/home/profile')}
-							className="flex justify-between items-center gap-2 px-2 md:px-4 py-1 md:py-2 border border-[#1783fb] rounded-lg hover:opacity-40"
+							className="flex justify-between items-center gap-2 border border-[#1783fb] rounded-lg hover:opacity-40"
 						>
-							<p className="text-[#1783fb] text-sm md:text-lg font-bold">
+							<p className="text-[#1783fb] text-sm font-bold">
 								Edit Profile
 							</p>
 						</button>

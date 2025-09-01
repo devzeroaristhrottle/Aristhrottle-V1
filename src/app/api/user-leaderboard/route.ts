@@ -93,7 +93,8 @@ async function handleGetRequest(request: NextRequest) {
           votes_received: 1,
           votes_casted: 1,
           uploads: 1,
-          profile_pic: 1
+          profile_pic: 1,
+          _id: 1
         }
       }
     ];
@@ -122,7 +123,8 @@ async function handleGetRequest(request: NextRequest) {
       votes_casted: user.votes_casted || 0,
       uploads: user.uploads || 0,
       tokens_minted: user.tokens_minted || 0,
-      profile_pic: user.profile_pic || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4_WP3VdprlZKs2I6Flr83IcWk5QeZhXGO-g&s"
+      profile_pic: user.profile_pic || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4_WP3VdprlZKs2I6Flr83IcWk5QeZhXGO-g&s",
+      _id: user._id
     }));
 
     // Get total count for pagination info

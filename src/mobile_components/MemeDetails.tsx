@@ -13,6 +13,7 @@ import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
 import { Meme, MemeDetailProps } from '@/mobile_components/types'
 import axiosInstance from '@/utils/axiosInstance'
 import ShareModal from './ShareModal'
+import { useRouter } from 'next/navigation'
 
 
 
@@ -37,6 +38,7 @@ export default function MemeDetails({
 	const [eyeOpen, setEyeOpen] = useState<boolean>(meme?.has_user_voted || false)
 
 	const { openAuthModal } = useAuthModal()
+	const router = useRouter();
 
 	// Helper function to format date as "31st August 2025"
 	const formatDate = (dateString: string): string => {
@@ -161,7 +163,7 @@ export default function MemeDetails({
 						{/* User Info, Title, and Tags */}
 						<div className="flex gap-4 items-center">
 							{/* Profile Photo */}
-							<div className="w-12 h-12 rounded-full overflow-hidden bg-[#29e0ca]/20 flex-none">
+							<div className="w-12 h-12 rounded-full overflow-hidden bg-[#29e0ca]/20 flex-none" onClick={() => router.push(`/mobile/profile/${meme.created_by?._id}`)}>
 								{meme.created_by?.profile_pic ? (
 									<img
 										src={meme.created_by.profile_pic}

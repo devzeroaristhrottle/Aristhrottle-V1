@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import {UserLeaderboardItem, UserListProps} from '@/mobile_components/types'
 import { useUser } from '@account-kit/react'
+import { useRouter } from 'next/navigation'
 
 // UserStats Component for uniform styling across all locations
 const UserStats: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
@@ -23,9 +24,11 @@ const UserStats: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 )
 
 // Component for 1st Place User
-const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="rounded-lg mb-4 border py-4 h-20 flex items-center"
+const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem; onClick: () => void }> = ({ user, onClick }) => (
+	<div 
+		className="rounded-lg mb-4 border py-4 h-20 flex items-center cursor-pointer hover:opacity-80 transition-opacity"
         style={{backgroundImage: "linear-gradient(to left, rgba(211, 151, 54, 0.5), rgba(227, 112, 70, 0.5))"}}
+        onClick={onClick}
     >
 		<div className="flex items-center justify-between w-full">
 			<div className=" text-lg w-12 flex items-center justify-center">
@@ -61,9 +64,11 @@ const FirstPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 )
 
 // Component for 2nd Place User
-const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="rounded-lg mb-4 py-4 h-20 flex items-center border border-[#F1F1F1]"
-        style={{backgroundImage: "linear-gradient(to right, rgba(192, 171, 168, 0.5), rgba(214, 110, 93, 0.5))"}}>
+const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem; onClick: () => void }> = ({ user, onClick }) => (
+	<div 
+		className="rounded-lg mb-4 py-4 h-20 flex items-center border border-[#F1F1F1] cursor-pointer hover:opacity-80 transition-opacity"
+        style={{backgroundImage: "linear-gradient(to right, rgba(192, 171, 168, 0.5), rgba(214, 110, 93, 0.5))"}}
+        onClick={onClick}>
 		<div className="flex items-center justify-between w-full">
 			<div className=" text-lg w-12 flex items-center justify-center">
 				<img 
@@ -98,9 +103,11 @@ const SecondPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
 )
 
 // Component for 3rd Place User
-const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem }> = ({ user }) => (
-	<div className="py-4 mb-4 rounded-lg h-20 flex items-center border border-[#F48634]"
+const ThirdPlaceUser: React.FC<{ user: UserLeaderboardItem; onClick: () => void }> = ({ user, onClick }) => (
+	<div 
+		className="py-4 mb-4 rounded-lg h-20 flex items-center border border-[#F48634] cursor-pointer hover:opacity-80 transition-opacity"
         style={{backgroundImage: "linear-gradient(to left, rgba(214, 112, 26, 0.5), rgba(255, 91, 43, 0.5))"}}
+        onClick={onClick}
         >
 		<div className="flex items-center justify-between w-full">
 			<div className=" text-lg w-12 flex items-center justify-center">
@@ -178,7 +185,7 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 	
 	// Real authentication
 	const user = useUser()
-
+	const router = useRouter();
 	// Find current user in leaderboard based on wallet address
 	useEffect(() => {
 		if (user && user.address && users.length > 0) {
@@ -282,9 +289,9 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 
 			{/* Top 3 Users with Special Components */}
 			{users.slice(0, 3).map((user) => {
-				if (user.rank === 1) return <FirstPlaceUser key={user.user_wallet_address} user={user} />
-				if (user.rank === 2) return <SecondPlaceUser key={user.user_wallet_address} user={user} />
-				if (user.rank === 3) return <ThirdPlaceUser key={user.user_wallet_address} user={user} />
+				if (user.rank === 1) return <FirstPlaceUser key={user.user_wallet_address} user={user} onClick={() => router.push(`/mobile/profile/${user._id}`)} />
+				if (user.rank === 2) return <SecondPlaceUser key={user.user_wallet_address} user={user} onClick={() => router.push(`/mobile/profile/${user._id}`)} />
+				if (user.rank === 3) return <ThirdPlaceUser key={user.user_wallet_address} user={user} onClick={() => router.push(`/mobile/profile/${user._id}`)} />
 				return null
 			})}
 
@@ -296,6 +303,7 @@ const UserList: React.FC<UserListProps> = ({ users, loading }) => {
 					<div
 						key={user.user_wallet_address}
 						ref={isCurrentUserRow ? currentUserRef : null}
+						onClick={() => router.push(`/mobile/profile/${user._id}`)}
 					>
 						<RegularUserRow user={user} isCurrentUser={!!isCurrentUserRow} />
 					</div>

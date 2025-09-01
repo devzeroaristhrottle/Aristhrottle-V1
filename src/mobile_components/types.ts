@@ -78,6 +78,7 @@ export interface UserLeaderboardItem {
 	uploads: number
 	tokens_minted: number
 	profile_pic: string
+	_id: string
 }
 
 export interface UserListProps {
