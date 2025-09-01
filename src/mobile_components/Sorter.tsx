@@ -1,10 +1,9 @@
 import { Button } from '@/components/ui/button'
 import { LiaSortSolid } from 'react-icons/lia'
-import { IoGridOutline } from 'react-icons/io5'
+import { IoGridOutline, IoListOutline } from 'react-icons/io5'
 
-import React from 'react'
 
-function Sorter({ gridEnable } : { gridEnable? : boolean}) {
+function Sorter({ gridEnable, onViewChange, view = 'grid' } : { gridEnable? : boolean, view?: 'grid' | 'list', onViewChange?: (view: 'grid' | 'list') => void}) {
 	return (
 		<div className="flex flex-row justify-between p-3">
 			<div id="sorting_selector">
@@ -17,8 +16,17 @@ function Sorter({ gridEnable } : { gridEnable? : boolean}) {
 					Sort
 				</Button>
 			</div>
-			<div id="new_or_grid_buttons" className="flex flex-row gap-2" hidden={!gridEnable}>
-				<IoGridOutline className="h-full" />
+			<div id="new_or_grid_buttons" className="flex flex-row gap-2 items-center" hidden={!gridEnable}>
+				<button
+					onClick={() => onViewChange?.(view === 'grid' ? 'list' : 'grid')}
+					className="p-2 hover:text-blue-400 transition-colors"
+				>
+					{view === 'grid' ? (
+						<IoListOutline className="w-5 h-5" />
+					) : (
+						<IoGridOutline className="w-5 h-5" />
+					)}
+				</button>
 			</div>
 		</div>
 	)

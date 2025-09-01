@@ -11,6 +11,7 @@ import { useAuthModal, useUser } from '@account-kit/react'
 import { BiPlus } from 'react-icons/bi'
 import { UserProfileData, Meme } from '@/mobile_components/types'
 import MemesList from '@/mobile_components/MemesList'
+import Sorter from '@/mobile_components/Sorter'
 
 export default function UserProfilePage() {
 	const params = useParams()
@@ -19,10 +20,10 @@ export default function UserProfilePage() {
 	
 	const [profileLoading, setProfileLoading] = useState(true)
 	const [memes, setMemes] = useState<Meme[]>([])
-	const [activeTab, setActiveTab] = useState<'live' | 'all'>('all')
 	const [userProfile, setUserProfile] = useState<UserProfileData | null>(null)
 	const [isFollowing, setIsFollowing] = useState(false)
 	const [followLoading, setFollowLoading] = useState(false)
+	const [view, setView] = useState<'grid' | 'list'>('grid');
 
 	const { userDetails, setUserDetails } = useContext(Context)
 	const { openAuthModal } = useAuthModal()
@@ -161,11 +162,7 @@ export default function UserProfilePage() {
 		}
 	}, [userDetails, openAuthModal, user, getUserMemes])
 
-	// Memoized tab change handler
-	const handleTabChange = useCallback((tab: string) => {
-		setMemes([])
-		setActiveTab(tab.toLowerCase() as 'live' | 'all')
-	}, [])
+	
 
 	// Effects
 	useEffect(() => {
@@ -180,7 +177,7 @@ export default function UserProfilePage() {
 	useEffect(() => {
 		setMemes([])
 		getUserMemes()
-	}, [activeTab, getUserMemes])
+	}, [getUserMemes])
 
 	// Memoized computed values
 	const isOwnProfile = useMemo(() => userDetails?._id === userId, [userDetails?._id, userId])
@@ -208,46 +205,43 @@ export default function UserProfilePage() {
 		<div className="md:max-w-7xl md:mx-auto mx-4">
 			{/* Top Section */}
 			<div className="flex items-center justify-between pb-4 md:pb-6">
-				<div className="flex items-center space-x-2 md:space-x-4 rounded-lg">
-					<div className="h-20 w-20 md:h-44 md:w-44 bg-black rounded-full overflow-hidden flex items-center justify-center">
+				<div className="flex items-center rounded-lg gap-x-4">
+					<div className="h-20 w-20 bg-black rounded-full overflow-hidden flex items-center justify-center">
 						<img
 							src={userProfile?.profile_pic || '/assets/meme1.jpeg'}
 							alt="Profile"
 							className="w-full h-full object-cover"
 						/>
 					</div>
-					<div className='flex flex-col gap-2'>
-						<p className="text-white text-lg md:text-4xl font-bold">
-							{isOwnProfile ? 'Welcome' : 'Profile'}
-						</p>
-						<h1 className="text-[#29e0ca] text-2xl md:text-6xl font-bold">
+					<div className='flex flex-col'>
+						<div className="text-base font-bold flex flex-row gap-x-4">
 							{userProfile?.username}
-						</h1>
-						<div className='flex flex-row items-center justify-start gap-2 text-lg'>
 							{!isOwnProfile && userDetails && (
-								<div>
+								<div className='text-sm flex text-center text-black'>
 									<button
 										onClick={handleFollow}
 										disabled={followLoading}
-										className={`flex justify-between items-center gap-2 px-2 rounded-full font-medium transition-colors ${
+										className={`flex justify-between items-center gap-2 px-2 rounded-lg font-medium transition-colors ${
 											isFollowing
-												? 'border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-												: 'border-2 border-[#1783fb] text-[#1783fb] hover:bg-[#1783fb] hover:text-white'
+												? 'bg-[#707070]'
+												: 'bg-[#2FCAC7]'
 										} ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
 									>
 										{followLoading ? (
 											<AiOutlineLoading3Quarters className="animate-spin" />
 										) : isFollowing ? (
-											'Unfollow'
+											'Following'
 										) : (
-											<>
-												<BiPlus />
-												Follow
-											</>
+											'Follow'
 										)}
 									</button>
 								</div>
 							)}
+						</div>
+						<h1 className="text-base">
+							{userProfile?.bio}
+						</h1>
+						<div className='flex flex-row items-center justify-start gap-2 text-base'>
 							<div>{userProfile.followersCount} Followers</div>
 							<div>{userProfile.followingCount} Following</div>
 						</div>
@@ -267,48 +261,16 @@ export default function UserProfilePage() {
 					)}
 				</div>
 			</div>
-
-			{/* Bio Section */}
-			<div className="mt-3">
-				<div className="py-3 border-[.1875rem] border-[#1783fb] rounded-xl">
-					<p className="text-[28px] h-fit leading-none px-4">
-						{userProfile?.bio || 'No bio available'}
-					</p>
-				</div>
-			</div>
-
-			{/* Gallery Section */}
-			<div className="mt-16 md:mt-12">
-				<div className="flex items-center justify-center">
-					<div className="space-x-2.5 md:space-x-5 flex justify-center">
-						<TabButton
-							classname="!text-base md:!text-xl !px-2  md:!px-8 !rounded-md md:!rounded-10px hidden"
-							isActive={activeTab === 'live'}
-							label="Live"
-							onClick={() => handleTabChange('live')}
-						/>
-						<TabButton
-							classname="!text-base md:!text-xl !px-2 md:!px-5 !rounded-md md:!rounded-10px"
-							isActive={activeTab === 'all'}
-							label="All-Time"
-							onClick={() => handleTabChange('all')}
-						/>
-					</div>
-				</div>
-				<div>
-					<h2 className="text-[#29e0ca] text-xl md:text-4xl font-medium text-center mt-8 md:my-2">
-						{isOwnProfile ? 'Your Uploads' : `${userProfile?.username}'s Uploads`}
-					</h2>
-				</div>
-				<MemesList
-					memes={memes}
-					pageType={activeTab}
-					onVote={voteToMeme}
-					bookmarkedMemes={new Set()}
-					view="grid"
-					isSelf={isOwnProfile}
-				/>
-			</div>
+			
+			<Sorter onViewChange={setView} gridEnable/>
+			<MemesList
+				memes={memes}
+				pageType={'all'}
+				onVote={voteToMeme}
+				bookmarkedMemes={new Set()}
+				view={view}
+				isSelf={isOwnProfile}
+			/>
 		</div>
 	)
 } 
