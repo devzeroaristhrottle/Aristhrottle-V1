@@ -8,6 +8,9 @@ from google.genai import types
 
 load_dotenv()
 
+# MongoDB URL (can be overridden in .env file)
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb+srv://aristhrottle:3f484sVzFrDthL9o@userdb.fiqc5.mongodb.net/?retryWrites=true&w=majority&appName=Userdb")
+
 # Vertex AI initialization
 def init_vertexai():
     credentials = service_account.Credentials.from_service_account_file(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
