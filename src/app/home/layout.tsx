@@ -34,7 +34,7 @@ export default function Layout({ children }: Props) {
 			<div className="lg:hidden bg1 min-h-screen">
 				{/* Use CSS custom property for dynamic navbar height */}
 				<div 
-  className="px-4 pb-20" 
+  className=" pb-20" 
   style={{ paddingTop: 'var(--navbar-height, 140px)' }}
 >
 					<main className="w-full">
