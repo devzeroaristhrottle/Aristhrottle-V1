@@ -10,10 +10,9 @@ import Notification from "@/models/Notification";
 import Referrals from "@/models/Referrals";
 import ApiLog from "@/models/ApiLog";
 import MintLog from "@/models/MintLog";
+import Report from "@/models/Report";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { getContractUtils } from "@/ethers/contractUtils";
-import { ethers } from "ethers";
 import { SortOrder } from "mongoose";
 
 export async function GET(request: NextRequest) {
@@ -61,43 +60,7 @@ export async function GET(request: NextRequest) {
     if (modelParam) {
       switch(modelParam.toLowerCase()) {
         case "users":
-          // Fetch all users with sorting
-          const users = await User.find().sort(Object.keys(sortObj).length ? sortObj : undefined);
-          
-          // Get contract instance to fetch balances
-          const { contract } = getContractUtils();
-          
-          // Add token balance for each user
-          const usersWithBalance = await Promise.all(
-            users.map(async (user) => {
-              const userData = user.toObject();
-              try {
-                if (user.user_wallet_address) {
-                  const balance = await contract.balanceOf(user.user_wallet_address);
-                  // Convert BigInt to string and format to show as decimal
-                  const formattedBalance = ethers.formatUnits(balance, 18);
-                  userData.balance = formattedBalance;
-                } else {
-                  userData.balance = "0";
-                }
-              } catch (error) {
-                console.error(`Error fetching balance for ${user.username}:`, error);
-                userData.balance = "Error";
-              }
-              return userData;
-            })
-          );
-          
-          data = usersWithBalance;
-          
-          // Apply manual sorting for computed fields if needed
-          if (sortKey === "balance") {
-            data.sort((a, b) => {
-              const aValue = parseFloat(a.balance) || 0;
-              const bValue = parseFloat(b.balance) || 0;
-              return sortDirection === "descending" ? bValue - aValue : aValue - bValue;
-            });
-          }
+          data = await User.find().sort(Object.keys(sortObj).length ? sortObj : undefined);
           break;
         case "memes":
           data = await Meme.find()
@@ -149,6 +112,19 @@ export async function GET(request: NextRequest) {
             .sort(mintLogSort)
             .limit(100);
           break;
+        case "reports":
+          data = await Report.find()
+            .populate({
+              path: "meme",
+              populate: [
+                { path: "created_by", select: "username user_wallet_address" },
+                { path: "tags", select: "name" }
+              ]
+            })
+            .populate("reported_by", "username user_wallet_address")
+            .populate("reviewed_by", "username user_wallet_address")
+            .sort(Object.keys(sortObj).length ? sortObj : { createdAt: -1 as SortOrder });
+          break;
         default:
           return NextResponse.json(
             { error: "Invalid model specified" },
@@ -191,7 +167,8 @@ export async function GET(request: NextRequest) {
         notifications: await Notification.countDocuments(),
         referrals: await Referrals.countDocuments(),
         apiLogs: await ApiLog.countDocuments(),
-        mintLogs: await MintLog.countDocuments()
+        mintLogs: await MintLog.countDocuments(),
+        reports: await Report.countDocuments()
       };
     }
 

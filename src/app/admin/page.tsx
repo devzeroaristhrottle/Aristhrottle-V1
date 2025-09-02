@@ -16,7 +16,7 @@ export default function AdminDashboard() {
   const [selectedModel, setSelectedModel] = useState<string>('')
   const [models] = useState<string[]>([
     'users', 'memes', 'votes', 'tags', 'categories', 
-    'followers', 'milestones', 'notifications', 'referrals', 'apilogs', 'mintlogs'
+    'followers', 'milestones', 'notifications', 'referrals', 'apilogs', 'mintlogs', 'reports'
   ])
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -94,6 +94,28 @@ export default function AdminDashboard() {
       return '⇅';
     }
     return sortConfig.direction === 'ascending' ? '↑' : '↓';
+  }
+
+  // Handle report actions (delete meme or dismiss report)
+  const handleReportAction = async (reportId: string, action: 'delete_meme' | 'dismiss_report') => {
+    try {
+      setIsLoading(true)
+      const response = await axios.post('/api/report/admin-action', {
+        reportId,
+        action
+      })
+      
+      if (response.status === 200) {
+        // Refresh the reports data
+        fetchData(selectedModel)
+        alert(response.data.message)
+      }
+    } catch (error: any) {
+      console.error('Error handling report action:', error)
+      alert('Error: ' + (error.response?.data?.error || 'Something went wrong'))
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   // Check authentication and admin status on component mount
@@ -218,6 +240,103 @@ export default function AdminDashboard() {
       // Only show first level of populated fields
       (typeof firstItem[key] !== 'object' || key === '_id' || Array.isArray(firstItem[key]))
     )
+    
+    // For reports, show specific columns and actions
+    if (selectedModel === 'reports') {
+      const priorityHeaders = ['createdAt', 'meme', 'reported_by', 'reason', 'status', 'admin_action'];
+      const filteredHeaders = headers.filter(h => 
+        priorityHeaders.includes(h) || !['__v', 'updatedAt', 'resolved_at'].includes(h)
+      );
+      
+      // Sort headers to match priority order
+      const sortedHeaders = [...priorityHeaders].filter(h => filteredHeaders.includes(h));
+      
+      // Add any remaining headers not in the priority list
+      filteredHeaders.forEach(h => {
+        if (!sortedHeaders.includes(h)) {
+          sortedHeaders.push(h);
+        }
+      });
+      
+      return (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-100">
+              <tr>
+                {sortedHeaders.map(header => (
+                  <th 
+                    key={header} 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                    onClick={() => requestSort(header)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>{header === '_id' ? 'ID' : header.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}</span>
+                      <span className="ml-1">{getSortDirectionIcon(header)}</span>
+                    </div>
+                  </th>
+                ))}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {data.map((item: any, index: number) => (
+                <tr key={item._id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  {sortedHeaders.map(header => (
+                    <td key={`${item._id}-${header}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {header === 'meme' && item[header] ? (
+                        <div>
+                          <div className="font-medium">{item[header].name}</div>
+                          <div className="text-xs text-gray-400">by {item[header].created_by?.username}</div>
+                        </div>
+                      ) : header === 'reported_by' && item[header] ? (
+                        item[header].username
+                      ) : header === 'status' ? (
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          item[header] === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          item[header] === 'resolved' ? 'bg-green-100 text-green-800' :
+                          item[header] === 'dismissed' ? 'bg-gray-100 text-gray-800' :
+                          'bg-blue-100 text-blue-800'
+                        }`}>
+                          {item[header]}
+                        </span>
+                      ) : header === 'reason' ? (
+                        item[header].replace(/_/g, ' ')
+                      ) : (
+                        renderCellValue(item[header])
+                      )}
+                    </td>
+                  ))}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {item.status === 'pending' && item.meme && !item.meme.is_deleted ? (
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleReportAction(item._id, 'delete_meme')}
+                          className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
+                        >
+                          Delete Meme
+                        </button>
+                        <button
+                          onClick={() => handleReportAction(item._id, 'dismiss_report')}
+                          className="bg-gray-600 text-white px-3 py-1 rounded text-xs hover:bg-gray-700"
+                        >
+                          Dismiss
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-xs">
+                        {item.status === 'pending' && item.meme?.is_deleted ? 'Meme already deleted' : 'Already processed'}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
     
     // For mint logs, prioritize certain columns and exclude others
     if (selectedModel === 'mintlogs') {
