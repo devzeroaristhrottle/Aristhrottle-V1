@@ -160,127 +160,132 @@ export default function Navbar() {
   };
 
   return (
-    <div className="sticky top-0 z-50 backdrop-blur-md bg-black/20 w-full">
-      <div className="relative w-full mx-0 px-0">
-        {/* Mobile Layout - Full Width Matching Design */}
-        {/* // Replace the mobile layout section (around line 130-200) with this updated version: */}
-
-<div className="block md:hidden w-full m-0 p-0">
-  {userDetails && user != null && user.address && (
-    <div className="w-full px-0 py-0 backdrop-blur-md bg-black/20 m-0">
-      {/* Mobile Navigation Bar - 3 Row Layout */}
-      <div className="flex flex-col w-full">
-        
-        {/* First Row - Avatar and Token Balance */}
-        <div className="flex items-center justify-between w-full px-2 py-2">
-          {/* Left Side - Avatar */}
-          <div className="flex items-center flex-shrink-0">
-            <Avatar
-              name="Random"
-              colorPalette="blue"
-              src={userDetails.profile_pic}
-              css={ringCss}
-              className="cursor-pointer"
-              size="sm"
-              onClick={() => {
-                route.replace("/home/profile");
-              }}
-            />
-          </div>
-
-          {/* Right Side - Token Balance */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Image
-              className="!w-6 !h-6"
-              alt="icon"
-              src="/assets/token_e.png"
-              height={24}
-              width={24}
-            />
-            <span className="text-white text-lg font-medium">
-              {userDetails?.mintedCoins
-                ? parseFloat(ethers.formatEther(userDetails.mintedCoins)).toFixed(1)
-                : "0.0"}
-            </span>
-            <span className="text-white text-lg font-medium">$ART</span>
+    <div className="sticky top-0 z-50 w-full bg-black bg-opacity-80" style={{
+      backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
+      background: 'rgba(0, 0, 0, 0.8)'
+    }}>
+      <div className="relative w-full">
+        {/* Mobile Layout - Always render base structure, conditionally show content */}
+        <div className="block md:hidden w-full">
+          {/* Always show basic mobile navbar structure */}
+          <div className="w-full px-0 py-0 bg-black bg-opacity-20" style={{
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)'
+          }}>
             
-            
+            {/* Show login button if user not connected */}
+            {(!user || !user.address) && (
+              <div className="flex justify-center items-center w-full px-4 py-3">
+                <Button
+                  size="lg"
+                  variant="solid"
+                  className="bg-slate-50 text-slate-800 font-bold px-6 py-2 rounded-xl text-base"
+                  onClick={() => openAuthModal()}
+                >
+                  Login / Signup
+                </Button>
+              </div>
+            )}
+
+            {/* Show full navbar if user is connected */}
+            {userDetails && user && user.address && (
+              <div className="flex flex-col w-full">
+                
+                {/* First Row - Avatar and Token Balance */}
+                <div className="flex items-center justify-between w-full px-3 py-2">
+                  {/* Left Side - Avatar */}
+                  <div className="flex items-center flex-shrink-0">
+                    <Avatar
+                      name="Random"
+                      colorPalette="blue"
+                      src={userDetails.profile_pic}
+                      css={ringCss}
+                      className="cursor-pointer"
+                      size="sm"
+                      onClick={() => {
+                        route.replace("/home/profile");
+                      }}
+                    />
+                  </div>
+
+                  {/* Right Side - Token Balance */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Image
+                      className="w-6 h-6"
+                      alt="icon"
+                      src="/assets/token_e.png"
+                      height={24}
+                      width={24}
+                    />
+                    <span className="text-white text-lg font-medium">
+                      {userDetails?.mintedCoins
+                        ? parseFloat(ethers.formatEther(userDetails.mintedCoins)).toFixed(1)
+                        : "0.0"}
+                    </span>
+                    <span className="text-white text-lg font-medium">$ART</span>
+                  </div>
+                </div>
+
+                {/* Second Row - Stats - Compact Mobile Layout */}
+                <div className="flex items-center justify-between w-full px-2 py-1">
+                  {/* Vote Stats */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="text-white text-xs font-medium">Vote</span>
+                    <div className="border border-white rounded px-2 py-1 bg-gray-800 bg-opacity-50 min-w-[40px]">
+                      <span className="text-white text-xs font-medium">
+                        {userDetails.votes || 0}/20
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Upload Stats */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="text-white text-xs font-medium">Upload</span>
+                    <div className="border border-white rounded px-2 py-1 bg-gray-800 bg-opacity-50 min-w-[40px]">
+                      <span className="text-white text-xs font-medium">
+                        {userDetails.uploads || 0}/20
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Create Stats */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="text-white text-xs font-medium">Create</span>
+                    <div className="border border-white rounded px-2 py-1 bg-gray-800 bg-opacity-50 min-w-[32px]">
+                      <span className="text-white text-xs font-medium">
+                        {userDetails.generations || 0}/5
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* New Phase Timer */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="text-white text-xs font-medium whitespace-nowrap">Phase</span>
+                    <div className="border border-white rounded px-2 py-1 bg-gray-800 bg-opacity-50 min-w-[50px]">
+                      <span className="text-white text-xs font-medium">
+                        {timeLeft ? timeLeft.split(":").slice(0, 2).join(":") : "00:00"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Third Row - Feedback Section */}
+                <div className="flex justify-center items-center w-full px-4 py-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-white text-sm font-medium">Fill for 5 $eART</span>
+                    <button
+                      onClick={() => setShowFeedback(true)}
+                      className="border border-white rounded-full px-6 py-2 bg-gray-800 bg-opacity-50 hover:bg-gray-700 hover:bg-opacity-60 transition-colors"
+                    >
+                      <span className="text-white text-sm font-medium">Feedback</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Second Row - Stats - Compact Mobile Layout */}
-        <div className="flex items-center justify-between w-full px-0 py-1">
-          {/* Vote Stats */}
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <span className="text-white text-xs font-medium ">Vote</span>
-            <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30 min-w-[40px] mr-2 ">
-              <span className="text-white text-xs font-medium ">
-                {userDetails.votes}/20
-              </span>
-            </div>
-          </div>
-
-          {/* Upload Stats */}
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <span className="text-white text-xs font-medium">Upload</span>
-            <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30 min-w-[40px] mr-2">
-              <span className="text-white text-xs font-medium">
-                {userDetails.uploads}/20
-              </span>
-            </div>
-          </div>
-
-          {/* Create Stats */}
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <span className="text-white text-xs font-medium">Create</span>
-            <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30 min-w-[32px] mr-2">
-              <span className="text-white text-xs font-medium">
-                {userDetails.generations}/5
-              </span>
-            </div>
-          </div>
-
-          {/* New Phase Timer */}
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <span className="text-white text-xs font-medium whitespace-nowrap">New Phase</span>
-            <div className="border border-white rounded px-1.5 py-0.5 bg-gray-800/30 min-w-[50px] mr-2">
-              <span className="text-white text-xs font-medium">
-                {timeLeft.split(":").slice(0, 2).join(":")}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Third Row - Feedback Section */}
-        <div className="flex justify-center items-center w-full px-4 py-2">
-          <div className="flex items-center gap-3">
-            <span className="text-white text-sm font-medium">Fill for 5 $eART</span>
-            <button
-              onClick={() => setShowFeedback(true)}
-              className="border border-white rounded-full px-6 py-2 bg-gray-800/30 hover:bg-gray-700/40 transition-colors"
-            >
-              <span className="text-white text-sm font-medium">Feedback</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Hidden Wallet Popover for functionality */}
-        <Popover.Root
-          open={open}
-          onOpenChange={(e) => {
-            if (!e.open && user && user.address) {
-              setOpen(e.open);
-            }
-          }}
-        >
-          <Popover.Trigger asChild>
-            <div className="hidden"></div>
-          </Popover.Trigger>
-        </Popover.Root>
-      </div>
-    </div>
-  )}
-</div>
 
         {/* Desktop Layout */}
         <div className="hidden md:flex justify-between align-middle items-center py-0 md:py-0 px-2 sm:px-4 md:px-0">
@@ -353,7 +358,7 @@ export default function Navbar() {
                   <span className="text-yellow-400 text-lg">👉</span>
                   <button
                     onClick={() => setShowFeedback(true)}
-                    className="border border-white rounded-md px-2 py-1 hover:bg-gray-800/50 transition-colors"
+                    className="border border-white rounded-md px-2 py-1 hover:bg-gray-800 hover:bg-opacity-50 transition-colors"
                   >
                     Feedback
                   </button>
@@ -439,7 +444,7 @@ export default function Navbar() {
             {user?.address ? (
               <div className="flex items-center justify-center gap-2">
                 <Image
-                  className="!w-10 !h-10"
+                  className="w-10 h-10"
                   alt="icon"
                   src="/assets/token_e.png"
                   height={24}
@@ -455,6 +460,20 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* Hidden Popover for Mobile Functionality */}
+        <Popover.Root
+          open={open}
+          onOpenChange={(e) => {
+            if (!e.open && user && user.address) {
+              setOpen(e.open);
+            }
+          }}
+        >
+          <Popover.Trigger asChild>
+            <div className="hidden"></div>
+          </Popover.Trigger>
+        </Popover.Root>
+
         <DialogRoot
           open={isOpenModel}
           motionPreset="slide-in-bottom"
@@ -462,7 +481,10 @@ export default function Navbar() {
         >
           {/* Improved, conditional backdrop blur */}
           {isOpenModel && (
-            <div className="fixed inset-0 z-0 backdrop-blur-2xl bg-black/40 pointer-events-none w-screen h-screen" />
+            <div className="fixed inset-0 z-0 bg-black bg-opacity-40 pointer-events-none w-screen h-screen" style={{
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)'
+            }} />
           )}
           <DialogContent className="relative z-10 mx-4 md:mx-0 bg-black p-6 rounded-lg border border-white text-lg">
             <DialogHeader>
