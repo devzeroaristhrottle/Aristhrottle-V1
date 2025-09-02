@@ -38,6 +38,7 @@ export default function Navbar() {
   const [username, setUsername] = useState<string>("");
   const [bio, setBio] = useState<string>("");
   const ref = useRef<HTMLInputElement>(null);
+  const navbarRef = useRef<HTMLDivElement>(null);
   const { setUserDetails, userDetails } = useContext(Context);
   const [loading, setLoading] = useState<boolean>(false);
   const [referralCode, setReferralCode] = useState<string>("");
@@ -67,6 +68,23 @@ export default function Navbar() {
     outlineOffset: "2px",
     outlineStyle: "solid",
   });
+
+  // Update CSS custom property with navbar height
+  useEffect(() => {
+    const updateNavbarHeight = () => {
+      if (navbarRef.current) {
+        const height = navbarRef.current.offsetHeight;
+        document.documentElement.style.setProperty('--navbar-height', `${height}px`);
+      }
+    };
+
+    updateNavbarHeight();
+    window.addEventListener('resize', updateNavbarHeight);
+    
+    return () => {
+      window.removeEventListener('resize', updateNavbarHeight);
+    };
+  }, [userDetails, user]);
 
   useEffect(() => {
     const signCheck = async () => {
@@ -159,7 +177,11 @@ export default function Navbar() {
   return ( 
   <>
       {/* Fixed Navbar for Mobile, Sticky for Desktop */}
-      <div className="fixed lg:sticky top-0 left-0 right-0 z-50 w-screen min-w-full">
+    
+<div 
+  ref={navbarRef}
+  className="fixed lg:sticky top-0 left-0 right-0 z-50 w-screen min-w-full"
+>
         {/* Container with proper viewport handling */}
         <div className="w-screen min-w-full backdrop-blur-md bg-black/20 border-b border-white/10">
         <div className="w-full mx-auto px-2 sm:px-4">

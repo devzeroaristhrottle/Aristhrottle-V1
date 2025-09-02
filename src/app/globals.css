@@ -7,7 +7,7 @@
   font-family: "Jersey 10", serif;
   letter-spacing: 1px;
   font-style: normal;
-  /* background-image: url("/assets/bg.jpg"); */
+  --navbar-height: 220px; /* Default fallback */
 }
 
 html {
@@ -16,17 +16,28 @@ html {
   color: #ededed;
 }
 
+/* Remove all conflicting mobile margin/padding rules */
+@media (max-width: 1023px) {
+  body {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+  
+  /* Remove any existing conflicting rules */
+  .mobile-content-wrapper {
+    margin-top: 0 !important;
+  }
+}
 
 .no-scrollbar {
-  overflow: scroll; /* Allows scrolling */
-  scrollbar-width: none; /* For Firefox to hide scrollbar */
-  -ms-overflow-style: none;  /* For IE and Edge */
+  overflow: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .no-scrollbar::-webkit-scrollbar {
-  display: none;  /* Hides scrollbar in WebKit browsers (Chrome, Safari) */
+  display: none;
 }
-
 
 @layer utilities {
   .scrollbar-hide::-webkit-scrollbar {
@@ -39,30 +50,12 @@ html {
   }
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #010101;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  @apply scroll-smooth;
-} */
-
 .bg {
   height: 100vh;
-  /* background-image: url("/assets/bg.jpg"); */
   background-size: contain;
 }
 
 .bg1 {
-  /* height: 100vh; */
-  /* overflow-y: auto; */
-  /* background-image: url("/assets/bg1.jpeg"); */
   background-size: cover;
 }
 
@@ -81,20 +74,10 @@ body {
   background-color: transparent !important;
 }
 
-
-/* .goog-te-banner-frame.skiptranslate,
-.goog-logo-link,
-.goog-te-gadget span,
-.goog-te-gadget-simple span,
-.goog-te-gadget-simple img {
-  display: none !important;
-} */
-
-/* global.css */
+/* Google Translate Styling */
 #google_translate_element {
-  font-size: 2; /* Hides text */
+  font-size: 2;
 }
-
 
 #google_translate_element select {
   margin-top: 19px;
@@ -105,8 +88,8 @@ body {
   border-color: rgb(23 131 251) !important;
   background-color: transparent !important;
   font-size: 14px;
-  width: 185px; /* force smaller width */
-  height: 40px; /* force smaller height */
+  width: 185px;
+  height: 40px;
 }
 
 #google_translate_element select > option {
@@ -128,12 +111,12 @@ body {
 
 .goog-te-gadget .goog-te-combo {
   color: white !important;
-  /* background-color: rgb(20 30 41); */
 }
 
 .css-aphhdw {
   padding: 0 !important;
 }
+
 /* Custom animation for flying up points */
 @keyframes flyUp {
   0% {
