@@ -49,13 +49,53 @@ export async function GET(req: NextRequest) {
     const userId = user._id.toString();
 
     try {
-      // Count total bookmarked memes for pagination
-      const bookmarkedMemesCount = await Bookmark.countDocuments({
-        user: new mongoose.Types.ObjectId(userId)
-      });
+      // Count total bookmarked memes for pagination (excluding deleted memes)
+      const bookmarkCountPipeline = [
+        {
+          $match: {
+            is_deleted: { $ne: true }
+          }
+        },
+        {
+          $lookup: {
+            from: 'bookmarks',
+            let: { memeId: '$_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$meme', '$$memeId'] },
+                      { $eq: ['$user', new mongoose.Types.ObjectId(userId)] }
+                    ]
+                  }
+                }
+              }
+            ],
+            as: 'userBookmark'
+          }
+        },
+        {
+          $match: {
+            'userBookmark.0': { $exists: true }
+          }
+        },
+        {
+          $count: "total"
+        }
+      ];
+
+      const bookmarkCountResult = await Meme.aggregate(bookmarkCountPipeline);
+      const bookmarkedMemesCount = bookmarkCountResult.length > 0 ? bookmarkCountResult[0].total : 0;
 
       // Create aggregation pipeline to fetch bookmarked memes
       const pipeline: any[] = [
+        // First filter out deleted memes
+        {
+          $match: {
+            is_deleted: { $ne: true }
+          }
+        },
         {
           $lookup: {
             from: 'bookmarks',
@@ -217,10 +257,10 @@ async function handlePostRequest(request: NextRequest) {
 
     await checkIsAuthenticated(userId, request);
 
-    // Check if meme exists
-    const meme = await Meme.findById(memeId);
+    // Check if meme exists and is not deleted
+    const meme = await Meme.findOne({ _id: memeId, is_deleted: false });
     if (!meme) {
-      return NextResponse.json({ message: "Content not found" }, { status: 404 });
+      return NextResponse.json({ message: "Content not found or has been deleted" }, { status: 404 });
     }
 
     // Check if the user already bookmarked the meme

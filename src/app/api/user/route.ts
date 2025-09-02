@@ -45,6 +45,7 @@ async function handleGetRequest(request: NextRequest) {
 
       const todayUploads = await Meme.find({
         created_by: user.id,
+        is_deleted: false,
         createdAt: { $gte: startOfDay, $lt: endOfDay },
       }).countDocuments();
 
@@ -59,6 +60,7 @@ async function handleGetRequest(request: NextRequest) {
 
       const totalUploadsCount = await Meme.find({
         created_by: user.id,
+        is_deleted: false,
       }).countDocuments();
       
       // Get follower counts
@@ -69,6 +71,7 @@ async function handleGetRequest(request: NextRequest) {
         {
           $match: {
             created_by: new mongoose.Types.ObjectId(user.id), // Step 1: filter memes created by this user
+            is_deleted: false, // Exclude deleted memes
           },
         },
         {
@@ -82,6 +85,7 @@ async function handleGetRequest(request: NextRequest) {
       const majorityUploads = await Meme.find({
         is_onchain: true,
         created_by: user.id,
+        is_deleted: false,
         in_percentile: { $gte: 50 },
       }).countDocuments();
 

@@ -35,11 +35,11 @@ async function handlePostRequest(request: NextRequest) {
 
     await isLimitReached(vote_by);
 
-    // Fetch the meme to get the creator
-    const meme = await Meme.findOne({ _id: vote_to }).populate("created_by");
+    // Fetch the meme to get the creator and check if it's not deleted
+    const meme = await Meme.findOne({ _id: vote_to, is_deleted: false }).populate("created_by");
 
     if (!meme) {
-      return NextResponse.json({ message: "Content not found" }, { status: 404 });
+      return NextResponse.json({ message: "Content not found or has been deleted" }, { status: 404 });
     }
 
     // Prevent user from voting on their own meme

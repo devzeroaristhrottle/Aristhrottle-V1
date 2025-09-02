@@ -23,10 +23,10 @@ async function handlePostRequest(request: NextRequest) {
 
     await checkIsAuthenticated(userId, request);
 
-    // Check if meme exists
-    const meme = await Meme.findById(memeId);
+    // Check if meme exists and is not deleted
+    const meme = await Meme.findOne({ _id: memeId, is_deleted: false });
     if (!meme) {
-      return NextResponse.json({ message: "Content not found" }, { status: 404 });
+      return NextResponse.json({ message: "Content not found or has been deleted" }, { status: 404 });
     }
 
     // Prevent duplicate shares
