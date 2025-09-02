@@ -23,7 +23,6 @@ interface InterestCategory {
 interface UserProfile {
   username: string;
   bio: string;
-  phone_no?: string;
   tags: string[];
   profile_pic: string;
   interests?: InterestCategory[];
@@ -34,7 +33,6 @@ interface EditProfileProps {
   formData: {
     title: string;
     bio: string;
-    phone_no: string;
     tags: string[];
     file: File | null;
     interests: InterestCategory[];
@@ -45,7 +43,6 @@ interface EditProfileProps {
       tags: string[];
       file: File | null;
       bio: string;
-      phone_no: string;
       interests: InterestCategory[];
     }>
   >;
@@ -176,24 +173,12 @@ export default function EditProfile({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate phone number if provided
-    if (formData.phone_no && formData.phone_no.trim() !== "") {
-      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-      if (!phoneRegex.test(formData.phone_no.trim())) {
-        toast.error("Please enter a valid phone number");
-        return;
-      }
-    }
-
     const submitData = new FormData();
     if (formData?.file) {
       submitData.append("file", formData?.file);
     }
     if (formData?.bio) {
       submitData.append("bio", formData?.bio);
-    }
-    if (formData?.phone_no) {
-      submitData.append("phone_no", formData?.phone_no);
     }
     if (formData?.tags && formData.tags.length) {
       submitData.append("tags", JSON.stringify(formData.tags));
@@ -232,7 +217,6 @@ export default function EditProfile({
         ...prev,
         title: userData?.username || "",
         bio: userData?.bio || "",
-        phone_no: userData?.phone_no || "",
         tags: userData?.tags || [],
         interests: userData?.interests || [],
       }));
@@ -325,19 +309,6 @@ export default function EditProfile({
                 value={formData?.bio}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, bio: e.target.value }))
-                }
-              />
-            </div>
-
-            <div className="flex gap-2 text-2xl mt-4 px-6 md:px-12">
-              <span className="text-[#1783fb] text-lg md:text-3xl">Phone:</span>
-              <input
-                type="tel"
-                placeholder="Enter your phone number"
-                className="w-full rounded px-2 py-1 text-white text-base border-2 border-[#1783fb] bg-gray-800 outline-none"
-                value={formData?.phone_no}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, phone_no: e.target.value }))
                 }
               />
             </div>

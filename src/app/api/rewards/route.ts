@@ -22,11 +22,13 @@ export async function GET(req: NextRequest) {
 
       const memesCount = await Meme.find({
         is_voting_close: true,
+        is_deleted: false,
         createdAt: { $gte: startOfDay, $lt: endOfDay },
       }).countDocuments();
 
       const memes = await Meme.find({
         createdAt: { $gte: startOfDay, $lt: endOfDay },
+        is_deleted: false,
       })
         .skip(start)
         .limit(defaultOffset)
@@ -40,12 +42,13 @@ export async function GET(req: NextRequest) {
     } else {
       const memesCount = await Meme.find({
         is_voting_close: true,
+        is_deleted: false,
       }).countDocuments();
 
       const memes = await await Meme.find()
         .skip(start)
         .limit(defaultOffset)
-        .where({ is_voting_close: true })
+        .where({ is_voting_close: true, is_deleted: false })
         .populate("created_by");
 
       return NextResponse.json(

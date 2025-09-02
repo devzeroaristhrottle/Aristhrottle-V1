@@ -1,0 +1,19 @@
+services:
+  # Text-to-Image API Service
+  text-image-api:
+    image: himesh18/text-image-api:latest
+    container_name: text-image-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PROJECT_ID=${PROJECT_ID}
+      - LOCATION=${LOCATION}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/service-account.json
+      - GENAI_API_KEY=${GENAI_API_KEY}
+      - MONGODB_URL=${MONGODB_URL}
+    env_file:
+      - .env
+    volumes:
+      - ./service-account.json:/app/service-account.json:ro
+      - ./static:/app/static

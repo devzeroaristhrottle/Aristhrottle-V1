@@ -217,7 +217,7 @@ const Share = ({
 	if (!isOpen) return null
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+		<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
 			<div className="relative w-[90vw] max-w-xl bg-[#141e29] border-2 border-[#1783fb] rounded-xl p-6 max-h-[90vh] overflow-y-auto">
 				<button
 					onClick={onClose}

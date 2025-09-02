@@ -22,7 +22,6 @@ interface Data {
 	tags: string[]
 	file: File | null
 	bio: string
-	phone_no: string
 	interests: { name: string; tags: string[] }[]
 }
 
@@ -50,7 +49,6 @@ export default function Page() {
 		tags: [],
 		file: null,
 		bio: '',
-		phone_no: '',
 		interests: [],
 	})
 	const [page, setPage] = useState(1)
@@ -238,7 +236,6 @@ export default function Page() {
 			tags: [],
 			file: null,
 			bio: '',
-			phone_no: '',
 			interests: [],
 		})
 		if (fileInputRef.current) {

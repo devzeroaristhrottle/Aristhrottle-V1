@@ -3,6 +3,7 @@ from PIPELINE.dependencies import init_vertexai
 from fastapi import APIRouter, HTTPException
 from PIPELINE.dependencies import get_genai_client, get_genai_config
 from PIPELINE.schemas import ImageRequest
+from PIPELINE.database import save_image_generation_record
 from fastapi.responses import StreamingResponse
 from google.api_core import exceptions
 import io
@@ -22,13 +23,21 @@ async def generate_image(request: ImageRequest):
             filename=request.filename
         )
         
-        # Convert image to bytes (assuming image has _image_bytes attribute)
-        img_bytes = io.BytesIO(image._image_bytes)
+        # Save to MongoDB
+        record_id = await save_image_generation_record(
+            title=request.title,
+            tags=request.tags,
+            filename=request.filename,
+            generated_prompt=prompt
+        )
         
+        if record_id:
+            print(f"Saved generation record with ID: {record_id}")
+        
+        # Return just the PNG image bytes
         return StreamingResponse(
-            img_bytes,
-            media_type="image/png",
-            headers={"Content-Disposition": f"attachment; filename={request.filename}"}
+            io.BytesIO(image._image_bytes),
+            media_type="image/png"
         )
         
     except exceptions.GoogleAPIError as e:

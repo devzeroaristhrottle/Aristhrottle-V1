@@ -52,7 +52,7 @@ export default function Page() {
 						createdAt: meme.created_by.createdAt || '',
 						updatedAt: meme.created_by.updatedAt || '',
 						__v: meme.created_by.__v || 0,
-						profile_pic: meme.created_by.profile_pic
+						profile_pic: meme.created_by.profile_pic || '' // Ensure profile_pic is never undefined
 					},
 					createdAt: meme.createdAt,
 					updatedAt: meme.updatedAt,
@@ -136,6 +136,15 @@ export default function Page() {
 		})
 	}
 
+	// Transform Meme to UnifiedMeme type for MemeDetail component
+	const transformMemeForDetail = (meme: Meme) => ({
+		...meme,
+		created_by: {
+			...meme.created_by,
+			profile_pic: meme.created_by.profile_pic || ''
+		}
+	})
+
 	if (!user || !user.address) {
 		return (
 			<div className="flex items-center justify-center h-screen">
@@ -197,6 +206,7 @@ export default function Page() {
 					imageUrl={shareData.imageUrl}
 					onClose={handleCloseShare}
 				/>
+
 			)}
 
 			{/* MemeDetail Component */}
@@ -206,7 +216,7 @@ export default function Page() {
 					onClose={handleCloseMemeDetail}
 					onNext={currentMemeIndex < memes.length - 1 ? handleNextMeme : undefined}
 					onPrev={currentMemeIndex > 0 ? handlePrevMeme : undefined}
-					meme={selectedMeme}
+					meme={transformMemeForDetail(selectedMeme)}
 					tab="bookmark"
 					onVoteMeme={(memeId) => {
 						handleVoteUpdate(memeId)

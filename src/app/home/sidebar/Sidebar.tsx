@@ -16,41 +16,20 @@ const sidebarItems = [
 		icon: (isActive: boolean) => (
 			<Image
 				alt="side-bar-logo"
-				className={`cursor-pointer transition-transform duration-150 ${
-					isActive ? 'text-[#1783FB]' : 'text-slate-100'
+				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+					isActive ? 'brightness-0 saturate-100 hue-rotate-[210deg] contrast-[2]' : 'text-slate-100'
 				}`}
 				height={52}
 				quality={100}
 				src="/assets/aris-logo.svg"
 				width={50}
+				style={{
+					filter: isActive ? 'brightness(0) saturate(100%) invert(27%) sepia(96%) saturate(3207%) hue-rotate(210deg) brightness(101%) contrast(101%)' : 'none'
+				}}
 			/>
 		),
 		action: (route: AppRouterInstance) => route.push('/landing'),
 	},
-	// {
-	// 	title: 'Upload',
-	// 	icon: (isActive: boolean) => (
-	// 		<GrCloudUpload
-	// 			className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-	// 				isActive ? 'text-[#1783FB]' : 'text-slate-100'
-	// 			}`}
-	// 		/>
-	// 	),
-	// 	action: (
-	// 		_: AppRouterInstance,
-	// 		setIsUploadMemeOpen: Dispatch<SetStateAction<boolean>>,
-	// 		isConnected: boolean,
-	// 		openConnectModal: (() => void) | undefined
-	// 	) => {
-	// 		if (isConnected) {
-	// 			setIsUploadMemeOpen(true)
-	// 		} else {
-	// 			if (openConnectModal) {
-	// 				openConnectModal()
-	// 			}
-	// 		}
-	// 	},
-	// },
 	{
 		title: 'Leaderboard',
 		icon: (isActive: boolean) => (
@@ -86,20 +65,15 @@ const sidebarItems = [
 		action: (route: AppRouterInstance) => route.push('/home/rewards'),
 	},
 	{
-		title: 'My Votes',
+		title: 'Upload',
 		icon: (isActive: boolean) => (
-			<Image
-				alt="vote-logo"
-				className={`cursor-pointer transition-transform duration-150 ${
+			<GrCloudUpload
+				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
 					isActive ? 'text-[#1783FB]' : 'text-slate-100'
 				}`}
-				height={48}
-				quality={100}
-				src="/assets/vote-logo.svg"
-				width={48}
 			/>
 		),
-		action: (route: AppRouterInstance) => route.push('/home/myVotes'),
+		action: (route: AppRouterInstance) => route.push('/upload'),
 	},
 	{
 		title: 'Saved',
@@ -146,7 +120,7 @@ const Sidebar = () => {
 	const getActiveTab = () => {
 		if (pathname?.includes('leaderboard')) return 'Leaderboard'
 		if (pathname?.includes('rewards')) return 'Rewards'
-		if (pathname?.includes('myVotes')) return 'My Votes'
+		if (pathname?.includes('upload')) return 'Upload'
 		if (pathname?.includes('bookmark')) return 'Saved'
 		if (pathname?.includes('community')) return 'Community'
 		if (pathname?.includes('profile')) return 'Profile'
@@ -179,7 +153,7 @@ const Sidebar = () => {
 											hoveredItem === item.title && !isActive ? 'scale-110' : ''
 										}`}
 									>
-										{item.icon(false)}
+										{item.icon(isActive)}
 									</div>
 									{isHovered && (
 										<span
@@ -210,7 +184,7 @@ const Sidebar = () => {
 							<div
 								key={item.title}
 								onClick={() => item.action(route)}
-								className="flex flex-col items-center"
+								className="flex flex-col items-center cursor-pointer"
 							>
 								<div
 									className={`transition-transform duration-150 ${
@@ -225,30 +199,31 @@ const Sidebar = () => {
 												quality={100}
 												src="/assets/aris-logo.svg"
 												width={24}
+												style={{
+													filter: isActive ? 'brightness(0) saturate(100%) invert(27%) sepia(96%) saturate(3207%) hue-rotate(210deg) brightness(101%) contrast(101%)' : 'none'
+												}}
 											/>
 										) : item.title === 'Upload' ? (
-											<GrCloudUpload className="h-6 w-6" />
+											<GrCloudUpload className={`h-6 w-6 ${isActive ? 'text-[#1783FB]' : 'text-white'}`} />
 										) : item.title === 'Leaderboard' ? (
-											<IoPodiumOutline className="h-6 w-6" />
+											<IoPodiumOutline className={`h-6 w-6 ${isActive ? 'text-[#1783FB]' : 'text-white'}`} />
 										) : item.title === 'Rewards' ? (
-											<LuTrophy className="h-6 w-6" />
-										) : item.title === 'My Votes' ? (
-											<Image
-												alt="vote-logo"
-												height={24}
-												quality={100}
-												src="/assets/vote-logo.svg"
-												width={24}
-											/>
+											<LuTrophy className={`h-6 w-6 ${isActive ? 'text-[#1783FB]' : 'text-white'}`} />
 										) : item.title === 'Community' ? (
-											<FaUsers className="h-6 w-6" />
+											<FaUsers className={`h-6 w-6 ${isActive ? 'text-[#1783FB]' : 'text-white'}`} />
 										) : item.title === 'Docs' ? (
-											<HiOutlineDocumentText className="h-6 w-6" />
+											<HiOutlineDocumentText className={`h-6 w-6 ${isActive ? 'text-[#1783FB]' : 'text-white'}`} />
 										) : (
-											<FaRegBookmark className="h-6 w-6" />
+											<FaRegBookmark className={`h-6 w-6 ${isActive ? 'text-[#1783FB]' : 'text-white'}`} />
 										)}
 									</div>
 								</div>
+								{/* Show title below icon only when active on mobile */}
+								{isActive && (
+									<span className="text-xs mt-1 text-[#1783FB]">
+										{item.title}
+									</span>
+								)}
 							</div>
 						)
 					})}

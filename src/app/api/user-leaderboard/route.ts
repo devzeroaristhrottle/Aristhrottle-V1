@@ -41,8 +41,19 @@ async function handleGetRequest(request: NextRequest) {
       {
         $lookup: {
           from: "memes",
-          localField: "_id",
-          foreignField: "created_by",
+          let: { userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$created_by", "$$userId"] },
+                    { $ne: ["$is_deleted", true] }
+                  ]
+                }
+              }
+            }
+          ],
           as: "user_memes"
         }
       },
@@ -107,8 +118,19 @@ async function handleGetRequest(request: NextRequest) {
       {
         $lookup: {
           from: "memes",
-          localField: "_id",
-          foreignField: "created_by",
+          let: { userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$created_by", "$$userId"] },
+                    { $ne: ["$is_deleted", true] }
+                  ]
+                }
+              }
+            }
+          ],
           as: "user_memes"
         }
       },
