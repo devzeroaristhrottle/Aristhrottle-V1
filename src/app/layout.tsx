@@ -38,6 +38,7 @@ export default function RootLayout({
           @import
           url(&apos;https://fonts.googleapis.com/css2?family=Jersey+10&display=swap&apos;);
         </style>
+        
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

@@ -156,23 +156,25 @@ export default function Navbar() {
     }
   };
 
-  return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full">
-      {/* Fixed Container with proper viewport handling */}
-      <div className="w-full backdrop-blur-md bg-black/20 border-b border-white/10">
-        <div className="max-w-full mx-auto px-2 sm:px-4">
+  return ( 
+  <>
+      {/* Sticky Navbar instead of Fixed */}
+      <div className="sticky top-0 left-0 right-0 z-50 w-full overflow-hidden">
+        {/* Container with proper viewport handling */}
+        <div className="w-full backdrop-blur-md bg-black/20 border-b border-white/10 overflow-hidden">
+        <div className="max-w-full mx-auto px-2 sm:px-4 overflow-hidden">
           
           {/* Mobile Layout - Show on small screens */}
           <div className="block lg:hidden w-full">
             {userDetails && user != null && user.address && (
               <div className="w-full">
                 {/* Mobile Navigation Bar - 3 Row Layout */}
-                <div className="flex flex-col w-full space-y-2 py-2">
+                <div className="flex flex-col w-full space-y-2 py-0.1">
                   
                   {/* First Row - Avatar and Token Balance */}
                   <div className="flex items-center justify-between w-full">
                     {/* Left Side - Avatar */}
-                    <div className="flex items-center flex-shrink-0">
+                    <div className="flex items-center flex-shrink-0 mt-2">
                       <Avatar
                         name="Random"
                         colorPalette="blue"
@@ -204,12 +206,12 @@ export default function Navbar() {
                     </div>
                   </div>
 
-                  {/* Second Row - Stats - Mobile Optimized */}
-                  <div className="flex items-center justify-between w-full px-1">
+                  {/* Second Row - Stats - Horizontal Layout like Desktop */}
+                  <div className="flex items-center justify-between w-full px-1 min-w-0">
                     {/* Vote Stats */}
-                    <div className="flex flex-col items-center flex-1 min-w-0">
-                      <span className="text-white text-xs font-medium mb-1">Vote</span>
-                      <div className="border border-white rounded px-2 py-1 bg-gray-800/30 min-w-[35px] text-center">
+                    <div className="flex items-center gap-1 flex-shrink-0 min-w-0">
+                      <span className="text-white text-xs font-medium">Votes</span>
+                      <div className="border border-white rounded px-1 py-1 min-w-[35px] text-center">
                         <span className="text-white text-xs font-medium">
                           {userDetails.votes}/20
                         </span>
@@ -217,9 +219,9 @@ export default function Navbar() {
                     </div>
 
                     {/* Upload Stats */}
-                    <div className="flex flex-col items-center flex-1 min-w-0">
-                      <span className="text-white text-xs font-medium mb-1">Upload</span>
-                      <div className="border border-white rounded px-2 py-1 bg-gray-800/30 min-w-[35px] text-center">
+                    <div className="flex items-center gap-1 flex-shrink-0 min-w-0">
+                      <span className="text-white text-xs font-medium">Uploads</span>
+                      <div className="border border-white rounded px-1 py-1 min-w-[35px] text-center">
                         <span className="text-white text-xs font-medium">
                           {userDetails.uploads}/20
                         </span>
@@ -227,9 +229,9 @@ export default function Navbar() {
                     </div>
 
                     {/* Create Stats */}
-                    <div className="flex flex-col items-center flex-1 min-w-0">
-                      <span className="text-white text-xs font-medium mb-1">Create</span>
-                      <div className="border border-white rounded px-2 py-1 bg-gray-800/30 min-w-[35px] text-center">
+                    <div className="flex items-center gap-1 flex-shrink-0 min-w-0">
+                      <span className="text-white text-xs font-medium">Gen</span>
+                      <div className="border border-white rounded px-1 py-1 min-w-[30px] text-center">
                         <span className="text-white text-xs font-medium">
                           {userDetails.generations}/5
                         </span>
@@ -237,9 +239,9 @@ export default function Navbar() {
                     </div>
 
                     {/* Timer */}
-                    <div className="flex flex-col items-center flex-1 min-w-0">
-                      <span className="text-white text-xs font-medium mb-1">Timer</span>
-                      <div className="border border-white rounded px-1 py-1 bg-gray-800/30 min-w-[45px] text-center">
+                    <div className="flex items-center gap-1 flex-shrink-0 min-w-0">
+                      <span className="text-white text-xs font-medium">Timer</span>
+                      <div className="border border-white rounded px-1 py-1 min-w-[45px] text-center">
                         <span className="text-white text-xs font-medium">
                           {timeLeft.split(":").slice(0, 2).join(":")}
                         </span>
@@ -285,7 +287,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Layout - Show on large screens */}
-          <div className="hidden lg:flex justify-between items-center py-3">
+          <div className="hidden lg:flex justify-between items-center py-0.8">
             <div className="flex items-center gap-5">
               {userDetails && user != null && user.address && (
                 <div className="flex gap-5 items-center">
@@ -538,5 +540,6 @@ export default function Navbar() {
         userWalletAddress={user?.address} 
       />
     </div>
-  );
+  </>
+  )
 }

@@ -12,9 +12,9 @@ export default function Layout({ children }: Props) {
 
 	return (
 		<div className="bg1 min-h-screen flex flex-col">
-			<div className="px-6 sticky top-0 z-[100]">
-				<Navbar />
-			</div>
+			{/* Remove sticky wrapper - Navbar handles its own fixed positioning */}
+			<Navbar />
+			
 			<div className="flex flex-1">
 				{/* Sidebar - only visible on large screens */}
 				<aside className="w-20 h-screen sticky top-0 lg:block hidden z-50">
