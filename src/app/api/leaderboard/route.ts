@@ -47,7 +47,6 @@ export async function GET(req: NextRequest) {
 			const memesCount = await Meme.countDocuments({
 				is_voting_close: true,
 				is_onchain: true,
-				is_deleted: false,
 				createdAt: { $gte: yesterday6amIST, $lte: today6amIST },
 			})
 
@@ -57,7 +56,6 @@ export async function GET(req: NextRequest) {
 					$match: {
 						is_voting_close: true,
 						is_onchain: true,
-						is_deleted: false,
 						createdAt: { $gte: yesterday6amIST, $lte: today6amIST },
 					},
 				},
@@ -75,7 +73,6 @@ export async function GET(req: NextRequest) {
 				{
 					$match: {
 						is_voting_close: true,
-						is_deleted: false,
 						createdAt: { $gte: yesterday6amIST, $lte: today6amIST },
 					},
 				},
@@ -94,7 +91,6 @@ export async function GET(req: NextRequest) {
 					$match: {
 						is_voting_close: true,
 						is_onchain: true,
-						is_deleted: false,
 						createdAt: { $gte: yesterday6amIST, $lt: today6amIST },
 					},
 				},
@@ -269,14 +265,12 @@ export async function GET(req: NextRequest) {
 			// OLD non-daily logic unchanged
 			const memesCount = await Meme.countDocuments({
 				is_voting_close: true,
-				is_deleted: false,
 			})
 
 			const maxVotesResult = await Meme.aggregate([
 				{
 					$match: {
 						is_voting_close: true,
-						is_deleted: false,
 					},
 				},
 				{
@@ -292,7 +286,6 @@ export async function GET(req: NextRequest) {
 				{
 					$match: {
 						is_voting_close: true,
-						is_deleted: false,
 					},
 				},
 				{
@@ -306,10 +299,7 @@ export async function GET(req: NextRequest) {
 			// Create base pipeline
 			const basePipeline: PipelineStage[] = [
 				{
-					$match: { 
-						is_voting_close: true,
-						is_deleted: false
-					},
+					$match: { is_voting_close: true },
 				},
 				{ $sort: { vote_count: -1, _id: 1 } },
 				{

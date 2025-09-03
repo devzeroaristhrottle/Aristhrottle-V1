@@ -409,7 +409,10 @@ export default function Page() {
       setAllMemesLoading(true)
       const offset = 30 * page
       const response = await axiosInstance.get(
-        `/api/leaderboard?daily=false&offset=${offset}&userId=${userDetails?._id}`
+        `/api/leaderboard?daily=false&offset=${offset}&userId=${userDetails?._id}`,
+        {
+          timeout: 180000
+        }
       )
 
       if (response?.data?.memes) {
