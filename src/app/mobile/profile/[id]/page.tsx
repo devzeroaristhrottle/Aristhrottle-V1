@@ -265,7 +265,6 @@ export default function UserProfilePage() {
 				memes={memes}
 				pageType={'all'}
 				onVote={voteToMeme}
-				bookmarkedMemes={new Set()}
 				view={view}
 				isSelf={isOwnProfile}
 			/>

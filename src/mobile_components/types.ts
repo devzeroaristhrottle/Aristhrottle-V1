@@ -62,8 +62,6 @@ export interface MemesListProps {
 	memes: Meme[]
 	pageType: 'live' | 'all'
 	onVote?: (memeId: string) => void
-	onBookmark?: (memeId: string, name: string, imageUrl: string) => void
-	bookmarkedMemes?: Set<string>
 	view?: 'grid' | 'list'
 	isSelf?: boolean
 }

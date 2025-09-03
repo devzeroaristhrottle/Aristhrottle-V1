@@ -1,17 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Memecard from './Memecard'
 import MemeDetails from './MemeDetails'
 import { Meme, MemesListProps } from './types'
 import ReportModal from './ReportModal';
 import ShareModal from './ShareModal';
 import ConfirmModal from './ConfirmModal';
+import { useAuthModal, useUser } from '@account-kit/react'
+import { useMemeActions } from '@/app/home/bookmark/bookmarkHelper'
+import axiosInstance from '@/utils/axiosInstance'
+import { toast } from 'react-toastify';
 
 function MemesList({
 	memes,
 	pageType,
 	onVote,
-	onBookmark,
-	bookmarkedMemes = new Set(),
 	view = 'list',
 	isSelf = false
 }: MemesListProps) {
@@ -25,6 +27,56 @@ function MemesList({
 	const [shareMeme, setShareMeme] = useState<{ id: string; name: string; imageUrl: string } | null>(null);
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const [memeToDelete, setMemeToDelete] = useState<string | null>(null);
+	const [localBookmarks, setLocalBookmarks] = useState<Set<string>>(new Set());
+
+	const user = useUser();
+	const { openAuthModal } = useAuthModal();
+	const { handleBookmark: bookmarkAction } = useMemeActions();
+
+	// Fetch bookmarks from server on mount
+	const fetchBookmarks = async () => {
+		try {
+			const resp = await axiosInstance.get('/api/bookmark')
+			if (resp.status === 200) {
+				setLocalBookmarks(new Set(resp.data.memes.map((meme: Meme) => meme._id)))
+			}
+		} catch (err) {
+			console.error(err)
+			toast.error('Error fetching bookmarks')
+		}
+	}
+
+	useEffect(() => {
+		fetchBookmarks()
+	}, [])
+
+	// Handle bookmark action
+	const handleLocalBookmark = async (id: string, name: string, imageUrl: string) => {
+		if (!user || !user.address) {
+			openAuthModal?.()
+			return
+		}
+
+		try {
+			bookmarkAction(id)
+			// Optimistically update the local state
+			setLocalBookmarks(prev => {
+				const newBookmarks = new Set(prev)
+				if (newBookmarks.has(id)) {
+					newBookmarks.delete(id)
+				} else {
+					newBookmarks.add(id)
+				}
+				return newBookmarks
+			})
+			await fetchBookmarks()
+		} catch (error) {
+			console.log(error)
+			toast.error('Error updating bookmark')
+			// Revert on error
+			await fetchBookmarks()
+		}
+	}
 
     const handleOpenReport = (memeId: string) => {
         setReportMemeId(memeId);
@@ -107,8 +159,8 @@ function MemesList({
 							pageType={pageType}
 							onVote={onVote}
 							onShare={handleShare}
-							onBookmark={onBookmark}
-							isBookmarked={bookmarkedMemes.has(meme._id)}
+							onBookmark={handleLocalBookmark}
+							isBookmarked={localBookmarks.has(meme._id)}
 							onImageClick={() => handleMemeClick(meme)}
 							onReport={handleOpenReport}
 							isGridView={view === 'grid'}
@@ -126,7 +178,7 @@ function MemesList({
 					meme={selectedMeme}
 					tab={pageType}
 					onVoteMeme={(memeId: string) => onVote?.(memeId)}
-					bmk={bookmarkedMemes.has(selectedMeme._id)}
+					bmk={localBookmarks.has(selectedMeme._id)}
 					handleReport={handleOpenReport}
 					type={pageType}
 					onMemeChange={handleMemeChange}

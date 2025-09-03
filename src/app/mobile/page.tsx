@@ -13,7 +13,6 @@ import MemesList from '@/mobile_components/MemesList'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { toast } from 'react-toastify'
 import MemeDetails from '@/mobile_components/MemeDetails'
-import { useMemeActions } from '../home/bookmark/bookmarkHelper'
 import { Context } from '@/context/contextProvider'
 
 import { Meme } from '@/mobile_components/types'
@@ -27,7 +26,6 @@ function Page() {
 	const [allMemeDataFilter, setAllMemeDataFilter] = useState<Meme[]>([])
 	const [loading, setLoading] = useState(true)
 	const [initialLoad, setInitialLoad] = useState(true)
-	const [bookMarks, setBookMarks] = useState<Meme[]>([])
 	const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null)
 	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
@@ -86,24 +84,6 @@ function Page() {
 		return allMemeDataFilter
 	}, [activeTab, allMemes, allMemeDataFilter, filterLiveMemes])
 
-	const { handleBookmark: bookmarkAction } = useMemeActions()
-
-	// Fetch bookmarks from server on mount
-	const fetchBookmarks = async () => {
-		try {
-			const resp = await axiosInstance.get('/api/bookmark')
-			if (resp.status === 200) {
-				setBookMarks(resp.data.memes)
-			}
-		} catch (err) {
-			console.error(err)
-			toast.error('Error fetching bookmarks')
-		}
-	}
-
-	useEffect(() => {
-		fetchBookmarks()
-	}, [])
 
 	const fetchCarouselMemes = async () => {
 		try {
@@ -262,33 +242,6 @@ function Page() {
 		setSelectedMeme(null)
 	}
 
-	const handleBookmark = async (id: string, name: string, imageUrl: string) => {
-		if (!user || !user.address) {
-			openAuthModal?.()
-			return
-		}
-
-		try {
-			bookmarkAction(id)
-			// Optimistically update the local state
-			setBookMarks(prev => {
-				const isCurrentlyBookmarked = prev.some(meme => meme._id === id)
-				if (isCurrentlyBookmarked) {
-					return prev.filter(meme => meme._id !== id)
-				} else {
-					return [...prev, { _id: id, name, image_url: imageUrl } as Meme]
-				}
-			})
-			// Fetch the actual state from server
-			await fetchBookmarks()
-		} catch (error) {
-			console.log(error)
-			toast.error('Error updating bookmark')
-			// Revert on error
-			await fetchBookmarks()
-		}
-	}
-
 	if (loading) {
 		return (
 			<div className="h-screen flex items-center justify-center">
@@ -323,8 +276,6 @@ function Page() {
 						memes={displayedMemes}
 						pageType={activeTab}
 						onVote={handleVote}
-						onBookmark={handleBookmark}
-						bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
 						view={view}
 					/>
 				)}
@@ -336,8 +287,8 @@ function Page() {
 					meme={selectedMeme}
 					tab={activeTab}
 					onVoteMeme={(memeId: string) => handleVote(memeId)}
-					bmk={bookMarks.some(bookmark => bookmark._id === selectedMeme._id)}
 					onMemeChange={(newMeme) => setSelectedMeme(newMeme)}
+					bmk={false}
 				/>
 			)}
 		</>

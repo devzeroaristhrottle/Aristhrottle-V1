@@ -18,7 +18,6 @@ function Page() {
 	const [loading, setLoading] = useState(false)
 	const [users, setUsers] = useState<UserLeaderboardItem[]>([])
 	const [memes, setMemes] = useState<Meme[]>([])
-	const [bookMarks, setBookMarks] = useState<Meme[]>([])
 
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
@@ -68,23 +67,6 @@ function Page() {
 			fetchContent()
 		}
 	}, [active, period])
-
-	// Fetch bookmarks from server on mount
-	const fetchBookmarks = async () => {
-		try {
-			const resp = await axiosInstance.get('/api/bookmark')
-			if (resp.status === 200) {
-				setBookMarks(resp.data.memes)
-			}
-		} catch (err) {
-			console.error(err)
-			toast.error('Error fetching bookmarks')
-		}
-	}
-
-	useEffect(() => {
-		fetchBookmarks()
-	}, [])
 
 	const handleVote = async (memeId: string) => {
 		if (!userDetails && openAuthModal) {
@@ -153,33 +135,6 @@ function Page() {
 		}
 	}
 
-	const handleBookmark = async (id: string, name: string, imageUrl: string) => {
-		if (!user || !user.address) {
-			openAuthModal?.()
-			return
-		}
-
-		try {
-			bookmarkAction(id)
-			// Optimistically update the local state
-			setBookMarks(prev => {
-				const isCurrentlyBookmarked = prev.some(meme => meme._id === id)
-				if (isCurrentlyBookmarked) {
-					return prev.filter(meme => meme._id !== id)
-				} else {
-					return [...prev, { _id: id, name, image_url: imageUrl } as Meme]
-				}
-			})
-			// Fetch the actual state from server
-			await fetchBookmarks()
-		} catch (error) {
-			console.log(error)
-			toast.error('Error updating bookmark')
-			// Revert on error
-			await fetchBookmarks()
-		}
-	}
-
 	return (
 		<div className="overflow-y-auto">
 				<div className="flex justify-center items-center mb-4">
@@ -237,8 +192,6 @@ function Page() {
 								memes={memes}
 								pageType={period === 'daily' ? 'live' : 'all'}
 								onVote={handleVote}
-								onBookmark={handleBookmark}
-								bookmarkedMemes={new Set(bookMarks.map(meme => meme._id))}
 								view="list"
 							/>
 						)}
