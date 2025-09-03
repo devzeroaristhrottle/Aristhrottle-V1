@@ -7,7 +7,7 @@ import axiosInstance from '@/utils/axiosInstance'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { useAuthModal, useUser, useLogout } from '@account-kit/react'
-import { Meme } from '@/mobile_components/types'
+import { Meme, Stats } from '@/mobile_components/types'
 import MemesList from '@/mobile_components/MemesList'
 import Sorter from '@/mobile_components/Sorter'
 import { TabButton } from '@/mobile_components/TabButton'
@@ -17,6 +17,7 @@ import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { BiStats } from 'react-icons/bi'
 import ShareModal from '@/mobile_components/ShareModal'
 import ConfirmModal from '@/mobile_components/ConfirmModal'
+import StatsModal from '@/mobile_components/StatsModal'
 
 type TabType = 'posts' | 'votecast' | 'drafts' | 'saved';
 
@@ -30,8 +31,43 @@ export default function ProfilePage() {
     const [isConfirmLogoutOpen, setIsConfirmLogoutOpen] = useState(false)
     const [followersCount, setFollowersCount] = useState(0)
     const [followingCount, setFollowingCount] = useState(0)
+    const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
+    const [userStats, setUserStats] = useState<Stats>({
+        mintedCoins: '0',
+        uploads: 0,
+        votesReceived: 0,
+        votesCast: 0,
+        views: 0,
+        referrals: 0
+    })
 
     const { userDetails } = useContext(Context)
+
+    // Fetch user stats
+    const fetchUserStats = async () => {
+        try {
+            if (!userDetails?._id) return
+            const response = await axiosInstance.get(`/api/user/${userDetails._id}`)
+            if (response.data) {
+                setUserStats({
+                    mintedCoins: response.data.user.tokens_minted || '0',
+                    uploads: response.data.totalUploadsCount || 0,
+                    votesReceived: response.data.totalVotesReceived || 0,
+                    votesCast: response.data.votes || 0,
+                    views: response.data.views || 0,
+                    referrals: response.data.referrals?.length || 0
+                })
+            }
+        } catch (error) {
+            console.error('Error fetching user stats:', error)
+        }
+    }
+
+    useEffect(() => {
+        if (userDetails?._id) {
+            fetchUserStats()
+        }
+    }, [userDetails?._id])
 
     // Fetch followers and following counts
     const fetchFollowCounts = async () => {
@@ -228,7 +264,7 @@ export default function ProfilePage() {
                     </p>
                 </button>
                 <button
-                    onClick={() => router.push('/home/profile/stats')}
+                    onClick={() => setIsStatsModalOpen(true)}
                     className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
                     title="View Stats"
                 >
@@ -324,6 +360,13 @@ export default function ProfilePage() {
                 title="Confirm Logout"
                 message="Are you sure you want to logout? You will need to login again to access your account."
                 confirmButtonText="Logout"
+            />
+
+            {/* Stats Modal */}
+            <StatsModal
+                isOpen={isStatsModalOpen}
+                onClose={() => setIsStatsModalOpen(false)}
+                stats={userStats}
             />
         </div>
     )

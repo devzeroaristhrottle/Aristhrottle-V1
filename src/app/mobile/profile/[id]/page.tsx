@@ -7,9 +7,13 @@ import axiosInstance from '@/utils/axiosInstance'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { useAuthModal, useUser } from '@account-kit/react'
-import { UserProfileData, Meme } from '@/mobile_components/types'
+import { UserProfileData, Meme, Stats } from '@/mobile_components/types'
 import MemesList from '@/mobile_components/MemesList'
 import Sorter from '@/mobile_components/Sorter'
+import ShareModal from '@/mobile_components/ShareModal'
+import StatsModal from '@/mobile_components/StatsModal'
+import { FaRegShareFromSquare } from 'react-icons/fa6'
+import { BiStats } from 'react-icons/bi'
 
 export default function UserProfilePage() {
 	const params = useParams()
@@ -22,6 +26,16 @@ export default function UserProfilePage() {
 	const [isFollowing, setIsFollowing] = useState(false)
 	const [followLoading, setFollowLoading] = useState(false)
 	const [view, setView] = useState<'grid' | 'list'>('list');
+	const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+	const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+	const [userStats, setUserStats] = useState<Stats>({
+		mintedCoins: '0',
+		uploads: 0,
+		votesReceived: 0,
+		votesCast: 0,
+		views: 0,
+		referrals: 0
+	});
 
 	const { userDetails, setUserDetails } = useContext(Context)
 	const { openAuthModal } = useAuthModal()
@@ -43,6 +57,16 @@ export default function UserProfilePage() {
 					majorityUploads: response.data.majorityUploads,
 				}
 				setUserProfile(userData)
+				
+				// Set stats
+				setUserStats({
+					mintedCoins: response.data.user.tokens_minted || '0',
+					uploads: response.data.totalUploadsCount || 0,
+					votesReceived: response.data.totalVotesReceived || 0,
+					votesCast: response.data.user.votes || 0,
+					views: response.data.user.views || 0,
+					referrals: response.data.user.referrals?.length || 0
+				})
 			}
 		} catch (error: any) {
 			console.log(error)
@@ -202,6 +226,37 @@ export default function UserProfilePage() {
 	return (
 		<div>
 			{/* Top Section */}
+			<div className="flex flex-row items-center justify-end py-2 px-1 gap-2 ">
+				<button
+					onClick={() => setIsShareModalOpen(true)}
+					className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+					title="Share Profile"
+				>
+					<p className="text-sm font-bold px-2 py-1">
+						<FaRegShareFromSquare />
+					</p>
+				</button>
+				<button
+					onClick={() => setIsStatsModalOpen(true)}
+					className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+					title="View Stats"
+				>
+					<p className="text-sm font-bold px-2 py-1 flex flex-row items-center gap-1">
+						<BiStats />
+						Stats
+					</p>
+				</button>
+				{isOwnProfile && (
+					<button
+						onClick={() => router.push('/home/profile')}
+						className="flex justify-between items-center gap-2 border border-[#1783fb] rounded-lg hover:opacity-40"
+					>
+						<p className="text-[#1783fb] text-sm font-bold px-2 py-1">
+							Edit Profile
+						</p>
+					</button>
+				)}
+			</div>
 			<div className="flex items-center justify-between">
 				<div className="flex items-center rounded-lg gap-x-4 px-4">
 					<div className="h-20 w-20 bg-black rounded-full overflow-hidden flex items-center justify-center">
@@ -246,18 +301,6 @@ export default function UserProfilePage() {
 					</div>
 				</div>
 				
-				<div className="flex flex-col items-end space-y-2">
-					{isOwnProfile && (
-						<button
-							onClick={() => router.push('/home/profile')}
-							className="flex justify-between items-center gap-2 border border-[#1783fb] rounded-lg hover:opacity-40"
-						>
-							<p className="text-[#1783fb] text-sm font-bold">
-								Edit Profile
-							</p>
-						</button>
-					)}
-				</div>
 			</div>
 			
 			<Sorter onViewChange={setView} view={view} gridEnable/>
@@ -267,6 +310,21 @@ export default function UserProfilePage() {
 				onVote={voteToMeme}
 				view={view}
 				isSelf={isOwnProfile}
+			/>
+
+			{/* Share Modal */}
+			<ShareModal
+				isOpen={isShareModalOpen}
+				onClose={() => setIsShareModalOpen(false)}
+				contentUrl={`${window.location.origin}/mobile/profile/${userId}`}
+				contentTitle={userProfile?.username ? `${userProfile.username}'s Profile` : 'Profile'}
+			/>
+
+			{/* Stats Modal */}
+			<StatsModal
+				isOpen={isStatsModalOpen}
+				onClose={() => setIsStatsModalOpen(false)}
+				stats={userStats}
 			/>
 		</div>
 	)

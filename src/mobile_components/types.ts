@@ -128,3 +128,18 @@ export interface UserProfileData {
 	followersCount?: number
 	followingCount?: number
 }
+
+export interface Stats {
+    mintedCoins?: string | number
+    uploads?: number
+    votesReceived?: number
+    votesCast?: number
+    views?: number
+    referrals?: number
+}
+
+export interface StatsModalProps {
+    isOpen: boolean
+    onClose: () => void
+    stats: Stats
+}
