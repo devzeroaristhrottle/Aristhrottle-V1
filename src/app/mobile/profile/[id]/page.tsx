@@ -12,6 +12,7 @@ import MemesList from '@/mobile_components/MemesList'
 import Sorter from '@/mobile_components/Sorter'
 import ShareModal from '@/mobile_components/ShareModal'
 import StatsModal from '@/mobile_components/StatsModal'
+import ConfirmModal from '@/mobile_components/ConfirmModal'
 import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { BiStats } from 'react-icons/bi'
 
@@ -28,6 +29,7 @@ export default function UserProfilePage() {
 	const [view, setView] = useState<'grid' | 'list'>('list');
 	const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 	const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+	const [isConfirmUnfollowOpen, setIsConfirmUnfollowOpen] = useState(false);
 	const [userStats, setUserStats] = useState<Stats>({
 		mintedCoins: '0',
 		uploads: 0,
@@ -116,7 +118,7 @@ export default function UserProfilePage() {
 		}
 	}, [userDetails?._id, userId])
 
-	// Memoized follow/unfollow handler
+	// Follow handler
 	const handleFollow = useCallback(async () => {
 		try {
 			if (!userDetails?._id) {
@@ -124,19 +126,17 @@ export default function UserProfilePage() {
 				return
 			}
 
-			setFollowLoading(true)
-			
 			if (isFollowing) {
-				await axiosInstance.delete(`/api/user/follow?userId=${userId}`)
-				setIsFollowing(false)
-				toast.success('User unfollowed successfully')
-				setUserProfile(prev => prev ? { ...prev, followersCount: (prev.followersCount || 0) - 1 } : null)
-			} else {
-				await axiosInstance.post('/api/user/follow', { userIdToFollow: userId })
-				setIsFollowing(true)
-				toast.success('User followed successfully')
-				setUserProfile(prev => prev ? { ...prev, followersCount: (prev.followersCount || 0) + 1 } : null)
+				// Show confirmation modal for unfollow
+				setIsConfirmUnfollowOpen(true)
+				return
 			}
+
+			// Follow user
+			setFollowLoading(true)
+			await axiosInstance.post('/api/user/follow', { userIdToFollow: userId })
+			setIsFollowing(true)
+			setUserProfile(prev => prev ? { ...prev, followersCount: (prev.followersCount || 0) + 1 } : null)
 		} catch (error: any) {
 			const errorMessage = error.response?.data?.error || 'An error occurred'
 			toast.error(errorMessage)
@@ -144,6 +144,22 @@ export default function UserProfilePage() {
 			setFollowLoading(false)
 		}
 	}, [userDetails?._id, userId, isFollowing])
+
+	// Unfollow handler
+	const handleUnfollow = useCallback(async () => {
+		try {
+			setFollowLoading(true)
+			await axiosInstance.delete(`/api/user/follow?userId=${userId}`)
+			setIsFollowing(false)
+			setUserProfile(prev => prev ? { ...prev, followersCount: (prev.followersCount || 0) - 1 } : null)
+		} catch (error: any) {
+			const errorMessage = error.response?.data?.error || 'An error occurred'
+			toast.error(errorMessage)
+		} finally {
+			setFollowLoading(false)
+			setIsConfirmUnfollowOpen(false)
+		}
+	}, [userId])
 
 	// Memoized vote handler
 	const voteToMeme = useCallback(async (vote_to: string) => {
@@ -325,6 +341,16 @@ export default function UserProfilePage() {
 				isOpen={isStatsModalOpen}
 				onClose={() => setIsStatsModalOpen(false)}
 				stats={userStats}
+			/>
+
+			{/* Confirm Unfollow Modal */}
+			<ConfirmModal
+				isOpen={isConfirmUnfollowOpen}
+				onClose={() => setIsConfirmUnfollowOpen(false)}
+				onConfirm={handleUnfollow}
+				title="Confirm Unfollow"
+				message={`Are you sure you want to unfollow ${userProfile?.username}?`}
+				confirmButtonText="Unfollow"
 			/>
 		</div>
 	)
