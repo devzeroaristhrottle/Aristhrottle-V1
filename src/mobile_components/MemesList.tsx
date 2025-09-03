@@ -51,7 +51,7 @@ function MemesList({
 	}, [])
 
 	// Handle bookmark action
-	const handleLocalBookmark = async (id: string, name: string, imageUrl: string) => {
+	const handleLocalBookmark = async (id: string) => {
 		if (!user || !user.address) {
 			openAuthModal?.()
 			return

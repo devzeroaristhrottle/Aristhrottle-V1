@@ -9,7 +9,6 @@ import MemesList from '@/mobile_components/MemesList'
 import { Meme, UserLeaderboardItem } from '@/mobile_components/types'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { toast } from 'react-toastify'
-import { useMemeActions } from '../../home/bookmark/bookmarkHelper'
 import { Context } from '@/context/contextProvider'
 
 function Page() {
@@ -22,7 +21,6 @@ function Page() {
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
 	const { userDetails, setUserDetails } = useContext(Context)
-	const { handleBookmark: bookmarkAction } = useMemeActions()
 
 	const fetchUsers = async () => {
 		try {
