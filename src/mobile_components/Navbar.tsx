@@ -158,7 +158,7 @@ export default function Navbar() {
 				<div className="flex justify-between align-middle items-center py-3 md:py-0">
 					<div className="flex align-middle items-center gap-5">
 						{userDetails && user != null && user.address && (
-							<div className="flex gap-5">
+							<div className="flex gap-5" onClick={() => route.push("/mobile/profile")}>
 								<Avatar
 									name="Random"
 									colorPalette="blue"

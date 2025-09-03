@@ -48,7 +48,7 @@ export default function UserProfilePage() {
 			console.log(error)
 			if (error.response?.status === 404) {
 				toast.error('User not found')
-				router.push('/landing')
+				router.push('/mobile')
 			} else {
 				toast.error('Failed to load user profile')
 			}
@@ -260,7 +260,7 @@ export default function UserProfilePage() {
 				</div>
 			</div>
 			
-			<Sorter onViewChange={setView} gridEnable/>
+			<Sorter onViewChange={setView} view={view} gridEnable/>
 			<MemesList
 				memes={memes}
 				pageType={'all'}
