@@ -6,7 +6,7 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import axiosInstance from '@/utils/axiosInstance'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
-import { useAuthModal, useUser } from '@account-kit/react'
+import { useAuthModal, useUser, useLogout } from '@account-kit/react'
 import { Meme } from '@/mobile_components/types'
 import MemesList from '@/mobile_components/MemesList'
 import Sorter from '@/mobile_components/Sorter'
@@ -15,6 +15,8 @@ import { FaPen } from 'react-icons/fa'
 import { FiLogOut } from 'react-icons/fi'
 import { FaRegShareFromSquare } from 'react-icons/fa6'
 import { BiStats } from 'react-icons/bi'
+import ShareModal from '@/mobile_components/ShareModal'
+import ConfirmModal from '@/mobile_components/ConfirmModal'
 
 type TabType = 'posts' | 'votecast' | 'drafts' | 'saved';
 
@@ -24,10 +26,25 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(false)
     const [memes, setMemes] = useState<Meme[]>([])
     const [view, setView] = useState<'grid' | 'list'>('list')
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+    const [isConfirmLogoutOpen, setIsConfirmLogoutOpen] = useState(false)
 
     const { userDetails } = useContext(Context)
     const { openAuthModal } = useAuthModal()
     const user = useUser()
+    const { logout } = useLogout()
+
+    const handleLogoutConfirmed = () => {
+        logout()
+        router.push('/landing')
+        setIsConfirmLogoutOpen(false)
+    }
+
+    const handleShare = () => {
+        if (userDetails) {
+            setIsShareModalOpen(true)
+        }
+    }
 
     // Fetch user's posts
     const fetchUserPosts = async () => {
@@ -162,32 +179,36 @@ export default function ProfilePage() {
         <div>
             <div className='flex flex-row items-center justify-end py-2 px-1 gap-2'>
                 <button
-                    onClick={() => router.push('/home/profile')}
+                    onClick={() => setIsConfirmLogoutOpen(true)}
                     className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+                    title="Logout"
                 >
                     <p className="text-sm font-bold px-2 py-1">
                         <FiLogOut />
                     </p>
                 </button>
                 <button
-                    onClick={() => router.push('/home/profile')}
+                    onClick={handleShare}
                     className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+                    title="Share Profile"
                 >
                     <p className="text-sm font-bold px-2 py-1">
                         <FaRegShareFromSquare />
                     </p>
                 </button>
                 <button
-                    onClick={() => router.push('/home/profile')}
+                    onClick={() => router.push('/home/profile/edit')}
                     className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+                    title="Edit Profile"
                 >
                     <p className="text-sm font-bold px-2 py-1">
                         <FaPen />
                     </p>
                 </button>
                 <button
-                    onClick={() => router.push('/home/profile')}
+                    onClick={() => router.push('/home/profile/stats')}
                     className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+                    title="View Stats"
                 >
                     <p className="text-sm font-bold px-2 py-1 flex flex-row items-center gap-1">
                         <BiStats />
@@ -260,6 +281,24 @@ export default function ProfilePage() {
                     isSelf={activeTab === 'posts' || activeTab === 'drafts'}
                 />
             )}
+
+            {/* Share Modal */}
+            <ShareModal
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                contentUrl={userDetails ? `${window.location.origin}/mobile/profile/${userDetails._id}` : ''}
+                contentTitle={userDetails ? `${userDetails.username}'s Profile` : ''}
+            />
+
+            {/* Confirm Logout Modal */}
+            <ConfirmModal
+                isOpen={isConfirmLogoutOpen}
+                onClose={() => setIsConfirmLogoutOpen(false)}
+                onConfirm={handleLogoutConfirmed}
+                title="Confirm Logout"
+                message="Are you sure you want to logout? You will need to login again to access your account."
+                confirmButtonText="Logout"
+            />
         </div>
     )
 }
