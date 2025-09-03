@@ -11,6 +11,10 @@ import { Meme } from '@/mobile_components/types'
 import MemesList from '@/mobile_components/MemesList'
 import Sorter from '@/mobile_components/Sorter'
 import { TabButton } from '@/mobile_components/TabButton'
+import { FaPen } from 'react-icons/fa'
+import { FiLogOut } from 'react-icons/fi'
+import { FaRegShareFromSquare } from 'react-icons/fa6'
+import { BiStats } from 'react-icons/bi'
 
 type TabType = 'posts' | 'votecast' | 'drafts' | 'saved';
 
@@ -156,6 +160,41 @@ export default function ProfilePage() {
 
     return (
         <div>
+            <div className='flex flex-row items-center justify-end py-2 px-1 gap-2'>
+                <button
+                    onClick={() => router.push('/home/profile')}
+                    className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+                >
+                    <p className="text-sm font-bold px-2 py-1">
+                        <FiLogOut />
+                    </p>
+                </button>
+                <button
+                    onClick={() => router.push('/home/profile')}
+                    className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+                >
+                    <p className="text-sm font-bold px-2 py-1">
+                        <FaRegShareFromSquare />
+                    </p>
+                </button>
+                <button
+                    onClick={() => router.push('/home/profile')}
+                    className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+                >
+                    <p className="text-sm font-bold px-2 py-1">
+                        <FaPen />
+                    </p>
+                </button>
+                <button
+                    onClick={() => router.push('/home/profile')}
+                    className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
+                >
+                    <p className="text-sm font-bold px-2 py-1 flex flex-row items-center gap-1">
+                        <BiStats />
+                        Stats
+                    </p>
+                </button>
+            </div>
             {/* Header Section */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center rounded-lg gap-x-4 px-4">
@@ -176,14 +215,6 @@ export default function ProfilePage() {
                     </div>
                 </div>
                 
-                <button
-                    onClick={() => router.push('/home/profile')}
-                    className="flex justify-between items-center gap-2 border border-[#1783fb] rounded-lg hover:opacity-40 mr-4"
-                >
-                    <p className="text-[#1783fb] text-sm font-bold px-2 py-1">
-                        Edit Profile
-                    </p>
-                </button>
             </div>
 
             {/* Tab Navigation */}
