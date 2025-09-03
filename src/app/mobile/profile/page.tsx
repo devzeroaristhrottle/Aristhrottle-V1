@@ -28,8 +28,30 @@ export default function ProfilePage() {
     const [view, setView] = useState<'grid' | 'list'>('list')
     const [isShareModalOpen, setIsShareModalOpen] = useState(false)
     const [isConfirmLogoutOpen, setIsConfirmLogoutOpen] = useState(false)
+    const [followersCount, setFollowersCount] = useState(0)
+    const [followingCount, setFollowingCount] = useState(0)
 
     const { userDetails } = useContext(Context)
+
+    // Fetch followers and following counts
+    const fetchFollowCounts = async () => {
+        try {
+            if (!userDetails?._id) return
+            const response = await axiosInstance.get(`/api/user/${userDetails._id}`)
+            if (response.data) {
+                setFollowersCount(response.data.followersCount || 0)
+                setFollowingCount(response.data.followingCount || 0)
+            }
+        } catch (error) {
+            console.error('Error fetching follow counts:', error)
+        }
+    }
+
+    useEffect(() => {
+        if (userDetails?._id) {
+            fetchFollowCounts()
+        }
+    }, [userDetails?._id])
     const { openAuthModal } = useAuthModal()
     const user = useUser()
     const { logout } = useLogout()
@@ -233,6 +255,10 @@ export default function ProfilePage() {
                         <h1 className="text-sm py-1">
                             {userDetails?.bio}
                         </h1>
+                        <div className='flex flex-row items-center justify-start gap-2 text-sm'>
+                            <div>{followersCount} Followers</div>
+                            <div>{followingCount} Following</div>
+                        </div>
                     </div>
                 </div>
                 
