@@ -289,22 +289,22 @@ export default function Navbar() {
 
             {/* Mobile Login Button when not logged in */}
             {(!userDetails || !user?.address) && (
-              <div className="flex justify-center py-3 w-full">
-                <Button
-                  size="lg"
-                  variant="solid"
-                  className="bg-slate-50 text-slate-800 font-bold px-4 rounded-xl text-base w-full max-w-xs"
-                  onClick={() => {
-                    if (user && user.address) {
-                      setOpen(true);
-                    } else {
-                      openAuthModal();
-                    }
-                  }}
-                >
-                  Login / Signup
-                </Button>
-              </div>
+             <div className="flex justify-end py-3 w-auto ml-auto">
+             <Button
+               size="sm"
+               variant="solid"
+               className="bg-slate-50 text-slate-800 font-bold px-3 rounded-xl text-sm whitespace-nowrap mr-5"
+               onClick={() => {
+                 if (user && user.address) {
+                   setOpen(true);
+                 } else {
+                   openAuthModal();
+                 }
+               }}
+             >
+               Login / Signup
+             </Button>
+           </div>
             )}
           </div>
 
