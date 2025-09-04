@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import axiosInstance from '@/utils/axiosInstance';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { LazyImage } from '@/components/LazyImage';
 
 // Define and EXPORT types for your meme data
 interface MemeCreator {
@@ -115,15 +116,10 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
     return memes.filter(meme => !failedImageIds.has(meme._id));
   }, [memes, failedImageIds]);
 
-  // Handle image load error with useCallback
+  // Handle image load error with useCallback - matching LeaderboardMemeCard pattern
   const handleImageError = useCallback((meme: MemeData) => {
-    console.log(`Image failed to load for meme: ${meme.name} (${meme._id})`);
+    console.log(`Image failed to load for meme: ${meme.name} - URL: ${meme.image_url}`);
     setFailedImageIds(prev => new Set(prev).add(meme._id));
-  }, []);
-
-  // Enhanced image loading with useCallback
-  const handleImageLoad = useCallback((meme: MemeData) => {
-    console.log(`Image loaded successfully for meme: ${meme.name}`);
   }, []);
 
   // Check if mobile on mount and resize (memoized)
@@ -234,7 +230,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   // Loading state
   if (loading) {
     return (
-      <div className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
+      <div className={`w-full h-96 bg-gray-800/50 rounded-lg flex items-center justify-center ${className}`}>
         <div className="flex flex-col items-center gap-4">
           <AiOutlineLoading3Quarters className="animate-spin text-4xl text-blue-500" />
           <p className="text-gray-400 text-lg">Loading top memes...</p>
@@ -246,7 +242,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   // Error state
   if (error) {
     return (
-      <div className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
+      <div className={`w-full h-96 bg-gray-800/50 rounded-lg flex items-center justify-center ${className}`}>
         <div className="flex flex-col items-center gap-4">
           <p className="text-red-400 text-lg">{error}</p>
           <button 
@@ -266,7 +262,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   // Empty state
   if (!memes || memes.length === 0) {
     return (
-      <div className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
+      <div className={`w-full h-96 bg-gray-800/50 rounded-lg flex items-center justify-center ${className}`}>
         <div className="flex flex-col items-center gap-4">
           <p className="text-gray-400 text-lg">No memes available</p>
         </div>
@@ -277,7 +273,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
   // All memes failed to load
   if (validMemes.length === 0 && memes.length > 0) {
     return (
-      <div className={`w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
+      <div className={`w-full h-96 bg-gray-800/50 rounded-lg flex items-center justify-center ${className}`}>
         <div className="flex flex-col items-center gap-4">
           <p className="text-gray-400 text-lg">Unable to load meme images</p>
           <button 
@@ -325,15 +321,13 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                         className="relative group cursor-pointer h-full w-full"
                         onClick={() => handleMemeClick(meme, relativeIndex)}
                       >
-                        <div className="relative h-full w-full rounded-xl overflow-hidden bg-gray-700 shadow-xl aspect-square">
-                          <img
+                        <div className="relative h-full w-full rounded-xl overflow-hidden bg-gray-700/50 shadow-xl aspect-square">
+                          {/* Using LazyImage instead of regular img */}
+                          <LazyImage
                             src={meme.image_url}
                             alt={meme.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover cursor-pointer"
                             onError={() => handleImageError(meme)}
-                            onLoad={() => handleImageLoad(meme)}
-                            draggable={false}
-                            loading="lazy"
                           />
                           
                           {/* Hover effect */}
@@ -362,24 +356,22 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                 </div>
               ) : (
                 // Desktop: Three cards view with equal heights
-                <div className="flex gap-6 h-full w-full justify-center max-w-7xl">
+                <div className="flex gap-4 h-full w-full justify-center max-w-7xl">
                   {currentMemes.map((meme: MemeData, index: number) => {
                     const relativeIndex = currentIndex * slidesPerView + index;
                     return (
                       <div
                         key={meme._id}
-                        className="flex-1 max-w-sm min-w-0 relative group cursor-pointer transition-transform duration-300 hover:scale-105 h-full"
+                        className="flex-1 max-w-sm min-w-0 relative group cursor-pointer transition-transform duration-300 hover:scale-[1.02] h-full"
                         onClick={() => handleMemeClick(meme, relativeIndex)}
                       >
-                        <div className="relative h-full w-full rounded-xl overflow-hidden bg-gray-700 shadow-xl">
-                          <img
+                        <div className="relative h-full w-full rounded-xl overflow-hidden bg-gray-700/50 shadow-xl">
+                          {/* Using LazyImage instead of regular img */}
+                          <LazyImage
                             src={meme.image_url}
                             alt={meme.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover cursor-pointer"
                             onError={() => handleImageError(meme)}
-                            onLoad={() => handleImageLoad(meme)}
-                            draggable={false}
-                            loading="lazy"
                           />
                           
                           {/* Hover effect */}
@@ -410,7 +402,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
                   {!isMobile && currentMemes.length < 3 && currentMemes.length > 0 && 
                     Array.from({ length: 3 - currentMemes.length }).map((_, emptyIndex) => (
                       <div key={`empty-${emptyIndex}`} className="flex-1 max-w-sm min-w-0 h-full opacity-30">
-                        <div className="h-full w-full rounded-xl bg-gray-700/50 border-2 border-dashed border-gray-600 flex items-center justify-center">
+                        <div className="h-full w-full rounded-xl bg-gray-700/30 border-2 border-dashed border-gray-600 flex items-center justify-center">
                           <span className="text-gray-500 text-sm">No more memes</span>
                         </div>
                       </div>
