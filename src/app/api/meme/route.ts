@@ -70,12 +70,11 @@ async function handleGetRequest(req: NextRequest) {
 		const memesCount = await Meme.find({
 			is_voting_close: false,
 			is_onchain: false,
-			is_deleted: false,
 		}).countDocuments()
 
 		if (id) {
 			// For single meme fetch, check if user has voted for it
-			const memeQuery = Meme.findOne().where({ _id: id, is_deleted: false }).populate('tags')
+			const memeQuery = Meme.findOne().where({ _id: id }).populate('tags')
 			
 			let meme = await memeQuery.exec()
 			
@@ -143,15 +142,11 @@ async function handleGetRequest(req: NextRequest) {
 		if (created_by && off) {
 			const memesCount = await Meme.where({
 				created_by: created_by,
-				is_deleted: false,
 			}).countDocuments()
 			
 			// Create base pipeline for user's memes
 			const userMemesPipeline: any[] = [
-				{ $match: { 
-					created_by: new mongoose.Types.ObjectId(created_by),
-					is_deleted: false
-				} },
+				{ $match: { created_by: new mongoose.Types.ObjectId(created_by) } },
 				{
 					$lookup: {
 						from: 'users',
@@ -260,20 +255,14 @@ async function handleGetRequest(req: NextRequest) {
 			const searchPipeline: any[] = [
 				{
 					$match: {
-						$and: [
-							{
-								$or: [
-									// Direct name search
-									...nameSearchConditions,
-									// Tag search
-									{ tags: { $in: tagIds } },
-									// Creator username search
-									{ created_by: { $in: matchingUserIds } },
-								]
-							},
-							// Exclude deleted memes
-							{ is_deleted: { $ne: true } }
-						]
+						$or: [
+							// Direct name search
+							...nameSearchConditions,
+							// Tag search
+							{ tags: { $in: tagIds } },
+							// Creator username search
+							{ created_by: { $in: matchingUserIds } },
+						],
 						// Don't filter by is_voting_close for search - show all memes
 						// is_voting_close: false
 					}
@@ -445,17 +434,11 @@ async function handleGetRequest(req: NextRequest) {
 			const countPipeline = [
 				{
 					$match: {
-						$and: [
-							{
-								$or: [
-									...nameSearchConditions,
-									{ tags: { $in: tagIds } },
-									{ created_by: { $in: matchingUserIds } },
-								]
-							},
-							// Exclude deleted memes
-							{ is_deleted: { $ne: true } }
-						]
+						$or: [
+							...nameSearchConditions,
+							{ tags: { $in: tagIds } },
+							{ created_by: { $in: matchingUserIds } },
+						],
 						// Don't filter by is_voting_close for search
 						// is_voting_close: false
 					}
@@ -496,10 +479,7 @@ async function handleGetRequest(req: NextRequest) {
 		if (type == 'carousel') {
 			// Create carousel pipeline
 			const carouselPipeline: any[] = [
-				{ $match: { 
-					is_onchain: false,
-					is_deleted: { $ne: true }
-				} },
+				{ $match: { is_onchain: false } },
 				{ $sort: { createdAt: -1 } },
 				{ $limit: 10 },
 				{
@@ -587,8 +567,8 @@ async function handleGetRequest(req: NextRequest) {
 			if (liveMemes.length == 0 || liveMemes.length < 5) {
 				// Fallback to get more memes if needed
 				const fallbackPipeline = [...carouselPipeline]
-				// Remove the is_onchain filter but keep is_deleted filter
-				fallbackPipeline[0] = { $match: { is_deleted: { $ne: true } } }
+				// Remove the is_onchain filter
+				fallbackPipeline.splice(0, 1)
 				
 				const memes = await Meme.aggregate(fallbackPipeline)
 				
@@ -613,7 +593,6 @@ async function handleGetRequest(req: NextRequest) {
 		const basePipeline: any[] = [
 			{ $match: { is_voting_close: false } },
 			{ $match: { is_onchain: false } },
-			{ $match: { is_deleted: { $ne: true } } },
 			{ $sort: { createdAt: -1 } },
 			{ $skip: start },
 			{ $limit: defaultOffset },
@@ -880,11 +859,10 @@ async function milestoneReward(created_by: string) {
 		created_by,
 		'upload',
 		Meme,
-		{ created_by, is_deleted: false }, // Total uploads query
+		{ created_by }, // Total uploads query
 		{ // Majority uploads query
 			is_onchain: true,
 			created_by,
-			is_deleted: false,
 			in_percentile: { $gte: MAJORITY_PERCENTILE_THRESHOLD }
 		}
 	);
@@ -900,7 +878,6 @@ async function isLimitReached(created_by: string) {
 	const memes = await Meme.find({
 		created_by: created_by,
 		createdAt: { $gte: startOfDay, $lt: endOfDay },
-		is_deleted: false,
 	})
 
 	if (memes.length >= DAILY_LIMITS.UPLOADS) {
@@ -908,79 +885,5 @@ async function isLimitReached(created_by: string) {
 	}
 }
 
-async function handleDeleteRequest(req: NextRequest) {
-	try {
-		await connectToDatabase()
-
-		// Check if user is authenticated
-		const token = await getToken({ req })
-		if (!token || !token.address) {
-			return NextResponse.json(
-				{ error: 'Authentication required' },
-				{ status: 401 }
-			)
-		}
-
-		// Get the meme ID from query parameters
-		const query = new URLSearchParams(req.nextUrl.search)
-		const memeId = query.get('id')
-
-		if (!memeId) {
-			return NextResponse.json(
-				{ error: 'Meme ID is required' },
-				{ status: 400 }
-			)
-		}
-
-		// Find the user
-		const user = await User.findOne({ user_wallet_address: token.address })
-		if (!user) {
-			return NextResponse.json(
-				{ error: 'User not found' },
-				{ status: 404 }
-			)
-		}
-
-		// Find the meme and check if it exists and is not already deleted
-		const meme = await Meme.findOne({ 
-			_id: memeId, 
-			is_deleted: false 
-		})
-
-		if (!meme) {
-			return NextResponse.json(
-				{ error: 'Meme not found or already deleted' },
-				{ status: 404 }
-			)
-		}
-
-		// Check if the user is the owner of the meme or an admin
-		if (meme.created_by.toString() !== user._id.toString() && !user.is_admin) {
-			return NextResponse.json(
-				{ error: 'Permission denied. You can only delete your own memes.' },
-				{ status: 403 }
-			)
-		}
-
-		// Soft delete the meme by setting is_deleted to true
-		await Meme.findByIdAndUpdate(memeId, { 
-			is_deleted: true 
-		})
-
-		return NextResponse.json(
-			{ message: 'Meme deleted successfully' },
-			{ status: 200 }
-		)
-
-	} catch (error) {
-		console.error('Error deleting meme:', error)
-		return NextResponse.json(
-			{ error: 'Internal Server Error' },
-			{ status: 500 }
-		)
-	}
-}
-
 export const GET = handleGetRequest
 export const POST = withApiLogging(handlePostRequest, 'Create_Meme')
-export const DELETE = withApiLogging(handleDeleteRequest, 'Delete_Meme')
