@@ -233,7 +233,7 @@ const MemeCarousel: React.FC<MemeCarouselProps> = ({
       <div className={`w-full h-96 bg-gray-800/50 rounded-lg flex items-center justify-center ${className}`}>
         <div className="flex flex-col items-center gap-4">
           <AiOutlineLoading3Quarters className="animate-spin text-4xl text-blue-500" />
-          <p className="text-gray-400 text-lg">Loading top memes...</p>
+          {/* <p className="text-gray-400 text-lg">Loading top memes...</p> */}
         </div>
       </div>
     );

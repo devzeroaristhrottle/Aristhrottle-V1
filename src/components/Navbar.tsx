@@ -191,10 +191,10 @@ export default function Navbar() {
           <div className="block lg:hidden w-screen min-w-full">
             {userDetails && user != null && user.address && (
               <div className="w-full">
-                {/* Mobile Navigation Bar - 3 Row Layout */}
-                <div className="flex flex-col w-full space-y-1 py-2">
+                {/* Mobile Navigation Bar - 2 Row Layout */}
+                <div className="flex flex-col w-full space-y-2 py-2">
                   
-                  {/* First Row - Avatar and Token Balance */}
+                  {/* First Row - Avatar, Feedback Button, and Token Balance */}
                   <div className="flex items-center justify-between w-full">
                     {/* Left Side - Avatar */}
                     <div className="flex items-center flex-shrink-0">
@@ -211,30 +211,41 @@ export default function Navbar() {
                       />
                     </div>
 
+                    {/* Center - Feedback Section */}
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <span className="text-white text-xs font-medium">Earn 5 $eART</span>
+                      <button
+                        onClick={() => setShowFeedback(true)}
+                        className="border border-white rounded px-2 py-1 bg-gray-800/30 hover:bg-gray-700/40 transition-colors"
+                      >
+                        <span className="text-white text-xs font-medium">Feedback</span>
+                      </button>
+                    </div>
+
                     {/* Right Side - Token Balance */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       <Image
-                        className="!w-5 !h-5 sm:!w-6 sm:!h-6"
+                        className="!w-4 !h-4 sm:!w-5 sm:!h-5"
                         alt="icon"
                         src="/assets/token_e.png"
-                        height={24}
-                        width={24}
+                        height={20}
+                        width={20}
                       />
-                      <span className="text-white text-sm sm:text-base font-medium">
+                      <span className="text-white text-xs sm:text-sm font-medium">
                         {userDetails?.mintedCoins
                           ? parseFloat(ethers.formatEther(userDetails.mintedCoins)).toFixed(1)
                           : "0.0"}
                       </span>
-                      <span className="text-white text-sm sm:text-base font-medium mr-3">$ART</span>
+                      <span className="text-white text-xs sm:text-sm font-medium mr-3">$ART</span>
                     </div>
                   </div>
 
                   {/* Second Row - Stats - Even spacing like desktop */}
                   <div className="flex items-center justify-between w-full px-0.5 gap-1">
                     {/* Vote Stats */}
-                    <div className="flex items-center gap-1 flex-shrink-0 ">
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       <span className="text-white text-xs font-medium">Votes</span>
-                      <div className="border border-white rounded px-2 py-0.5 min-w-[35px] text-center ">
+                      <div className="border border-white rounded px-2 py-0.5 min-w-[35px] text-center">
                         <span className="text-white text-xs font-medium">
                           {userDetails.votes}/20
                         </span>
@@ -269,19 +280,6 @@ export default function Navbar() {
                           {timeLeft.split(":").slice(0, 2).join(":")}
                         </span>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Third Row - Feedback Section */}
-                  <div className="flex justify-center items-center w-full py-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-white text-xs sm:text-sm font-medium">Earn 5 $eART</span>
-                      <button
-                        onClick={() => setShowFeedback(true)}
-                        className="border border-white rounded-full px-3 py-1 bg-gray-800/30 hover:bg-gray-700/40 transition-colors"
-                      >
-                        <span className="text-white text-xs sm:text-sm font-medium">Feedback</span>
-                      </button>
                     </div>
                   </div>
                 </div>
