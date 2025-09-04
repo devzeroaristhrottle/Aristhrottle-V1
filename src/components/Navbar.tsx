@@ -180,7 +180,8 @@ export default function Navbar() {
     
 <div 
   ref={navbarRef}
-  className="fixed lg:sticky top-0 left-0 right-0 z-50 w-screen min-w-full"
+  className="fixed lg:sticky top-0 left-0 right-0 w-screen min-w-full"
+  style={{zIndex: '100'}}
 >
         {/* Container with proper viewport handling */}
         <div className="w-screen min-w-full backdrop-blur-md bg-black/20 border-b border-white/10">
