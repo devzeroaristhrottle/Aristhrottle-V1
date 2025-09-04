@@ -31,7 +31,7 @@ export default function MobileLayout({
         </style>
       </head>
       <body className={`${inter.className} antialiased`}>
-        <div className="h-screen flex flex-col overflow-hidden">
+        <div className="flex flex-col overflow-hidden" style={{height: "100dvh"}}>
           <Navbar />
           <div className="flex-1 overflow-y-auto">
             {children}
