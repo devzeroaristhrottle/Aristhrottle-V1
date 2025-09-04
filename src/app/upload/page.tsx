@@ -16,7 +16,7 @@ export default function UploadPage() {
   // Handle successful upload - you can customize this based on your needs
   const handleUploadSuccess = (meme: Meme) => {
     console.log("Meme uploaded successfully:", meme);
-    toast.success("Content uploaded successfully!");
+    // toast.success("Content uploaded successfully!");
 
     // Update user stats if needed
     if (userDetails) {
