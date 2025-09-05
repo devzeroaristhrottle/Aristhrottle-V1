@@ -10,6 +10,7 @@ import { Meme, UserLeaderboardItem } from '@/mobile_components/types'
 import { useAuthModal, useUser } from '@account-kit/react'
 import { toast } from 'react-toastify'
 import { Context } from '@/context/contextProvider'
+import { IoGridOutline, IoListOutline } from 'react-icons/io5'
 
 function Page() {
 	const [active, setActive] = useState<'users' | 'content'>('users')
@@ -17,6 +18,7 @@ function Page() {
 	const [loading, setLoading] = useState(false)
 	const [users, setUsers] = useState<UserLeaderboardItem[]>([])
 	const [memes, setMemes] = useState<Meme[]>([])
+	const [view, setView] = useState<'grid' | 'list'>('list');
 
 	const user = useUser()
 	const { openAuthModal } = useAuthModal()
@@ -133,6 +135,10 @@ function Page() {
 		}
 	}
 
+	const onViewChange = (nextView: 'grid' | 'list') => {
+		setView(nextView);
+	}
+
 	return (
 		<div className="overflow-y-auto">
 				<div className="flex justify-center items-center mb-4">
@@ -173,7 +179,20 @@ function Page() {
 						/>
 					</div>
 
-					<div className="w-[60px]"></div>
+					<div className="w-[60px]">
+						<div id="new_or_grid_buttons" className="flex flex-row gap-2 items-center" hidden={active == 'users'}>
+							<button
+								onClick={() => onViewChange?.(view === 'grid' ? 'list' : 'grid')}
+								className="p-2 hover:text-blue-400 transition-colors"
+							>
+								{view === 'grid' ? (
+									<IoListOutline className="w-5 h-5" />
+								) : (
+									<IoGridOutline className="w-5 h-5" />
+								)}
+							</button>
+						</div>
+					</div>
 				</div>
 
 				{/* Content based on active tab */}
@@ -190,7 +209,7 @@ function Page() {
 								memes={memes}
 								pageType={period === 'daily' ? 'live' : 'all'}
 								onVote={handleVote}
-								view="list"
+								view={view}
 							/>
 						)}
 					</div>
