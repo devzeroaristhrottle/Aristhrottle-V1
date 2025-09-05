@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { AccountsProps } from '../types'
+import { useRouter } from 'next/navigation'
 
 function Accounts({ accounts }: AccountsProps) {
     const [isExpanded, setIsExpanded] = useState(false)
+    const router = useRouter();
     
     if (!accounts || accounts.length === 0) {
         return (
@@ -24,7 +26,7 @@ function Accounts({ accounts }: AccountsProps) {
         <div className="space-y-2 py-2">
             <div className="space-y-3">
                 {visibleAccounts.map((account) => (
-                    <div key={account._id} className="flex items-center gap-3 rounded-lg">
+                    <div key={account._id} className="flex items-center gap-3 rounded-lg" onClick={() => router.push(`/mobile/profile/${account._id}`)}>
                         {/* Profile Picture */}
                         <div className="flex items-center justify-center">
                             <img

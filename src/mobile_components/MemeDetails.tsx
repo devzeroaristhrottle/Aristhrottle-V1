@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useContext, useEffect, useState } from 'react'
-import { FaBookmark, FaRegShareFromSquare, FaSpinner } from 'react-icons/fa6'
+import { FaBookmark, FaSpinner } from 'react-icons/fa6'
 import { CgCloseO } from 'react-icons/cg'
 import { CiBookmark, CiUser } from 'react-icons/ci'
 import { MdOutlineReport } from 'react-icons/md'
