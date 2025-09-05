@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { Logo } from '@/components/Logo'
-import { FaRegShareFromSquare } from 'react-icons/fa6'
-import { CiBookmark } from 'react-icons/ci'
-import { FaBookmark } from 'react-icons/fa'
 import { LazyImage } from '@/components/LazyImage'
 import { MdDeleteOutline, MdOutlineReport } from "react-icons/md";
 import { MemeCardProps } from './types'
@@ -149,21 +146,24 @@ function Memecard({
 					{/* Share and bookmark on right */}
 					<div className="flex items-center space-x-3 w-16 justify-end">
 						{onShare && (
-							<FaRegShareFromSquare
+							<img
+								src='/assets/bottom_nav/Share.png'
 								className="w-6 h-6 text-white cursor-pointer"
 								onClick={() => onShare(meme._id, meme.image_url)}
 							/>
 						)}
 						{onBookmark &&
 							(isBookmarked ? (
-								<FaBookmark
+								<img
+									src='/assets/bottom_nav/Bookmark_sel.png'
 									className="w-6 h-6 text-white cursor-pointer"
 									onClick={() =>
 										onBookmark(meme._id, meme.name, meme.image_url)
 									}
 								/>
 							) : (
-								<CiBookmark
+								<img
+									src='/assets/bottom_nav/Bookmark.png'
 									className="w-6 h-6 text-white cursor-pointer"
 									onClick={() =>
 										onBookmark(meme._id, meme.name, meme.image_url)
