@@ -214,7 +214,7 @@ export default function MemeDetails({
 							<div className="flex justify-between items-center">
 								{/* Views and Report buttons on left */}
 								<div className="w-16 flex flex-row justify-between">
-									<div className="flex items-center flex-col justify-center">
+									<div className="flex items-center flex-col justify-center" hidden>
 										<CiUser className="w-6 h-6 text-white" />
 										<span className="text-xs text-white">{meme.views || 0}</span>
 									</div>

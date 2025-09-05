@@ -81,7 +81,7 @@ function Memecard({
 			<div className="py-2 px-3 bg-black/5" hidden={isGridView || false}>
 				<div className="flex justify-between items-center">
 					<div className="w-16 flex flex-row justify-between" > 
-						<div className='flex items-center flex-col justify-center'>
+						<div className='flex items-center flex-col justify-center' hidden>
 							<CiUser className="w-6 h-6 text-white"/>
 							<span className="text-xs text-white">{meme.views || 0}</span>
 						</div>
