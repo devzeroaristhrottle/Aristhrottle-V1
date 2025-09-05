@@ -18,6 +18,7 @@ import { BiStats } from 'react-icons/bi'
 import ShareModal from '@/mobile_components/ShareModal'
 import ConfirmModal from '@/mobile_components/ConfirmModal'
 import StatsModal from '@/mobile_components/StatsModal'
+import MobileEditProfile from '@/mobile_components/MobileEditProfile'
 
 type TabType = 'posts' | 'votecast' | 'drafts' | 'saved';
 
@@ -32,6 +33,18 @@ export default function ProfilePage() {
     const [followersCount, setFollowersCount] = useState(0)
     const [followingCount, setFollowingCount] = useState(0)
     const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
+    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
+    const [editProfileData, setEditProfileData] = useState<{
+        title: string;
+        bio: string;
+        preferredContent: string[];
+        file: File | null;
+    }>({
+        title: '',
+        bio: '',
+        preferredContent: [],
+        file: null,
+    })
     const [userStats, setUserStats] = useState<Stats>({
         mintedCoins: '0',
         uploads: 0,
@@ -41,7 +54,7 @@ export default function ProfilePage() {
         referrals: 0
     })
 
-    const { userDetails } = useContext(Context)
+    const { userDetails, setUserDetails } = useContext(Context)
 
     // Fetch user stats
     const fetchUserStats = async () => {
@@ -66,6 +79,13 @@ export default function ProfilePage() {
     useEffect(() => {
         if (userDetails?._id) {
             fetchUserStats()
+            // Initialize edit profile form data
+            setEditProfileData({
+                title: userDetails.username || '',
+                bio: userDetails.bio || '',
+                preferredContent: [],  // Initialize empty as it's a new feature
+                file: null,
+            })
         }
     }, [userDetails?._id])
 
@@ -255,7 +275,7 @@ export default function ProfilePage() {
                     </p>
                 </button>
                 <button
-                    onClick={() => router.push('/home/profile/edit')}
+                    onClick={() => setIsEditProfileOpen(true)}
                     className="flex justify-between items-center gap-2 border rounded-md hover:opacity-40"
                     title="Edit Profile"
                 >
@@ -367,6 +387,27 @@ export default function ProfilePage() {
                 isOpen={isStatsModalOpen}
                 onClose={() => setIsStatsModalOpen(false)}
                 stats={userStats}
+            />
+
+            {/* Edit Profile Modal */}
+            <MobileEditProfile
+                isOpen={isEditProfileOpen}
+                onCancel={() => setIsEditProfileOpen(false)}
+                formData={editProfileData}
+                setFormData={setEditProfileData}
+                onProfileUpdate={async (updatedData) => {
+                    if (userDetails && setUserDetails) {
+                        setUserDetails({
+                            ...userDetails,
+                            username: updatedData.username,
+                            bio: updatedData.bio,
+                            profile_pic: updatedData.profile_pic
+                        });
+                        
+                        await fetchUserStats();
+                        await fetchFollowCounts();
+                    }
+                }}
             />
         </div>
     )

@@ -143,3 +143,28 @@ export interface StatsModalProps {
     onClose: () => void
     stats: Stats
 }
+
+export interface EditProfileProps {
+	isOpen: boolean
+	onCancel: () => void
+	formData: {
+		title: string
+		bio: string
+		preferredContent: string[]
+		file: File | null
+	}
+	setFormData: React.Dispatch<
+		React.SetStateAction<{
+			title: string
+			bio: string
+			preferredContent: string[]
+			file: File | null
+		}>
+	>
+	onProfileUpdate?: (updatedData: {
+		username: string
+		bio: string
+		profile_pic?: string
+		preferred_content: string[]
+	}) => void
+}

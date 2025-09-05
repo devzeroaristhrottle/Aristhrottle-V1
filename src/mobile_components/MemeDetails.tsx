@@ -254,16 +254,14 @@ export default function MemeDetails({
 								</div>
 								
 								{/* Share and bookmark on right */}
-								<div className="flex items-center space-x-6 w-24 justify-end">
+								<div className="flex items-center w-24 justify-end gap-x-2">
 									{/* Share button with count */}
 									<div className="flex flex-col items-center">
-										<FaRegShareFromSquare
+										<img
+											src='/assets/bottom_nav/Share.png'
 											className="w-5 h-5 text-white cursor-pointer"
 											onClick={() => setIsShareOpen(true)}
 										/>
-										{meme.shares && meme.shares.length > 0 && (
-											<p className="text-[#1783fb] text-sm mt-1">{meme.shares.length}</p>
-										)}
 									</div>
 									
 									{/* Bookmark button with count */}
