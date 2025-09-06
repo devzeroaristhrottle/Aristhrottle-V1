@@ -149,12 +149,12 @@ export default function MemeDetails({
 			<div className="fixed inset-0 z-50 flex flex-col">
 				<div className="relative w-full h-full bg-black/90 overflow-y-auto">
 					{/* Header */}
-					<div className="sticky top-0 z-10 bg-black/90 px-4 py-3 flex justify-end">
+					<div className="absolute top-2 right-2 z-10 bg-black/90 flex justify-end">
 						<button
 							onClick={onClose}
 							className="p-2 bg-black/70 hover:bg-black/90 transition-colors duration-200 backdrop-blur-sm"
 						>
-							<CgCloseO className="text-white w-6 h-6" />
+							<img src="/assets/bottom_nav/Multiply.png" className="text-white w-6 h-6" />
 						</button>
 					</div>
 
