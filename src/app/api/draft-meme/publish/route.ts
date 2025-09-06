@@ -11,7 +11,6 @@ import mongoose from 'mongoose'
 import { getToken } from 'next-auth/jwt'
 import { withApiLogging } from '@/utils/apiLogger'
 import { processActivityMilestones } from '@/utils/milestoneUtils'
-import { MAJORITY_PERCENTILE_THRESHOLD } from '@/config/rewardsConfig'
 
 type Tag = {
   _id: mongoose.Types.ObjectId
@@ -158,14 +157,9 @@ async function handlePostRequest(req: NextRequest) {
     // Process milestone rewards
     await processActivityMilestones(
       user._id.toString(),
-      'upload',
+      'upload-total',
       Meme,
-      { created_by: user._id }, // Total uploads query
-      { // Majority uploads query
-        is_onchain: true,
-        created_by: user._id,
-        in_percentile: { $gte: MAJORITY_PERCENTILE_THRESHOLD }
-      }
+      { created_by: user._id }
     )
 
     return NextResponse.json({ 

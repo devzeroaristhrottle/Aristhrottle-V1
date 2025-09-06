@@ -102,7 +102,7 @@ export async function processActivityMilestones(
   majorityCountQuery?: object
 ): Promise<mongoose.Document[]> {
   const createdMilestones: mongoose.Document[] = [];
-  
+  console.log('activityType', majorityCountQuery);
   // Count total activities of this type
   const totalCount = await totalCountsModel.find(totalCountQuery).countDocuments();
   

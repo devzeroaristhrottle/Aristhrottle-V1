@@ -10,7 +10,6 @@ import { updateTagsRelevance } from "@/utils/tagUtils";
 import { generateReferralCodeIfEligible } from "@/utils/referralUtils";
 import User from "@/models/User";
 import { 
-  MAJORITY_PERCENTILE_THRESHOLD,
   DAILY_LIMITS
 } from "@/config/rewardsConfig";
 import { processActivityMilestones } from "@/utils/milestoneUtils";
