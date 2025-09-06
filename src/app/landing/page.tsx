@@ -722,74 +722,145 @@ export default function Page() {
 
   const [animateSearchBar, setAnimateSearchBar] = useState(0)
 
-  const handleUpvoteDownvote = useCallback(
-    async (meme_id: string) => {
-      if (!userDetails && openAuthModal) {
-        openAuthModal()
+  // Replace your existing handleUpvoteDownvote function with this simplified version:
+
+const handleUpvoteDownvote = useCallback(
+  async (meme_id: string) => {
+    if (!userDetails && openAuthModal) {
+      openAuthModal()
+      return
+    }
+
+    if (!user || !user.address) return
+
+    try {
+      const currentMeme = allMemeDataFilter.find((meme) => meme._id === meme_id)
+      
+      // Don't allow voting on own content
+      if (currentMeme?.created_by._id === userDetails?._id) {
         return
       }
 
-      try {
-        if (user && user.address && activeTab === 'all') {
-          const currentMeme = allMemeDataFilter.find((meme) => meme._id === meme_id)
-          if (
-            currentMeme?.has_user_voted ||
-            currentMeme?.created_by._id === userDetails?._id
-          ) {
-            return
-          }
+      // Toggle vote state immediately for UI feedback
+      const isCurrentlyVoted = currentMeme?.has_user_voted || false
+      const newVotedState = !isCurrentlyVoted
+      const voteCountChange = newVotedState ? 1 : -1
 
-          // Optimistic update
-          setAllMemeDataFilter((prev) => {
-            const updated = prev.map((meme) =>
-              meme._id === meme_id
-                ? {
-                    ...meme,
-                    vote_count: meme.vote_count + 1,
-                    has_user_voted: true,
-                  }
-                : meme
-            )
-            return [...updated]
+      // Update both state arrays immediately
+      setAllMemeDataFilter((prev) =>
+        prev.map((meme) =>
+          meme._id === meme_id
+            ? {
+                ...meme,
+                vote_count: Math.max(0, meme.vote_count + voteCountChange),
+                has_user_voted: newVotedState,
+              }
+            : meme
+        )
+      )
+
+      setAllMemeData((prev) =>
+        prev.map((meme) =>
+          meme._id === meme_id
+            ? {
+                ...meme,
+                vote_count: Math.max(0, meme.vote_count + voteCountChange),
+                has_user_voted: newVotedState,
+              }
+            : meme
+        )
+      )
+
+      // Update user details
+      if (userDetails) {
+        if (newVotedState) {
+          // User is voting
+          setUserDetails({
+            ...userDetails,
+            votes: userDetails.votes + 1,
+            mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(1e17),
           })
-
-          const response = await axiosInstance.post('/api/vote', {
-            vote_to: meme_id,
-            vote_by: userDetails?._id,
+        } else {
+          // User is unvoting
+          setUserDetails({
+            ...userDetails,
+            votes: Math.max(0, userDetails.votes - 1),
+            mintedCoins: BigInt(Math.max(0, Number(userDetails.mintedCoins) - 1e17)),
           })
-
-          if (response.status === 201) {
-            toast.success('Voted successfully!')
-
-            if (userDetails) {
-              setUserDetails({
-                ...userDetails,
-                mintedCoins: BigInt(userDetails.mintedCoins) + BigInt(1e17),
-              })
-            }
-          }
         }
-      } catch (error: any) {
-        // Revert optimistic update on error
+      }
+
+      // Make API call
+      const response = await axiosInstance.post('/api/vote', {
+        vote_to: meme_id,
+        vote_by: userDetails?._id,
+      })
+
+      if (response.status === 201 || response.status === 200) {
+        toast.success(newVotedState ? 'Voted successfully!' : 'Vote removed!')
+      }
+
+    } catch (error: any) {
+      console.error('Vote error:', error)
+      
+      const errorMessage = error.response?.data?.message || ''
+      const isContentDeleted = errorMessage.toLowerCase().includes('content not found') || 
+                               errorMessage.toLowerCase().includes('deleted') ||
+                               errorMessage.toLowerCase().includes('not found')
+
+      if (isContentDeleted) {
+        // Remove the deleted meme from both arrays
+        setAllMemeDataFilter((prev) => prev.filter((meme) => meme._id !== meme_id))
+        setAllMemeData((prev) => prev.filter((meme) => meme._id !== meme_id))
+        toast.error('This content has been removed')
+      } else {
+        // For other errors, revert the optimistic update
+        const currentMeme = allMemeDataFilter.find((meme) => meme._id === meme_id)
+        const revertVotedState = !(currentMeme?.has_user_voted || false)
+        const revertCountChange = revertVotedState ? 1 : -1
+
         setAllMemeDataFilter((prev) =>
           prev.map((meme) =>
             meme._id === meme_id
               ? {
                   ...meme,
-                  vote_count: Math.max(0, meme.vote_count - 1),
-                  has_user_voted: false,
+                  vote_count: Math.max(0, meme.vote_count + revertCountChange),
+                  has_user_voted: revertVotedState,
                 }
               : meme
           )
         )
 
-        console.error('Error in handleUpvoteDownvote:', error)
-        toast.error(error.response?.data?.message || 'Failed to vote')
-      }
-    },
-    [userDetails, openAuthModal, user, activeTab, allMemeDataFilter, setAllMemeDataFilter, setUserDetails]
-  )
+        setAllMemeData((prev) =>
+          prev.map((meme) =>
+            meme._id === meme_id
+              ? {
+                  ...meme,
+                  vote_count: Math.max(0, meme.vote_count + revertCountChange),
+                  has_user_voted: revertVotedState,
+                }
+              : meme
+          )
+        )
 
+        // Revert user details
+        if (userDetails) {
+          const revertVoteChange = revertVotedState ? -1 : 1
+          const revertCoinChange = revertVotedState ? -1e17 : 1e17
+          
+          setUserDetails({
+            ...userDetails,
+            votes: Math.max(0, userDetails.votes + revertVoteChange),
+            mintedCoins: BigInt(Math.max(0, Number(userDetails.mintedCoins) + revertCoinChange)),
+          })
+        }
+
+        toast.error(errorMessage || 'Failed to vote')
+      }
+    }
+  },
+  [userDetails, openAuthModal, user, allMemeDataFilter, setAllMemeDataFilter, setAllMemeData, setUserDetails]
+)
   const addMeme = (meme: Meme) => {
     setDisplayedMeme((prevMemes) =>
       [...prevMemes, meme].sort(
@@ -1187,3 +1258,4 @@ export default function Page() {
     </div>
   )
 }
+
