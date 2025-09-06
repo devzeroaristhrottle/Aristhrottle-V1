@@ -1,16 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Milestones } from './Milestones'
 import {
-	getMilestoneKeys,
 	getMilestoneTitles,
-	majorityVotesRewards,
 	Milestone,
 	MilestoneTitles,
-	totalVotesRewards,
 } from '../constants'
 import { Context } from '@/context/contextProvider'
 import axiosInstance from '@/utils/axiosInstance'
-import ProgressBar from './ProgressBar'
 import { BiDownArrowAlt } from 'react-icons/bi'
 import Loader from '@/components/Loader'
 import { useSendUserOperation, useSmartAccountClient, useUser } from '@account-kit/react'
@@ -98,20 +94,7 @@ const Votes = () => {
 	return (
 		<div className="grid h-full md:grid-cols-3 grid-cols-1 gap-y-6 md:gap-y-0 flex-col-reverse">
 			<div className="total_majority_milestones_wrapper md:col-span-2 col-span-1 md:order-1 order-2">
-				<div className="total_votes flex flex-col gap-4 md:p-5">
-					<h2 className="text-2xl md:text-4xl">Total Votes</h2>
-					<ProgressBar
-						milestones={getMilestoneKeys(totalVotesRewards)}
-						currentValue={votesData?.totalVotesCount ?? 0}
-					/>
-				</div>
-				<div className="majority_votes mt-6 md:mt-0 flex flex-col gap-4 md:p-5">
-					<h2 className="text-2xl md:text-4xl">Majority Votes</h2>
-					<ProgressBar
-						milestones={getMilestoneKeys(majorityVotesRewards)}
-						currentValue={votesData?.majorityVotesCount ?? 0}
-					/>
-				</div>
+			
 				<div className="milestones mt-8 md:mt-6 md:pr-10 flex flex-col">
 					<h2 className="text-2xl md:text-4xl md:pl-5">Milestones</h2>
 					<Milestones hasBorder={false} tasks={votesMilestones} />

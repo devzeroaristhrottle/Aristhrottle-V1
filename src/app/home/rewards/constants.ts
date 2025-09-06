@@ -1,7 +1,6 @@
 import {
-  MAJORITY_VOTES_REWARDS,
-  TOTAL_VOTES_REWARDS,
-  MAJORITY_UPLOAD_REWARDS,
+  CAST_VOTES_REWARDS,
+  RECEIVED_VOTES_REWARDS,
   TOTAL_UPLOAD_REWARDS,
   REFERRAL_REWARDS,
   MilestoneType
@@ -50,9 +49,8 @@ export const getMilestoneKeys = (rewards: Record<number, any>): number[] => {
 }
 
 // Use the imported constants instead of redefining them
-export const majorityVotesRewards = MAJORITY_VOTES_REWARDS
-export const totalVotesRewards = TOTAL_VOTES_REWARDS
-export const majorityUploadRewards = MAJORITY_UPLOAD_REWARDS
+export const votesReceivedRewards = RECEIVED_VOTES_REWARDS
+export const votesCastRewards = CAST_VOTES_REWARDS
 export const totalUploadRewards = TOTAL_UPLOAD_REWARDS
 export const referralRewards = REFERRAL_REWARDS
 
@@ -65,34 +63,25 @@ export const getMilestoneTitles = (
     switch (groupType) {
       case 'votes':
         return [
-          ...Object.entries(majorityVotesRewards).map(
+          ...Object.entries(votesReceivedRewards).map(
             ([milestone, reward]) => ({
               milestone: Number(milestone),
               reward,
-              type: 'vote' as const,
+              type: 'vote-received' as const,
             })
           ),
-          ...Object.entries(totalVotesRewards).map(([milestone, reward]) => ({
+          ...Object.entries(votesCastRewards).map(([milestone, reward]) => ({
             milestone: Number(milestone),
             reward,
-            type: 'vote-total' as const,
+            type: 'vote-cast' as const,
           })),
         ]
       case 'uploads':
-        return [
-          ...Object.entries(majorityUploadRewards).map(
-            ([milestone, reward]) => ({
-              milestone: Number(milestone),
-              reward,
-              type: 'upload' as const,
-            })
-          ),
-          ...Object.entries(totalUploadRewards).map(([milestone, reward]) => ({
-            milestone: Number(milestone),
-            reward,
-            type: 'upload-total' as const,
-          })),
-        ]
+        return Object.entries(totalUploadRewards).map(([milestone, reward]) => ({
+          milestone: Number(milestone),
+          reward,
+          type: 'upload-total' as const,
+        }))
       case 'referrals':
         return Object.entries(referralRewards).map(([milestone, reward]) => ({
           milestone: Number(milestone),
@@ -116,24 +105,22 @@ export const getMilestoneTitles = (
       // Generate human-readable title
       const title = (() => {
         switch (type) {
-          case 'vote':
-            return milestone === 10
-              ? 'Reach 10 Majority Votes'
-              : `Reach ${milestone} Majority Votes`
-          case 'vote-total':
+          case 'vote-received':
+            return milestone === 1
+              ? 'Receive First Vote'
+              : `Receive ${milestone} Votes`
+          case 'vote-cast':
             return milestone === 1
               ? 'Cast First Vote'
-              : `Cast ${milestone} Total Votes`
-          case 'upload':
-            return milestone === 10
-              ? 'Reach 10 Majority Uploads'
-              : `Reach ${milestone} Majority Uploads`
+              : `Cast ${milestone} Votes`
           case 'upload-total':
             return milestone === 1
               ? 'First Upload'
-              : `${milestone} Total Uploads`
+              : `${milestone} Uploads`
           case 'referral':
-            return milestone === 1 ? 'Refer 1 User' : `Refer ${milestone} Users`
+            return milestone === 1 
+              ? 'Refer 1 User' 
+              : `Refer ${milestone} Users`
           default:
             const _exhaustiveCheck: never = type
             return _exhaustiveCheck
