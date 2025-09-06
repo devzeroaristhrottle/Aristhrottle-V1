@@ -9,37 +9,34 @@
 export type RewardRecord = Record<number, number>;
 
 // Milestone rewards for majority votes (votes on memes that reach majority)
-export const MAJORITY_VOTES_REWARDS: RewardRecord = {
-  10: 25,   // 10 majority votes = 25 tokens
-  50: 100,  // 50 majority votes = 100 tokens
-  100: 250, // 100 majority votes = 250 tokens
-  250: 500, // 250 majority votes = 500 tokens
+export const RECEIVED_VOTES_REWARDS: RewardRecord = {
+  1: 5,   // 10 majority votes = 25 tokens
+  25: 50,  // 50 majority votes = 100 tokens
+  50: 100, // 100 majority votes = 250 tokens
+  100: 250, // 250 majority votes = 500 tokens
+  250: 750, // 500 majority votes = 100 tokens
+  500: 1500
 };
 
 // Milestone rewards for total votes cast
-export const TOTAL_VOTES_REWARDS: RewardRecord = {
+export const CAST_VOTES_REWARDS: RewardRecord = {
   1: 5,     // First vote = 5 tokens
-  50: 10,   // 50 total votes = 10 tokens
-  100: 25,  // 100 total votes = 25 tokens
-  250: 75,  // 250 total votes = 75 tokens
-  500: 100, // 500 total votes = 100 tokens
+  25: 10,   // 50 total votes = 10 tokens
+  50: 25,  // 100 total votes = 25 tokens
+  100: 100, // 250 total votes = 75 tokens
+  250: 500, // 500 total votes = 100 tokens
+  500: 1000, // 500 total votes = 100 tokens
 };
 
-// Milestone rewards for majority uploads (uploads that reach majority)
-export const MAJORITY_UPLOAD_REWARDS: RewardRecord = {
-  10: 50,    // 10 majority uploads = 50 tokens
-  50: 250,   // 50 majority uploads = 250 tokens
-  100: 650,  // 100 majority uploads = 650 tokens
-  250: 1500, // 250 majority uploads = 1500 tokens
-};
 
 // Milestone rewards for total uploads
 export const TOTAL_UPLOAD_REWARDS: RewardRecord = {
   1: 5,      // First upload = 5 tokens
-  50: 50,    // 50 total uploads = 50 tokens
-  100: 150,  // 100 total uploads = 150 tokens
-  250: 500,  // 250 total uploads = 500 tokens
-  500: 1000, // 500 total uploads = 1000 tokens
+  25: 25,    // 50 total uploads = 50 tokens
+  50: 75,
+  100: 200,
+  250: 500,
+  500: 1000,  // 100 total uploads = 150 tokens
 };
 
 // Milestone rewards for referrals
@@ -61,17 +58,15 @@ export const POINTS_MULTIPLIERS = {
 };
 
 // Milestone types
-export type MilestoneType = 'vote' | 'vote-total' | 'referral' | 'upload' | 'upload-total';
+export type MilestoneType = 'vote-received' | 'vote-cast' | 'referral' | 'upload-total';
 
 // Helper function to get milestone thresholds for a specific type
 export function getMilestoneThresholds(type: MilestoneType): number[] {
   switch (type) {
-    case 'vote':
-      return Object.keys(MAJORITY_VOTES_REWARDS).map(Number);
-    case 'vote-total':
-      return Object.keys(TOTAL_VOTES_REWARDS).map(Number);
-    case 'upload':
-      return Object.keys(MAJORITY_UPLOAD_REWARDS).map(Number);
+    case 'vote-received':
+      return Object.keys(RECEIVED_VOTES_REWARDS).map(Number);
+    case 'vote-cast':
+      return Object.keys(CAST_VOTES_REWARDS).map(Number);
     case 'upload-total':
       return Object.keys(TOTAL_UPLOAD_REWARDS).map(Number);
     case 'referral':
@@ -84,12 +79,10 @@ export function getMilestoneThresholds(type: MilestoneType): number[] {
 // Helper function to get reward for a specific milestone
 export function getMilestoneReward(type: MilestoneType, milestone: number): number | undefined {
   switch (type) {
-    case 'vote':
-      return MAJORITY_VOTES_REWARDS[milestone];
-    case 'vote-total':
-      return TOTAL_VOTES_REWARDS[milestone];
-    case 'upload':
-      return MAJORITY_UPLOAD_REWARDS[milestone];
+    case 'vote-received':
+      return RECEIVED_VOTES_REWARDS[milestone];
+    case 'vote-cast':
+      return CAST_VOTES_REWARDS[milestone];
     case 'upload-total':
       return TOTAL_UPLOAD_REWARDS[milestone];
     case 'referral':

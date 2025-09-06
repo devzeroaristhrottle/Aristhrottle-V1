@@ -10,28 +10,33 @@ export type RewardRecord = Record<number, number>;
 
 // Milestone rewards for majority votes (votes on memes that reach majority)
 export const RECEIVED_VOTES_REWARDS: RewardRecord = {
-  1: 10,   // 10 majority votes = 25 tokens
-  100: 15,  // 50 majority votes = 100 tokens
-  500: 25, // 100 majority votes = 250 tokens
-  1500: 75, // 250 majority votes = 500 tokens
-  1800: 100, // 500 majority votes = 100 tokens
+  1: 5,   // 10 majority votes = 25 tokens
+  25: 50,  // 50 majority votes = 100 tokens
+  50: 100, // 100 majority votes = 250 tokens
+  100: 250, // 250 majority votes = 500 tokens
+  250: 750, // 500 majority votes = 100 tokens
+  500: 1500
 };
 
 // Milestone rewards for total votes cast
 export const CAST_VOTES_REWARDS: RewardRecord = {
   1: 5,     // First vote = 5 tokens
-  10: 7,   // 50 total votes = 10 tokens
+  25: 10,   // 50 total votes = 10 tokens
+  50: 25,  // 100 total votes = 25 tokens
+  100: 100, // 250 total votes = 75 tokens
+  250: 500, // 500 total votes = 100 tokens
+  500: 1000, // 500 total votes = 100 tokens
 };
 
 
 // Milestone rewards for total uploads
 export const TOTAL_UPLOAD_REWARDS: RewardRecord = {
   1: 5,      // First upload = 5 tokens
-  10: 50,    // 50 total uploads = 50 tokens
-  20: 20,
-  25: 25,
-  50: 50,
-  100: 150,  // 100 total uploads = 150 tokens
+  25: 25,    // 50 total uploads = 50 tokens
+  50: 75,
+  100: 200,
+  250: 500,
+  500: 1000,  // 100 total uploads = 150 tokens
 };
 
 // Milestone rewards for referrals
