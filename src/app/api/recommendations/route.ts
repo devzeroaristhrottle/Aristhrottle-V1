@@ -4,7 +4,6 @@ import Meme from '@/models/Meme';
 import User from '@/models/User';
 import Tags from '@/models/Tags';
 import { withApiLogging } from '@/utils/apiLogger';
-import { getToken } from 'next-auth/jwt';
 
 async function handleGetRequest(req: NextRequest) {
     try {
@@ -14,13 +13,8 @@ async function handleGetRequest(req: NextRequest) {
         const type = searchParams.get('type') || 'all';
         const limit = parseInt(searchParams.get('limit') || '10');
 
-        // Get authenticated user from token for personalized recommendations
-        const token = await getToken({ req });
-        const userId = token?.address ? 
-            (await User.findOne({ user_wallet_address: token.address }))?.id : 
-            null;
 
-        let results: any = {};
+        const results: any = {};
 
         // If type is 'all' or 'tags', get recommended tags
         if (type === 'all' || type === 'tags') {
