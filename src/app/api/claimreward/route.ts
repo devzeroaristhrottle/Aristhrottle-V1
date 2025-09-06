@@ -25,7 +25,7 @@ async function handlePostRequest(req: NextRequest) {
       );
     }
 
-    const validTypes = ["vote", "vote-total", "referral", "upload", "upload-total"];
+    const validTypes = ["vote-received", "vote-cast", "referral", "upload-total"];
     if (!validTypes.includes(type)) {
       console.log("❌ [ClaimReward] Invalid milestone type:", type);
       return NextResponse.json(

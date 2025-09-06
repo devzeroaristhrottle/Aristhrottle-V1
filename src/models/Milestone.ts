@@ -12,7 +12,7 @@ const MilestoneSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["vote", "vote-total", "referral", "upload", "upload-total"],
+      enum: ["vote-received", "vote-cast", "referral", "upload-total"],
     },
     transaction_hash: { type: String },
     claiming_in_progress: { type: Boolean },

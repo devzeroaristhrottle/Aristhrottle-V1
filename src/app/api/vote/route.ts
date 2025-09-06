@@ -159,15 +159,9 @@ async function handlePostRequest(request: NextRequest) {
 async function milestoneReward(vote_by: string) {
   await processActivityMilestones(
     vote_by,
-    'vote',
+    'vote-cast',
     Vote,
-    { vote_by }, // Total votes query
-    { // Majority votes query 
-      is_onchain: true,
-      vote_by,
-      "vote_to.is_onchain": true,
-      "vote_to.in_percentile": { $gte: MAJORITY_PERCENTILE_THRESHOLD }
-    }
+    { vote_by } // Total votes query
   );
 }
 

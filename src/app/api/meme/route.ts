@@ -857,14 +857,9 @@ async function handlePostRequest(req: NextRequest) {
 async function milestoneReward(created_by: string) {
 	await processActivityMilestones(
 		created_by,
-		'upload',
+    	'upload-total',
 		Meme,
-		{ created_by }, // Total uploads query
-		{ // Majority uploads query
-			is_onchain: true,
-			created_by,
-			in_percentile: { $gte: MAJORITY_PERCENTILE_THRESHOLD }
-		}
+		{ created_by } // Total uploads query
 	);
 }
 

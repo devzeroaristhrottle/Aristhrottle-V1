@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
     // Get milestone details
     const milestoneDetails = await Milestone.find({
       created_by: userId,
-      $or: [{ type: "vote" }, { type: "vote-total" }],
+      $or: [{ type: "vote-received" }, { type: "vote-cast" }],
     });
 
     // Calculate points from unclaimed votes

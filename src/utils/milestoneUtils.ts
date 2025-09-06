@@ -96,7 +96,7 @@ export async function checkAndCreateMilestones(
  */
 export async function processActivityMilestones(
   userId: string,
-  activityType: 'vote' | 'upload' | 'referral',
+  activityType: 'vote-received' | 'vote-cast' | 'upload-total' | 'referral',
   totalCountsModel: mongoose.Model<any>,
   totalCountQuery: object,
   majorityCountQuery?: object
@@ -106,46 +106,15 @@ export async function processActivityMilestones(
   // Count total activities of this type
   const totalCount = await totalCountsModel.find(totalCountQuery).countDocuments();
   
-  // Check first activity milestone (special case)
-  if (totalCount === 1) {
-    const milestone = await createMilestoneIfNotExists(
-      userId, 
-      1, 
-      `${activityType === 'referral' ? activityType : `${activityType}-total`}` as MilestoneType
-    );
-    
-    if (milestone) {
-      createdMilestones.push(milestone);
-    }
-  }
+  // Get all thresholds for this activity type
+  const thresholds = getMilestoneThresholds(activityType as MilestoneType);
   
-  // Check total milestones (excluding first one which is handled specially)
-  const totalThresholds = getMilestoneThresholds(
-    `${activityType === 'referral' ? activityType : `${activityType}-total`}` as MilestoneType
-  ).filter(t => t > 1);
-  
-  if (totalThresholds.includes(totalCount)) {
-    const milestone = await createMilestoneIfNotExists(
-      userId,
-      totalCount,
-      `${activityType === 'referral' ? activityType : `${activityType}-total`}` as MilestoneType
-    );
-    
-    if (milestone) {
-      createdMilestones.push(milestone);
-    }
-  }
-  
-  // For vote and upload, also check majority milestones (not applicable for referrals)
-  if (activityType !== 'referral' && majorityCountQuery) {
-    const majorityCount = await totalCountsModel.find(majorityCountQuery).countDocuments();
-    
-    const majorityThresholds = getMilestoneThresholds(activityType as MilestoneType);
-    
-    if (majorityThresholds.includes(majorityCount)) {
+  // Create milestones for all thresholds that have been reached
+  for (const threshold of thresholds) {
+    if (totalCount >= threshold) {
       const milestone = await createMilestoneIfNotExists(
         userId,
-        majorityCount,
+        threshold,
         activityType as MilestoneType
       );
       
@@ -154,6 +123,7 @@ export async function processActivityMilestones(
       }
     }
   }
+  
   
   return createdMilestones;
 }

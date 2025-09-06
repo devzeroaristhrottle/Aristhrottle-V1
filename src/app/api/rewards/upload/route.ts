@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ethers } from "ethers";
 import Meme from "@/models/Meme";
 import { checkIsAuthenticated } from "@/utils/authFunctions";
-import { POINTS_MULTIPLIERS, MAJORITY_PERCENTILE_THRESHOLD } from "@/config/rewardsConfig";
+import { POINTS_MULTIPLIERS } from "@/config/rewardsConfig";
 
 export async function GET(req: NextRequest) {
   try {
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     // Get milestone details
     const milestoneDetails = await Milestone.find({
       created_by: userId,
-      $or: [{ type: "upload" }, { type: "upload-total" }],
+      type: "upload-total",
     });
 
     // Get unclaimed uploads
@@ -58,20 +58,12 @@ export async function GET(req: NextRequest) {
       ethers.encodeBytes32String(meme._id.toString())
     );
 
-    // Get majority uploads count
-    const majorityUploads = await Meme.find({
-      is_onchain: true,
-      created_by: userId,
-      in_percentile: { $gte: MAJORITY_PERCENTILE_THRESHOLD },
-    }).countDocuments();
-
     return NextResponse.json(
       {
         totalUploadMemeCount,
         milestoneDetails,
         unClaimedMemeIds: memeIds,
         unClaimedReward,
-        majorityUploads,
         voteReceived: unClaimedUploads.reduce((acc, meme) => acc + meme.vote_count, 0)
       },
       { status: 200 }
