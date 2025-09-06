@@ -168,6 +168,14 @@ async function handleGetRequest(req: NextRequest) {
                     }
                 },
                 {
+                    $lookup: {
+                        from: 'tags',
+                        localField: 'tags',
+                        foreignField: '_id',
+                        as: 'tagDetails'
+                    }
+                },
+                {
                     $project: {
                         _id: 1,
                         name: 1,
@@ -187,7 +195,19 @@ async function handleGetRequest(req: NextRequest) {
                         createdAt: 1,
                         updatedAt: 1,
                         shares: 1,
-                        tags: 1,
+                        tags: {
+                            $map: {
+                                input: '$tagDetails',
+                                as: 'tag',
+                                in: {
+                                    _id: '$$tag._id',
+                                    name: '$$tag.name',
+                                    createdAt: '$$tag.createdAt',
+                                    updatedAt: '$$tag.updatedAt',
+                                    __v: '$$tag.__v'
+                                }
+                            }
+                        },
                         categories: 1,
                         views: 1
                     }

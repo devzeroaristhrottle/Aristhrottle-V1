@@ -125,7 +125,7 @@ function SearchBar({
                     onChange={handleInputChange}
                     onFocus={handleInputFocus}
                     onBlur={handleInputBlur}
-                    className="bg-black/20 border border-gray-700/50 w-full rounded-full pr-12 pl-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-[#2FCAC7] focus:ring-1 focus:ring-[#2FCAC7] transition-all duration-200"
+                    className="bg-black/20 border text-sm border-gray-700/50 w-full rounded-full pr-12 pl-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-[#2FCAC7] focus:ring-1 focus:ring-[#2FCAC7] transition-all duration-200"
                 />
                 
                 <button
