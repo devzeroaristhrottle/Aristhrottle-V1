@@ -2,7 +2,6 @@
 
 import React, { useContext, useEffect, useState } from 'react'
 import { FaBookmark, FaSpinner } from 'react-icons/fa6'
-import { CgCloseO } from 'react-icons/cg'
 import { CiBookmark, CiUser } from 'react-icons/ci'
 import { MdOutlineReport } from 'react-icons/md'
 import { useAuthModal, useUser } from '@account-kit/react'
