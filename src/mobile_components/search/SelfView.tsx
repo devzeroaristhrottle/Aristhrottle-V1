@@ -4,36 +4,43 @@ import Accounts from './SearchAccounts'
 import MemesList from '../MemesList'
 import { Account, Meme } from '../types'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
-function SelfView() {
+interface SelfViewProps {
+    searchQuery?: string;
+}
+
+function SelfView({ searchQuery }: SelfViewProps) {
     const [loading, setLoading] = useState(true);
     const [tags, setTags] = useState<string[]>([]);
     const [users, setUser] = useState<Account[]>([]);
     const [memes, setMemes] = useState<Meme[]>([]);
-    
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchRecommendations = async () => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('/api/recommendations?type=all');
+                const url = searchQuery
+                    ? `/api/search?type=all&query=${encodeURIComponent(searchQuery)}`
+                    : '/api/recommendations?type=all';
+                
+                const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error('Failed to fetch recommendations');
+                    throw new Error(searchQuery ? 'Failed to search' : 'Failed to fetch recommendations');
                 }
                 const data = await response.json();
-                 setTags(data.tags || []);
-                 setUser(data.users || []);
-                 setMemes(data.memes || []);
+                setTags(data.tags || []);
+                setUser(data.users || []);
+                setMemes(data.memes || []);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Something went wrong');
-                console.error('Error fetching recommendations:', err);
+                console.error('Error fetching data:', err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchRecommendations();
-    }, []);
+        fetchData();
+    }, [searchQuery]);
 
     if (loading) {
         return (
