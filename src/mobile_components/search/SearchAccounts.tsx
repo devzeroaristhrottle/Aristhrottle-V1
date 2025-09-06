@@ -1,10 +1,92 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { AccountsProps } from '../types'
 import { useRouter } from 'next/navigation'
+import { toast } from 'react-toastify'
+import axiosInstance from '@/utils/axiosInstance'
+import { Context } from '@/context/contextProvider'
+import { useAuthModal } from '@account-kit/react'
+import ConfirmModal from '../ConfirmModal'
 
 function Accounts({ accounts }: AccountsProps) {
     const [isExpanded, setIsExpanded] = useState(false)
+    const [followingStatus, setFollowingStatus] = useState<{ [key: string]: boolean }>({})
+    const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({})
+    const [isConfirmUnfollowOpen, setIsConfirmUnfollowOpen] = useState(false)
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
     const router = useRouter();
+    const { userDetails } = useContext(Context)
+    const { openAuthModal } = useAuthModal()
+
+    // Check initial follow status for all accounts
+    const checkFollowStatus = async () => {
+        if (!userDetails?._id) return;
+        
+        try {
+            const response = await axiosInstance.get(`/api/user/follow?userId=${userDetails._id}&type=following`);
+            
+            if (response.data.users) {
+                const followingIds = response.data.users.map((user: any) => user._id);
+                const newStatus: { [key: string]: boolean } = {};
+                accounts.forEach(account => {
+                    newStatus[account._id] = followingIds.includes(account._id);
+                });
+                setFollowingStatus(newStatus);
+            }
+        } catch (error) {
+            console.error('Error checking follow status:', error);
+        }
+    };
+
+    // Check follow status when accounts or user changes
+    React.useEffect(() => {
+        checkFollowStatus();
+    }, [accounts, userDetails?._id]);
+
+    const handleFollow = async (userId: string) => {
+        try {
+            if (!userDetails?._id) {
+                toast.error('Please login to follow users')
+                if (openAuthModal) openAuthModal()
+                return
+            }
+
+            const isCurrentlyFollowing = followingStatus[userId];
+            
+            if (isCurrentlyFollowing) {
+                // Show confirmation modal for unfollow
+                setSelectedUserId(userId);
+                setIsConfirmUnfollowOpen(true);
+                return;
+            }
+
+            // Follow user
+            setIsLoading(prev => ({ ...prev, [userId]: true }));
+            await axiosInstance.post('/api/user/follow', { userIdToFollow: userId });
+            setFollowingStatus(prev => ({ ...prev, [userId]: true }));
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.error || 'Failed to update follow status';
+            toast.error(errorMessage);
+        } finally {
+            setIsLoading(prev => ({ ...prev, [userId]: false }));
+        }
+    };
+
+    const handleUnfollow = async () => {
+        if (!selectedUserId) return;
+
+        try {
+            setIsLoading(prev => ({ ...prev, [selectedUserId]: true }));
+            await axiosInstance.delete(`/api/user/follow?userId=${selectedUserId}`);
+            setFollowingStatus(prev => ({ ...prev, [selectedUserId]: false }));
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.error || 'Failed to unfollow user';
+            toast.error(errorMessage);
+        } finally {
+            setIsLoading(prev => ({ ...prev, [selectedUserId]: false }));
+            setIsConfirmUnfollowOpen(false);
+            setSelectedUserId(null);
+        }
+    };
     
     if (!accounts || accounts.length === 0) {
         return (
@@ -26,9 +108,9 @@ function Accounts({ accounts }: AccountsProps) {
         <div className="space-y-2 py-2">
             <div className="space-y-3">
                 {visibleAccounts.map((account) => (
-                    <div key={account._id} className="flex items-center gap-3 rounded-lg" onClick={() => router.push(`/mobile/profile/${account._id}`)}>
+                    <div key={account._id} className="flex items-center gap-3 rounded-lg" >
                         {/* Profile Picture */}
-                        <div className="flex items-center justify-center">
+                        <div className="flex items-center justify-center" onClick={() => router.push(`/mobile/profile/${account._id}`)}>
                             <img
                                 src={account.profile_pic}
                                 alt={account.username}
@@ -65,8 +147,26 @@ function Accounts({ accounts }: AccountsProps) {
                         </div>
 
                         <div className="flex items-center justify-center">
-                            <button className="bg-[#2FCAC7] hover:bg-[#28b8b5] text-black p-1 rounded-full font-medium transition-colors" style={{fontSize: '0.6rem'}}>
-                                Follow
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleFollow(account._id);
+                                }}
+                                disabled={isLoading[account._id]}
+                                className={`flex justify-between items-center gap-2 p-1 rounded-md font-medium transition-colors text-black ${
+                                    followingStatus[account._id]
+                                        ? 'bg-[#707070]'
+                                        : 'bg-[#2FCAC7]'
+                                } ${isLoading[account._id] ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                style={{fontSize: '0.75rem'}}
+                            >
+                                {isLoading[account._id] ? (
+                                    <div className="w-3 h-3 border-t-2 border-b-2 border-black rounded-full animate-spin" />
+                                ) : followingStatus[account._id] ? (
+                                    'Following'
+                                ) : (
+                                    'Follow'
+                                )}
                             </button>
                         </div>
                     </div>
@@ -90,6 +190,23 @@ function Accounts({ accounts }: AccountsProps) {
                     Show less
                 </button>
             )}
+
+            {/* Confirm Unfollow Modal */}
+            <ConfirmModal
+                isOpen={isConfirmUnfollowOpen}
+                onClose={() => {
+                    setIsConfirmUnfollowOpen(false);
+                    setSelectedUserId(null);
+                }}
+                onConfirm={handleUnfollow}
+                title="Confirm Unfollow"
+                message={`Are you sure you want to unfollow ${
+                    selectedUserId 
+                        ? accounts.find(a => a._id === selectedUserId)?.username 
+                        : 'this user'
+                }?`}
+                confirmButtonText="Unfollow"
+            />
         </div>
     )
 }

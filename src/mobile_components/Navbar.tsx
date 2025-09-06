@@ -179,7 +179,7 @@ export default function Navbar() {
 							<Button
 								size={{ base: 'xs', md: 'lg' }}
 								variant="solid"
-								className="bg-slate-50 text-slate-800 font-bold px-1 md:px-3 rounded-lg md:rounded-xl text-base md:text-lg"
+								className="bg-slate-50 text-slate-800 font-bold px-1 md:px-3 rounded-lg text-sm md:text-lg"
 								onClick={() => openAuthModal()}
 								hidden={user != null}
 							>
