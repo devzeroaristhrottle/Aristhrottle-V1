@@ -165,7 +165,7 @@ const Uploads = () => {
 				</div>
 				
 				{/* Add History Box */}
-				{user && user.address && (
+				{/* {user && user.address && (
 					<div className="history flex flex-col gap-2 md:gap-5 items-center border-2 border-[#1783FB] rounded-lg p-2 md:p-5 mx-8 md:mx-0">
 						<h4 className="text-2xl md:text-4xl">History</h4>
 						<p className="text-[#1783FB] text-lg md:text-xl text-center">
@@ -180,7 +180,7 @@ const Uploads = () => {
 							View History
 						</a>
 					</div>
-				)}
+				)} */}
 				
 				<div className="rules flex flex-col md:gap-3 items-center justify-center border-2 border-[#1783FB] rounded-lg p-3 md:p-5 mx-8 md:mx-0">
 					<h4 className="text-2xl md:text-4xl">Rules</h4>
