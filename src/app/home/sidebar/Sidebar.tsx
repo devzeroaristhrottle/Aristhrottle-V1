@@ -12,21 +12,15 @@ import { HiOutlineDocumentText } from 'react-icons/hi'
 // Define sidebar items configuration
 const sidebarItems = [
 	{
-		title: 'Rewards',
+		title: 'Upload',
 		icon: (isActive: boolean) => (
-			<div className="relative inline-block">
-				<LuTrophy
-					className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-						isActive ? 'text-[#1783FB]' : 'text-slate-100'
-					}`}
-				/>
-				<span className="absolute -top-1 right-1 flex h-3 w-3 items-center justify-center">
-					<span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
-					<span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
-				</span>
-			</div>
+			<GrCloudUpload
+				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+					isActive ? 'text-[#1783FB]' : 'text-slate-100'
+				}`}
+			/>
 		),
-		action: (route: AppRouterInstance) => route.push('/home/rewards'),
+		action: (route: AppRouterInstance) => route.push('/upload'),
 	},
 	{
 		title: 'Leaderboard',
@@ -65,16 +59,23 @@ const sidebarItems = [
 		),
 		action: (route: AppRouterInstance) => route.push('/landing'),
 	},
+
 	{
-		title: 'Upload',
+		title: 'Rewards',
 		icon: (isActive: boolean) => (
-			<GrCloudUpload
-				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-					isActive ? 'text-[#1783FB]' : 'text-slate-100'
-				}`}
-			/>
+			<div className="relative inline-block">
+				<LuTrophy
+					className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+						isActive ? 'text-[#1783FB]' : 'text-slate-100'
+					}`}
+				/>
+				<span className="absolute -top-1 right-1 flex h-3 w-3 items-center justify-center">
+					<span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
+					<span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
+				</span>
+			</div>
 		),
-		action: (route: AppRouterInstance) => route.push('/upload'),
+		action: (route: AppRouterInstance) => route.push('/home/rewards'),
 	},
 	// {
 	// 	title: 'Saved',
