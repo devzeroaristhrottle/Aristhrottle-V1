@@ -12,23 +12,15 @@ import { HiOutlineDocumentText } from 'react-icons/hi'
 // Define sidebar items configuration
 const sidebarItems = [
 	{
-		title: 'Home',
+		title: 'Upload',
 		icon: (isActive: boolean) => (
-			<Image
-				alt="side-bar-logo"
+			<GrCloudUpload
 				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-					isActive ? 'brightness-0 saturate-100 hue-rotate-[210deg] contrast-[2]' : 'text-slate-100'
+					isActive ? 'text-[#1783FB]' : 'text-slate-100'
 				}`}
-				height={52}
-				quality={100}
-				src="/assets/aris-logo.svg"
-				width={50}
-				style={{
-					filter: isActive ? 'brightness(0) saturate(100%) invert(27%) sepia(96%) saturate(3207%) hue-rotate(210deg) brightness(101%) contrast(101%)' : 'none'
-				}}
 			/>
 		),
-		action: (route: AppRouterInstance) => route.push('/landing'),
+		action: (route: AppRouterInstance) => route.push('/upload'),
 	},
 	{
 		title: 'Leaderboard',
@@ -47,6 +39,27 @@ const sidebarItems = [
 		),
 		action: (route: AppRouterInstance) => route.push('/home/leaderboard'),
 	},
+
+	{
+		title: 'Home',
+		icon: (isActive: boolean) => (
+			<Image
+				alt="side-bar-logo"
+				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+					isActive ? 'brightness-0 saturate-100 hue-rotate-[210deg] contrast-[2]' : 'text-slate-100'
+				}`}
+				height={52}
+				quality={100}
+				src="/assets/aris-logo.svg"
+				width={50}
+				style={{
+					filter: isActive ? 'brightness(0) saturate(100%) invert(27%) sepia(96%) saturate(3207%) hue-rotate(210deg) brightness(101%) contrast(101%)' : 'none'
+				}}
+			/>
+		),
+		action: (route: AppRouterInstance) => route.push('/landing'),
+	},
+
 	{
 		title: 'Rewards',
 		icon: (isActive: boolean) => (
@@ -64,39 +77,28 @@ const sidebarItems = [
 		),
 		action: (route: AppRouterInstance) => route.push('/home/rewards'),
 	},
-	{
-		title: 'Upload',
-		icon: (isActive: boolean) => (
-			<GrCloudUpload
-				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-					isActive ? 'text-[#1783FB]' : 'text-slate-100'
-				}`}
-			/>
-		),
-		action: (route: AppRouterInstance) => route.push('/upload'),
-	},
-	{
-		title: 'Saved',
-		icon: (isActive: boolean) => (
-			<FaRegBookmark
-				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-					isActive ? 'text-[#1783FB]' : 'text-slate-100'
-				}`}
-			/>
-		),
-		action: (route: AppRouterInstance) => route.push('/home/bookmark'),
-	},
-	{
-		title: 'Community',
-		icon: (isActive: boolean) => (
-			<FaUsers
-				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-					isActive ? 'text-[#1783FB]' : 'text-slate-100'
-				}`}
-			/>
-		),
-		action: (route: AppRouterInstance) => route.push('/home/community'),
-	},
+	// {
+	// 	title: 'Saved',
+	// 	icon: (isActive: boolean) => (
+	// 		<FaRegBookmark
+	// 			className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+	// 				isActive ? 'text-[#1783FB]' : 'text-slate-100'
+	// 			}`}
+	// 		/>
+	// 	),
+	// 	action: (route: AppRouterInstance) => route.push('/home/bookmark'),
+	// },
+	// {
+	// 	title: 'Community',
+	// 	icon: (isActive: boolean) => (
+	// 		<FaUsers
+	// 			className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+	// 				isActive ? 'text-[#1783FB]' : 'text-slate-100'
+	// 			}`}
+	// 		/>
+	// 	),
+	// 	action: (route: AppRouterInstance) => route.push('/home/community'),
+	// },
 	{
 		title: 'Docs',
 		icon: (isActive: boolean) => (

@@ -214,6 +214,7 @@ export default function Navbar() {
                     {/* Center - Feedback Section */}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <span className="text-white text-xs font-medium">Earn 5 $eART</span>
+                      <span className="text-yellow-400 text-lg">👉</span>
                       <button
                         onClick={() => setShowFeedback(true)}
                         className="border border-white rounded px-2 py-1 bg-gray-800/30 hover:bg-gray-700/40 transition-colors"
