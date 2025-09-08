@@ -12,6 +12,41 @@ import { HiOutlineDocumentText } from 'react-icons/hi'
 // Define sidebar items configuration
 const sidebarItems = [
 	{
+		title: 'Rewards',
+		icon: (isActive: boolean) => (
+			<div className="relative inline-block">
+				<LuTrophy
+					className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+						isActive ? 'text-[#1783FB]' : 'text-slate-100'
+					}`}
+				/>
+				<span className="absolute -top-1 right-1 flex h-3 w-3 items-center justify-center">
+					<span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
+					<span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
+				</span>
+			</div>
+		),
+		action: (route: AppRouterInstance) => route.push('/home/rewards'),
+	},
+	{
+		title: 'Leaderboard',
+		icon: (isActive: boolean) => (
+			<div className="relative inline-block">
+				<IoPodiumOutline
+					className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+						isActive ? 'text-[#1783FB]' : 'text-slate-100'
+					}`}
+				/>
+				<span className="absolute -top-1 right-2 flex h-3 w-3 items-center justify-center">
+					<span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
+					<span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
+				</span>
+			</div>
+		),
+		action: (route: AppRouterInstance) => route.push('/home/leaderboard'),
+	},
+
+	{
 		title: 'Home',
 		icon: (isActive: boolean) => (
 			<Image
@@ -31,40 +66,6 @@ const sidebarItems = [
 		action: (route: AppRouterInstance) => route.push('/landing'),
 	},
 	{
-		title: 'Leaderboard',
-		icon: (isActive: boolean) => (
-			<div className="relative inline-block">
-				<IoPodiumOutline
-					className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-						isActive ? 'text-[#1783FB]' : 'text-slate-100'
-					}`}
-				/>
-				<span className="absolute -top-1 right-2 flex h-3 w-3 items-center justify-center">
-					<span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
-					<span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
-				</span>
-			</div>
-		),
-		action: (route: AppRouterInstance) => route.push('/home/leaderboard'),
-	},
-	{
-		title: 'Rewards',
-		icon: (isActive: boolean) => (
-			<div className="relative inline-block">
-				<LuTrophy
-					className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-						isActive ? 'text-[#1783FB]' : 'text-slate-100'
-					}`}
-				/>
-				<span className="absolute -top-1 right-1 flex h-3 w-3 items-center justify-center">
-					<span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
-					<span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
-				</span>
-			</div>
-		),
-		action: (route: AppRouterInstance) => route.push('/home/rewards'),
-	},
-	{
 		title: 'Upload',
 		icon: (isActive: boolean) => (
 			<GrCloudUpload
@@ -75,28 +76,28 @@ const sidebarItems = [
 		),
 		action: (route: AppRouterInstance) => route.push('/upload'),
 	},
-	{
-		title: 'Saved',
-		icon: (isActive: boolean) => (
-			<FaRegBookmark
-				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-					isActive ? 'text-[#1783FB]' : 'text-slate-100'
-				}`}
-			/>
-		),
-		action: (route: AppRouterInstance) => route.push('/home/bookmark'),
-	},
-	{
-		title: 'Community',
-		icon: (isActive: boolean) => (
-			<FaUsers
-				className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
-					isActive ? 'text-[#1783FB]' : 'text-slate-100'
-				}`}
-			/>
-		),
-		action: (route: AppRouterInstance) => route.push('/home/community'),
-	},
+	// {
+	// 	title: 'Saved',
+	// 	icon: (isActive: boolean) => (
+	// 		<FaRegBookmark
+	// 			className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+	// 				isActive ? 'text-[#1783FB]' : 'text-slate-100'
+	// 			}`}
+	// 		/>
+	// 	),
+	// 	action: (route: AppRouterInstance) => route.push('/home/bookmark'),
+	// },
+	// {
+	// 	title: 'Community',
+	// 	icon: (isActive: boolean) => (
+	// 		<FaUsers
+	// 			className={`cursor-pointer h-12 w-12 transition-transform duration-150 ${
+	// 				isActive ? 'text-[#1783FB]' : 'text-slate-100'
+	// 			}`}
+	// 		/>
+	// 	),
+	// 	action: (route: AppRouterInstance) => route.push('/home/community'),
+	// },
 	{
 		title: 'Docs',
 		icon: (isActive: boolean) => (

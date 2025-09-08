@@ -16,6 +16,8 @@ import { LeaderboardMemeCard } from '../leaderboard/MemeCard'
 import MemeDetail from '@/components/MemeDetail'
 import { toast } from 'react-toastify'
 import { Meme } from '../page'
+import {  useRouter } from 'next/navigation'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 interface Data {
 	title: string
@@ -43,6 +45,7 @@ interface DraftMeme {
 }
 
 export default function Page() {
+	const [isClicked, setIsClicked] = useState(false);
 	const [editProfileOpen, setEditProfileOpen] = useState(false)
 	const [formData, setFormData] = useState<Data>({
 		title: '',
@@ -352,6 +355,7 @@ export default function Page() {
 			scrollComp.current.style = isMemeDetailOpen ? 'hidden' : 'auto'
 	}, [isMemeDetailOpen])
 
+	const router: AppRouterInstance = useRouter()
 	return (
 		<div className="md:max-w-7xl md:mx-auto mx-4">
 			{/* Top Section */}
@@ -377,8 +381,15 @@ export default function Page() {
 							{userDetails?.username}
 						</h1>
 						<div className="flex flex-row items-center justify-start gap-2 text-lg">
+							<button className='flex justify-between items-center gap-2 px-1 md:px-3 md:py-1 border border-[#1783fb] rounded-lg hover:opacity-40'
+							onClick={() => router.push(`/home/community`)}
+							>
 							<div>{userData?.followersCount || 0} followers</div>
+							</button>
+							<button className='flex justify-between items-center gap-2 px-1 md:px-3 md:py-1 border border-[#1783fb] rounded-lg hover:opacity-40'
+							onClick={() => router.push(`/home/community`)}>
 							<div>{userData?.followingCount || 0} following</div>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -511,10 +522,24 @@ export default function Page() {
 						/>
 					</div>
 					<div className="space-x-2.5 md:space-x-5 flex justify-center">
+					<button 
+ onClick={() => {
+   setIsClicked(true);
+   router.push('/home/bookmark');
+ }}
+ className={`
+   ${isClicked ? 'bg-white text-black' : 'bg-[#0d3159] text-white'}
+   text-base text-center md:text-xl font-medium md:py-1 rounded-[9px] w-14
+   transition-all duration-300 flex items-center justify-center cursor-pointer
+ `}
+>
+ Saved
+</button>
+			
 						<TabButton
 							classname="!text-base md:!text-xl !px-2 md:!px-5 !rounded-md md:!rounded-10px"
 							isActive={activeTab === 'generations'}
-							label="Draft Content"
+							label="Drafts"
 							onClick={() => handleTabChange('generations')}
 						/>
 						<TabButton
