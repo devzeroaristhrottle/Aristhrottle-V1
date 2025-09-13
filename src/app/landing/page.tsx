@@ -119,6 +119,9 @@ export default function Page() {
   const [shownCount, setShownCount] = useState<number>(0)
   const [showUninteractedOnly, setShowUninteractedOnly] = useState<boolean>(false)
   
+  // Add new state for new user auth modal
+  const [showNewUserAuth, setShowNewUserAuth] = useState<boolean>(false)
+  
   const { setUserDetails, userDetails, setIsUploadMemeOpen, isRefreshMeme } = useContext(Context)
 
   const user = useUser()
@@ -128,6 +131,53 @@ export default function Page() {
 
   const memeContainerRef = useRef<HTMLDivElement>(null)
   const { handleBookmark } = useMemeActions()
+
+  // Add functions to handle new user authentication
+  const handleNewUserAuth = () => {
+    setShowNewUserAuth(false)
+    if (openAuthModal) {
+      openAuthModal()
+    }
+  }
+
+  const handleSkipAuth = () => {
+    setShowNewUserAuth(false)
+    setWelcOpen(true) // Show welcome card instead
+  }
+
+  // New User Auth Modal Component
+  const NewUserAuthModal = () => {
+    if (!showNewUserAuth) return null
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-gradient-to-b from-[#050D28] to-[#0F345C] border border-[#1783fb] rounded-2xl p-8 max-w-md mx-4">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-white mb-4">
+              Welcome to Aristhrottle! 🚀
+            </h2>
+            <p className="text-gray-300 mb-6">
+              Join our community to vote on memes, earn rewards, and participate in exclusive airdrops!
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleNewUserAuth}
+                className="bg-gradient-to-r from-[#1783fb] to-[#28e0ca] hover:from-[#28e0ca] hover:to-[#1783fb] text-white font-medium px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                Sign Up / Sign In
+              </button>
+              <button
+                onClick={handleSkipAuth}
+                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
+              >
+                Continue as Guest
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const handleCloseShare = () => {
     setIsShareOpen(false)
@@ -181,16 +231,24 @@ export default function Page() {
     }
   }
 
+  // Modified useEffect for new user check
   useEffect(() => {
     axiosInstance.get('/api/new-ip').then((response) => {
       if (response.data.message && !localStorage.getItem('isNew')) {
-        setWelcOpen(true)
+        // Check if user is already authenticated
+        if (!user || !user.address) {
+          // Show auth modal for new unauthenticated users
+          setShowNewUserAuth(true)
+        } else {
+          // If already authenticated, just show welcome card
+          setWelcOpen(true)
+        }
         localStorage.setItem('isNew', 'true')
       }
     })
     fetchLeaderBoard()
     setTimeout(() => readSearch(), 1000)
-  }, [])
+  }, [user]) // Add user as dependency
 
   // Updated handleNext to work with carousel memes
   const handleNext = () => {
@@ -946,6 +1004,9 @@ const handleUpvoteDownvote = useCallback(
       className='mx-8 md:ml-24 xl:mx-auto md:max-w-[56.25rem] lg:max-w-[87.5rem]'
       style={{ height: '100vh' }}
     >
+      {/* New User Auth Modal */}
+      <NewUserAuthModal />
+      
       <div className='w-full overflow-hidden' style={{ width: 'calc(80vw)' }}>
         <div className='animate-marquee whitespace-nowrap w-fit'>
           <span className='text-lg sm:text-xl md:text-2xl font-semibold text-white inline-flex gap-1 sm:gap-2'>
@@ -1258,4 +1319,3 @@ const handleUpvoteDownvote = useCallback(
     </div>
   )
 }
-
