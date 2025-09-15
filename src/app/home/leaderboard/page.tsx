@@ -105,7 +105,6 @@ export default function Page() {
   } = useFilterAndSort(memes, activeTab);
 
 
-
   const getMyMemes = async () => {
     try {
       setLoading(true);
@@ -421,7 +420,6 @@ export default function Page() {
       </div>
 
       <div
-
         className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 sm:gap-y-10 grid-cols-1 grid-flow-row !min-h-[47vh]  mt-6 mb-4 no-scrollbar w-full"
         ref={memeContainerRef}
       >
@@ -434,7 +432,6 @@ export default function Page() {
                 onOpenMeme={() => {
                   setSelectedMeme(item);
                   setIsMemeDetailOpen(true);
-
                 }}
                 activeTab={activeTab}
                 voteMeme={(meme_id) => handleVote(meme_id)}
@@ -445,7 +442,6 @@ export default function Page() {
         </div>
 
         {finalFilterMeme.map((item, index) => (
-
           <div key={item._id} className="hidden md:block">
             <LeaderboardMemeCard
               meme={item}
@@ -466,7 +462,6 @@ export default function Page() {
           )}
           {!loading && finalFilterMeme.length === 0 && memes.length === 0 && (
             <p className="text-center text-nowrap text-2xl mx-auto">
-
               Content not found
             </p>
           )}
@@ -475,17 +470,14 @@ export default function Page() {
       {/* Meme Detail Modal */}
       {isMemeDetailOpen && selectedMeme && (
         <MemeDetail
-
           tab={activeTab}
           onClose={onClose}
           meme={selectedMeme}
-
           onNext={handleNext}
           onPrev={handlePrev}
           onVoteMeme={(meme_id) => handleVote(meme_id)}
           bmk={false}
           searchRelatedMemes={() => {}}
-
           onRelatedMemeClick={(meme: any) =>
             setSelectedMeme(meme)
           }
