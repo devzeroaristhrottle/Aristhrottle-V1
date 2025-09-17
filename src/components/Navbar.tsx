@@ -180,8 +180,7 @@ export default function Navbar() {
     
 <div 
   ref={navbarRef}
-  className="fixed lg:sticky top-0 left-0 right-0 w-screen min-w-full"
-  style={{zIndex: '100'}}
+  className="fixed lg:sticky top-0 left-0 right-0 z-50 w-screen min-w-full"
 >
         {/* Container with proper viewport handling */}
         <div className="w-screen min-w-full backdrop-blur-md bg-black/20 border-b border-white/10">
@@ -214,7 +213,6 @@ export default function Navbar() {
                     {/* Center - Feedback Section */}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <span className="text-white text-xs font-medium">Earn 5 $eART</span>
-                      <span className="text-yellow-400 text-lg">👉</span>
                       <button
                         onClick={() => setShowFeedback(true)}
                         className="border border-white rounded px-2 py-1 bg-gray-800/30 hover:bg-gray-700/40 transition-colors"
@@ -237,7 +235,7 @@ export default function Navbar() {
                           ? parseFloat(ethers.formatEther(userDetails.mintedCoins)).toFixed(1)
                           : "0.0"}
                       </span>
-                      <span className="text-white text-xs sm:text-sm font-medium mr-3">$ART</span>
+                      <span className="text-white text-xs sm:text-sm font-medium mr-3">$eART</span>
                     </div>
                   </div>
 
@@ -399,7 +397,7 @@ export default function Navbar() {
                       setOpen(e.open);
                     }
                   }}
-                >
+                 >
                   <Popover.Trigger asChild>
                     <Button
                       size="lg"

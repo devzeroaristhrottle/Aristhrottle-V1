@@ -16,8 +16,16 @@ import { LeaderboardMemeCard } from '../leaderboard/MemeCard'
 import MemeDetail from '@/components/MemeDetail'
 import { toast } from 'react-toastify'
 import { Meme } from '../page'
-import {  useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { Button } from '@/components/ui/button'
+import { Popover, Portal } from '@chakra-ui/react'
+import {
+	useAuthModal,
+	useLogout,
+	useUser,
+	useSmartAccountClient,
+} from '@account-kit/react'
 
 interface Data {
 	title: string
@@ -47,6 +55,7 @@ interface DraftMeme {
 export default function Page() {
 	const [isClicked, setIsClicked] = useState(false);
 	const [editProfileOpen, setEditProfileOpen] = useState(false)
+	const [walletPopoverOpen, setWalletPopoverOpen] = useState(false)
 	const [formData, setFormData] = useState<Data>({
 		title: '',
 		tags: [],
@@ -55,7 +64,6 @@ export default function Page() {
 		interests: [],
 	})
 	const [page, setPage] = useState(1)
-	// const [totalMemeCount, setTotalMemeCount] = useState<number>(0)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [memes, setMemes] = useState<LeaderboardMeme[]>([])
 	const [draftMemes, setDraftMemes] = useState<DraftMeme[]>([])
@@ -69,8 +77,14 @@ export default function Page() {
 	const [selectedMemeIndex, setSelectedMemeIndex] = useState<number>(0)
 	const [userData, setUserData] = useState<any>()
 	const scrollComp = useRef<HTMLDivElement>(null)
-	const { userDetails } = useContext(Context)
+	const { userDetails, setUserDetails } = useContext(Context)
 	const fileInputRef = useRef<HTMLInputElement>(null)
+
+	// Wallet integration
+	const user = useUser()
+	const { openAuthModal } = useAuthModal()
+	const { logout } = useLogout()
+	const { client, address } = useSmartAccountClient({})
 
 	// Tab-based filtering (primary)
 	const tabFilteredMemes = useMemo(() => {
@@ -78,17 +92,7 @@ export default function Page() {
 		today.setUTCHours(0, 0, 0, 0) // Start of today in UTC
 		const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000) // Start of yesterday
 		yesterday.setUTCHours(0, 0, 0, 0)
-		// else if (activeTab === "daily") {
-		//   // Memes from yesterday (00:00 to 23:59 UTC)
-		//   return memes.filter((meme) => {
-		//     const createdAt = new Date(meme.createdAt);
-		//     return (
-		//       createdAt >= yesterday &&
-		//       createdAt < new Date(yesterday.getTime() + 24 * 60 * 60 * 1000)
-		//     );
-		//   });
-		// }
-		// All-time tab: no date filtering
+		
 		// Always sort by createdAt descending
 		return [...memes].sort(
 			(a, b) =>
@@ -160,12 +164,10 @@ export default function Page() {
 			)
 
 			if (response.data.memes) {
-				// setTotalMemeCount(response.data.memesCount)
 				setMemes(response.data.memes)
 			}
 		} catch (error) {
 			console.log(error)
-			// setTotalMemeCount(0)
 			setMemes([])
 		} finally {
 			setLoading(false)
@@ -219,7 +221,6 @@ export default function Page() {
 	}
 
 	useEffect(() => {
-		// setTotalMemeCount(0)
 		setMemes([])
 		setDraftMemes([])
 		resetFilters() // Reset filters on tab/page/user change
@@ -349,6 +350,14 @@ export default function Page() {
 		}
 	}
 
+	// Handle wallet disconnect
+	const handleDisconnect = () => {
+		logout()
+		setWalletPopoverOpen(false)
+		setUserDetails(undefined)
+		router.replace('/landing')
+	}
+
 	useEffect(() => {
 		document.body.style.overflow = isMemeDetailOpen ? 'hidden' : 'auto'
 		if (scrollComp.current)
@@ -393,15 +402,71 @@ export default function Page() {
 						</div>
 					</div>
 				</div>
-				<div className="flex flex-col items-end md:flex-row space-y-2 md:space-x-16">
+				<div className="flex flex-col items-end md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+					{/* Wallet Connection Button - Now on left */}
+					<Popover.Root
+						open={walletPopoverOpen}
+						onOpenChange={(e) => {
+							if (!e.open && user && user.address) {
+								setWalletPopoverOpen(e.open);
+							}
+						}}
+					>
+						<Popover.Trigger asChild>
+							<button
+								className="flex justify-center items-center text-lg gap-2 px-1 md:px-3 md:py-1  border border-[#1783fb] rounded-lg hover:opacity-40 text-[#1783fb]  md:text-4xl  text-nowrap font-bold min-w-[60px] md:min-w-[80px] h-8 md:h-12"
+								onClick={() => {
+									if (user && user.address) {
+										setWalletPopoverOpen(true);
+									} else {
+										openAuthModal();
+									}
+								}}
+							>
+								{user && user.address
+									? "Logout"
+									: "Connect"}
+							</button>
+						</Popover.Trigger>
+						<Portal>
+							<Popover.Positioner>
+								<Popover.Content className="bg-slate-50 rounded-lg shadow-lg border">
+									<Popover.Arrow />
+									<Popover.Body className="flex flex-col p-4">
+										<Popover.Title
+											fontWeight="medium"
+											className="text-slate-900 text-sm md:text-base mb-4"
+										>
+											<p className="mb-2">
+												<strong>Wallet (EOA): </strong>
+												<span className="break-all text-xs md:text-sm">{user?.address}</span>
+											</p>
+											<p>
+												<strong>Smart Account: </strong>
+												<span className="break-all text-xs md:text-sm">{address}</span>
+											</p>
+										</Popover.Title>
+										<Button
+											size="sm"
+											variant="solid"
+											className="text-slate-50 font-bold px-3 py-2 bg-slate-900 hover:bg-slate-800 rounded-md"
+											onClick={handleDisconnect}
+										>
+											Disconnect
+										</Button>
+									</Popover.Body>
+								</Popover.Content>
+							</Popover.Positioner>
+						</Portal>
+					</Popover.Root>
+					
+					{/* Edit Profile Button - Now on right */}
 					<button
 						onClick={() => setEditProfileOpen(true)}
 						className="flex justify-between items-center gap-2 px-1 md:px-3 md:py-1 border border-[#1783fb] rounded-lg hover:opacity-40"
 					>
 						<MdEdit className="w-4 h-4 md:w-9 md:h-9" fill="#1783fb" />
-						<p className="text-[#1783fb] text-lg md:text-4xl text-nowrap font-bold">
-							Edit Profile
-						</p>
+						<p className="text-[#1783fb] text-lg md:text-4xl text-nowrap font-bold">Edit</p>
 					</button>
 				</div>
 			</div>
@@ -522,20 +587,20 @@ export default function Page() {
 						/>
 					</div>
 					<div className="space-x-2.5 md:space-x-5 flex justify-center">
-					<button 
- onClick={() => {
-   setIsClicked(true);
-   router.push('/home/bookmark');
- }}
- className={`
-   ${isClicked ? 'bg-white text-black' : 'bg-[#0d3159] text-white'}
-   text-base text-center md:text-xl font-medium md:py-1 rounded-[9px] w-14
-   transition-all duration-300 flex items-center justify-center cursor-pointer
- `}
->
- Saved
-</button>
-			
+						<button 
+							onClick={() => {
+								setIsClicked(true);
+								router.push('/home/bookmark');
+							}}
+							className={`
+								${isClicked ? 'bg-white text-black' : 'bg-[#0d3159] text-white'}
+								text-base text-center md:text-xl font-medium md:py-1 rounded-[9px] w-14
+								transition-all duration-300 flex items-center justify-center cursor-pointer
+							`}
+						>
+							Saved
+						</button>
+				
 						<TabButton
 							classname="!text-base md:!text-xl !px-2 md:!px-5 !rounded-md md:!rounded-10px"
 							isActive={activeTab === 'generations'}
