@@ -103,12 +103,9 @@ const Votes = () => {
         <div className='milestones mt-8 md:mt-6 md:pr-10 flex flex-col'>
           <h2 className='text-2xl md:text-4xl md:pl-5'>Milestones</h2>
           <Milestones hasBorder={false} tasks={votesMilestones} />
-        </div>
-      </div>
-      <div className='points_rules_wrapper flex flex-col gap-y-8 md:gap-y-12 md:mt-8 md:order-2 order-1'>
-        {/* History Box  */}
+           {/* History Box  */}
         {user && user.address && (
-          <div className='history flex flex-col gap-2 md:gap-5 items-center mx-20 md:mx-0 border-2 border-[#1783FB] rounded-lg p-2 md:p-5 mt-8 md:mt-10'>
+       <div className='history flex flex-col gap-2 md:gap-3 items-center md:mx-0 border-2 border-[#1783FB] rounded-lg p-3 md:p-5 mx-8 mt-8 md:mt-10'>
             <h4 className='text-2xl md:text-4xl'>History</h4>
             <p className='text-[#1783FB] text-lg md:text-xl text-center'>
               View on blockchain explorer
@@ -123,7 +120,9 @@ const Votes = () => {
             </a>
           </div>
         )}
-        
+        </div>
+      </div>
+      <div className='points_rules_wrapper flex flex-col gap-y-8 md:gap-y-12 md:mt-8 md:order-2 order-1'>
         <div className='rules flex flex-col md:gap-3 items-center justify-center border-2 border-[#1783FB] rounded-lg p-3 md:p-5 mx-8 md:mx-0'>
           <h4 className='text-2xl md:text-4xl'>Rules</h4>
           <p className='text-2xl md:text-3xl'>1 Vote Cast</p>
@@ -131,8 +130,6 @@ const Votes = () => {
           <span className='text-[#29e0ca] text-3xl md:text-4xl'>0.1 $eART</span>
           <p className='text-xl md:text-3xl'>to Voter</p>
           <span className='text-[#1783FB] text-lg md:text-2xl text-center leading-none md:leading-normal'>
-            *Majority Vote is counted when Voted Content has above average
-            votes. (Total Votes on Platform / Number of Content) in 24 Hours
           </span>
         </div>
       </div>
