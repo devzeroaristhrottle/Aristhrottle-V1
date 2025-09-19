@@ -246,8 +246,8 @@ export async function GET(req: NextRequest) {
 						has_user_voted: 1,
 					},
 				},
-				{ $skip: start }
-				//{ $limit: defaultOffset }
+				{ $skip: start },
+				// { $limit: defaultOffset }
 			)
 
 			const memes = await Meme.aggregate(basePipeline)
