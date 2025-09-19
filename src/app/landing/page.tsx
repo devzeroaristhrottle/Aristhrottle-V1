@@ -1234,7 +1234,7 @@ useEffect(() => {
             {!loading && displayedMemes.length === 0 && (
               <div className='col-span-full flex justify-center items-center py-20'>
                 <p className='text-center text-2xl text-gray-400'>
-                  No memes found
+                <AiOutlineLoading3Quarters className='animate-spin text-3xl' />
                 </p>
               </div>
             )}
