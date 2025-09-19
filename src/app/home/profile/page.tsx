@@ -472,7 +472,7 @@ export default function Page() {
 			</div>
 
 			{/* Stats Section */}
-			<div className="flex flex-col md:flex-row gap-10 mt-3">
+			{/* <div className="flex flex-col md:flex-row gap-10 mt-3">
 				<div className="md:flex-1 py-3 border-[.1875rem] border-[#1783fb] rounded-xl">
 					<p className="text-[28px] h-16 md:h-8 leading-none px-4">
 						{userDetails?.bio}
@@ -496,7 +496,7 @@ export default function Page() {
 							<p className="text-lg text-[#1783FB]">Majority Uploads</p>
 							<p className="text-lg">{userDetails?.majorityUploads}</p>
 						</div>
-					</div>
+					</div> */}
 					<div className="md:!w-[200px] flex flex-col md:justify-between gap-y-4">
 						<div className="order-2 md:order-1 flex flex-col md:gap-2 md:px-2 md:py-4 border-[.1875rem] border-[#1783fb] rounded-xl">
 							<p className="text-lg md:text-[28px] h-5 md:h-8 text-[#1783FB] text-center">
@@ -508,16 +508,16 @@ export default function Page() {
 									: 0}
 							</p>
 						</div>
-						<div className="order-1 md:order-2 flex flex-col md:gap-2 px-2 md:py-4 border-[.1875rem] border-[#1783fb] rounded-xl">
+						{/* <div className="order-1 md:order-2 flex flex-col md:gap-2 px-2 md:py-4 border-[.1875rem] border-[#1783fb] rounded-xl">
 							<p className="text-lg md:text-[28px] h-5 md:h-8 text-[#1783FB] text-center">
 								Votes Received
 							</p>
 							<p className="text-2xl md:text-[30px] md:h-8 text-center">
 								{userDetails?.totalVotesReceived}
 							</p>
-						</div>
+						</div> */}
 					</div>
-				</div>
+				{/* </div>
 				<div className="w-[200px] px-2 py-4 border-[.1875rem] border-[#1783fb] rounded-xl hidden md:flex flex-col justify-between">
 					<div className="flex flex-col gap-2">
 						<p className="text-[28px] h-8 text-[#1783FB] text-center">
@@ -554,7 +554,7 @@ export default function Page() {
 						</p>
 					</div>
 				</div>
-			</div>
+			</div> */}
 
 			{/* Gallery Section */}
 			<div className="mt-16 md:mt-12">
